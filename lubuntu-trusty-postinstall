@@ -8,7 +8,17 @@
 #  10/06/2014, V1.1 - Update
 # -------------------------------------------------------
 
-# detect current architecture (i386 or amd64)
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+# define where screenshot are saved
+SCREENSHOT_DIR="$HOME/Téléchargements"
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
 RESULT=`uname -a | grep x86_64`
 [ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
 
@@ -153,8 +163,22 @@ sudo chmod +rx /usr/local/sbin/lo-thumbnailer
 sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo.thumbnailer
 
 # ---------------------------------------------------
-# --------------------- Cleanup ---------------------
+# ------------------ Package cleanup ----------------
 # ---------------------------------------------------
 
 sudo apt-get -y autoremove
 sudo apt-get -y autoclean
+
+# ---------------------------------------------------
+# --------------- Lubuntu 14.04 tweaks --------------
+# ---------------------------------------------------
+ 
+# start network applet (Lubuntu 14.04 bug)
+echo "nm-applet" >> $HOME/.config/lxsession/Lubuntu/autostart
+ 
+# Set double click time to 400ms (instead of 200ms)
+sed -i 's,.*doubleClickTime.*,<doubleClickTime>400<\/doubleClickTime>,' $HOME/.config/openbox/lubuntu-rc.xml
+ 
+# set target directory for screenshots
+sed -i 's,.*<command>lxsession-default screenshot<\/command>.*,      <command>lxsession-default screenshot -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
+sed -i 's,.*<command>lxsession-default screenshot window<\/command>.*,      <command>lxsession-default screenshot window -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
