@@ -5,6 +5,7 @@
 #  This script will run some commands as sudo
 # 
 #  25/05/2014, V1.0 - Creation by N. Bernaerts
+#  10/06/2014, V1.1 - Update
 # -------------------------------------------------------
 
 # detect current architecture (i386 or amd64)
@@ -15,7 +16,6 @@ RESULT=`uname -a | grep x86_64`
 # --------------- Full System Update ----------------
 # ---------------------------------------------------
 
-# Lubuntu PPA for system updates
 sudo add-apt-repository -y ppa:lubuntu-dev/staging
 sudo apt-get update
 sudo apt-get -y dist-upgrade
@@ -27,15 +27,15 @@ sudo apt-get -y dist-upgrade
 # system extension really needed
 sudo apt-get -y install linux-firmware-nonfree xbacklight preload ppa-purge libnotify-bin
 
-# complementary filesystem clients 
+# filesystem clients 
 sudo apt-get -y install cifs-utils autofs
+
+# compression tools
+sudo apt-get -y install p7zip-full rar unrar unzip
 
 # ---------------------------------------------------
 # --------------- misc Desktop Tools ----------------
 # ---------------------------------------------------
-
-# complementary compression format
-sudo apt-get -y install p7zip-full rar unrar unzip
 
 # keepassx : electronic wallet
 sudo apt-get -y install keepassx
@@ -65,7 +65,10 @@ sudo apt-get -y install exiv2 gcolor2 imagemagick hugin
 # gimp
 sudo apt-get -y install gimp gimp-plugin-registry
 
-# ------------ Multimedia Codecs & Flash ------------
+# ---------------------------------------------------
+# ----------- Multimedia Codecs & Flash -------------
+# ---------------------------------------------------
+
 # auto-accept mscorefonts eula
 sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
 
@@ -74,84 +77,84 @@ sudo apt-get --yes --force-yes install lubuntu-restricted-extras x264
 
 # CSS DVD decryption
 sudo sh /usr/share/doc/libdvdread4/install-css.sh
+
+# ---------------------------------------------------
+# ------------------ Audio tools --------------------
 # ---------------------------------------------------
 
-# ------------------- Audio Tools -------------------
 # misc tools
 sudo apt-get -y install pavucontrol soundconverter
 
 # mp3 tools
 sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame  mp3gain
+
+# ---------------------------------------------------
+# ------------------ Video tools --------------------
 # ---------------------------------------------------
 
-# ------------------- Video Tools -------------------
-# video tools and editors
+# video tools
 sudo apt-get -y install libav-tools avidemux mkvtoolnix-gui handbrake
 
-# openshot (install and mouse cursor bug)
+# video editor
 sudo apt-get -y install openshot
+
+# ---------------------------------------------------
+# ---------------- Internet tools -------------------
 # ---------------------------------------------------
 
-# ----------------- Internet Tools ------------------
 # thunderbird
 sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-support
 
 # chromium & filezilla
 sudo apt-get -y install chromium-bsu filezilla
 
-# skype
-#wget http://download.skype.com/linux/skype-ubuntu-precise_4.2.0.11-1_${ARCHI}.deb
-#gdebi --n skype-ubuntu-precise_4.1.0.20-1_*.deb
-
-# gitso (remote assistance)
+# remote assistance
 wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
 sudo gdebi --n gitso_0.6.2_all.deb
 
-# -------------------- Firefox ---------------------
-# H264 support
+# Firefox : H264 support
 sudo add-apt-repository -y ppa:mc3man/trusty-media
 sudo apt-get update
 sudo apt-get -y install gstreamer0.10-ffmpeg
 
-# Hangout plugin for Firefox
+# Firefox : Hangout plugin
 wget https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
 sudo gdebi --n google-talkplugin_current_*.deb
+
+# ---------------------------------------------------
+# ------------------ Android tools ------------------
 # ---------------------------------------------------
 
-# -------------------- PDF Tools ---------------------
-# Master PDF Editor
-wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
-sudo gdebi --n master-pdf-editor_*.deb
-# ---------------------------------------------------
-
-# -------------- Android Tools and Yad --------------
-# android tools adb and fastboot
+# adb and fastboot
 sudo add-apt-repository -y ppa:nilarimogard/webupd8
 sudo apt-get update
-sudo apt-get -y install android-tools-adb android-tools-fastboot yad
+sudo apt-get -y install android-tools-adb android-tools-fastboot
+
+# yad editor (from same PPA)
+sudo apt-get -y install yad
+
+# ---------------------------------------------------
+# ----------------- Thumbnailers --------------------
 # ---------------------------------------------------
 
-# ------- APK thumbnailer  (to be tested) -----------
-# multiarch
+# APK thumbnailer (to be tested)
 sudo apt-get -y install libstdc++6:i386 lib32z1 lib32ncurses5 lib32bz2-1.0
-
-# install thumbnailer
 wget http://bernaerts.dyndns.org/download/gnome/apk/apk-thumbnailer.zip
 sudo unzip -d /usr/local/sbin apk-thumbnailer.zip && rm apk-thumbnailer.zip
 sudo chmod +rx /usr/local/sbin/apk-thumbnailer /usr/local/sbin/aapt-thumbnailer
 sudo wget -O /usr/share/thumbnailers/apk.thumbnailer http://bernaerts.dyndns.org/download/gnome/apk/apk.thumbnailer
-# ---------------------------------------------------
 
-# -------------- LibreOffice thumbnailer ------------
+# LibreOffice thumbnailer
 wget https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo-thumbnailer-icons.zip 
 sudo unzip -d /usr/local/sbin lo-thumbnailer-icons.zip
 rm lo-thumbnailer-icons.zip
 sudo wget -O /usr/local/sbin/lo-thumbnailer https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo-thumbnailer
 sudo chmod +rx /usr/local/sbin/lo-thumbnailer
 sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo.thumbnailer
+
+# ---------------------------------------------------
+# --------------------- Cleanup ---------------------
 # ---------------------------------------------------
 
-# ----------------- System Cleanup ------------------
 sudo apt-get -y autoremove
 sudo apt-get -y autoclean
-# ---------------------------------------------------
