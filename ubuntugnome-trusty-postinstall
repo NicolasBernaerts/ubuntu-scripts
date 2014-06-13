@@ -163,7 +163,7 @@ sudo apt-get -y install libstdc++6:i386 lib32z1 lib32ncurses5 lib32bz2-1.0
 sudo wget -O /usr/local/sbin/aapt-thumbnailer https://github.com/NicolasBernaerts/apk-thumbnailer/raw/master/aapt
 sudo wget -O /usr/local/sbin/apk-thumbnailer https://github.com/NicolasBernaerts/apk-thumbnailer/raw/master/apk-thumbnailer
 sudo chmod +rx /usr/local/sbin/apk-thumbnailer /usr/local/sbin/aapt-thumbnailer
-sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://github.com/NicolasBernaerts/apk-thumbnailer/raw/master/apk.thumbnailer
+sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://github.com/NicolasBernaerts/apk-thumbnailer/raw/master/apk.thumbnailer 
 
 # LibreOffice thumbnailer
 wget https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo-thumbnailer-icons.zip 
