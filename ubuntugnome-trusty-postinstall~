@@ -1,0 +1,200 @@
+#!/bin/sh
+# -------------------------------------------------------
+#  UbuntuGnome 14.04 LTS Post-installation script
+#
+#  This script will run some commands as sudo
+# 
+#  25/05/2014, V1.0 - Creation by N. Bernaerts
+#  13/06/2014, V1.1 - Update 
+# -------------------------------------------------------
+
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
+RESULT=`uname -a | grep x86_64`
+[ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
+
+# ---------------------------------------------------
+# --------------- Full System Update ----------------
+# ---------------------------------------------------
+
+sudo apt-get update
+sudo apt-get -y dist-upgrade
+
+# ---------------------------------------------------
+# ---------------- System Utilities -----------------
+# ---------------------------------------------------
+
+# system extension really needed
+sudo apt-get -y install linux-firmware-nonfree xbacklight preload libnotify-bin
+
+# package manipulation tools
+sudo apt-get -y install ppa-purge synaptic gdebi
+
+# filesystem clients 
+sudo apt-get -y install cifs-utils autofs
+
+# compression tools
+sudo apt-get -y install p7zip-full rar unrar unzip
+
+# disk tools
+sudo apt-get -y install smartmontools disktype unetbootin
+
+# ---------------------------------------------------
+# ----------- Gnome Shell Configuration -------------
+# ---------------------------------------------------
+
+# gnome shell extensions (including missing menu editor alacarte)
+sudo apt-get -y install gnome-shell-extensions alacarte
+
+# gnome shell window bar icons
+gsettings set org.gnome.shell.overrides button-layout :close,minimize,maximize
+
+# ---------------------------------------------------
+# --------------- misc Desktop Tools ----------------
+# ---------------------------------------------------
+
+# keepassx
+sudo apt-get -y install keepassx
+
+# grisbi
+sudo apt-get -y install grisbi
+
+# PDF editor
+wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
+sudo gdebi --n master-pdf-editor_1.9.25_*.deb
+
+# ---------------------------------------------------
+# ------------------ Graphical Apps -----------------
+# ---------------------------------------------------
+
+# misc graphical apps
+sudo apt-get -y install exiv2 gcolor2 imagemagick
+
+# hugin
+sudo apt-get -y install hugin 
+
+# gimp
+sudo apt-get -y install gimp gimp-plugin-registry
+
+# ---------------------------------------------------
+# ----------- Multimedia Codecs & Flash -------------
+# ---------------------------------------------------
+
+# auto-accept mscorefonts eula
+sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
+
+# restricted extra : codecs & flash
+sudo apt-get --yes --force-yes install ubuntu-restricted-extras libav-tools x264
+
+# CSS DVD decryption
+sudo sh /usr/share/doc/libdvdread4/install-css.sh
+
+# ---------------------------------------------------
+# ------------------ Audio tools --------------------
+# ---------------------------------------------------
+
+# misc tools
+sudo apt-get -y install pavucontrol soundconverter
+
+# mp3 tools
+sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame mp3gain
+
+# ---------------------------------------------------
+# ------------------ Video tools --------------------
+# ---------------------------------------------------
+
+# avidemux
+sudo apt-get -y install avidemux
+
+# MKV tools
+sudo apt-get -y install mkvtoolnix-gui
+
+# handbrake
+sudo apt-get -y install handbrake
+
+# openshot video editor
+sudo apt-get -y install openshot
+
+# ---------------------------------------------------
+# ---------------- Internet tools -------------------
+# ---------------------------------------------------
+
+# thunderbird
+sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-support
+
+# chromium 
+sudo apt-get -y install chromium-bsu
+
+# filezilla
+sudo apt-get -y install filezilla
+
+# remote assistance
+wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
+sudo gdebi --n gitso_0.6.2_all.deb
+
+# Firefox : H264 support
+sudo add-apt-repository -y ppa:mc3man/trusty-media
+sudo apt-get update
+sudo apt-get -y install gstreamer0.10-ffmpeg
+
+# Firefox : Hangout plugin
+wget https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
+sudo gdebi --n google-talkplugin_current_*.deb
+
+# youtube-dl & gui
+sudo add-apt-repository -y ppa:nilarimogard/webupd8
+sudo apt-get update
+sudo apt-get -y install youtube-dl youtube-dlg
+
+# ---------------------------------------------------
+# ----------------- Thumbnailers --------------------
+# ---------------------------------------------------
+
+# APK thumbnailer
+#sudo apt-get -y install libstdc++6:i386 lib32z1 lib32ncurses5 lib32bz2-1.0
+#sudo wget -O /usr/local/sbin/aapt-thumbnailer https://github.com/NicolasBernaerts/apk-thumbnailer/raw/master/aapt
+#sudo wget -O /usr/local/sbin/apk-thumbnailer https://github.com/NicolasBernaerts/apk-thumbnailer/raw/master/apk-thumbnailer
+#sudo chmod +rx /usr/local/sbin/apk-thumbnailer /usr/local/sbin/aapt-thumbnailer
+#sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://github.com/NicolasBernaerts/apk-thumbnailer/raw/master/apk.thumbnailer
+
+# LibreOffice thumbnailer
+wget https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo-thumbnailer-icons.zip 
+sudo unzip -d /usr/local/sbin lo-thumbnailer-icons.zip
+rm lo-thumbnailer-icons.zip
+sudo wget -O /usr/local/sbin/lo-thumbnailer https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo-thumbnailer
+sudo chmod +rx /usr/local/sbin/lo-thumbnailer
+sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo.thumbnailer
+
+
+# ---------------------------------------------------
+# ---------------- Development Tools ----------------
+# ---------------------------------------------------
+
+# GIT
+sudo apt-get -y install git git-cola
+
+# ---------------------------------------------------
+# ------------------ Android tools ------------------
+# ---------------------------------------------------
+
+# adb and fastboot (from ppa:nilarimogard/webupd8)
+sudo apt-get -y install android-tools-adb android-tools-fastboot
+
+# yad editor (from ppa:nilarimogard/webupd8)
+sudo apt-get -y install yad
+
+# ---------------------------------------------------
+# ------------------ Package cleanup ----------------
+# ---------------------------------------------------
+
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+
