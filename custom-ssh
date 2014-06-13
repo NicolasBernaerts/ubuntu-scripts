@@ -1,0 +1,24 @@
+#!/bin/sh
+# -------------------------------------------------------
+#  Script used to create SSH terminal with custom theme per host basis
+#  This script handle a custom profile for every SSH gnome terminal sessions
+#  The gnome terminal profile must match the SSH Host name
+#
+#  Used in http://bernaerts.dyndns.org/linux/76-gnome/223-gnome-shell-customise-ssh-terminal
+#
+#  Parameters :
+#    $1 : -e
+#    $2 : "ssh host"
+#
+#  20/05/2012, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# get terminal profile form ssh host
+PROFILE=`echo $2 | cut -d ' ' -f 2`
+
+# call gnome terminal with the needed profile
+gnome-terminal --window-with-profile="$PROFILE" "$1" "$2"
+
+# exit
+exit 0
+

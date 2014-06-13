@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Custom SSH Terminal
+Icon=utilities-terminal
+Exec=custom-ssh
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Utility;TerminalEmulator;
+OnlyShowIn=GNOME;
+X-Ubuntu-Gettext-Domain=custom-ssh
+Comment=Customised SSH terminal using Gnome Terminal
+
