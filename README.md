@@ -1,4 +1,10 @@
 ubuntu-scripts
 ==============
 
-Various installation &amp; administration scripts for Ubuntu workstation
+Various installation & administration scripts for Ubuntu workstation.
+
+Most of these scripts are used by some articles available under
+
+http://bernaerts.dyndns.org/linux/
+
+
