@@ -1,0 +1,30 @@
+#!/bin/bash
+# -------------------------------------------------
+#  Get monitors configuration from monitor.xml and apply it for current user session.
+#  In case of multiple definitions in monitor.xml only first one is used.
+#
+#  See http://bernaerts.dyndns.org/linux/74-ubuntu/309-ubuntu-dual-display-monitor-position-lost
+#  for instructions
+#
+#  Revision history :
+#    19/04/2014 - Creation by N. Bernaerts
+# -------------------------------------------------
+
+
+# get number of declared monitors
+NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/output)' $HOME/.config/monitors.xml)
+
+# loop thru declared monitors to create the command line parameters
+for (( i=1; i<=$NUM; i++)); do
+  # get attributes of current monitor (name and x & y positions)
+  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/output['$i']/@name)' $HOME/.config/monitors.xml 2>NULL)
+  POS_X=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/x/text()' $HOME/.config/monitors.xml 2>NULL)
+  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/y/text()' $HOME/.config/monitors.xml 2>NULL)
+
+  # if position is defined for current monitor, add its position to command line parameters
+  [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}")
+done
+
+# position all monitors
+xrandr "${PARAM_ARR[@]}"
+
