@@ -173,7 +173,6 @@ sudo wget -O /usr/local/sbin/lo-thumbnailer https://github.com/NicolasBernaerts/
 sudo chmod +rx /usr/local/sbin/lo-thumbnailer
 sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://github.com/NicolasBernaerts/libreoffice-thumbnailer/raw/master/lo.thumbnailer
 
-
 # ---------------------------------------------------
 # ---------------- Development Tools ----------------
 # ---------------------------------------------------
@@ -197,4 +196,19 @@ sudo apt-get -y install yad
 
 sudo apt-get -y autoremove
 sudo apt-get -y autoclean
+
+# ---------------------------------------------------
+# -------------- Ubuntu Gnome tweaks ----------------
+# ---------------------------------------------------
+
+# force proper multi-display position at startup
+# see http://bernaerts.dyndns.org/linux/74-ubuntu/309-ubuntu-dual-display-monitor-position-lost
+sudo wget -O /usr/local/sbin/update-monitor-position https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/update-monitor-position
+sudo chmod +x /usr/local/sbin/update-monitor-position
+mkdir $HOME/.config/autostart
+wget -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/update-monitor-position.desktop
+
+
+
+
 
