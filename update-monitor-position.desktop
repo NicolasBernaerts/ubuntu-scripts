@@ -8,3 +8,5 @@ Name[en_US]=Update Monitors Position
 Name=Update Monitors Position
 Comment[en_US]=Force monitors position from monitor.xml
 Comment=Force monitors position from monitor.xml
+Icon=display
+
