@@ -21,4 +21,3 @@ gnome-terminal --window-with-profile="$PROFILE" "$1" "$2"
 
 # exit
 exit 0
-
