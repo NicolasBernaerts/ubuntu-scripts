@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Exec=btsync –config /home/user/.btsync.conf
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=btsync.desktop
+Name=BitTorrent Sync
+Comment[en_US]=BitTorrent Sync daemon
+Comment=BitTorrent Sync daemon
+Icon=display
+
