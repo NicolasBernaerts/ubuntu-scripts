@@ -39,13 +39,16 @@ sudo apt-get -y install linux-firmware-nonfree xbacklight preload libnotify-bin
 sudo apt-get -y install ppa-purge synaptic gdebi
 
 # filesystem clients 
-sudo apt-get -y install cifs-utils autofs
+sudo apt-get -y install cifs-utils autofs exfat-fuse
 
 # compression tools
 sudo apt-get -y install p7zip-full rar unrar unzip
 
 # disk tools
-sudo apt-get -y install smartmontools disktype unetbootin
+sudo apt-get -y install smartmontools disktype unetbootin gparted
+
+# snmp tools
+sudo apt-get -y install snmp snmp-mibs-downloader
 
 # ---------------------------------------------------
 # ----------- Gnome Shell Configuration -------------
