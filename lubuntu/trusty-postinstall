@@ -38,10 +38,10 @@ sudo apt-get -y dist-upgrade
 sudo apt-get -y install linux-firmware-nonfree xbacklight preload ppa-purge libnotify-bin
 
 # dual display management
-sudo apt-get install arandr
+sudo apt-get -y install arandr
 
 # trackpad and mouse management
-sudo apt-get install gpointing-device-settings
+sudo apt-get -y install gpointing-device-settings
 
 # filesystem clients 
 sudo apt-get -y install cifs-utils autofs
@@ -115,7 +115,7 @@ sudo apt-get -y install libav-tools avidemux mkvtoolnix-gui handbrake
 sudo apt-get -y install openshot
 
 # vlc and declare it as replacement for gnome player 
-sudo apt-get install vlc
+sudo apt-get -y install vlc
 sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
 
 # ---------------------------------------------------
