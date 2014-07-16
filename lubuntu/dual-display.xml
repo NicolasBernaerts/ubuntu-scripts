@@ -1,0 +1,13 @@
+
+    <keybind key="W-1">
+      <action name="Execute">
+        <command>sh ~/.screenlayout/single-display.sh</command>
+      </action>
+    </keybind>
+    <keybind key="W-2">
+      <action name="Execute">
+        <command>sh ~/.screenlayout/dual-display.sh</command>
+      </action>
+    </keybind>
+
+
