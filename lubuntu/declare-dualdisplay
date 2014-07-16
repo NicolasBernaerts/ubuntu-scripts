@@ -1,7 +1,10 @@
 #!/bin/sh
  
-# arandr generated output
-xrandr --output LVDS1 --mode 1366x768 --pos 1920x312 --rotate normal --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output HDMI1 --off --output VIRTUAL1 --off --output DP1 --off
+# place scripts to handle display change
+mkdir -p $HOME/.screenlayout
+wget -O $HOME/.screenlayout/single-display.sh https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/single-display.sh
+wget -O $HOME/.screenlayout/dual-display.sh https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/dual-display.sh
  
-# lxpanel reload
-lxpanelctl restart
+# declare keyboard shortcut
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/dual-display.xml
+sed -i -e '/<!-- Keybindings for desktop switching -->/r dual-display.xml' $HOME/.config/openbox/lubuntu-rc.xml
