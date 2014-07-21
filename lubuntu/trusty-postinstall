@@ -13,7 +13,7 @@
 # ---------------------------------------------------
 
 # define where screenshot are saved
-SCREENSHOT_DIR="$HOME/Téléchargements"
+SCREENSHOT_DIR="$HOME/Images"
 
 # ---------------------------------------------------
 # ------------ Architecture detection ---------------
@@ -190,5 +190,5 @@ echo "nm-applet" >> $HOME/.config/lxsession/Lubuntu/autostart
 sed -i 's,.*doubleClickTime.*,<doubleClickTime>400<\/doubleClickTime>,' $HOME/.config/openbox/lubuntu-rc.xml
  
 # set target directory for screenshots
-sed -i 's,.*<command>lxsession-default screenshot<\/command>.*,      <command>lxsession-default screenshot -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
-sed -i 's,.*<command>lxsession-default screenshot window<\/command>.*,      <command>lxsession-default screenshot window -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
+sed -i 's,.*<command>lxsession-default screenshot<\/command>.*,      <command>scrot -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
+sed -i 's,.*<command>lxsession-default screenshot window<\/command>.*,      <command>scrot --focused -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
