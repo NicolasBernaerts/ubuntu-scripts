@@ -1,0 +1,191 @@
+#!/bin/bash
+# --------------------------------------------------------------------------
+#  Setup your Linux computer to automount any connected MTP device
+#  
+#  Depends on following packages :
+#    * go-mtpfs
+#    * mtp-tools
+#    * zenity
+#
+#  Revision history :
+#    07/03/2013, V1.0 - Creation by N. Bernaerts
+#    17/03/2013, V1.1 - Add multi-devices support (thanks to Manu Sankala)
+#    22/03/2013, V2.0 - Complete rewrite using mtp-detect
+#    22/03/2013, V2.1 - Add fuse.conf test (thanks to Stefan Schanz)
+#    31/05/2014, V2.2 - Add support for xhci & ohci usb ports (thanks to Viktor Aksionov)
+# --------------------------------------------------------------------------
+ 
+# set string separator as \n
+IFS="
+"
+
+# set default path
+PATH_FSTAB="/etc/fstab"
+PATH_GO="/usr/bin/go-mtpfs"
+
+# function with zenity progression display
+(
+# no error ... so far
+MTP_ERROR=""
+
+# determine original user
+MTP_USER="$SUDO_USER"
+
+# progress indicator
+echo "0" ; echo "# Step 1 - Checking environment" ; sleep 1
+
+# check if go-mtpfs is installed
+if [ ! -f "$PATH_GO" ]; then MTP_ERROR="go-mtpfs is not installed. Install it first."; fi
+
+# check if script is run as sudo
+if [ "$MTP_USER" = "" ]; then MTP_ERROR="script must be run as sudo."; fi
+
+# check whether needed user_allow_other option is set in /etc/fuse.conf
+FUSE_UAO=`cat /etc/fuse.conf | grep user_allow_other | sed "s/^ *user_allow_other.*$/ok/" | grep ok`
+if [ "$FUSE_UAO" = "" ]; then MTP_ERROR="user_allow_other is not declared in /etc/fuse.conf"; fi
+   
+# detection of devices
+if [ "$MTP_ERROR" = "" ]
+then
+  # progress indicator
+  echo "5" ; echo "# Step 2 - Detection of devices ... this may take a very long time !" ; sleep 1
+
+  # Declare the device list
+  MTP_LIST=( `mtp-detect 2>NULL | grep bus | sed 's/^\(.*\) (\([0-9a-f]*\):\([0-9a-f]*\)) .*$/FALSE\n\2:\3 - \1/'` )
+ 
+  # display the selection dialog box
+  MTP_TITLE="MTP device : Selection"
+  MTP_QUESTION="Select in the list of connected MTP devices the one you want to declare for automount"
+  MTP_SELECT=`zenity --list --width=500 --height=200 --text "$MTP_QUESTION" --title "$MTP_TITLE" --radiolist --column "Select" --column "MTP Device" "${MTP_LIST[@]}"`
+    
+  # if no device selected, operation canceled
+  if [ "$MTP_SELECT" = "" ]; then MTP_ERROR="No MTP device selected." ; fi
+fi
+  
+# collection of important data
+if [ "$MTP_ERROR" = "" ]
+then
+  # progress indicator
+  echo "40" ; echo "# Step 3 - Collection of device data" ; sleep 1
+
+  # get VENDOR_ID and DEVICE_ID
+  MTP_VENDOR_ID=`echo "$MTP_SELECT" | sed 's/^\([0-9a-f]*\):[0-9a-f]* - .*$/\1/'`
+  MTP_DEVICE_ID=`echo "$MTP_SELECT" | sed 's/^[0-9a-f]*:\([0-9a-f]*\) - .*$/\1/'`
+
+  # get BUSNUM and DEVNUM
+  MTP_BUSNUM=`lsusb | grep "$MTP_VENDOR_ID:$MTP_DEVICE_ID" | sed 's/^Bus \([0-9a-f]*\) Device [0-9a-f]*:.*$/\1/g'`
+  MTP_DEVNUM=`lsusb | grep "$MTP_VENDOR_ID:$MTP_DEVICE_ID" | sed 's/^Bus [0-9a-f]* Device \([0-9a-f]*\):.*$/\1/g'`
+
+  # get USB device full PCI path and PCI id
+  MTP_PATH=`udevadm info --query=path --name=/dev/bus/usb/$MTP_BUSNUM/$MTP_DEVNUM`
+  MTP_USBID=`echo "$MTP_PATH" | sed 's/^.*\/\([0-9]*:[0-9]*:[0-9a-f]*.[0-9]\)\/.*$/\1/g'`
+
+  # get ID_MODEL and ID_MODEL_ID
+  MTP_MODEL=`udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL=" | sed 's/^.*=.\(.*\).$/\1/g'`
+  MTP_MODEL_ID=`udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL_ID=" | sed 's/^.*=.\(.*\).$/\1/g'`
+  
+  # determine USB port type (ehci, ohci or xhci)
+  if [ -e "/sys/bus/pci/drivers/ehci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="ehci_hcd"
+  elif [ -e "/sys/bus/pci/drivers/ohci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="ohci_hcd"
+  elif [ -e "/sys/bus/pci/drivers/xhci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="xhci_hcd"
+  else MTP_ERROR="USB port is of unknown type. Try to use another USB port."
+  fi
+fi
+  
+# prepare mount point
+if [ "$MTP_ERROR" = "" ]
+then
+  echo "45" ; echo "# Step 4 - Creation of $MTP_MOUNT directory" ; sleep 1
+
+  # setup mount point as /media/model
+  MTP_MOUNT="/media/$MTP_MODEL"
+
+  # MOUNT - if needed, create the mount point
+  if [ ! -d "$MTP_MOUNT" ]; then
+    mkdir "$MTP_MOUNT"
+    chown root:root "$MTP_MOUNT"
+    chmod 777 "$MTP_MOUNT"
+  fi
+fi
+
+# declaration of UDEV rules
+if [ "$MTP_ERROR" = "" ]
+then
+  # progress indicator
+  echo "50" ; echo "# Step 5 - Creation of UDEV rules" ; sleep 1
+
+  # UDEV - create the rule
+  MTP_RULE="/etc/udev/rules.d/99-mtp-$MTP_MODEL-$MTP_VENDOR_ID-$MTP_DEVICE_ID.rules"
+  echo "# $MTP_MODEL - MTP mount & unmount rules " > $MTP_RULE
+  echo "SUBSYSTEM==\"usb\", ATTR{idVendor}==\"$MTP_VENDOR_ID\", ATTR{idProduct}==\"$MTP_DEVICE_ID\", MODE=\"0666\", OWNER=\"$MTP_USER\"" >> $MTP_RULE
+  echo "ENV{ID_MODEL}==\"$MTP_MODEL\", ENV{ID_MODEL_ID}==\"$MTP_MODEL_ID\", ACTION==\"add\", RUN+=\"/usr/bin/sudo -b -u $MTP_USER $PATH_GO -dev=$MTP_VENDOR_ID:$MTP_DEVICE_ID -allow-other=true /media/$MTP_MODEL\"" >> $MTP_RULE
+  echo "ENV{ID_MODEL}==\"$MTP_MODEL\", ENV{ID_MODEL_ID}==\"$MTP_MODEL_ID\", ACTION==\"remove\", RUN+=\"/bin/umount /media/$MTP_MODEL\"" >> $MTP_RULE
+  echo " " >> $MTP_RULE
+
+  # UDEV - restart the service
+  service udev restart
+fi
+ 
+# device detection according to new UDEV rules
+if [ "$MTP_ERROR" = "" ]
+then
+  # progress indicator
+  echo "80" ; echo "# Step 6 - Device detection ... if more than 10s, reconnect the device" ; sleep 1
+
+  # USB - first reset of host to force device reconnexion
+  echo -n "$MTP_USBID" | tee /sys/bus/pci/drivers/${MTP_USBTYPE}/unbind
+  echo -n "$MTP_USBID" | tee /sys/bus/pci/drivers/${MTP_USBTYPE}/bind
+
+  # GO-MTPFS - loop till the device has been detected again
+  MTP_LINE=""
+  while [ "$MTP_LINE" = "" ]
+  do    
+    # wait for 2 seconds
+    sleep 2
+     
+    # check if device has been detected by go-mtpfs
+    MTP_LINE=`mount | grep "$MTP_MOUNT"`
+  done
+
+  # GO-MTPFS - check if line in mount is having proper format (starts by DeviceFS and holds fuse.DeviceFs)
+  MTP_OK=`echo $MTP_LINE | sed 's/^DeviceFs(.*) .* fuse.DeviceFs(.*) .*$/ok/g'`
+  if [ "$MTP_OK" != "ok" ]; then MTP_ERROR="mount command returns an improper $MTP_MOUNT line"; fi
+fi
+
+# declaration in /etc/fstab
+if [ "$MTP_ERROR" = "" ]
+then
+  # progress indicator
+  echo "90" ; echo "# Step 7 - Declaration of device mount point" ; sleep 1
+
+  # check if /etc/fstab doesn't already handle mount path
+  MTP_OK=`cat "$PATH_FSTAB" | grep "$MTP_MOUNT"`
+    
+  # if device has to be declared in /etc/fstab
+  if [ "$MTP_OK" = "" ]
+  then
+    # get fuse mount caracteristics
+    FSTAB_DEVICE=`mount | grep "$MTP_MOUNT" | sed 's/^.*(\(.*\)) on.*$/\1/g'`
+    FSTAB_FUSE=`mount | grep "$MTP_MOUNT" | sed 's/^.*type .*(\(.*\)) .*$/\1/g'`
+
+    # append device mount line to /etc/fstab, any ' ' will be replaced by '\040'
+    echo "# declaration of $FSTAB_DEVICE to be mounted under $MTP_MOUNT" >> "$PATH_FSTAB"
+    echo "DeviceFs($FSTAB_DEVICE)|$MTP_MOUNT|fuse.DeviceFs($FSTAB_FUSE)|allow_other,rw,user,noauto|0|0" | sed 's/ /\\040/g' | sed 's/|/    /g' >> "$PATH_FSTAB"
+
+    # reset USB host to force device reconnection and mount it as device  
+    echo "90" ; echo "# Step 9 - Second reset of USB host" ; sleep 1
+    echo -n "$MTP_USBID" | tee /sys/bus/pci/drivers/${MTP_USBTYPE}/unbind
+    echo -n "$MTP_USBID" | tee /sys/bus/pci/drivers/${MTP_USBTYPE}/bind
+
+    # FINISHED - declare mount point in /etc/fstab
+    echo "100" ; echo "# Finished ! Your $MTP_MODEL should be seen as a device" ; sleep 1
+      
+  # else, warning, device already declared in /etc/fstab
+  else 
+    echo "100" ; echo "# Finished ! Device declared but $MTP_MOUNT already present" ; sleep 1
+  fi
+fi
+  
+# in case of error, display message
+if [ "$MTP_ERROR" != "" ]; then echo "100" ; echo "# Error - $MTP_ERROR" ; sleep 1 ; fi
+) | zenity --progress --pulsate --width=500 --title "Declaration of a new MTP device"
