@@ -1,0 +1,27 @@
+#!/bin/sh
+# ---------------------------------------------------
+# Thumbnailer for
+# LibreOffice & OpenOffice documents
+#
+# Depends on :
+# * unzip
+# * imagemagick
+# Parameters :
+# $1 - full path of office file
+# $2 - full path of generated thumbnail
+# $3 - height of thumbnail in pixels
+# Revision history :
+# 04/08/2013, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+# path where to get icons used for generation
+ICONPATH="/usr/local/sbin/lo-thumbnailer-icons"
+# get parameters
+INPUT=$1
+OUTPUT=$2
+HEIGHT=$3
+# get the file mime type (application/vnd.oasis.opendocument...)
+MIMETYPE=`file --mime-type "${INPUT}" | sed 's/.*: //'`
+# get document type (text, spreadsheet, graphics or presentation)
+DOCTYPE=`echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/'`
+# generate thumbnail according to document type
+unzip -p "${INPUT}" Thumbnails/thumbnail.png | composite -gravity center \( -resize x244 - \) ${ICONPATH}/lo-${DOCTYPE}.png ${ICONPATH}/lo-mask.png \( -resize x${HEIGHT} \) "${OUTPUT}"
