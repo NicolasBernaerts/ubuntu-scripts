@@ -159,13 +159,13 @@ sudo apt-get -y install yad
 
 # APK thumbnailer
 sudo apt-get -y install libstdc++6:i386 lib32z1 lib32ncurses5 lib32bz2-1.0
-sudo wget -O /usr/local/sbin/aapt-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/apk-thumbnailer/aapt
+sudo wget -O /usr/local/sbin/aapt-thumbnailer http://bernaerts.dyndns.org/download/gnome/apk/aapt-thumbnailer
 sudo wget -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk-thumbnailer
 sudo chmod +rx /usr/local/sbin/apk-thumbnailer /usr/local/sbin/aapt-thumbnailer
 sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer 
 
 # LibreOffice thumbnailer
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/libreoffice-thumbnailer/lo-thumbnailer-icons.zip
+wget http://bernaerts.dyndns.org/download/gnome/libreoffice/lo-thumbnailer-icons.zip
 sudo unzip -d /usr/local/sbin lo-thumbnailer-icons.zip
 rm lo-thumbnailer-icons.zip
 sudo wget -O /usr/local/sbin/lo-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/libreoffice-thumbnailer/lo-thumbnailer
