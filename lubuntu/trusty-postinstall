@@ -15,6 +15,9 @@
 # define where screenshot are saved
 SCREENSHOT_DIR="$HOME/Images"
 
+# define remote support address (for gitso)
+SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
+
 # ---------------------------------------------------
 # ------------ Architecture detection ---------------
 # ---------------------------------------------------
@@ -128,10 +131,6 @@ sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-supp
 # chromium & filezilla
 sudo apt-get -y install chromium-bsu filezilla
 
-# remote assistance
-wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
-sudo gdebi --n gitso_0.6.2_all.deb
-
 # Firefox : H264 support
 sudo add-apt-repository -y ppa:mc3man/trusty-media
 sudo apt-get update
@@ -140,6 +139,18 @@ sudo apt-get -y install gstreamer0.10-ffmpeg
 # Firefox : Hangout plugin
 wget https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
 sudo gdebi --n google-talkplugin_current_*.deb
+
+# ---------------------------------------------------
+# -------------- Remote assistance ------------------
+# ---------------------------------------------------
+
+# gitso
+wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
+sudo gdebi --n gitso_0.6.2_all.deb
+
+# include remote assistance site in launcher
+cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
+sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
 
 # ---------------------------------------------------
 # ------------------ Android tools ------------------
