@@ -67,8 +67,10 @@ sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 # ------------------- LibreOffice ------------------
 # ---------------------------------------------------
 
-# application
-sudo apt-get -y install libreoffice libreoffice-gtk
+# declare 4.3 PPA & install
+sudo add-apt-repository -y ppa:libreoffice/libreoffice-4-3
+sudo apt-get update
+sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr
 
 # default file association
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
