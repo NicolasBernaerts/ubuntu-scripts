@@ -1,0 +1,35 @@
+#!/bin/bash
+# --------------------------------------------
+#
+# Detect ext4 devices and start trim for SSD
+#
+#  Revision history :
+#   10/04/2014 - Creation by N. Bernaerts
+# --------------------------------------------
+
+# set PATH
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# list all mounted devices into an array
+LST_DEVICE=`mount | grep "^/dev/" | grep "ext4" | cut -d" " -f1,3  | sed 's/ /|/g'`
+read -a ARR_DEVICE <<< $LST_DEVICE
+     
+# loop thru the selected devices to check if trimming needed
+for DEVICE_DATA in "${ARR_DEVICE[@]}"
+do
+  # get current device data
+  DEVICE_PATH=`echo $DEVICE_DATA | cut -d"|" -f1`
+  DEVICE_MOUNT=`echo $DEVICE_DATA | cut -d"|" -f2`
+     
+  # check if device accepts trim command
+  DEVICE_TRIM=`hdparm -I $DEVICE_PATH | grep "TRIM supported"`
+  if [ "$DEVICE_TRIM" == "" ] ;
+  then
+    # trim not supported
+    logger "$DEVICE_PATH : trim not supported"
+  else
+    # trim supported
+    logger "$DEVICE_PATH : trim started on $DEVICE_MOUNT"
+    logger "$DEVICE_PATH : `fstrim -v $DEVICE_MOUNT`"
+  fi
+done
