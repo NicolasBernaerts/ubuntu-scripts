@@ -9,6 +9,7 @@
 #  Revision history :
 #    19/04/2014, V1.0 - Creation by N. Bernaerts
 #    10/07/2014, V1.1 - Wait 5 seconds for X to fully initialize
+#    01/09/2014, V1.2 - Correct NULL file bug (thanks to Ivan Harmady) and handle rotation
 # -------------------------------------------------
 
 
@@ -18,12 +19,13 @@ NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/output)' $HOME/.confi
 # loop thru declared monitors to create the command line parameters
 for (( i=1; i<=$NUM; i++)); do
   # get attributes of current monitor (name and x & y positions)
-  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/output['$i']/@name)' $HOME/.config/monitors.xml 2>NULL)
-  POS_X=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/x/text()' $HOME/.config/monitors.xml 2>NULL)
-  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/y/text()' $HOME/.config/monitors.xml 2>NULL)
+  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/output['$i']/@name)' $HOME/.config/monitors.xml 2>/dev/null)
+  POS_X=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/x/text()' $HOME/.config/monitors.xml 2>/dev/null)
+  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/y/text()' $HOME/.config/monitors.xml 2>/dev/null)
+  ROTATE=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/rotation/text()' $HOME/.config/monitors.xml 2>/dev/null)
 
-  # if position is defined for current monitor, add its position to command line parameters
-  [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}")
+  # if position is defined for current monitor, add its position and orientation to command line parameters
+  [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}" "--rotate" "$ROTATE")
 done
 
 # wait for 5 seconds (for X to finish initialisation)
