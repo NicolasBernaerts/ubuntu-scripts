@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=pdf-repair $1
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=pdf-repair.desktop
+Name=Broken PDF Repair Tool
+Comment[en_US]=Tool to repair broken PDF files. Is has been tested on boarding passes issued by EasyJet site.
+Comment=Tool to repair broken PDF files. Is has been tested on boarding passes issued by EasyJet site.
