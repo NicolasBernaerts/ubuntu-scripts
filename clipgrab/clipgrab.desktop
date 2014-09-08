@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=clipgrab
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=clipgrab.desktop
+Name=ClipGrab
+Comment[en_US]=ClipGrab client for YouTube, DailyMotion, ...
+Comment=ClipGrab client for YouTube, DailyMotion, ...
