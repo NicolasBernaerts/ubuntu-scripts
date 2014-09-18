@@ -223,3 +223,11 @@ sudo wget -O /usr/local/sbin/update-monitor-position https://raw.githubuserconte
 sudo chmod +x /usr/local/sbin/update-monitor-position
 mkdir $HOME/.config/autostart
 wget -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position.desktop
+
+# ---------------------------------------------------
+# ------------------- Wifi tweaks -------------------
+# ---------------------------------------------------
+
+# Intel Centrino N 6235 - Re-enable AMPDU for iwldvm devices
+# Solves very slow connection since kernel 3.11.10
+echo options iwlwifi 11n_disable=8 | sudo tee /etc/modprobe.d/iwlwifi.conf
