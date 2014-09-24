@@ -229,5 +229,6 @@ wget -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.gith
 # ---------------------------------------------------
 
 # Intel Centrino N 6235 - Re-enable AMPDU for iwldvm devices
-# Solves very slow connection since kernel 3.11.10
-echo options iwlwifi 11n_disable=8 | sudo tee /etc/modprobe.d/iwlwifi.conf
+# Solves very slow connection since kernel 3.11.10+
+echo options iwlwifi 11n_disable=8 | sudo tee /etc/modprobe.d/iwlwifi-11n.conf
+echo options iwlwifi bt_coex_active=0 | sudo tee -a /etc/modprobe.d/iwlwifi-11n.conf
