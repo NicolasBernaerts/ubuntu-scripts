@@ -1,0 +1,9 @@
+    [Desktop Entry]
+    Version=1.0
+    Type=Application
+    Terminal=false
+    Exec=/usr/local/bin/scan2folder
+    Name=Scan document to specific folder
+    Categories=Graphics
+    MimeType=
+    Icon=scanner
