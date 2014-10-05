@@ -3,7 +3,7 @@
     Type=Application
     Terminal=false
     Exec=/usr/local/bin/scan2folder
-    Name=Scan document to specific folder
+    Name=Scan to Folder
     Categories=Graphics
     MimeType=
     Icon=scanner
