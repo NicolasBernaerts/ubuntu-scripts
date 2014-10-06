@@ -4,8 +4,11 @@
 # I developped this script to correct files generated 
 # on easyjet site. Should work on other files.
 #
+# Dependencies :
+#  * ghostscript (gs)
+# 
 # Parameters :
-# $1 : PDF file to be repaired
+#  $1 : PDF file to be repaired
 #
 # 14/08/2014, V1.0 - Creation by N. Bernaerts
 # -------------------------------------------------------
@@ -26,8 +29,12 @@ PDF_ORIGINAL="$1"
 PDF_REPAIRED="${PDF_ORIGINAL%%.*}-repaired.pdf"
 
 # function to repair the file, with progression display
-(
-# correct the file
-gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="$PDF_REPAIRED" "$PDF_ORIGINAL"
+( gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="$PDF_REPAIRED" "$PDF_ORIGINAL" ) \
+| zenity --pulsate --width=500 --title "Repairing PDF file"
 
-) | zenity --pulsate --width=500 --title "Repairing PDF file"
+# if needed, replace original file
+if [ "$PDF_REPLACE" = "yes" ]
+then
+  rm "$PDF_ORIGINAL"
+  mv "$PDF_REPAIRED" "$PDF_ORIGINAL"
+fi
