@@ -10,22 +10,28 @@
 #    19/04/2014, V1.0 - Creation by N. Bernaerts
 #    10/07/2014, V1.1 - Wait 5 seconds for X to fully initialize
 #    01/09/2014, V1.2 - Correct NULL file bug (thanks to Ivan Harmady) and handle rotation
+#    07/10/2014, V1.3 - Add monitors size and rate handling (idea from jescalante)
 # -------------------------------------------------
 
+# monitor.xml path
+MONITOR_XML="$HOME/.config/monitors.xml"
 
 # get number of declared monitors
-NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/output)' $HOME/.config/monitors.xml)
+NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/output)' $MONITOR_XML)
 
 # loop thru declared monitors to create the command line parameters
 for (( i=1; i<=$NUM; i++)); do
   # get attributes of current monitor (name and x & y positions)
-  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/output['$i']/@name)' $HOME/.config/monitors.xml 2>/dev/null)
-  POS_X=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/x/text()' $HOME/.config/monitors.xml 2>/dev/null)
-  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/y/text()' $HOME/.config/monitors.xml 2>/dev/null)
-  ROTATE=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/rotation/text()' $HOME/.config/monitors.xml 2>/dev/null)
+  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/output['$i']/@name)' $MONITOR_XML 2>/dev/null)
+  POS_X=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/x/text()' $MONITOR_XML 2>/dev/null)
+  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/y/text()' $MONITOR_XML 2>/dev/null)
+  ROTATE=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/rotation/text()' $MONITOR_XML 2>/dev/null)
+  WIDTH=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/width/text()' $MONITOR_XML 2>/dev/null)
+  HEIGHT=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/height/text()' $MONITOR_XML 2>/dev/null)
+  RATE=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/rate/text()' $MONITOR_XML 2>/dev/null)
 
   # if position is defined for current monitor, add its position and orientation to command line parameters
-  [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}" "--rotate" "$ROTATE")
+  [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}" "--fbmm" "${WIDTH}x${HEIGHT}" "--rate" "$RATE" "--rotate" "$ROTATE")
 done
 
 # wait for 5 seconds (for X to finish initialisation)
