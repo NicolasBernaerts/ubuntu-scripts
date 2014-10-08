@@ -11,6 +11,7 @@
 #    10/07/2014, V1.1 - Wait 5 seconds for X to fully initialize
 #    01/09/2014, V1.2 - Correct NULL file bug (thanks to Ivan Harmady) and handle rotation
 #    07/10/2014, V1.3 - Add monitors size and rate handling (idea from jescalante)
+#    08/10/2014, V1.4 - Handle primary display parameter
 # -------------------------------------------------
 
 # monitor.xml path
@@ -29,9 +30,13 @@ for (( i=1; i<=$NUM; i++)); do
   WIDTH=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/width/text()' $MONITOR_XML 2>/dev/null)
   HEIGHT=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/height/text()' $MONITOR_XML 2>/dev/null)
   RATE=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/rate/text()' $MONITOR_XML 2>/dev/null)
+  PRIMARY=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/primary/text()' $MONITOR_XML 2>/dev/null)
 
   # if position is defined for current monitor, add its position and orientation to command line parameters
   [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}" "--fbmm" "${WIDTH}x${HEIGHT}" "--rate" "$RATE" "--rotate" "$ROTATE")
+ 
+  # if monitor is defined as primary, adds it to command line parameters
+  [ "$PRIMARY" = "yes" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--primary")
 done
 
 # wait for 5 seconds (for X to finish initialisation)
