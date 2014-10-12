@@ -8,6 +8,7 @@
 #  10/06/2014, V1.1 - Update
 #  30/08/2014, V1.2 - Add LibreOffice and GIMP PPA
 #  09/09/2014, V1.3 - Add YouTube-dl & ClipGrab
+#  10/10/2014, V1.4 - Add Scan2folder for Sane scanners
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -89,10 +90,17 @@ xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spr
 # misc graphical apps
 sudo apt-get -y install exiv2 gcolor2 imagemagick hugin 
 
-# declare 4.3 PPA & install gimp
+# declare Gimp 2.8 PPA & install gimp
 sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp
 sudo apt-get update
 sudo apt-get -y install gimp gimp-plugin-registry
+
+# install scan2folder tool
+sudo wget -O /usr/local/bin/scan2folder https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder
+sudo chmod +x /usr/local/bin/scan2folder
+sudo wget -O /usr/share/applications/scan2folder.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder.desktop
+sudo chmod +x /usr/share/applications/scan2folder.desktop
+wget -O $HOME/.scan2folder.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder.conf
 
 # ---------------------------------------------------
 # ----------- Multimedia Codecs & Flash -------------
