@@ -87,7 +87,7 @@ do case $CHOICE in
 
     # end
     echo 100 
-    ) | yad --center --width=$DLG_WIDTH --title "Scanning documents ..." --text=""  --window-icon="scanner" --image="scanner" --progress --pulsate --auto-close --no-buttons
+    ) | yad --center --width=$DLG_WIDTH --title "Scanning documents ..." --text="" --window-icon="scanner" --image="scanner" --progress --pulsate --auto-close --no-buttons
 
     # back to parameter dialog box
     CHOICE=$CHOICE_PARAM
