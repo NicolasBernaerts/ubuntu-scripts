@@ -122,7 +122,7 @@ do case $CHOICE in
   $CHOICE_DEVICE)
     # list available scanners (remove all spaces and set space as separator)
     ( echo 0 ; scanimage -L > $TMP_FILE ; echo 100 ) \
-    | yad --center --width=$DLG_WIDTH --title "Detecting scanners ..." --text="" --progress --pulsate --auto-close --no-buttons
+    | yad --center --width=$DLG_WIDTH --title "Detecting scanners ..." --text="" --window-icon="scanner" --image="scanner" --progress --pulsate --auto-close --no-buttons
 
     # generate scanner list
     LIST_SCANNER=`cat $TMP_FILE | sed 's/device..\(.*\). is a \(.*\)$/\2|\1/' | tr ' ' '_' | tr '|' ' ' | tr '\n' ' '`
@@ -130,7 +130,7 @@ do case $CHOICE in
     # display scanner selection dialog
     TITLE="Scanner selection"
     TEXT="Select scanner to use"
-    SELECTION=`yad --center --title="$TITLE" --text="$TEXT" --width=$DLG_WIDTH --height=250 --window-icon="scanner" --image="scanner" --list --column="Scanner" --column="Device" --hide-column=2 $LIST_SCANNER`
+    SELECTION=`yad --center --width=$DLG_WIDTH --title="$TITLE" --text="$TEXT" --height=250 --window-icon="scanner" --image="scanner" --list --column="Scanner" --column="Device" --hide-column=2 $LIST_SCANNER`
 
     # if needed, update current scanner
     if [ "$SELECTION" != "" ]
@@ -141,7 +141,7 @@ do case $CHOICE in
  
       # get scanner possibilities
       ( echo 0 ; scanimage --help --device $SCAN_DEVICE > $TMP_FILE ; echo 100 ) \
-      | yad --center --width=$DLG_WIDTH --title "Retrieving scanner parameters ..." --text="" --progress --pulsate --auto-close --no-buttons
+      | yad --center --width=$DLG_WIDTH --title "Retrieving scanner parameters ..." --text="" --window-icon="scanner" --image="scanner" --progress --pulsate --auto-close --no-buttons
 
       # retreive parameters list and default values
       DPI=`cat $TMP_FILE | grep "\-\-resolution" | sed 's/^.*\[\(.*\)\].*$/\1/'`
