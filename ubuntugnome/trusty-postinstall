@@ -130,6 +130,9 @@ sudo apt-get -y install handbrake
 # openshot video editor
 sudo apt-get -y install openshot
 
+# VLC
+sudo apt-get -y install vlc vlc-plugin-notify vlc-plugin-pulse
+
 # ---------------------------------------------------
 # ---------------- Internet tools -------------------
 # ---------------------------------------------------
