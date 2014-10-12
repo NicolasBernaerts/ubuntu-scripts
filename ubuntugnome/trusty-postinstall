@@ -6,7 +6,8 @@
 # 
 #  25/05/2014, V1.0 - Creation by N. Bernaerts
 #  13/06/2014, V1.1 - Update 
-#  09/09/2014, V1.2 - Add ClipGrab 
+#  09/09/2014, V1.2 - Add ClipGrab
+#  10/10/2014, V1.4 - Add Scan2folder for Sane scanners
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -76,6 +77,19 @@ wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
 sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 
 # ---------------------------------------------------
+# ------------------- LibreOffice ------------------
+# ---------------------------------------------------
+
+# declare 4.3 PPA & install libreoffice
+sudo add-apt-repository -y ppa:libreoffice/libreoffice-4-3
+sudo apt-get update
+sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr
+
+# default file association
+xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
+xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
+
+# ---------------------------------------------------
 # ------------------ Graphical Apps -----------------
 # ---------------------------------------------------
 
@@ -85,8 +99,16 @@ sudo apt-get -y install exiv2 gcolor2 imagemagick
 # hugin
 sudo apt-get -y install hugin 
 
-# gimp
-sudo apt-get -y install gimp gimp-plugin-registry
+# declare Gimp 2.8 PPA & install gimp
+sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp
+sudo apt-get update
+
+# install scan2folder tool
+sudo wget -O /usr/local/bin/scan2folder https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder
+sudo chmod +x /usr/local/bin/scan2folder
+sudo wget -O /usr/share/applications/scan2folder.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder.desktop
+sudo chmod +x /usr/share/applications/scan2folder.desktop
+wget -O $HOME/.scan2folder.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder.conf
 
 # ---------------------------------------------------
 # ----------- Multimedia Codecs & Flash -------------
