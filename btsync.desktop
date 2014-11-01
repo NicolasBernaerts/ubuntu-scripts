@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=btsync –config /home/user/.btsync.conf
+Exec=btsync --config /home/user/.btsync.conf
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
