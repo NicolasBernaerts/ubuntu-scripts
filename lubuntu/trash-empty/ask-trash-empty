@@ -1,0 +1,17 @@
+#!/bin/sh
+# -------------------------------------------------------
+#  Script used to empty trash from context menu 
+#
+#  Used in http://bernaerts.dyndns.org/linux/...
+#
+#  01/11/2014, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+ 
+# retrieve number of files in the trash
+TRASH_QTY=`/usr/bin/trash-list | wc -l`
+ 
+# ask for confirmation
+[ "$TRASH_QTY" != "0" ] && zenity --question --title="" --text="Trash contains $TRASH_QTY items.\n\nDo you want to empty it ?"
+ 
+# if answer is yes, empty trash
+[ "$?" = "0" ] && /usr/bin/trash-empty
