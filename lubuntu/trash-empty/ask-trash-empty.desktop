@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Action
+Profiles=profile-zero;
+Name[en_US]=Empty Trash
+Name[en]=Empty Trash
+Name[C]=Empty Trash
+Name[fr_FR]=Vider la corbeille
+     
+[X-Action-Profile profile-zero]
+MimeTypes=inode/directory;
+Basenames=trash:///
+Exec=/usr/local/bin/ask-trash-empty
+Name[en_US]=Empty Trash
+Name[en]=Empty Trash
+Name[C]=Empty Trash
+Name[fr_FR]=Vider la corbeille
