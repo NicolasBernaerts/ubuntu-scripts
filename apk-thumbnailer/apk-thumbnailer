@@ -1,27 +1,38 @@
 #!/bin/sh
 # ---------------------------------------------------
-# Thumbnailer for APK archives files
-# Uses aapt (renamed as aapt-thumbnailer)
+#  Thumbnailer for APK archives files
+#  Uses aapt (renamed as aapt-thumbnailer)
 #
-# Depends on :
-# * unzip
-# * imagemagick
-# Parameters :
-# $1 - full path of APK archive
-# $2 - full path of generated thumbnail
-# $3 - height of thumbnail in pixels
-# Revision history :
-# 04/08/2013, V1.0 - Creation by N. Bernaerts
-# 11/08/2013, V1.1 - Use aapt to get icon file
+#  Depends on :
+#    * unzip
+#    * imagemagick
+#  Parameters :
+#    $1 - full path of APK archive
+#    $2 - full path of generated thumbnail
+#    $3 - height of thumbnail in pixels
+#  Revision history :
+#    04/08/2013, V1.0 - Creation by N. Bernaerts
+#    11/08/2013, V1.1 - Use aapt to get icon file
+#    05/11/2014, V2.0 - Add version display
 # ---------------------------------------------------
+
 # get parameters
 INPUT=$1
 OUTPUT=$2
 HEIGHT=$3
+
+# get version
+VERSION=`aapt-thumbnailer d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/'`
+
 # get application icon
 ICON=`aapt-thumbnailer d badging "$INPUT" | grep application-icon | tail -n 1 | sed 's/^.*:.\(.*\).$/\1/'`
-# if icon exists, extract icon & generate thumbnail
+
+# if icon exists, extract icon & generate thumbnail 
 if [ "$ICON" != "" ] ;
-then
-unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - "${OUTPUT}"
+then 
+  # calculate font size
+  FONT_SIZE=`echo $HEIGHT / 5 | bc`
+
+  # generate icon
+  unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - -pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 " $VERSION " "${OUTPUT}"
 fi
