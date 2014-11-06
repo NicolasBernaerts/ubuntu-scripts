@@ -1,11 +1,11 @@
 #!/bin/sh
 # ---------------------------------------------------
 #  Thumbnailer for APK archives files
-#  Uses aapt (renamed as aapt-thumbnailer)
-#
+#  Display icon and version
 #  Depends on :
 #    * unzip
-#    * imagemagick
+#    * imagemagick (for convert)
+#    * aapt
 #  Parameters :
 #    $1 - full path of APK archive
 #    $2 - full path of generated thumbnail
@@ -14,6 +14,7 @@
 #    04/08/2013, V1.0 - Creation by N. Bernaerts
 #    11/08/2013, V1.1 - Use aapt to get icon file
 #    05/11/2014, V2.0 - Add version display
+#    06/11/2014, V2.1 - Don't use renamed aapt anymore
 # ---------------------------------------------------
 
 # get parameters
@@ -22,10 +23,10 @@ OUTPUT=$2
 HEIGHT=$3
 
 # get version
-VERSION=`aapt-thumbnailer d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/'`
+VERSION=`aapt d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/'`
 
 # get application icon
-ICON=`aapt-thumbnailer d badging "$INPUT" | grep application-icon | tail -n 1 | sed 's/^.*:.\(.*\).$/\1/'`
+ICON=`aapt d badging "$INPUT" | grep application-icon | tail -n 1 | sed 's/^.*:.\(.*\).$/\1/'`
 
 # if icon exists, extract icon & generate thumbnail 
 if [ "$ICON" != "" ] ;
