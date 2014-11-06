@@ -26,7 +26,7 @@ HEIGHT=$3
 VERSION=`aapt d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/'`
 
 # get application icon
-ICON=`aapt d badging "$INPUT" | grep application-icon | tail -n 1 | sed 's/^.*:.\(.*\).$/\1/'`
+ICON=`aapt d badging "$INPUT" | grep "application:" | sed 's/^.*icon=.\(.*\).$/\1/'`
 
 # if icon exists, extract icon & generate thumbnail 
 if [ "$ICON" != "" ] ;
