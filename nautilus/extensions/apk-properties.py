@@ -16,8 +16,8 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
   def __init__(self):
     pass
 
- # method to extract data from aapt console 
- def get_data(self,filename):
+  # method to extract data from aapt console 
+  def get_data(self,filename):
     apk_name = ""
     apk_versioncode = ""
     apk_versionname = ""
@@ -35,6 +35,7 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
 
     # console return analysis
     for line in p.stdout.readlines():
+
       # new line, no match found
       found = False
 
@@ -73,7 +74,7 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
         regexpr = re.match('^supports-screens:.*$', line)
         if regexpr: 
           text = re.sub('^supports-screens:.(.*)$', '\g<1>', line)
-          text = re.sub(' ', ' & ', text)
+          text = re.sub(' ', '\n', text)
           apk_supportsscreens = re.sub('\'', '', text).rstrip('\n')
           found = True
 
@@ -82,7 +83,7 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
         regexpr = re.match('^densities:.*$', line)
         if regexpr: 
           text = re.sub('^densities:.(.*)$', '\g<1>', line)
-          text = re.sub(' ', ' & ', text)
+          text = re.sub(' ', '\n', text)
           apk_densities = re.sub('\'', '', text).rstrip('\n')
           found = True
 
@@ -166,13 +167,10 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       # set tab label
       apk_label = Gtk.Label('APK infos')
 
-      # set tab content (vbox -> scrolled window -> table)
-      apk_page = Gtk.VBox(False, 10)
+      # set tab content (scrolled window -> table)
       apk_win = Gtk.ScrolledWindow()
       apk_win.add_with_viewport(self.table)
-      apk_page.pack_start(apk_win, True, True, 10)
-      apk_page.show_all()
+      apk_win.show_all()
 
     # return label and tab content
-    return Nautilus.PropertyPage( name="NautilusPython::apk_info", label=apk_label, page=apk_page ),
-    
+    return Nautilus.PropertyPage( name="NautilusPython::apk_info", label=apk_label, page=apk_win ),
