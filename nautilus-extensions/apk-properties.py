@@ -108,58 +108,38 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
     # return data array
     return apk_name, apk_versioncode, apk_versionname, apk_label, apk_sdkversion, apk_targetsdkversion, apk_supportsscreens, apk_densities, apk_features, apk_permissions
 
-  # method to add one property to properties table
-  def populateTable(self, definition, value):
+  # method to add one property to the table
+  def populateTablePosition(self, definition, value, row, column):
 
     # add definition to table
     label_def = Gtk.Label()
     label_def.set_markup("<b>" + definition + ":</b>")
     label_def.set_alignment(1.0, 0)
     label_def.set_padding(10, 0)
-    self.table.attach(label_def, 0, 1, self.table_index, self.table_index + 1)
+    self.table.attach(label_def, column, column + 1, row, row + 1)
 
     # add value to table
     label_val = Gtk.Label(value)
     label_val.set_alignment(0.0, 0)
     label_val.set_padding(10, 0)
-    self.table.attach(label_val, 1, 2, self.table_index, self.table_index + 1)
-    
-    # shift to next row
-    self.table_index += 1
+    self.table.attach(label_val, column + 1, column + 2, row, row + 1)
     return
 
   # method to add one property to properties table
-  def populateTableXY(self, definition, value, x, y):
+  def populateTableLine(self, definition, value, row):
 
     # add definition to table
     label_def = Gtk.Label()
     label_def.set_markup("<b>" + definition + ":</b>")
     label_def.set_alignment(1.0, 0)
     label_def.set_padding(10, 0)
-    self.table.attach(label_def, x, x + 1, y, y + 1)
+    self.table.attach(label_def, 0, 1, row, row + 1)
 
     # add value to table
     label_val = Gtk.Label(value)
     label_val.set_alignment(0.0, 0)
     label_val.set_padding(10, 0)
-    self.table.attach(label_val, x + 1, x + 2, y, y + 1)
-    return
-
-  # method to add one property to properties table
-  def populateTableY(self, definition, value, y):
-
-    # add definition to table
-    label_def = Gtk.Label()
-    label_def.set_markup("<b>" + definition + ":</b>")
-    label_def.set_alignment(1.0, 0)
-    label_def.set_padding(10, 0)
-    self.table.attach(label_def, 0, 1, y, y + 1)
-
-    # add value to table
-    label_val = Gtk.Label(value)
-    label_val.set_alignment(0.0, 0)
-    label_val.set_padding(10, 0)
-    self.table.attach(label_val, 1, 4, y, y + 1)
+    self.table.attach(label_val, 1, 4, row, row + 1)
     return
 
   # method to generate APK properties tab
@@ -186,19 +166,18 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       self.table.set_row_spacings(5)
 
       # populate table
-      self.table_index=0
-      self.populateTableXY("Label", result[3], 0, 1)
-      self.populateTableXY("Name", result[0], 0, 2)
+      self.populateTablePosition("Label", result[3], 1, 0)
+      self.populateTablePosition("Name", result[0], 2, 0)
 
-      self.populateTableXY("Version name", result[2], 2, 1)
-      self.populateTableXY("Version code", result[1], 2, 2)
-      self.populateTableXY("SDK version", result[4], 2, 3)
-      self.populateTableXY("Target SDK version", result[5], 2, 4)
+      self.populateTablePosition("Version name", result[2], 1, 2)
+      self.populateTablePosition("Version code", result[1], 2, 2)
+      self.populateTablePosition("SDK version", result[4], 3, 2)
+      self.populateTablePosition("Target SDK version", result[5], 4, 2)
 
-      self.populateTableXY("Supported\ndensities", result[7], 0, 4)
-      self.populateTableXY("Supported\nscreens", result[6], 0, 5)
-      self.populateTableY("Features\nused", result[8], 6)
-      self.populateTableY("Permissions\nused", result[9], 7)
+      self.populateTablePosition("Supported\ndensities", result[7], 4, 0)
+      self.populateTablePosition("Supported\nscreens", result[6], 5, 0)
+      self.populateTableLine("Features\nused", result[8], 6)
+      self.populateTableLine("Permissions\nused", result[9], 7)
 
       # set tab label
       apk_label = Gtk.Label('APK infos')
