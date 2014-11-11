@@ -113,7 +113,7 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
 
     # add definition to table
     label_def = Gtk.Label()
-    label_def.set_markup("<b>" + definition + ":</b>")
+    label_def.set_markup("<b>" + definition + "</b>")
     label_def.set_alignment(1.0, 0)
     label_def.set_padding(10, 0)
     self.table.attach(label_def, column, column + 1, row, row + 1)
@@ -130,7 +130,7 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
 
     # add definition to table
     label_def = Gtk.Label()
-    label_def.set_markup("<b>" + definition + ":</b>")
+    label_def.set_markup("<b>" + definition + "</b>")
     label_def.set_alignment(1.0, 0)
     label_def.set_padding(10, 0)
     self.table.attach(label_def, 0, 1, row, row + 1)
@@ -162,10 +162,11 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       result = self.get_data(filename)
 
       # create table
-      self.table = Gtk.Table(8, 4, False)
+      self.table = Gtk.Table(9, 4, False)
       self.table.set_row_spacings(5)
 
       # populate table
+      self.populateTableLine("", "", 0)
       self.populateTablePosition("Label", result[3], 1, 0)
       self.populateTablePosition("Name", result[0], 2, 0)
 
@@ -178,9 +179,10 @@ class ApkPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       self.populateTablePosition("Supported\nscreens", result[6], 5, 0)
       self.populateTableLine("Features\nused", result[8], 6)
       self.populateTableLine("Permissions\nused", result[9], 7)
+      self.populateTableLine("", "", 8)
 
       # set tab label
-      apk_label = Gtk.Label('APK infos')
+      apk_label = Gtk.Label('Details')
 
       # set tab content (scrolled window -> table)
       apk_win = Gtk.ScrolledWindow()
