@@ -17,6 +17,10 @@
 #    06/11/2014, V2.1 - Don't use renamed aapt anymore
 # ---------------------------------------------------
 
+# select to display version on the icon
+# set to yes to display version number on the icon
+DISPLAY_VERSION="no"
+
 # get parameters
 INPUT=$1
 OUTPUT=$2
@@ -32,8 +36,16 @@ ICON=`aapt d badging "$INPUT" | grep "application:" | sed 's/^.*icon=.\(.*\).$/\
 if [ "$ICON" != "" ] ;
 then 
   # calculate font size
-  FONT_SIZE=`echo $HEIGHT / 5 | bc`
-
+  
+  # if needed, add version display options
+  if [ "$DISPLAY_VERSION" == "yes" ]
+  then
+    FONT_SIZE=`echo $HEIGHT / 5 | bc`
+    DISPLAY_OPTION="-pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 \" $VERSION \""
+  else
+    DISPLAY_OPTION=""
+  fi
+  
   # generate icon
-  unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - -pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 " $VERSION " "${OUTPUT}"
+  unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - $DISPLAY_OPTION "${OUTPUT}"
 fi
