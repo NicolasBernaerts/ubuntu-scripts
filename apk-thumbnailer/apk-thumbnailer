@@ -26,26 +26,26 @@ INPUT=$1
 OUTPUT=$2
 HEIGHT=$3
 
-# get version
-VERSION=`aapt d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/'`
-
 # get application icon
 ICON=`aapt d badging "$INPUT" | grep "application:" | sed 's/^.*icon=.\(.*\).$/\1/'`
 
 # if icon exists, extract icon & generate thumbnail 
 if [ "$ICON" != "" ] ;
 then 
-  # calculate font size
-  
   # if needed, add version display options
-  if [ "$DISPLAY_VERSION" == "yes" ]
+  if [ "$DISPLAY_VERSION" = "yes" ] ;
   then
+    # get version
+    VERSION=`aapt d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/'`
+
+    # calculate optimum font size
     FONT_SIZE=`echo $HEIGHT / 5 | bc`
-    DISPLAY_OPTION="-pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 \" $VERSION \""
+
+    # generate icon including version number
+    unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - -pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 " $VERSION " "${OUTPUT}"
+
+  # else, generate plain icon without version number
   else
-    DISPLAY_OPTION=""
+    unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - "${OUTPUT}"
   fi
-  
-  # generate icon
-  unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - $DISPLAY_OPTION "${OUTPUT}"
 fi
