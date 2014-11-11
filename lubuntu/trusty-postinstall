@@ -9,6 +9,7 @@
 #  30/08/2014, V1.2 - Add LibreOffice and GIMP PPA
 #  09/09/2014, V1.3 - Add YouTube-dl & ClipGrab
 #  10/10/2014, V1.4 - Add Scan2folder for Sane scanners
+#  11/11/2014, V1.5 - Add APK Nautilus extensions
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -197,15 +198,22 @@ sudo apt-get -y install android-tools-adb android-tools-fastboot
 sudo apt-get -y install yad
 
 # ---------------------------------------------------
-# ----------------- Thumbnailers --------------------
+# ---------- Thumbnailers and Extensions ------------
 # ---------------------------------------------------
 
 # APK thumbnailer
-sudo apt-get -y install libstdc++6:i386 lib32z1 lib32ncurses5 lib32bz2-1.0
-sudo wget -O /usr/local/sbin/aapt-thumbnailer http://bernaerts.dyndns.org/download/gnome/apk/aapt-thumbnailer
+wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
+sudo dpkg -i android-tools-aapt_*.deb
 sudo wget -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk-thumbnailer
-sudo chmod +rx /usr/local/sbin/apk-thumbnailer /usr/local/sbin/aapt-thumbnailer
-sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer 
+sudo chmod +rx /usr/local/sbin/apk-thumbnailer
+sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer
+rm -r $HOME/.cache/thumbnails
+
+# APK nautilus extensions
+sudo apt-get -y install python-nautilus
+mkdir --parents $HOME/.local/share/nautilus-python/extensions
+wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-columns.py
+wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
 
 # LibreOffice thumbnailer
 wget http://bernaerts.dyndns.org/download/gnome/libreoffice/lo-thumbnailer-icons.zip
