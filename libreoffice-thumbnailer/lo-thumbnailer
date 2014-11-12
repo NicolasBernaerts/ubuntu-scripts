@@ -4,8 +4,8 @@
 # LibreOffice & OpenOffice documents
 #
 # Depends on :
-# * unzip
-# * imagemagick
+#   * unzip
+#   * imagemagick
 # Parameters :
 # $1 - full path of office file
 # $2 - full path of generated thumbnail
