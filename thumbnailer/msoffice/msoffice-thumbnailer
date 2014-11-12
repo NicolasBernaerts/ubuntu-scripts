@@ -23,14 +23,14 @@ OUTPUT=$2
 HEIGHT=$3
 
 # get the file mime type (application/msword, ...)
-MIMETYPE=`file --mime-type "${INPUT}" | sed 's/.*: //'`
+MIMETYPE=`mimetype -b "${INPUT}"`
 
 # determine icon type according to mime type
 case $MIMETYPE in 
   "application/msword" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" )
     DOCTYPE="word"
     ;;
-  "application/vnd.ms-excel" | "application/vnd.ms-office" | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | "application/vnd.openxmlformats-officedocument.spreadsheetml.template" )
+  "application/vnd.ms-excel" | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | "application/vnd.openxmlformats-officedocument.spreadsheetml.template" )
     DOCTYPE="excel"
     ;;
   "application/vnd.ms-powerpoint" | "application/vnd.openxmlformats-officedocument.presentationml.presentation" | "application/vnd.openxmlformats-officedocument.presentationml.template" | "application/vnd.openxmlformats-officedocument.presentationml.slideshow" )
