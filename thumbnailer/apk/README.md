@@ -1,4 +1,4 @@
-Gnome Shell Android APK Thumbnailer
+Android APK files Thumbnailer for Nautilus
 
 --- Introduction ---
 
