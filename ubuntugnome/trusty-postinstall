@@ -84,7 +84,7 @@ sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 # declare 4.3 PPA & install libreoffice
 sudo add-apt-repository -y ppa:libreoffice/libreoffice-4-3
 sudo apt-get update
-sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr unoconv
+sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr
 
 # default file association
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
@@ -195,6 +195,9 @@ rm -R clipgrab*
 # ---------- Thumbnailers and Extensions ------------
 # ---------------------------------------------------
 
+# install needed packages
+sudo apt-get -y install libfile-mimeinfo-perl unzip unoconv imagemagick python-nautilus
+
 # APK thumbnailer
 wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
 sudo dpkg -i android-tools-aapt_*.deb
@@ -203,7 +206,6 @@ sudo chmod +x /usr/local/sbin/apk-thumbnailer
 sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer
 
 # APK nautilus extensions
-sudo apt-get -y install python-nautilus
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-columns.py
 wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
