@@ -22,7 +22,7 @@ OUTPUT=$2
 HEIGHT=$3
 
 # get the file mime type (application/vnd.oasis.opendocument...)
-MIMETYPE=`file --mime-type "${INPUT}" | sed 's/.*: //'`
+MIMETYPE=`mimetype -b "${INPUT}"`
 
 # get document type (text, spreadsheet, graphics or presentation)
 DOCTYPE=`echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/'`
