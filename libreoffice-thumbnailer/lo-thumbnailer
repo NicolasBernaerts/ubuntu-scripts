@@ -15,13 +15,17 @@
 # ---------------------------------------------------
 # path where to get icons used for generation
 ICONPATH="/usr/local/sbin/lo-thumbnailer-icons"
+
 # get parameters
 INPUT=$1
 OUTPUT=$2
 HEIGHT=$3
+
 # get the file mime type (application/vnd.oasis.opendocument...)
 MIMETYPE=`file --mime-type "${INPUT}" | sed 's/.*: //'`
+
 # get document type (text, spreadsheet, graphics or presentation)
 DOCTYPE=`echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/'`
+
 # generate thumbnail according to document type
 unzip -p "${INPUT}" Thumbnails/thumbnail.png | composite -gravity center \( -resize x244 - \) ${ICONPATH}/lo-${DOCTYPE}.png ${ICONPATH}/lo-mask.png \( -resize x${HEIGHT} \) "${OUTPUT}"
