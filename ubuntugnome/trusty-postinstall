@@ -84,7 +84,7 @@ sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 # declare 4.3 PPA & install libreoffice
 sudo add-apt-repository -y ppa:libreoffice/libreoffice-4-3
 sudo apt-get update
-sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr
+sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr unoconv
 
 # default file association
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
@@ -199,9 +199,8 @@ rm -R clipgrab*
 wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
 sudo dpkg -i android-tools-aapt_*.deb
 sudo wget -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk-thumbnailer
-sudo chmod +rx /usr/local/sbin/apk-thumbnailer
+sudo chmod +x /usr/local/sbin/apk-thumbnailer
 sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer
-rm -r $HOME/.cache/thumbnails
 
 # APK nautilus extensions
 sudo apt-get -y install python-nautilus
@@ -210,12 +209,23 @@ wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw
 wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
 
 # LibreOffice thumbnailer
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/libreoffice-thumbnailer/lo-thumbnailer-icons.zip
+wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/lo-thumbnailer-icons.zip
 sudo unzip -d /usr/local/sbin lo-thumbnailer-icons.zip
 rm lo-thumbnailer-icons.zip
-sudo wget -O /usr/local/sbin/lo-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/libreoffice-thumbnailer/lo-thumbnailer
+sudo wget -O /usr/local/sbin/lo-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer
 sudo chmod +rx /usr/local/sbin/lo-thumbnailer
-sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/libreoffice-thumbnailer/lo.thumbnailer
+sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo.thumbnailer
+
+# Ms Office thumbnailer
+wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/msoffice-thumbnailer-icons.zip
+sudo unzip -d /usr/local/sbin msoffice-thumbnailer-icons.zip
+rm msoffice-thumbnailer-icons.zip
+sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
+sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
+sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
+
+# purge thumbnails cache
+rm -r $HOME/.cache/thumbnails
 
 # ---------------------------------------------------
 # ---------------- Development Tools ----------------
