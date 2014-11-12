@@ -1,0 +1,55 @@
+#!/bin/sh
+# ---------------------------------------------------
+# Thumbnailer for Ms Office documents
+#
+# Depends on :
+#   * unzip
+#   * imagemagick
+#   * unoconv
+# Parameters :
+#   $1 - full path of office file
+#   $2 - full path of generated thumbnail
+#   $3 - height of thumbnail in pixels
+# Revision history :
+# 11/11/2014, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# path where to get icons used for generation
+ICONPATH="/usr/local/sbin/msoffice-thumbnailer-icons"
+
+# get parameters
+INPUT=$1
+OUTPUT=$2
+HEIGHT=$3
+
+# get the file mime type (application/msword, ...)
+MIMETYPE=`file --mime-type "${INPUT}" | sed 's/.*: //'`
+
+# determine icon type according to mime type
+case $MIMETYPE in 
+  "application/msword" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" )
+    DOCTYPE="word"
+    ;;
+  "application/vnd.ms-excel" | "application/vnd.ms-office" | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | "application/vnd.openxmlformats-officedocument.spreadsheetml.template" )
+    DOCTYPE="excel"
+    ;;
+  "application/vnd.ms-powerpoint" | "application/vnd.openxmlformats-officedocument.presentationml.presentation" | "application/vnd.openxmlformats-officedocument.presentationml.template" | "application/vnd.openxmlformats-officedocument.presentationml.slideshow" )
+    DOCTYPE="powerpoint"
+    ;;
+  * )
+esac
+
+# generate temporary directory
+TMPDIR=`mktemp -d`
+
+# convert first document page to PDF
+unoconv -e PageRange=1-1 -f pdf -o "$TMPDIR/tmp.pdf" "${INPUT}"
+
+# convert PDF to PNG
+convert "$TMPDIR/tmp.pdf" "$TMPDIR/tmp.png"
+
+# generate thumbnail according to document type
+composite -gravity center \( -resize x244 "$TMPDIR/tmp.png" \) ${ICONPATH}/msoffice-${DOCTYPE}.png ${ICONPATH}/msoffice-mask.png \( -resize x${HEIGHT} \) "${OUTPUT}"
+
+# remove temporary files
+rm -R $TMPDIR
