@@ -10,4 +10,4 @@ including document type icon and first page content, providing a simple and effi
 --- Description & Installation ---
 
 Complete description and full installation procedure are available at 
-http://bernaerts.dyndns.org/linux/76-gnome/...
+http://bernaerts.dyndns.org/linux/76-gnome/325-gnome-shell-generate-msoffice-thumbnail-nautilus
