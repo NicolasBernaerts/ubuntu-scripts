@@ -1,0 +1,20 @@
+#!/bin/sh
+# --------------------------------------------
+# Thumbnailer for Graphviz files
+# Depends on :
+# * imagemagick
+# * graphviz
+# Revision history :
+# 04/08/2013 - Creation by N. Bernaerts
+# -------------------------------------------
+
+# get parameters
+INPUT="$1"
+OUTPUT="$2"
+HEIGHT=$3
+
+# go to graphviz DOT file directory
+cd 'dirname "${INPUT}"'
+
+# generation
+dot -Tpng "${INPUT}" | convert -resize x${HEIGHT} - "${OUTPUT}"
