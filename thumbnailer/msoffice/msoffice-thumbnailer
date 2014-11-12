@@ -27,7 +27,7 @@ MIMETYPE=`mimetype -b "${INPUT}"`
 
 # determine icon type according to mime type
 case $MIMETYPE in 
-  "application/ms-word" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" )
+  "application/msword" | "application/vnd.ms-word" | "application/vnd.openxmlformats-officedocument.wordprocessingml.document" )
     DOCTYPE="word"
     ;;
   "application/vnd.ms-excel" | "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | "application/vnd.openxmlformats-officedocument.spreadsheetml.template" )
