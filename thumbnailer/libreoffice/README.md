@@ -1,4 +1,4 @@
-Gnome Shell LibreOffice Document Thumbnailer
+LibreOffice documents Thumbnailer for Nautilus
 
 --- Introduction ---
 
