@@ -13,6 +13,7 @@
 # Revision history :
 # 04/08/2013, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
+
 # path where to get icons used for generation
 ICONPATH="/usr/local/sbin/lo-thumbnailer-icons"
 
