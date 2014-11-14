@@ -11,4 +11,5 @@ as thumbnail. This allows you to handle your APK files from Nautilus as they app
 --- Description & Installation ---
 
 Complete description and full installation procedure are available at
+
 http://bernaerts.dyndns.org/linux/76-gnome/284-gnome-shell-generate-apk-thumbnail-nautilus
