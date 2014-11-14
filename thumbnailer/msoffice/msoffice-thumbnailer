@@ -23,7 +23,7 @@ OUTPUT=$2
 HEIGHT=$3
 
 # get the file mime type (application/msword, ...)
-MIMETYPE=`mimetype -b "${INPUT}"`
+MIMETYPE=$(mimetype -b "${INPUT}")
 
 # determine icon type according to mime type
 case $MIMETYPE in 
@@ -46,7 +46,7 @@ case $MIMETYPE in
 esac
 
 # generate temporary directory
-TMPDIR=`mktemp -d`
+TMPDIR=$(mktemp -d)
 
 # convert first document page to PDF
 unoconv -e PageRange=1-1 -f pdf -o "$TMPDIR/tmp.pdf" "${INPUT}"
