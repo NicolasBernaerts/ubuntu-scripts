@@ -23,10 +23,10 @@ OUTPUT=$2
 HEIGHT=$3
 
 # get the file mime type (application/vnd.oasis.opendocument...)
-MIMETYPE=`mimetype -b "${INPUT}"`
+MIMETYPE=$(mimetype -b "${INPUT}")
 
 # get document type (text, spreadsheet, graphics or presentation)
-DOCTYPE=`echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/'`
+DOCTYPE=$(echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/')
 
 # generate thumbnail according to document type
 unzip -p "${INPUT}" Thumbnails/thumbnail.png | composite -gravity center \( -resize x244 - \) ${ICONPATH}/lo-${DOCTYPE}.png ${ICONPATH}/lo-mask.png \( -resize x${HEIGHT} \) "${OUTPUT}"
