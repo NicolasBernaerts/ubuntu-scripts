@@ -36,7 +36,7 @@ then
   if [ "$DISPLAY_VERSION" = "yes" ] ;
   then
     # get version
-    VERSION=`aapt d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/'`
+    VERSION=$(aapt d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/')
 
     # calculate optimum font size
     FONT_SIZE=`echo $HEIGHT / 5 | bc`
