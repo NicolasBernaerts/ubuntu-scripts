@@ -9,5 +9,6 @@ including document type icon and first page content, providing a simple and effi
 
 --- Description & Installation ---
 
-Complete description and full installation procedure are available at 
+Complete description and full installation procedure are available at
+
 http://bernaerts.dyndns.org/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
