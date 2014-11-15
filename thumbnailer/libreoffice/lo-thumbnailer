@@ -1,6 +1,7 @@
 #!/bin/sh
 # ---------------------------------------------------
-# Thumbnailer for LibreOffice & OpenOffice documents
+# Thumbnailer for
+# LibreOffice & OpenOffice documents
 #
 # Depends on :
 #   * unzip
@@ -12,7 +13,7 @@
 #   $3 - height of thumbnail in pixels
 # Revision history :
 # 04/08/2013, V1.0 - Creation by N. Bernaerts
-# 15/11/2014, V2.0 - Change to URI and GVFS to handle thumbnails on network shares
+# 15/11/2014, V2.0 - Use URI to handle network shares
 # ---------------------------------------------------
 
 # path where to get icons used for generation
@@ -26,21 +27,20 @@ HEIGHT=$3
 # get filename extension
 FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 
-# generate temporary directory
-TMP_DIR=$(mktemp -d)
-TMP_BASEFILE="$TMP_DIR/file"
+# generate temporary local filename
+TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
 
-# copy file to temporary directory
-gvfs-copy "${FILE_URI}" "${TMP_BASEFILE}.${FILE_EXT}"
+# copy input file to temporary local file
+gvfs-copy "${FILE_URI}" "${TMP_FILE}"
 
 # get the file mime type (application/vnd.oasis.opendocument...)
-MIMETYPE=$(mimetype -b "${TMP_BASEFILE}.${FILE_EXT}")
+MIMETYPE=$(mimetype -b "${TMP_FILE}")
 
 # get document type (text, spreadsheet, graphics or presentation)
 DOCTYPE=$(echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/')
 
 # generate thumbnail according to document type
-unzip -p "${TMP_BASEFILE}.${FILE_EXT}" Thumbnails/thumbnail.png | composite -gravity center \( -resize x244 - \) ${ICONPATH}/lo-${DOCTYPE}.png ${ICONPATH}/lo-mask.png \( -resize x${HEIGHT} \) "${FILE_THUMB}"
+unzip -p "${TMP_FILE}" Thumbnails/thumbnail.png | composite -gravity center \( -resize x244 - \) ${ICONPATH}/lo-${DOCTYPE}.png ${ICONPATH}/lo-mask.png \( -resize x${HEIGHT} \) "${FILE_THUMB}"
 
-# remove temporary files
-rm -R $TMP_DIR
+# remove temporary local file
+rm ${TMP_FILE}
