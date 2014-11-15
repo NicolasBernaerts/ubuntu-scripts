@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
 TryExec=/usr/local/sbin/apk-thumbnailer
-Exec=/usr/local/sbin/apk-thumbnailer %i %o %s
+Exec=/usr/local/sbin/apk-thumbnailer %u %o %s
 MimeType=application/vnd.android.package-archive;
