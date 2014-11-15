@@ -32,10 +32,10 @@ HEIGHT=$3
 # get filename extension
 FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 
-# generate temporary directory
+# generate temporary local filename
 TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
 
-# copy file to temporary directory
+# copy input file to temporary local file
 gvfs-copy "${FILE_URI}" "${TMP_FILE}"
 
 # get application icon
@@ -62,5 +62,5 @@ then
   fi
 fi
 
-# remove temporary files
+# remove temporary local file
 rm ${TMP_FILE}
