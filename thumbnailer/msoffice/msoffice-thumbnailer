@@ -6,24 +6,36 @@
 #   * unzip
 #   * imagemagick
 #   * unoconv
+#   * gvfs
 # Parameters :
-#   $1 - full path of office file
+#   $1 - URI of office file
 #   $2 - full path of generated thumbnail
 #   $3 - height of thumbnail in pixels
 # Revision history :
 # 11/11/2014, V1.0 - Creation by N. Bernaerts
+# 15/11/2014, V2.0 - Change to URI and GVFS to handle thumbnails on network shares
 # ---------------------------------------------------
 
 # path where to get icons used for generation
 ICONPATH="/usr/local/sbin/msoffice-thumbnailer-icons"
 
 # get parameters
-INPUT=$1
-OUTPUT=$2
+FILE_URI=$1
+FILE_THUMB=$2
 HEIGHT=$3
 
+# get filename extension
+FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
+
+# generate temporary directory
+TMP_DIR=$(mktemp -d)
+TMP_BASEFILE="$TMP_DIR/file"
+
+# copy file to temporary local directory
+gvfs-copy "${FILE_URI}" "${TMP_BASEFILE}.${FILE_EXT}"
+
 # get the file mime type (application/msword, ...)
-MIMETYPE=$(mimetype -b "${INPUT}")
+MIMETYPE=$(mimetype -b "${TMP_BASEFILE}.${FILE_EXT}")
 
 # determine icon type according to mime type
 case $MIMETYPE in 
@@ -45,17 +57,14 @@ case $MIMETYPE in
   * )
 esac
 
-# generate temporary directory
-TMPDIR=$(mktemp -d)
-
 # convert first document page to PDF
-unoconv -e PageRange=1-1 -f pdf -o "$TMPDIR/tmp.pdf" "${INPUT}"
+unoconv -e PageRange=1-1 -f pdf -o "${TMP_BASEFILE}.pdf" "${TMP_BASEFILE}.${FILE_EXT}"
 
 # convert PDF to PNG
-convert "$TMPDIR/tmp.pdf" "$TMPDIR/tmp.png"
+convert "${TMP_BASEFILE}.pdf" "${TMP_BASEFILE}.png"
 
 # generate thumbnail according to document type
-composite -gravity center \( -resize x244 "$TMPDIR/tmp.png" \) ${ICONPATH}/msoffice-${DOCTYPE}.png ${ICONPATH}/msoffice-mask.png \( -resize x${HEIGHT} \) "${OUTPUT}"
+composite -gravity center \( -resize x244 "${TMP_BASEFILE}.png" \) ${ICONPATH}/msoffice-${DOCTYPE}.png ${ICONPATH}/msoffice-mask.png \( -resize x${HEIGHT} \) "$FILE_THUMB"
 
 # remove temporary files
-rm -R $TMPDIR
+rm -R $TMP_DIR
