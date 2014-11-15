@@ -1,13 +1,15 @@
 #!/bin/sh
 # ---------------------------------------------------
 #  Thumbnailer for APK archives files
-#  Display icon and version
+#  Display embedded icon and version number (option)
+#
 #  Depends on :
 #    * unzip
 #    * imagemagick (for convert)
 #    * aapt
+#    * gvfs
 #  Parameters :
-#    $1 - full path of APK archive
+#    $1 - URI of APK archive
 #    $2 - full path of generated thumbnail
 #    $3 - height of thumbnail in pixels
 #  Revision history :
@@ -15,6 +17,7 @@
 #    11/08/2013, V1.1 - Use aapt to get icon file
 #    05/11/2014, V2.0 - Add version display
 #    06/11/2014, V2.1 - Don't use renamed aapt anymore
+#    15/11/2014, V3.0 - Use URI to handle network shares
 # ---------------------------------------------------
 
 # select to display version on the icon
@@ -22,12 +25,21 @@
 DISPLAY_VERSION="no"
 
 # get parameters
-INPUT=$1
-OUTPUT=$2
+FILE_URI=$1
+FILE_THUMB=$2
 HEIGHT=$3
 
+# get filename extension
+FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
+
+# generate temporary directory
+TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
+
+# copy file to temporary directory
+gvfs-copy "${FILE_URI}" "${TMP_FILE}"
+
 # get application icon
-ICON=$(aapt d badging "$INPUT" | grep "application-icon" | sed 's/^.*icon-\(.*\):.\(.*\).$/\2/' | tail -1)
+ICON=$(aapt d badging "${TMP_FILE}" | grep "application-icon" | sed 's/^.*icon-\(.*\):.\(.*\).$/\2/' | tail -1)
 
 # if icon exists, extract icon & generate thumbnail 
 if [ "$ICON" != "" ] ;
@@ -36,16 +48,19 @@ then
   if [ "$DISPLAY_VERSION" = "yes" ] ;
   then
     # get version
-    VERSION=$(aapt d badging "$INPUT" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/')
+    VERSION=$(aapt d badging "${TMP_FILE}" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/')
 
     # calculate optimum font size
     FONT_SIZE=`echo $HEIGHT / 5 | bc`
 
     # generate icon including version number
-    unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - -pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 " $VERSION " "${OUTPUT}"
+    unzip -p "${TMP_FILE}" "${ICON}" | convert -resize x${HEIGHT} - -pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 " $VERSION " "${FILE_THUMB}"
 
   # else, generate plain icon without version number
   else
-    unzip -p "${INPUT}" "${ICON}" | convert -resize x${HEIGHT} - "${OUTPUT}"
+    unzip -p "${TMP_FILE}" "${ICON}" | convert -resize x${HEIGHT} - "${FILE_THUMB}"
   fi
 fi
+
+# remove temporary files
+rm ${TMP_FILE}
