@@ -10,6 +10,7 @@
 #  09/09/2014, V1.3 - Add YouTube-dl & ClipGrab
 #  10/10/2014, V1.4 - Add Scan2folder for Sane scanners
 #  11/11/2014, V1.5 - Add APK Nautilus extensions
+#  11/11/2014, V1.6 - Add right click on desktop Trash
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -260,3 +261,10 @@ sed -i 's,.*<command>lxsession-default screenshot window<\/command>.*,      <com
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/dual-display/declare-dualdisplay
 chmod +x ./declare-dualdisplay
 sudo ./declare-dualdisplay
+
+# Declare right click "empty trash" on desktop trash
+sudo apt-get -y install trash-cli
+mkdir --parents $HOME/.local/share/file-manager/actions
+wget -O $HOME/.local/share/file-manager/actions/ask-trash-empty.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty.desktop
+sudo wget -O /usr/local/bin/ask-trash-empty https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty
+sudo chmod +x /usr/local/bin/ask-trash-empty
