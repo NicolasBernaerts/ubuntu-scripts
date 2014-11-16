@@ -203,7 +203,7 @@ sudo apt-get -y install yad
 # ---------------------------------------------------
 
 # install needed packages
-sudo apt-get -y install libfile-mimeinfo-perl unzip unoconv imagemagick python-nautilus
+sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip unoconv imagemagick python-nautilus
 
 # APK thumbnailer
 wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
