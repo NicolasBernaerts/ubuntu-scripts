@@ -10,7 +10,8 @@
 #  09/09/2014, V1.3 - Add YouTube-dl & ClipGrab
 #  10/10/2014, V1.4 - Add Scan2folder for Sane scanners
 #  11/11/2014, V1.5 - Add APK Nautilus extensions
-#  11/11/2014, V1.6 - Add right click on desktop Trash
+#  15/11/2014, V1.6 - Add right click on desktop Trash
+#  16/11/2014, V1.7 - Add skype 4.3
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -173,6 +174,11 @@ tar -xzf clipgrab.tar.gz
 sudo mv ./clipgrab*/clipgrab*/clipgrab*_x86_$X86ARCHI /usr/local/bin/clipgrab
 sudo chmod +x /usr/local/bin/clipgrab
 rm -R clipgrab*
+
+# skype 4.3
+wget http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
+sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
+sudo apt-get -y -f install
 
 # ---------------------------------------------------
 # -------------- Remote assistance ------------------
