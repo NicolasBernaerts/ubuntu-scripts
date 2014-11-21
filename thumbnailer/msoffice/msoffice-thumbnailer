@@ -2,6 +2,8 @@
 # ---------------------------------------------------
 # Thumbnailer for Ms Office documents
 #
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/76-gnome/325-gnome-shell-generate-msoffice-thumbnail-nautilus
 # Depends on :
 #   * unzip
 #   * imagemagick
