@@ -1,40 +1,34 @@
 #!/bin/sh
-# -------------------------------------------------------
-# Script used to correct broken PDF files
-# I developped this script to correct files generated 
-# on easyjet site. Should work on other files.
+# ---------------------------------------------------
+# Repair broken PDF file using gs
 #
-# Dependencies :
-#  * ghostscript (gs)
-# 
-# Parameters :
-#  $1 : PDF file to be repaired
-#
-# 14/08/2014, V1.0 - Creation by N. Bernaerts
-# -------------------------------------------------------
-
-# ---------------------------------------------------
-# ----------    User defined variable     -----------
+# Depends on :
+#   * ghostscript
+#   * gvfs-bin
+# Revision history :
+#   08/11/2014, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 
-# setup to "yes" if you want to replace original file
-PDF_REPLACE="no"
+# get original document
+ORG_URI="$1"
 
-# ---------------------------------------------------
-# -------------     Conversion job    ---------------
-# ---------------------------------------------------
+# generate corrected document name
+ORG_BASE=$(echo "$ORG_URI" | sed 's/^\(.*\)\..*$/\1/')
+ORG_EXT=$(echo "$ORG_URI" | sed 's/^.*\.\(.*\)$/\1/')
+NEW_URI="$ORG_BASE-repaired.$ORG_EXT"
 
-# setup file names
-PDF_ORIGINAL="$1"
-PDF_REPAIRED="${PDF_ORIGINAL%%.*}-repaired.pdf"
+# generate temporary local filename
+ORG_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
+NEW_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
 
-# function to repair the file, with progression display
-( gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="$PDF_REPAIRED" "$PDF_ORIGINAL" ) \
-| zenity --pulsate --width=500 --title "Repairing PDF file"
+# copy input file to temporary local file
+gvfs-copy "${ORG_URI}" "${ORG_TMP}"
 
-# if needed, replace original file
-if [ "$PDF_REPLACE" = "yes" ]
-then
-  rm "$PDF_ORIGINAL"
-  mv "$PDF_REPAIRED" "$PDF_ORIGINAL"
-fi
+# generate corrected PDF
+gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="${NEW_TMP}" "${ORG_TMP}"
+# copy back corrected file
+gvfs-copy "${NEW_TMP}" "${NEW_URI}"
+
+# remove temporary local files
+rm ${ORG_TMP}
+rm ${NEW_TMP}
