@@ -1,23 +1,25 @@
 #!/bin/sh
 # ---------------------------------------------------
-#  Thumbnailer for APK archives files
-#  Display embedded icon and version number (option)
+# Thumbnailer for APK archives files
+# Display embedded icon and version number (option)
 #
-#  Depends on :
-#    * unzip
-#    * imagemagick (for convert)
-#    * aapt
-#    * gvfs
-#  Parameters :
-#    $1 - URI of APK archive
-#    $2 - full path of generated thumbnail
-#    $3 - height of thumbnail in pixels
-#  Revision history :
-#    04/08/2013, V1.0 - Creation by N. Bernaerts
-#    11/08/2013, V1.1 - Use aapt to get icon file
-#    05/11/2014, V2.0 - Add version display
-#    06/11/2014, V2.1 - Don't use renamed aapt anymore
-#    15/11/2014, V3.0 - Use URI to handle network shares
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/76-gnome/284-gnome-shell-generate-apk-thumbnail-nautilus
+# Depends on :
+#   * unzip
+#   * imagemagick (for convert)
+#   * aapt
+#   * gvfs
+# Parameters :
+#   $1 - URI of APK archive
+#   $2 - full path of generated thumbnail
+#   $3 - height of thumbnail in pixels
+# Revision history :
+#   04/08/2013, V1.0 - Creation by N. Bernaerts
+#   11/08/2013, V1.1 - Use aapt to get icon file
+#   05/11/2014, V2.0 - Add version display
+#   06/11/2014, V2.1 - Don't use renamed aapt anymore
+#   15/11/2014, V3.0 - Use URI to handle network shares
 # ---------------------------------------------------
 
 # select to display version on the icon
