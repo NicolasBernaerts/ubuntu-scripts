@@ -3,6 +3,8 @@
 # Thumbnailer for
 # LibreOffice & OpenOffice documents
 #
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
 # Depends on :
 #   * unzip
 #   * imagemagick
