@@ -25,7 +25,7 @@ class PDFCorrectionMenuProvider(GObject.GObject, Nautilus.MenuProvider):
     # if file is a PDF document, repair it
     if files[0].get_mime_type() in ('application/pdf'):
       # create menu item for right click menu
-      item = Nautilus.MenuItem(name='SimpleMenuExtension::pdf_repair', label='Repair using Ghostscript')
+      item = Nautilus.MenuItem(name='SimpleMenuExtension::pdf_repair', label='Repair PDF using Ghostscript')
       item.connect('activate', self.activate, files)
       return [item]
 
