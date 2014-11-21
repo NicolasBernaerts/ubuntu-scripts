@@ -9,6 +9,7 @@
 #  09/09/2014, V1.2 - Add ClipGrab
 #  10/10/2014, V1.4 - Add Scan2folder for Sane scanners
 #  10/10/2014, V1.5 - Add APK Nautilus extensions
+#  20/10/2014, V1.6 - Add PDF repair Nautilus extensions
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -196,7 +197,7 @@ rm -R clipgrab*
 # ---------------------------------------------------
 
 # install needed packages
-sudo apt-get -y install libfile-mimeinfo-perl unzip unoconv imagemagick python-nautilus
+sudo apt-get -y install libfile-mimeinfo-perl unzip unoconv imagemagick python-nautilus ghostscript
 
 # APK thumbnailer
 wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
@@ -225,6 +226,11 @@ rm msoffice-thumbnailer-icons.zip
 sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
 sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
 sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
+
+# PDF repair extension
+sudo wget -O /usr/local/bin/pdf-repair https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair
+sudo chmod +x /usr/local/bin/pdf-repair
+wget -O $HOME/.local/share/nautilus-python/extensions/pdf-menu-repair.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/pdf-menu-repair.py
 
 # purge thumbnails cache
 rm -r $HOME/.cache/thumbnails
