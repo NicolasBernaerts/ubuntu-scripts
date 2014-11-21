@@ -1,9 +1,11 @@
 # ---------------------------------------------------
 # Nautilus extension to add APK specific columns
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/76-gnome/324-gnome-nautilus-apk-column-property-provider-extension
 # Depends on :
-# * aapt
+#   * aapt
 # Revision history :
-# 08/11/2014, V1.0 - Creation by N. Bernaerts
+#   08/11/2014, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 import subprocess
 import urllib
