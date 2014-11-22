@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Action
+Icon=application-pdf
+Name[en_US]=Repair broken PDF
+Name[en]=Repair broken PDF
+Name[C]=Repair broken PDF
+Name[fr_FR]=Réparer PDF corrompu
+Profiles=repair_pdf;
+
+[X-Action-Profile repair_pdf]
+Exec=pdf-repair %u
+Icon=application-pdf
+MimeTypes=application/pdf;application/x-bzpdf;application/x-gzpdf;application/x-xzpdf;
