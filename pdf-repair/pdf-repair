@@ -5,30 +5,42 @@
 # Depends on :
 #   * ghostscript
 #   * gvfs-bin
+#   * libnotify-bin
+#   * zenity
 # Revision history :
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
+#   20/11/2014, V1.1 - Add file selection dialo box
 # ---------------------------------------------------
 
-# get original document
-ORG_URI="$1"
+# check if parameter is given, otherwise open dialog box selection
+[ "$1" != "" ] && ORG_URI="$1" || ORG_URI=$(zenity --file-selection --title="Select PDF file to repair")
 
-# generate corrected document name
-ORG_BASE=$(echo "$ORG_URI" | sed 's/^\(.*\)\..*$/\1/')
-ORG_EXT=$(echo "$ORG_URI" | sed 's/^.*\.\(.*\)$/\1/')
-NEW_URI="$ORG_BASE-repaired.$ORG_EXT"
+# if a PDF file is selected
+if [ "$ORG_URI" != "" ]
+then
+  # generate corrected document name
+  ORG_BASE=$(echo "$ORG_URI" | sed 's/^\(.*\)\..*$/\1/')
+  ORG_EXT=$(echo "$ORG_URI" | sed 's/^.*\.\(.*\)$/\1/')
+  NEW_URI="$ORG_BASE-repaired.$ORG_EXT"
 
-# generate temporary local filename
-ORG_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
-NEW_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
+  # generate temporary local filename
+  ORG_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
+  NEW_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
 
-# copy input file to temporary local file
-gvfs-copy "${ORG_URI}" "${ORG_TMP}"
+  # copy input file to temporary local file
+  gvfs-copy "${ORG_URI}" "${ORG_TMP}"
 
-# generate corrected PDF
-gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="${NEW_TMP}" "${ORG_TMP}"
-# copy back corrected file
-gvfs-copy "${NEW_TMP}" "${NEW_URI}"
+  # generate corrected PDF
+  gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="${NEW_TMP}" "${ORG_TMP}"
 
-# remove temporary local files
-rm ${ORG_TMP}
-rm ${NEW_TMP}
+  # copy back corrected file
+  gvfs-copy "${NEW_TMP}" "${NEW_URI}"
+
+  # remove temporary local files
+  rm ${ORG_TMP}
+  rm ${NEW_TMP}
+
+  # send desktop notification
+  NEW_NAME=$(echo "$NEW_URI" | sed 's/^.*\/\(.*\)$/\1/')
+  notify-send "Repaired PDF : $NEW_NAME"
+fi
