@@ -1,15 +1,17 @@
 [Desktop Entry]
 Type=Application
-Exec=pdf-repair $1
+Exec=pdf-repair
 Hidden=false
 NoDisplay=false
+Icon=application-pdf
 Keywords=pdf;broken;easyjet;
 X-GNOME-Autostart-enabled=true
-Name=Broken PDF Repair Tool
-Name[en_US]=Broken PDF Repair Tool
-Name[fr_FR]=Reparateur de fichiers PDF
-Comment=Tool to repair broken PDF files. Is has been tested on boarding passes issued by EasyJet site.
-Comment[en_US]=Tool to repair broken PDF files. Is has been tested on boarding passes issued by EasyJet site.
-Comment[fr_FR]=Outil de reparation de fichiers PDF corrompus. Teste sur les cartes d'enregistrement du site EasyJet.
+Name[en_US]=Repair broken PDF
+Name[en]=Repair broken PDF
+Name[C]=Repair broken PDF
+Name[fr_FR]=Réparer PDF corrompu
+Comment=Tool to repair broken PDF files with Ghostcsript. Is works well on boarding passes issued by EasyJet site.
+Comment[en_US]=Tool to repair broken PDF files with Ghostcsript. Is works well on boarding passes issued by EasyJet site.
+Comment[fr_FR]=Outil de reparation de fichiers PDF corrompus. Fonctionne sur les cartes d'enregistrement du site EasyJet.
 MimeType=application/pdf;application/x-bzpdf;application/x-gzpdf;application/x-xzpdf;
 Categories=GNOME;GTK;Viewer;Graphics;Utility;
