@@ -9,7 +9,7 @@
 #   * zenity
 # Revision history :
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
-#   20/11/2014, V1.1 - Add file selection dialo box
+#   20/11/2014, V1.1 - Add file selection dialog box
 # ---------------------------------------------------
 
 # check if parameter is given, otherwise open dialog box selection
@@ -42,5 +42,5 @@ then
 
   # send desktop notification
   NEW_NAME=$(echo "$NEW_URI" | sed 's/^.*\/\(.*\)$/\1/')
-  notify-send "Repaired PDF : $NEW_NAME"
+  notify-send "Repaired PDF is $NEW_NAME"
 fi
