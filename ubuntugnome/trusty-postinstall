@@ -228,9 +228,13 @@ sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
 sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
 
 # PDF repair extension
+sudo apt-get -y install nautilus-actions
+gsettings set org.gnome.desktop.interface menus-have-icons true
 sudo wget -O /usr/local/bin/pdf-repair https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair
 sudo chmod +x /usr/local/bin/pdf-repair
-wget -O $HOME/.local/share/nautilus-python/extensions/pdf-menu-repair.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/pdf-menu-repair.py
+sudo wget -O /usr/share/applications/pdf-repair.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair.desktop
+mkdir --parents $HOME/.local/share/file-manager/actions
+wget -O $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair-action.desktop
 
 # purge thumbnails cache
 rm -r $HOME/.cache/thumbnails
