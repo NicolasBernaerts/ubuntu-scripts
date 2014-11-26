@@ -1,0 +1,37 @@
+#!/bin/sh
+# ---------------------------------------------------
+# Thumbnailer for GIMP XCF files
+#
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/76-gnome/xxx
+# Depends on :
+#   * xcftools (for xcf2png)
+#   * imagemagick (for convert)
+#   * gvfs-bin (for gvfs-copy)
+# Parameters :
+#   $1 - URI of XCF file
+#   $2 - full path of generated thumbnail
+#   $3 - height of thumbnail in pixels
+# Revision history :
+#   26/11/2014, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# get parameters
+FILE_URI=$1
+FILE_THUMB=$2
+HEIGHT=$3
+
+# get filename extension
+FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
+
+# generate temporary local filename
+TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
+
+# copy input file to temporary local file
+gvfs-copy "${FILE_URI}" "${TMP_FILE}"
+
+# generate thumbnail
+xcf2png -o "${FILE_THUMB}" "${TMP_FILE}"
+
+# remove temporary local file
+rm ${TMP_FILE}
