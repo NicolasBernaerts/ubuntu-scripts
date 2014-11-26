@@ -196,10 +196,8 @@ rm -R clipgrab*
 # ---------- Thumbnailers and Extensions ------------
 # ---------------------------------------------------
 
-# install needed packages
-sudo apt-get -y install libfile-mimeinfo-perl unzip unoconv imagemagick python-nautilus ghostscript
-
 # APK thumbnailer
+sudo apt-get -y install libfile-mimeinfo-perl unzip imagemagick
 wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
 sudo dpkg -i android-tools-aapt_*.deb
 sudo wget -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk-thumbnailer
@@ -207,11 +205,13 @@ sudo chmod +x /usr/local/sbin/apk-thumbnailer
 sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer
 
 # APK nautilus extensions
+sudo apt-get -y install libfile-mimeinfo-perl unzip imagemagick python-nautilus
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-columns.py
 wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
 
 # LibreOffice thumbnailer
+sudo apt-get -y install libfile-mimeinfo-perl unzip imagemagick
 wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/lo-thumbnailer-icons.zip
 sudo unzip -d /usr/local/sbin lo-thumbnailer-icons.zip
 rm lo-thumbnailer-icons.zip
@@ -220,6 +220,7 @@ sudo chmod +rx /usr/local/sbin/lo-thumbnailer
 sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo.thumbnailer
 
 # Ms Office thumbnailer
+sudo apt-get -y install libfile-mimeinfo-perl unoconv imagemagick
 wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/msoffice-thumbnailer-icons.zip
 sudo unzip -d /usr/local/sbin msoffice-thumbnailer-icons.zip
 rm msoffice-thumbnailer-icons.zip
@@ -227,8 +228,14 @@ sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.
 sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
 sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
 
+# GIMP XCF thumbnailer
+sudo apt-get -y install imagemagick xcftools
+sudo wget -O /usr/local/sbin/gimp-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-thumbnailer
+sudo chmod +x /usr/local/sbin/gimp-thumbnailer
+sudo wget -O /usr/share/thumbnailers/gimp.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp.thumbnailer
+
 # PDF repair extension
-sudo apt-get -y install nautilus-actions
+sudo apt-get -y install nautilus-actions ghostscript
 gsettings set org.gnome.desktop.interface menus-have-icons true
 sudo wget -O /usr/local/bin/pdf-repair https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair
 sudo chmod +x /usr/local/bin/pdf-repair
