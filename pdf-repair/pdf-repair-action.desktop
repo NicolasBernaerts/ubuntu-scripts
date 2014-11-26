@@ -13,7 +13,7 @@ Profiles=repair_pdf;
 
 [X-Action-Profile repair_pdf]
 Exec=pdf-repair %u
-MimeTypes=application/pdf;application/x-bzpdf;application/x-gzpdf;application/x-xzpdf;
+MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
 Name[en_US]=Default profile
 Name[en]=Default profile
 Name[C]=Default profile
