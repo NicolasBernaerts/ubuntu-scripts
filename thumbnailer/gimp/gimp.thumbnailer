@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
 TryExec=/usr/local/sbin/gimp-thumbnailer
 Exec=/usr/local/sbin/gimp-thumbnailer %u %o %s
-MimeType=image/xcf;
+MimeType=image/xcf;image/x-xcf;
