@@ -31,7 +31,7 @@ TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
 gvfs-copy "${FILE_URI}" "${TMP_FILE}"
 
 # generate thumbnail
-xcf2png -o "${FILE_THUMB}" "${TMP_FILE}"
+xcf2png "${TMP_FILE}" | convert -resize x${HEIGHT} - "${FILE_THUMB}"
 
 # remove temporary local file
 rm ${TMP_FILE}
