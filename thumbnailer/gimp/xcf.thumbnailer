@@ -1,0 +1,4 @@
+[Thumbnailer Entry]
+TryExec=/usr/local/sbin/xcf-thumbnailer
+Exec=/usr/local/sbin/xcf-thumbnailer %u %o %s
+MimeType=image/xcf;
