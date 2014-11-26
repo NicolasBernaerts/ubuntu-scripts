@@ -13,5 +13,5 @@ Name[fr_FR]=Réparer PDF corrompu
 Comment=Tool to repair broken PDF files with Ghostcsript. Is works well on boarding passes issued by EasyJet site.
 Comment[en_US]=Tool to repair broken PDF files with Ghostcsript. Is works well on boarding passes issued by EasyJet site.
 Comment[fr_FR]=Outil de reparation de fichiers PDF corrompus. Fonctionne sur les cartes d'enregistrement du site EasyJet.
-MimeType=application/pdf;application/x-bzpdf;application/x-gzpdf;application/x-xzpdf;
+MimeType=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;application/x-xzpdf;
 Categories=GNOME;GTK;Viewer;Graphics;Utility;
