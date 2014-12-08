@@ -43,7 +43,7 @@ for (( i=1; i<=$NUM; i++)); do
   [ "$PRIMARY" = "yes" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--primary")
 done
 
-# if neededn wait for some seconds (for X to finish initialisation)
+# if needed, wait for some seconds (for X to finish initialisation)
 [ -n "$1" ] && sleep $1
 
 # position all monitors
