@@ -6,12 +6,16 @@
 #  See http://bernaerts.dyndns.org/linux/74-ubuntu/309-ubuntu-dual-display-monitor-position-lost
 #  for instructions
 #
+#  Parameters :
+#    $1 : waiting time in sec. before forcing configuration (optional)
+#
 #  Revision history :
 #    19/04/2014, V1.0 - Creation by N. Bernaerts
 #    10/07/2014, V1.1 - Wait 5 seconds for X to fully initialize
 #    01/09/2014, V1.2 - Correct NULL file bug (thanks to Ivan Harmady) and handle rotation
 #    07/10/2014, V1.3 - Add monitors size and rate handling (idea from jescalante)
 #    08/10/2014, V1.4 - Handle primary display parameter
+#    08/12/2014, V1.5 - Waiting time in seconds becomes a parameter
 # -------------------------------------------------
 
 # monitor.xml path
@@ -39,8 +43,8 @@ for (( i=1; i<=$NUM; i++)); do
   [ "$PRIMARY" = "yes" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--primary")
 done
 
-# wait for 5 seconds (for X to finish initialisation)
-sleep 5
+# if neededn wait for some seconds (for X to finish initialisation)
+[ -n "$1" ] && sleep $1
 
 # position all monitors
 xrandr "${PARAM_ARR[@]}"
