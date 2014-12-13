@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Telegram
+Name[fr]=Telegram
+Comment=Telegram social network client
+Comment[fr]=Client du réseau social Telegram
+Exec=/usr/local/bin/Telegram/Telegram
+Icon=/usr/share/icons/telegram.png
+Type=Application
+Categories=Network;
