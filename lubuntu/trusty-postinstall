@@ -182,8 +182,9 @@ sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
 sudo apt-get -y -f install
 
 # telegram client (launch Telegram from command line once to get desktop declaration)
-wget https://updates.tdesktop.com/tlinux/tsetup.0.6.20.tar.xz
-sudo tar xf tsetup.0.6.20.tar.xz -C /usr/local/bin
+[ "$ARCHI" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
+wget -O tsetup.tar.xz $TELEGRAM_URL
+sudo tar xf tsetup.tar.xz -C /usr/local/bin
 /usr/local/bin/Telegram/Telegram &
 
 # ---------------------------------------------------
