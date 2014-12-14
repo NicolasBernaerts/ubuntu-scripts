@@ -183,7 +183,7 @@ sudo apt-get -y -f install
 
 # telegram client (launch Telegram from command line once to get desktop icon)
 wget https://updates.tdesktop.com/tlinux/tsetup.0.6.20.tar.xz
-sudo tar xf '/home/nicolas/Downloads/tsetup.0.6.20.tar.xz' -C /usr/local/bin
+sudo tar xf tsetup.0.6.20.tar.xz -C /usr/local/bin
 
 # ---------------------------------------------------
 # -------------- Remote assistance ------------------
