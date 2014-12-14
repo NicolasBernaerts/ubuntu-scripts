@@ -181,9 +181,10 @@ wget http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
 sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
 sudo apt-get -y -f install
 
-# telegram client (launch Telegram from command line once to get desktop icon)
+# telegram client (launch Telegram from command line once to get desktop declaration)
 wget https://updates.tdesktop.com/tlinux/tsetup.0.6.20.tar.xz
 sudo tar xf tsetup.0.6.20.tar.xz -C /usr/local/bin
+/usr/local/bin/Telegram/Telegram &
 
 # ---------------------------------------------------
 # -------------- Remote assistance ------------------
