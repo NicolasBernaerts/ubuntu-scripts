@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Exec=generate-booklet
+Hidden=false
+NoDisplay=false
+Icon=evince
+Keywords=pdf;generate;booklet;
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Generate Booklet from PDF file
+Name[en]=enerate Booklet from PDF file
+Name[C]=enerate Booklet from PDF file
+Name[fr_FR]=Générer un livret depuis un document PDF
+Comment=Tool to generate a PDF booklet from a PDF document. For example, A4 pages will generate A5 booklet.
+Comment[en_US]=Tool to generate a PDF booklet from a PDF document. For example, A4 pages will generate A5 booklet.
+Comment[fr_FR]=Outil de génération d'un livret PDF depuis un document PDF. Par exemple, un document A4 génrèrera un livret A5.
+MimeType=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
+Categories=GNOME;GTK;Viewer;Graphics;Utility;
