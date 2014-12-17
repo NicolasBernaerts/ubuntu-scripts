@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Action
 Icon=evince
-Name[C]=Generate Booklet from PDF file
-Name[en]=Generate Booklet from PDF file
-Name[en_US]=Generate Booklet from PDF file
-Name[fr_FR]=Générer un livret depuis un document PDF
+Name[C]=Generate Booklet
+Name[en]=Generate Booklet
+Name[en_US]=Generate Booklet
+Name[fr_FR]=Générer un livret
 Tooltip[C]=Tool to generate a booklet from a PDF document
 Tooltip[en]=Tool to generate a booklet from a PDF document
 Tooltip[en_US]=Tool to generate a booklet from a PDF document
