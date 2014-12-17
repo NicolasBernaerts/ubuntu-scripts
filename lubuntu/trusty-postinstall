@@ -13,6 +13,7 @@
 #  15/11/2014, V1.6 - Add right click on desktop Trash
 #  16/11/2014, V1.7 - Add Skype 4.3
 #  12/12/2014, V1.8 - Add Telegram official client
+#  16/12/2014, V1.9 - Add official HPLIP driver
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -293,3 +294,11 @@ mkdir --parents $HOME/.local/share/file-manager/actions
 wget -O $HOME/.local/share/file-manager/actions/ask-trash-empty.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty.desktop
 sudo wget -O /usr/local/bin/ask-trash-empty https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty
 sudo chmod +x /usr/local/bin/ask-trash-empty
+
+# -----------------------------------------------------
+# ---------------- Latest HPLIP driver ----------------
+# -----------------------------------------------------
+
+URL_HPLIP=$(wget -q -O - http://hplipopensource.com/hplip-web/install/install/index.html | grep "http://prdownloads.sourceforge.net/hplip/hplip" | sed 's/^<a href=.\(.*\).><img.*$/\1/')
+wget -O hplip.run "$URL_HPLIP"
+sh ./hplip.run
