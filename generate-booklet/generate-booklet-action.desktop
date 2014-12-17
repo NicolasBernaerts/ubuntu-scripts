@@ -12,7 +12,7 @@ Tooltip[fr_FR]=Outil de génération d'un livret PDF depuis un document PDF
 Profiles=generate_booklet;
 
 [X-Action-Profile generate_booklet]
-Exec=generate-booklet %u
+Exec=generate-booklet %f
 MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
 Name[en_US]=Default profile
 Name[en]=Default profile
