@@ -94,7 +94,7 @@ xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spr
 # ---------------------------------------------------
 
 # misc graphical apps
-sudo apt-get -y install exiv2 gcolor2 imagemagick hugin 
+sudo apt-get -y install eog exiv2 gcolor2 imagemagick hugin 
 
 # declare Gimp 2.8 PPA & install gimp
 sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp
