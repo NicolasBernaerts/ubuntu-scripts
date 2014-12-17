@@ -282,10 +282,7 @@ sudo apt-get -y autoclean
 # ---------------------------------------------------
 # --------------- Lubuntu 14.04 tweaks --------------
 # ---------------------------------------------------
- 
-# start network applet (Lubuntu 14.04 bug, corrected in 14.04.1)
-#echo "nm-applet" >> $HOME/.config/lxsession/Lubuntu/autostart
- 
+
 # Set double click time to 400ms (instead of 200ms)
 sed -i 's,.*doubleClickTime.*,<doubleClickTime>400<\/doubleClickTime>,' $HOME/.config/openbox/lubuntu-rc.xml
  
