@@ -15,7 +15,7 @@ IFS="
 "
 
 # check if parameter is given, otherwise open dialog box selection
-[ "$1" != "" ] && ELEMENT="$1" || ELEMENT=$(zenity --file-selection --directory --title="Select images to resize")
+[ "$1" != "" ] && ELEMENT="$1" || ELEMENT=$(zenity --file-selection --file-filter='Images | *.bmp *.gif *.png *.tiff *.jpg *.jpeg' --title="Select images to resize")
 
 # creation of the array of candidates 
 if [ -f "$ELEMENT" ];
