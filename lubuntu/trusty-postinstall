@@ -13,7 +13,8 @@
 #  15/11/2014, V1.6 - Add right click on desktop Trash
 #  16/11/2014, V1.7 - Add Skype 4.3
 #  12/12/2014, V1.8 - Add Telegram official client
-#  16/12/2014, V1.9 - Add official HPLIP driver
+#  15/12/2014, V1.9 - Add official HPLIP driver & 
+#  16/12/2014, V1.10 - Add Image Resize extension
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -258,6 +259,15 @@ sudo chmod +x /usr/local/bin/pdf-repair
 sudo wget -O /usr/share/applications/pdf-repair.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
 wget -O $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair-action.desktop
+
+# Image resize extension
+sudo apt-get -y install imagemagick
+wget -O $HOME/.image-resize.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize.conf
+sudo wget -O /usr/local/bin/image-resize https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize
+sudo chmod +x /usr/local/bin/image-resize
+sudo wget -O /usr/share/applications/image-resize.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize.desktop
+mkdir --parents $HOME/.local/share/file-manager/actions
+wget -O $HOME/.local/share/file-manager/actions/image-resize-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize-action.desktop
 
 # purge thumbnails cache
 rm -r $HOME/.thumbnails
