@@ -171,11 +171,10 @@ sudo apt-get update
 sudo apt-get -y install youtube-dl youtube-dlg
 
 # clipgrab (get latest version from homepage)
-wget -O clipgrab.htm http://clipgrab.org/
-ARCHIVE=`cat clipgrab.htm | grep "tar.gz" | sed 's/^.*=.\(.*\).>/\1/'`
-wget -O clipgrab.tar.gz "$ARCHIVE"
+URL_CLIPGRAB=$(wget -q -O - clipgrab.htm http://clipgrab.org/ | grep "tar.gz" | sed 's/^.*=.\(.*\).>/\1/')
+wget -O clipgrab.tar.gz $URL_CLIPGRAB
 tar -xzf clipgrab.tar.gz
-sudo mv ./clipgrab*/clipgrab*/clipgrab*_x86_$X86ARCHI /usr/local/bin/clipgrab
+sudo mv ./clipgrab-*/clipgrab /usr/local/bin/clipgrab
 sudo chmod +x /usr/local/bin/clipgrab
 rm -R clipgrab*
 
