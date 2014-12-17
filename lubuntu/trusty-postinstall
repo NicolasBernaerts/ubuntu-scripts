@@ -176,6 +176,7 @@ wget -O clipgrab.tar.gz $URL_CLIPGRAB
 tar -xzf clipgrab.tar.gz
 sudo mv ./clipgrab-*/clipgrab /usr/local/bin/clipgrab
 sudo chmod +x /usr/local/bin/clipgrab
+sudo wget -O /usr/share/applications/clipgrab.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/clipgrab/clipgrab.desktop
 rm -R clipgrab*
 
 # skype 4.3
