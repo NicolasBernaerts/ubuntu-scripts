@@ -5,10 +5,10 @@ Name[C]=Generate Booklet from PDF file
 Name[en]=Generate Booklet from PDF file
 Name[en_US]=Generate Booklet from PDF file
 Name[fr_FR]=Générer un livret depuis un document PDF
-Tooltip[C]=Tool to generate a PDF booklet from a PDF document
-Tooltip[en]=Tool to generate a PDF booklet from a PDF document
-Tooltip[en_US]=Tool to generate a PDF booklet from a PDF document
-Tooltip[fr_FR]=Outil de génération d'un livret PDF depuis un document PDF
+Tooltip[C]=Tool to generate a booklet from a PDF document
+Tooltip[en]=Tool to generate a booklet from a PDF document
+Tooltip[en_US]=Tool to generate a booklet from a PDF document
+Tooltip[fr_FR]=Outil de génération d'un livret depuis un document PDF
 Profiles=generate_booklet;
 
 [X-Action-Profile generate_booklet]
