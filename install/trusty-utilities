@@ -6,19 +6,25 @@
 # -------------------------------------------------------
 
 # system extension really needed
-sudo apt-get -y install linux-firmware-nonfree xbacklight preload ppa-purge libnotify-bin
+sudo apt-get -y install linux-firmware-nonfree xbacklight preload
 
-# dual display management
-#sudo apt-get -y install arandr
+# package management tools
+sudo apt-get -y install ppa-purge synaptic gdebi
 
 # trackpad and mouse management
 sudo apt-get -y install gpointing-device-settings
 
 # filesystem clients
-sudo apt-get -y install cifs-utils autofs
+sudo apt-get -y install cifs-utils autofs exfat-fuse
 
 # compression tools
 sudo apt-get -y install p7zip-full rar unrar unzip
+
+# disk tools
+sudo apt-get -y install smartmontools disktype unetbootin gparted
+
+# snmp tools
+sudo apt-get -y install snmp snmp-mibs-downloader
 
 # keepassx : electronic wallet
 sudo apt-get -y install keepassx
