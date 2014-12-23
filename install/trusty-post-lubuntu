@@ -15,9 +15,6 @@
 # define where screenshot are saved
 SCREENSHOT_DIR="$HOME/Images"
 
-# define remote support address (for gitso)
-SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
-
 # ---------------------------------------------------
 # ------------ Architecture detection ---------------
 # ---------------------------------------------------
