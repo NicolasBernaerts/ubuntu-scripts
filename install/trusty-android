@@ -7,3 +7,16 @@
 
 # adb and fastboot (from WebUpd8 PPA)
 sudo apt-get -y install android-tools-adb android-tools-fastboot
+
+# APK thumbnailer
+sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick python-nautilus
+wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
+sudo dpkg -i android-tools-aapt_*.deb
+sudo wget -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk-thumbnailer
+sudo chmod +x /usr/local/sbin/apk-thumbnailer
+sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer
+
+# file manager APK extensions
+mkdir --parents $HOME/.local/share/nautilus-python/extensions
+wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-columns.py
+wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
