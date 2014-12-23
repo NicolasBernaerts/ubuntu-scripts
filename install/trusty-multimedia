@@ -20,6 +20,9 @@ sudo apt-get -y install pavucontrol soundconverter
 # mp3 tools
 sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame mp3gain
 
+# audacity
+sudo apt-get -y install audacity
+
 # misc video tools
 sudo apt-get -y install libav-tools avidemux mkvtoolnix-gui handbrake
 
