@@ -50,7 +50,7 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/in
 chmod +x ./trusty-multimedia
 . ./trusty-multimedia
 
-# multimedia tools
+# internet tools
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
 chmod +x ./trusty-internet
 . ./trusty-internet
