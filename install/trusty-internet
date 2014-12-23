@@ -44,7 +44,3 @@ sudo apt-get -y -f install
 wget -O tsetup.tar.xz $TELEGRAM_URL
 sudo tar xf tsetup.tar.xz -C /usr/local/bin
 /usr/local/bin/Telegram/Telegram &
-
-# gitso
-wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
-sudo gdebi --n gitso_0.6.2_all.deb
