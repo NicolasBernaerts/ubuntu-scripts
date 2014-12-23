@@ -1,0 +1,27 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to install misc utilities & tools
+#
+# 20/12/2014, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# system extension really needed
+sudo apt-get -y install linux-firmware-nonfree xbacklight preload ppa-purge libnotify-bin
+
+# dual display management
+#sudo apt-get -y install arandr
+
+# trackpad and mouse management
+sudo apt-get -y install gpointing-device-settings
+
+# filesystem clients
+sudo apt-get -y install cifs-utils autofs
+
+# compression tools
+sudo apt-get -y install p7zip-full rar unrar unzip
+
+# keepassx : electronic wallet
+sudo apt-get -y install keepassx
+
+# alacarte : menu editor
+sudo apt-get -y install alacarte
