@@ -1,0 +1,21 @@
+#!/bin/sh
+# -------------------------------------------------------
+#  Remote assistance installation script
+#
+#  Uses gitso
+#
+#  Needs to configure support site
+# 
+#  20/12/2014, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# define remote support address (for gitso)
+SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
+
+# gitso
+wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
+sudo gdebi --n gitso_0.6.2_all.deb
+
+# include remote assistance site in launcher
+cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
+sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
