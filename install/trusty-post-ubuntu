@@ -1,0 +1,84 @@
+#!/bin/sh
+# -------------------------------------------------------
+#  Ubuntu 14.04 LTS Post-installation script
+#
+#  This script will run some commands as sudo
+# 
+#  20/12/2014, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
+RESULT=`uname -a | grep x86_64`
+[ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
+[ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# --------------- Full System Update ----------------
+# ---------------------------------------------------
+
+sudo apt-get update
+sudo apt-get -y dist-upgrade
+
+# ---------------------------------------------------
+# ----------------- Common Packages  ----------------
+# ---------------------------------------------------
+
+# misc utilities and tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
+chmod +x ./trusty-utilities
+. ./trusty-utilities
+
+# office tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
+chmod +x ./trusty-office
+. ./trusty-office
+
+# graphical tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
+chmod +x ./trusty-graphical
+. ./trusty-graphical
+
+# multimedia tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
+chmod +x ./trusty-multimedia
+. ./trusty-multimedia
+
+# multimedia tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
+chmod +x ./trusty-internet
+. ./trusty-internet
+
+# android tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
+chmod +x ./trusty-android
+. ./trusty-android
+
+# remote assistance
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
+chmod +x ./trusty-assistance
+. ./trusty-assistance
+
+# ---------------------------------------------------
+# ---------------- Specific packages ----------------
+# ---------------------------------------------------
+
+# gnome classic session
+sudo apt-get -y install gnome-session-fallback
+
+# ---------------------------------------------------
+# ------------------ Package cleanup ----------------
+# ---------------------------------------------------
+
+# packages
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+
+# purge thumbnails cache
+rm -r $HOME/.thumbnails
