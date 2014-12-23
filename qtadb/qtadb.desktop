@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=QtADB
+Exec=/usr/local/sbin/qtadb
+Icon=/usr/share/icons/android-qtadb.png
+Type=Application
+Categories=Utility;
