@@ -5,6 +5,9 @@
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # -------------------------------------------------------
 
+# grisbi
+sudo apt-get -y install grisbi
+
 # PDF editor
 wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
 sudo gdebi --n master-pdf-editor_1.9.25_*.deb
