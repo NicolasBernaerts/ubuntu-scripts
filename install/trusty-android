@@ -1,0 +1,9 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to install office tools
+#
+# 20/12/2014, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# adb and fastboot
+sudo apt-get -y install android-tools-adb android-tools-fastboot
