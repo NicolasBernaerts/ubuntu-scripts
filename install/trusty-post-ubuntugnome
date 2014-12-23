@@ -29,9 +29,6 @@ RESULT=`uname -a | grep x86_64`
 sudo apt-get update
 sudo apt-get -y dist-upgrade
 
-# gnome classic session
-sudo apt-get -y install gnome-session-fallback
-
 # ---------------------------------------------------
 # ----------------- Common Packages  ----------------
 # ---------------------------------------------------
