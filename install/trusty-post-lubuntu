@@ -68,6 +68,11 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/in
 chmod +x ./trusty-android
 . ./trusty-android
 
+# remote assistance
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
+chmod +x ./trusty-assistance
+. ./trusty-assistance
+
 # ---------------------------------------------------
 # ---------------- Specific packages ----------------
 # ---------------------------------------------------
@@ -88,14 +93,6 @@ sudo apt-get -y autoclean
 
 # purge thumbnails cache
 rm -r $HOME/.thumbnails
-
-# ---------------------------------------------------
-# ----------------- Remote assistance ---------------
-# ---------------------------------------------------
-
-# include remote assistance site in launcher
-cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
-sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
 
 # ---------------------------------------------------
 # --------------- Lubuntu 14.04 tweaks --------------
