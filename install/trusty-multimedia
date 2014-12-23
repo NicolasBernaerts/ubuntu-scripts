@@ -1,0 +1,37 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to install office tools
+#
+# 20/12/2014, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# auto-accept mscorefonts eula
+sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
+
+# restricted codecs & flash
+sudo apt-get --yes --force-yes install lubuntu-restricted-extras x264
+
+# CSS DVD decryption
+sudo sh /usr/share/doc/libdvdread4/install-css.sh
+
+# misc audio tools
+sudo apt-get -y install pavucontrol soundconverter
+
+# mp3 tools
+sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame mp3gain
+
+# misc video tools
+sudo apt-get -y install libav-tools avidemux mkvtoolnix-gui handbrake
+
+# MKV toolnix
+sudo apt-get -y install mkvtoolnix-gui handbrake
+
+# handbrake video transcoder
+sudo apt-get -y install handbrake
+
+# kdenlive video editor
+sudo apt-get -y install kdenlive
+
+# vlc and declare it as replacement for gnome player
+sudo apt-get -y install vlc
+sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
