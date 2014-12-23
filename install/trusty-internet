@@ -1,0 +1,50 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to install office tools
+#
+# 20/12/2014, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# thunderbird
+sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-support
+
+# chromium & filezilla
+sudo apt-get -y install chromium-bsu filezilla
+
+# Firefox : H264 support
+sudo add-apt-repository -y ppa:mc3man/trusty-media
+sudo apt-get update
+sudo apt-get -y install gstreamer0.10-ffmpeg
+
+# Firefox : Hangout plugin
+wget https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
+sudo gdebi --n google-talkplugin_current_*.deb
+
+# youtube-dl & gui
+sudo add-apt-repository -y ppa:nilarimogard/webupd8
+sudo apt-get update
+sudo apt-get -y install youtube-dl youtube-dlg
+
+# clipgrab (get latest version from homepage)
+URL_CLIPGRAB=$(wget -q -O - clipgrab.htm http://clipgrab.org/ | grep "tar.gz" | sed 's/^.*=.\(.*\).>/\1/')
+wget -O clipgrab.tar.gz $URL_CLIPGRAB
+tar -xzf clipgrab.tar.gz
+sudo mv ./clipgrab-*/clipgrab /usr/local/bin/clipgrab
+sudo chmod +x /usr/local/bin/clipgrab
+sudo wget -O /usr/share/applications/clipgrab.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/clipgrab/clipgrab.desktop
+rm -R clipgrab*
+
+# skype 4.3
+wget http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
+sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
+sudo apt-get -y -f install
+
+# telegram client (launch Telegram from command line once to get desktop declaration)
+[ "$ARCHI" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
+wget -O tsetup.tar.xz $TELEGRAM_URL
+sudo tar xf tsetup.tar.xz -C /usr/local/bin
+/usr/local/bin/Telegram/Telegram &
+
+# gitso
+wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
+sudo gdebi --n gitso_0.6.2_all.deb
