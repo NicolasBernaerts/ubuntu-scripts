@@ -5,17 +5,7 @@
 #  This script will run some commands as sudo
 # 
 #  25/05/2014, V1.0 - Creation by N. Bernaerts
-#  10/06/2014, V1.1 - Update
-#  30/08/2014, V1.2 - Add LibreOffice and GIMP PPA
-#  09/09/2014, V1.3 - Add YouTube-dl & ClipGrab
-#  10/10/2014, V1.4 - Add Scan2folder for Sane scanners
-#  11/11/2014, V1.5 - Add APK Nautilus extensions
-#  15/11/2014, V1.6 - Add right click on desktop Trash
-#  16/11/2014, V1.7 - Add Skype 4.3
-#  12/12/2014, V1.8 - Add Telegram official client
-#  15/12/2014, V1.9 - Add official HPLIP driver & 
-#  16/12/2014, V1.10 - Add Image Resize extension
-#  16/12/2014, V1.11 - Add PDF booklet generation extension
+#  20/12/2014, V2.0 - Externalize scripts
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -45,11 +35,42 @@ sudo apt-get update
 sudo apt-get -y dist-upgrade
 
 # ---------------------------------------------------
-# ---------------- System Utilities -----------------
+# ----------------- Common Packages  ----------------
 # ---------------------------------------------------
 
-# system extension really needed
-sudo apt-get -y install linux-firmware-nonfree xbacklight preload ppa-purge libnotify-bin
+# misc utilities and tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
+chmod +x ./trusty-utilities
+. ./trusty-utilities
+
+# office tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
+chmod +x ./trusty-office
+. ./trusty-office
+
+# graphical tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
+chmod +x ./trusty-graphical
+. ./trusty-graphical
+
+# multimedia tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
+chmod +x ./trusty-multimedia
+. ./trusty-multimedia
+
+# multimedia tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
+chmod +x ./trusty-internet
+. ./trusty-internet
+
+# android tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
+chmod +x ./trusty-android
+. ./trusty-android
+
+# ---------------------------------------------------
+# ---------------- Specific packages ----------------
+# ---------------------------------------------------
 
 # dual display management
 sudo apt-get -y install arandr
@@ -57,236 +78,24 @@ sudo apt-get -y install arandr
 # trackpad and mouse management
 sudo apt-get -y install gpointing-device-settings
 
-# filesystem clients 
-sudo apt-get -y install cifs-utils autofs
-
-# compression tools
-sudo apt-get -y install p7zip-full rar unrar unzip
-
 # ---------------------------------------------------
-# --------------- misc Desktop Tools ----------------
+# ---------------------- Cleanup --------------------
 # ---------------------------------------------------
 
-# keepassx : electronic wallet
-sudo apt-get -y install keepassx
-
-# alacarte : menu editor
-sudo apt-get -y install alacarte
-
-# PDF editor
-wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
-sudo gdebi --n master-pdf-editor_1.9.25_*.deb
-
-# ---------------------------------------------------
-# ------------------- LibreOffice ------------------
-# ---------------------------------------------------
-
-# declare 4.3 PPA & install libreoffice
-sudo add-apt-repository -y ppa:libreoffice/libreoffice-4-3
-sudo apt-get update
-sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr
-
-# default file association
-xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
-xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
-
-# ---------------------------------------------------
-# ------------------ Graphical Apps -----------------
-# ---------------------------------------------------
-
-# misc graphical apps
-sudo apt-get -y install eog exiv2 gcolor2 imagemagick hugin 
-
-# declare Gimp 2.8 PPA & install gimp
-sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp
-sudo apt-get update
-sudo apt-get -y install gimp gimp-plugin-registry
-
-# install scan2folder tool
-sudo wget -O /usr/local/bin/scan2folder https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder
-sudo chmod +x /usr/local/bin/scan2folder
-sudo wget -O /usr/share/applications/scan2folder.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder.desktop
-sudo chmod +x /usr/share/applications/scan2folder.desktop
-wget -O $HOME/.scan2folder.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder.conf
-
-# ---------------------------------------------------
-# ----------- Multimedia Codecs & Flash -------------
-# ---------------------------------------------------
-
-# auto-accept mscorefonts eula
-sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
-
-# codecs & flash
-sudo apt-get --yes --force-yes install lubuntu-restricted-extras x264
-
-# CSS DVD decryption
-sudo sh /usr/share/doc/libdvdread4/install-css.sh
-
-# ---------------------------------------------------
-# ------------------ Audio tools --------------------
-# ---------------------------------------------------
-
-# misc tools
-sudo apt-get -y install pavucontrol soundconverter
-
-# mp3 tools
-sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame  mp3gain
-
-# ---------------------------------------------------
-# ------------------ Video tools --------------------
-# ---------------------------------------------------
-
-# video tools
-sudo apt-get -y install libav-tools avidemux mkvtoolnix-gui handbrake
-
-# video editor
-sudo apt-get -y install openshot
-
-# vlc and declare it as replacement for gnome player 
-sudo apt-get -y install vlc
-sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
-
-# ---------------------------------------------------
-# ---------------- Internet tools -------------------
-# ---------------------------------------------------
-
-# thunderbird
-sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-support
-
-# chromium & filezilla
-sudo apt-get -y install chromium-bsu filezilla
-
-# Firefox : H264 support
-sudo add-apt-repository -y ppa:mc3man/trusty-media
-sudo apt-get update
-sudo apt-get -y install gstreamer0.10-ffmpeg
-
-# Firefox : Hangout plugin
-wget https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
-sudo gdebi --n google-talkplugin_current_*.deb
-
-# youtube-dl & gui
-sudo add-apt-repository -y ppa:nilarimogard/webupd8
-sudo apt-get update
-sudo apt-get -y install youtube-dl youtube-dlg
-
-# clipgrab (get latest version from homepage)
-URL_CLIPGRAB=$(wget -q -O - clipgrab.htm http://clipgrab.org/ | grep "tar.gz" | sed 's/^.*=.\(.*\).>/\1/')
-wget -O clipgrab.tar.gz $URL_CLIPGRAB
-tar -xzf clipgrab.tar.gz
-sudo mv ./clipgrab-*/clipgrab /usr/local/bin/clipgrab
-sudo chmod +x /usr/local/bin/clipgrab
-sudo wget -O /usr/share/applications/clipgrab.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/clipgrab/clipgrab.desktop
-rm -R clipgrab*
-
-# skype 4.3
-wget http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
-sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
-sudo apt-get -y -f install
-
-# telegram client (launch Telegram from command line once to get desktop declaration)
-[ "$ARCHI" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
-wget -O tsetup.tar.xz $TELEGRAM_URL
-sudo tar xf tsetup.tar.xz -C /usr/local/bin
-/usr/local/bin/Telegram/Telegram &
-
-# ---------------------------------------------------
-# -------------- Remote assistance ------------------
-# ---------------------------------------------------
-
-# gitso
-wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
-sudo gdebi --n gitso_0.6.2_all.deb
-
-# include remote assistance site in launcher
-cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
-sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
-
-# ---------------------------------------------------
-# ------------------ Android tools ------------------
-# ---------------------------------------------------
-
-# adb and fastboot
-sudo add-apt-repository -y ppa:nilarimogard/webupd8
-sudo apt-get update
-sudo apt-get -y install android-tools-adb android-tools-fastboot
-
-# yad editor (from same PPA)
-sudo apt-get -y install yad
-
-# ---------------------------------------------------
-# ---------- Thumbnailers and Extensions ------------
-# ---------------------------------------------------
-
-# APK thumbnailer & nautilus extensions
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick python-nautilus
-wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
-sudo dpkg -i android-tools-aapt_*.deb
-sudo wget -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk-thumbnailer
-sudo chmod +x /usr/local/sbin/apk-thumbnailer
-sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer
-mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-columns.py
-wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
-
-# LibreOffice thumbnailer
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick
-wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/lo-thumbnailer-icons.zip
-sudo unzip -d /usr/local/sbin lo-thumbnailer-icons.zip
-rm lo-thumbnailer-icons.zip
-sudo wget -O /usr/local/sbin/lo-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer
-sudo chmod +rx /usr/local/sbin/lo-thumbnailer
-sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo.thumbnailer
-
-# Ms Office thumbnailer
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unoconv imagemagick
-wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/msoffice-thumbnailer-icons.zip
-sudo unzip -d /usr/local/sbin msoffice-thumbnailer-icons.zip
-rm msoffice-thumbnailer-icons.zip
-sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
-sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
-sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
-
-# GIMP XCF thumbnailer
-sudo apt-get -y install gvfs-bin imagemagick xcftools
-sudo wget -O /usr/local/sbin/gimp-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-thumbnailer
-sudo chmod +x /usr/local/sbin/gimp-thumbnailer
-sudo wget -O /usr/share/thumbnailers/gimp.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp.thumbnailer
-
-# PDF repair extension
-sudo apt-get -y install gvfs-bin libnotify-bin ghostscript zenity
-sudo wget -O /usr/local/bin/pdf-repair https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair
-sudo chmod +x /usr/local/bin/pdf-repair
-sudo wget -O /usr/share/applications/pdf-repair.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair.desktop
-mkdir --parents $HOME/.local/share/file-manager/actions
-wget -O $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair-action.desktop
-
-# PDF booklet generation extension
-sudo apt-get -y install poppler-utils pdfjam texlive-extra-utils
-sudo wget -O /usr/local/bin/generate-booklet https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/generate-booklet/generate-booklet
-sudo chmod +x /usr/local/bin/generate-booklet
-sudo wget -O /usr/share/applications/generate-booklet.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/generate-booklet/generate-booklet.desktop
-mkdir --parents $HOME/.local/share/file-manager/actions
-wget -O $HOME/.local/share/file-manager/actions/generate-booklet-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/generate-booklet/generate-booklet-action.desktop
-
-# Image resize extension
-sudo apt-get -y install imagemagick
-wget -O $HOME/.image-resize.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize.conf
-sudo wget -O /usr/local/bin/image-resize https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize
-sudo chmod +x /usr/local/bin/image-resize
-sudo wget -O /usr/share/applications/image-resize.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize.desktop
-mkdir --parents $HOME/.local/share/file-manager/actions
-wget -O $HOME/.local/share/file-manager/actions/image-resize-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image-resize/image-resize-action.desktop
+# packages
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
 
 # purge thumbnails cache
 rm -r $HOME/.thumbnails
 
 # ---------------------------------------------------
-# ------------------ Package cleanup ----------------
+# ----------------- Remote assistance ---------------
 # ---------------------------------------------------
 
-sudo apt-get -y autoremove
-sudo apt-get -y autoclean
+# include remote assistance site in launcher
+cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
+sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
 
 # ---------------------------------------------------
 # --------------- Lubuntu 14.04 tweaks --------------
