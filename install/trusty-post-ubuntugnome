@@ -12,8 +12,6 @@
 # ------------- User defined variable ---------------
 # ---------------------------------------------------
 
-# define remote support address (for gitso)
-SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
 
 # ---------------------------------------------------
 # ------------ Architecture detection ---------------
@@ -63,6 +61,11 @@ chmod +x ./trusty-internet
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
 chmod +x ./trusty-android
 . ./trusty-android
+
+# remote assistance
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
+chmod +x ./trusty-assistance
+. ./trusty-assistance
 
 # ---------------------------------------------------
 # ----------- Gnome Shell Configuration -------------
