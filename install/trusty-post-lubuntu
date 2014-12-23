@@ -1,0 +1,129 @@
+#!/bin/sh
+# -------------------------------------------------------
+#  LUbuntu 14.04 LTS Post-installation script
+#
+#  This script will run some commands as sudo
+# 
+#  25/05/2014, V1.0 - Creation by N. Bernaerts
+#  20/12/2014, V2.0 - Externalize scripts
+# -------------------------------------------------------
+
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+# define where screenshot are saved
+SCREENSHOT_DIR="$HOME/Images"
+
+# define remote support address (for gitso)
+SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
+RESULT=`uname -a | grep x86_64`
+[ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
+[ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# --------------- Full System Update ----------------
+# ---------------------------------------------------
+
+sudo add-apt-repository -y ppa:lubuntu-dev/staging
+sudo apt-get update
+sudo apt-get -y dist-upgrade
+
+# ---------------------------------------------------
+# ----------------- Common Packages  ----------------
+# ---------------------------------------------------
+
+# misc utilities and tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
+chmod +x ./trusty-utilities
+. ./trusty-utilities
+
+# office tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
+chmod +x ./trusty-office
+. ./trusty-office
+
+# graphical tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
+chmod +x ./trusty-graphical
+. ./trusty-graphical
+
+# multimedia tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
+chmod +x ./trusty-multimedia
+. ./trusty-multimedia
+
+# multimedia tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
+chmod +x ./trusty-internet
+. ./trusty-internet
+
+# android tools
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
+chmod +x ./trusty-android
+. ./trusty-android
+
+# ---------------------------------------------------
+# ---------------- Specific packages ----------------
+# ---------------------------------------------------
+
+# dual display management
+sudo apt-get -y install arandr
+
+# trackpad and mouse management
+sudo apt-get -y install gpointing-device-settings
+
+# ---------------------------------------------------
+# ---------------------- Cleanup --------------------
+# ---------------------------------------------------
+
+# packages
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+
+# purge thumbnails cache
+rm -r $HOME/.thumbnails
+
+# ---------------------------------------------------
+# ----------------- Remote assistance ---------------
+# ---------------------------------------------------
+
+# include remote assistance site in launcher
+cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
+sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
+
+# ---------------------------------------------------
+# --------------- Lubuntu 14.04 tweaks --------------
+# ---------------------------------------------------
+
+# Set double click time to 400ms (instead of 200ms)
+sed -i 's,.*doubleClickTime.*,<doubleClickTime>400<\/doubleClickTime>,' $HOME/.config/openbox/lubuntu-rc.xml
+ 
+# set target directory for screenshots
+sed -i 's,.*<command>lxsession-default screenshot<\/command>.*,      <command>scrot -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
+sed -i 's,.*<command>lxsession-default screenshot window<\/command>.*,      <command>scrot --focused -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
+
+# Declare shortcuts to switch single / dual display
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/dual-display/declare-dualdisplay
+chmod +x ./declare-dualdisplay
+sudo ./declare-dualdisplay
+
+# Declare right click "empty trash" on desktop trash
+sudo apt-get -y install trash-cli
+mkdir --parents $HOME/.local/share/file-manager/actions
+wget -O $HOME/.local/share/file-manager/actions/ask-trash-empty.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty.desktop
+sudo wget -O /usr/local/bin/ask-trash-empty https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty
+sudo chmod +x /usr/local/bin/ask-trash-empty
+
+# -----------------------------------------------------
+# ---------------- Latest HPLIP driver ----------------
+# -----------------------------------------------------
+
+URL_HPLIP=$(wget -q -O - http://hplipopensource.com/hplip-web/install/install/index.html | grep "http://prdownloads.sourceforge.net/hplip/hplip" | sed 's/^<a href=.\(.*\).><img.*$/\1/')
+wget -O hplip.run "$URL_HPLIP"
+sh ./hplip.run
