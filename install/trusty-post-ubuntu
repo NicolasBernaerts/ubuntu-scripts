@@ -70,7 +70,7 @@ chmod +x ./trusty-assistance
 # ---------------------------------------------------
 
 # gnome classic session
-sudo apt-get -y install gnome-session-fallback
+sudo apt-get -y install gnome-session-fallback gnome-tweak-tool
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
