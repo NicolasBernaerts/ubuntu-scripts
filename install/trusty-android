@@ -5,5 +5,5 @@
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # -------------------------------------------------------
 
-# adb and fastboot
+# adb and fastboot (from WebUpd8 PPA)
 sudo apt-get -y install android-tools-adb android-tools-fastboot
