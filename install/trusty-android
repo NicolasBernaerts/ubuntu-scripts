@@ -8,6 +8,14 @@
 # adb and fastboot (from WebUpd8 PPA)
 sudo apt-get -y install android-tools-adb android-tools-fastboot
 
+# QtABD (to be tested)
+sudo apt-get -y install libqtgui4 libqt4-network libqt4-declarative
+wget http://motyczko.pl/qtadb/QtADB_0.8.1_linux$X86ARCHI.tar.gz
+tar -xvf QtADB*.tar.gz
+sudo mv ./QtADB*/QtADB /usr/local/sbin/qtadb
+sudo chmod +x /usr/local/sbin/qtadb
+rm -R QtADB*
+
 # APK thumbnailer
 sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick python-nautilus
 wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
