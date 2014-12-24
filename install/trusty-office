@@ -3,10 +3,15 @@
 # Script to install office tools
 #
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
+# 22/12/2014, V1.1 - Add Gramps & dependancies
 # -------------------------------------------------------
 
 # grisbi
 sudo apt-get -y install grisbi
+
+# gramps (genealogy)
+sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
+sudo apt-get -y install gramps
 
 # PDF editor
 wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
