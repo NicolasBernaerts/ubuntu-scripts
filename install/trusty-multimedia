@@ -38,5 +38,5 @@ sudo apt-get -y install kdenlive
 # vlc and declare it as replacement for gnome player
 sudo add-apt-repository -y ppa:videolan/stable-daily
 sudo apt-get update
-sudo apt-get -y install vlc vlc-plugin-notify
+sudo apt-get -y install vlc
 sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
