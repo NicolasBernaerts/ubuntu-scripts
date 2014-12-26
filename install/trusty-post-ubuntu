@@ -5,6 +5,7 @@
 #  This script will run some commands as sudo
 # 
 #  20/12/2014, V1.0 - Creation by N. Bernaerts
+#  26/12/2014, V1.1 - Timeout sudo during installation
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -18,6 +19,12 @@
 RESULT=`uname -a | grep x86_64`
 [ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
 [ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# -------------- Disable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sh -c 'echo "\nDefaults timestamp_timeout=-1">>/etc/sudoers'
 
 # ---------------------------------------------------
 # --------------- Full System Update ----------------
@@ -82,3 +89,9 @@ sudo apt-get -y autoclean
 
 # purge thumbnails cache
 rm -r $HOME/.thumbnails
+
+# ---------------------------------------------------
+# -------------- Enable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
