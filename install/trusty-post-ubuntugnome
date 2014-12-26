@@ -6,6 +6,7 @@
 # 
 #  25/05/2014, V1.0 - Creation by N. Bernaerts
 #  20/12/2014, V2.0 - Externalize scripts
+#  26/12/2014, V2.1 - Timeout sudo during installation
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -20,6 +21,12 @@
 RESULT=`uname -a | grep x86_64`
 [ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
 [ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# -------------- Disable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sh -c 'echo "\nDefaults timestamp_timeout=-1">>/etc/sudoers'
 
 # ---------------------------------------------------
 # --------------- Full System Update ----------------
@@ -109,3 +116,9 @@ wget -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.gith
 # Solves very slow connection since kernel 3.11.10+
 echo options iwlwifi 11n_disable=8 | sudo tee /etc/modprobe.d/iwlwifi-11n.conf
 echo options iwlwifi bt_coex_active=0 | sudo tee -a /etc/modprobe.d/iwlwifi-11n.conf
+
+# ---------------------------------------------------
+# --------------- Enable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
