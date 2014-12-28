@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=QtADB
-Exec=/usr/local/sbin/qtadb
+Exec=qtadb
 Icon=qtadb
 Type=Application
 Categories=Utility;
