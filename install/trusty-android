@@ -17,7 +17,7 @@ sudo chmod +x /usr/local/sbin/qtadb
 rm -R QtADB*
 mkdir -p $HOME/.config/Bracia
 wget -O $HOME/.config/Bracia/QtADB.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/qtadb/QtADB.conf
-sudo wget -O /usr/share/icons/android-qtadb.png http://bernaerts.dyndns.org/download/ubuntu/qtadb/android-qtadb.png
+sudo wget -O /usr/share/icons/qtadb.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/qtadb/qtadb.png
 sudo wget -O /usr/share/applications/qtadb.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/qtadb/qtadb.desktop
 
 # APK thumbnailer
