@@ -4,7 +4,7 @@
 #
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # 22/12/2014, V1.1 - Add Gramps & dependancies
-# 26/12/2014, V1.1 - Add nvpy (simple note)
+# 26/12/2014, V1.2 - Add nvpy (simple note client)
 # -------------------------------------------------------
 
 # grisbi
@@ -64,4 +64,5 @@ wget -O $HOME/.local/share/file-manager/actions/generate-booklet-action.desktop 
 # nvpy
 sudo apt-get -y install nvpy
 cp /usr/share/doc/nvpy/examples/nvpy-example.cfg $HOME/.nvpy.cfg
-wget -O $HOME/.local/share/applications/vxlabs-nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/nvpy.desktop
+sudo wget -O /usr/share/icons/simplenote.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/simplenote.png
+wget -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/nvpy.desktop
