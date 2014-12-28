@@ -63,5 +63,5 @@ wget -O $HOME/.local/share/file-manager/actions/generate-booklet-action.desktop 
 
 # nvpy
 sudo apt-get -y install nvpy
-wget -O $HOME/.nvpy.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/nvpy.conf
-wget -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/nvpy.desktop
+cp /usr/share/doc/nvpy/examples/nvpy-example.cfg $HOME/.nvpy.cfg
+wget -O $HOME/.local/share/applications/vxlabs-nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/nvpy.desktop
