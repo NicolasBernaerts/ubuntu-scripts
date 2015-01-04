@@ -6,7 +6,7 @@
 # -------------------------------------------------------
 
 # misc graphical apps
-sudo apt-get -y install exiv2 gcolor2 imagemagick
+sudo apt-get -y install exiv2 gcolor2 imagemagick dcraw
 
 # eye of gnome viewer
 sudo apt-get -y install eog
