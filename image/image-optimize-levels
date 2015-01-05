@@ -1,0 +1,78 @@
+#!/bin/bash
+
+QUALITY="98"
+
+# loop thru arguments to load candidate files or files in directory
+for arg
+do
+  [ -f "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" "$arg")
+  [ -d "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "$arg" -maxdepth 1 -type f) )
+done
+
+# loop thru candidate files to keep only images
+for FILE in "${ARR_FILE[@]}"
+do
+  FILE_TYPE=$(file --mime-type "$FILE"  | sed 's/^.*: *\([a-z]*\).*$/\1/')
+  [ "$FILE_TYPE" = "image" ] && ARR_IMAGE=("${ARR_IMAGE[@]}" "$FILE")
+done
+
+# loop thru candidate image files
+for FILE_PATH in "${ARR_IMAGE[@]}"
+do
+
+  # reset min and max histogram indexes
+  MIN_INDEX=""
+  MAX_INDEX=""
+
+  # initialize min and max number of pixels (per index)
+  MIN_PIXEL="0"
+  MAX_PIXEL="0"
+
+  # generate filenames
+  FILE_BASE=$(echo "$FILE_PATH" | sed 's/^\(.*\)\..*$/\1/')
+  FILE_EXT=$(echo "$FILE_PATH" | sed 's/^.*\.\(.*\)$/\1/')
+  FILE_HISTO="$FILE_BASE-histo.txt"
+  FILE_LEVEL="$FILE_BASE-level.$FILE_EXT"
+
+  # generate histogram with one index per line (index:number of pixels)
+  convert "$FILE_PATH" -resize 400x400 -fx 'r=max(r,g,b)' -channel R -separate -depth 8 -format "%c" histogram:info:- | grep ":" | sed 's/^ *\([0-9]*\)[: (]*\([0-9]*\).*$/\2:\1/' > "$FILE_HISTO"
+
+  # first loop to detect maximum number of pixels per index
+  while read LINE;
+  do
+    # read actual index and number of pixels
+    INDEX=$(echo $LINE | cut -d':' -f1)
+    PIXEL=$(echo $LINE | cut -d':' -f2)
+
+    # check if current index has max pixels 
+    [ $PIXEL -gt $MAX_PIXEL ] && MAX_PIXEL=$PIXEL
+  done < "$FILE_HISTO"
+
+  # calculate number of pixels for minimum level (1% of maximum number of pixels)
+  MIN_PIXEL=$(echo "$MAX_PIXEL / 100" | bc)
+
+  # second loop to detect minimum and maximum levels
+  while read LINE;
+  do
+    # read actual index and number of pixels
+    INDEX=$(echo $LINE | cut -d':' -f1)
+    PIXEL=$(echo $LINE | cut -d':' -f2)
+
+    # if minimum index not set, calculate if minimum index is reached
+    [ -z $MIN_INDEX ] && [ $PIXEL -ge $MIN_PIXEL ] && MIN_INDEX=$INDEX
+
+    # checl if cuurent index is maximum index candidate
+    [ $PIXEL -ge $MIN_PIXEL ] && MAX_INDEX=$INDEX
+  done < "$FILE_HISTO"
+
+  # calculate percentage for minimum and maximum index position
+  MIN_PERCENT=$(echo "scale=2; $MIN_INDEX * 100 / 255" | bc)
+  MAX_PERCENT=$(echo "scale=2; $MAX_INDEX * 100 / 255" | bc)
+
+  # convert original image with calculated levels
+  convert -auto-orient "$FILE_PATH" -level $MIN_PERCENT,$MAX_PERCENT% -quality $QUALITY "$FILE_LEVEL"
+
+  # cleanup histogram
+  rm "$FILE_HISTO"
+
+done
