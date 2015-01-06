@@ -1,6 +1,6 @@
 #!/bin/bash
 # --------------------------------------------
-# Optimize image to widespread  
+# Optimize image to widespread
 # level histogram over the full range
 # More explainations are available at
 #   http://bernaerts.dyndns.org/...
@@ -12,6 +12,7 @@
 
 # set default image quality or compression
 JPG_QUALITY="98"
+PNG_COMPRESSION="9"
 
 # loop thru arguments to load candidate files or files in directory
 for arg
@@ -26,24 +27,38 @@ do
   FILE_TYPE=$(file --mime-type "$FILE"  | sed 's/^.*: *\([a-z]*\).*$/\1/')
   [ "$FILE_TYPE" = "image" ] && ARR_IMAGE=("${ARR_IMAGE[@]}" "$FILE")
 done
+NBR_IMAGE=${#ARR_IMAGE[@]}
+
+# initialize progress indicator
+PROGRESS=0
 
 # loop thru candidate image files
-for FILE_PATH in "${ARR_IMAGE[@]}"
+for (( CURRENT=0; CURRENT<NBR_IMAGE; CURRENT++ ))
 do
-  # min and max histogram indexes and number of pixels per index are not defined
+  # reset min and max histogram indexes
   MIN_INDEX=""
   MAX_INDEX=""
+
+  # initialize min and max number of pixels (per index)
   MIN_PIXEL="0"
   MAX_PIXEL="0"
 
-  # generate filenames
+  # generate filenames for current image
+  FILE_PATH=${ARR_IMAGE[$CURRENT]}
+  FILE_NAME=$(echo "$FILE_PATH" | sed 's/^.*\/\(.*\)$/\1/')
   FILE_BASE=$(echo "$FILE_PATH" | sed 's/^\(.*\)\..*$/\1/')
   FILE_EXT=$(echo "$FILE_PATH" | sed 's/^.*\.\(.*\)$/\1/')
   FILE_HISTO="$FILE_BASE-histo.txt"
   FILE_LEVEL="$FILE_BASE-level.$FILE_EXT"
 
+  echo "#[$FILE_NAME] Histogram generation" 
+
   # generate histogram with one index per line (index:number of pixels)
   convert "$FILE_PATH" -resize 400x400 -fx 'r=max(r,g,b)' -channel R -separate -depth 8 -format "%c" histogram:info:- | grep ":" | sed 's/^ *\([0-9]*\)[: (]*\([0-9]*\).*$/\2:\1/' > "$FILE_HISTO"
+
+  # display progress indicator
+  echo $((100*($CURRENT*4+1)/($NBR_IMAGE*4)))
+  echo "#[$FILE_NAME] Levels calculation" 
 
   # first loop to detect maximum number of pixels per index
   while read LINE;
@@ -56,8 +71,12 @@ do
     [ $PIXEL -gt $MAX_PIXEL ] && MAX_PIXEL=$PIXEL
   done < "$FILE_HISTO"
 
-  # minimum number of pixel target set to 1% of maximum number of pixels per index
+  # calculate number of pixels for minimum level (1% of maximum number of pixels)
   MIN_PIXEL=$(echo "$MAX_PIXEL / 100" | bc)
+
+  # display progress indicator
+  echo $((100*($CURRENT*4+2)/($NBR_IMAGE*4)))
+  echo "#[$FILE_NAME] Pixels thresold : $MIN_PIXEL -> $MAX_PIXEL" 
 
   # second loop to detect minimum and maximum levels
   while read LINE;
@@ -73,13 +92,27 @@ do
     [ $PIXEL -ge $MIN_PIXEL ] && MAX_INDEX=$INDEX
   done < "$FILE_HISTO"
 
+  # display progress indicator
+  echo $((100*($CURRENT*4+3)/($NBR_IMAGE*4)))
+  echo "#[$FILE_NAME] Histogram levels : $MIN_INDEX -> $MAX_INDEX" 
+
   # calculate percentage for minimum and maximum index position
   MIN_PERCENT=$(echo "scale=2; $MIN_INDEX * 100 / 255" | bc)
   MAX_PERCENT=$(echo "scale=2; $MAX_INDEX * 100 / 255" | bc)
+
+  # calculate quality factor
+  QUALITY=$JPG_QUALITY
+  shopt -s nocasematch
+  [[ "$FILE_EXT" == "png" ]] && QUALITY=$PNG_COMPRESSION
+  shopt -u nocasematch
 
   # convert original image with calculated levels
   convert -auto-orient "$FILE_PATH" -level $MIN_PERCENT,$MAX_PERCENT% -quality $QUALITY "$FILE_LEVEL"
 
   # cleanup histogram
   rm "$FILE_HISTO"
-done
+
+  # display progress indicator
+  echo $((100*($CURRENT+1)/$NBR_IMAGE))
+
+done | zenity --width=500 --height=25 --progress --auto-close --title "Image Levels Optimisation"
