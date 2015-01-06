@@ -6,4 +6,4 @@ Exec=/usr/local/bin/image-resize
 Name=Image Resize
 Categories=Graphics;Utility
 MimeType=image/bmp;image/gif;image/jpeg;image/jpg;image/png;image/tiff;
-Icon=emblem-photos
+Icon=image-resize
