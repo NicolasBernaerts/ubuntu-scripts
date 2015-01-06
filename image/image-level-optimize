@@ -1,16 +1,18 @@
 #!/bin/bash
 # --------------------------------------------
-# Optimize image to widespread
-# level histogram over the full range
+# Optimize image to extend level histogram 
+# over the full range from black to white 
 # More explainations are available at
 #   http://bernaerts.dyndns.org/...
 # Depends on :
 #   * imagemagick
+# Parameters :
+#   $1 ... $n - files or directories
 # Revision history :
 #   06/01/2015, V1.0 - Creation by N. Bernaerts
 # -------------------------------------------
 
-# set default image quality or compression
+# set default image quality or compression (for PNG files)
 JPG_QUALITY="98"
 PNG_COMPRESSION="9"
 
@@ -51,6 +53,7 @@ do
   FILE_HISTO="$FILE_BASE-histo.txt"
   FILE_LEVEL="$FILE_BASE-level.$FILE_EXT"
 
+  # display progress indicator
   echo "#[$FILE_NAME] Histogram generation" 
 
   # generate histogram with one index per line (index:number of pixels)
