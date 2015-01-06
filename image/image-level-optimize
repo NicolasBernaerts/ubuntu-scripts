@@ -1,6 +1,17 @@
 #!/bin/bash
+# --------------------------------------------
+# Optimize image to widespread  
+# level histogram over the full range
+# More explainations are available at
+#   http://bernaerts.dyndns.org/...
+# Depends on :
+#   * imagemagick
+# Revision history :
+#   06/01/2015, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------
 
-QUALITY="98"
+# set default image quality or compression
+JPG_QUALITY="98"
 
 # loop thru arguments to load candidate files or files in directory
 for arg
@@ -19,12 +30,9 @@ done
 # loop thru candidate image files
 for FILE_PATH in "${ARR_IMAGE[@]}"
 do
-
-  # reset min and max histogram indexes
+  # min and max histogram indexes and number of pixels per index are not defined
   MIN_INDEX=""
   MAX_INDEX=""
-
-  # initialize min and max number of pixels (per index)
   MIN_PIXEL="0"
   MAX_PIXEL="0"
 
@@ -48,7 +56,7 @@ do
     [ $PIXEL -gt $MAX_PIXEL ] && MAX_PIXEL=$PIXEL
   done < "$FILE_HISTO"
 
-  # calculate number of pixels for minimum level (1% of maximum number of pixels)
+  # minimum number of pixel target set to 1% of maximum number of pixels per index
   MIN_PIXEL=$(echo "$MAX_PIXEL / 100" | bc)
 
   # second loop to detect minimum and maximum levels
@@ -74,5 +82,4 @@ do
 
   # cleanup histogram
   rm "$FILE_HISTO"
-
 done
