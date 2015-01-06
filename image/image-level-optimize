@@ -16,6 +16,9 @@
 JPG_QUALITY="98"
 PNG_COMPRESSION="9"
 
+# set CR as separator
+IFS=$'\n'
+
 # loop thru arguments to load candidate files or files in directory
 for arg
 do
