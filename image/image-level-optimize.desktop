@@ -6,4 +6,4 @@ Exec=/usr/local/bin/image-level-optimize
 Name=Automatic image levels optimisation
 Categories=Graphics;Utility
 MimeType=image/bmp;image/gif;image/jpeg;image/jpg;image/png;image/tiff;
-Icon=emblem-photos
+Icon=image-level-optimize
