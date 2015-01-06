@@ -1,0 +1,20 @@
+[Desktop Entry]
+Type=Action
+Icon=emblem-photos
+Name[C]=Automatic image levels optimisation
+Name[en]=Automatic image levels optimisation
+Name[en_US]=Automatic image levels optimisation
+Name[fr_FR]=Ajuster automatiquement les niveaux de l'image
+Tooltip[C]=Tool to automatically optimise image levels (histogram)
+Tooltip[en]=Tool to automatically optimise image levels (histogram)
+Tooltip[en_US]=Tool to automatically optimise image levels (histogram)
+Tooltip[fr_FR]=Outil d'optimisation automatisee des niveaux d'une image (histogramme)
+Profiles=resize_pix;
+
+[X-Action-Profile resize_pix]
+Exec=image-level-optimize %f
+MimeTypes=image/bmp;image/gif;image/jpeg;image/jpg;image/png;image/tiff;inode/directory;
+Name[C]=Default profile
+Name[en]=Default profile
+Name[en_US]=Default profile
+Name[fr_FR]=Profil par défaut
