@@ -9,35 +9,36 @@
 #  04/02/2014, V1.1 - Add multiple files selection
 #  01/04/2014, V1.2 - Add format selection
 #  16/12/2014, V1.3 - Add file selection dialog box
+#  16/12/2014, V2.0 - Rewrite parameters and file selection handling
 # -------------------------------------------
 
-IFS="
-"
+# set default jpg quality
+QUALITY="85"
 
-# check if parameter is given, otherwise open dialog box selection
-[ "$1" != "" ] && ELEMENT="$1" || ELEMENT=$(zenity --file-selection --file-filter='Images (jpg,png,bmp,gif,tiff)| *.jpg *.jpeg *.png *.bmp *.gif *.tiff' --title="Select images to resize")
+# set separator as carriage return
+IFS=$'\n'
 
-# creation of the array of candidates 
-if [ -f "$ELEMENT" ];
-# if current parameter id a file
-then
-  # if current file is an audio file, add it to the encode list
-  ARR_PIX=("${ARR_PIX[@]}" "${ELEMENT}")
+# loop thru arguments to load candidate files or files in directory
+for arg
+do
+[ -f "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" "$arg")
+[ -d "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "$arg" -maxdepth 1 -type f) )
+done
+NBR_FILE=${#ARR_FILE[@]}
 
-# else, parameter is a directory
-else
-  # list directory files and add them to the array
-  for FILENAME in `find "${ELEMENT}" -maxdepth 1 -type f`
-  do
-    ARR_PIX=("${ARR_PIX[@]}" "${FILENAME}")
-  done
-fi
+# if no file is candidate thru arguments, open files selection dialog box
+[ $NBR_FILE -eq 0 ] && ARR_FILE=($(zenity --file-selection --multiple --separator=$'\n' --file-filter='Images (jpg,png,bmp,gif,tiff)| *.jpg *.jpeg *.png *.bmp *.gif *.tiff' --title="Select images to resize"))
 
-# calculate number of images to convert
-NUM_PIX=${#ARR_PIX[@]}
+# loop thru candidate files to keep only images
+for FILE in "${ARR_FILE[@]}"
+do
+  FILE_TYPE=$(file --mime-type "$FILE"  | sed 's/^.*: *\([a-z]*\).*$/\1/')
+  [ "$FILE_TYPE" = "image" ] && ARR_IMAGE=("${ARR_IMAGE[@]}" "$FILE")
+done
+NBR_IMAGE=${#ARR_IMAGE[@]}
 
 # if some pix are selected, start conversion
-if [ "$NUM_PIX" != "0" ];
+if [ $NBR_IMAGE -gt 0 ];
 then
   # load target formats into array
   ARR_FORMAT=( `cat "$HOME/.resize-pix.conf" `)
@@ -65,10 +66,10 @@ then
 
   # display format selection box
   ZENH=$((150+INDEX*30))
-  RESULT=`zenity --title "Image resizer" --text "$NUM_PIX files will be resized. Select target format :" --width 400 --height $ZENH --list --column="Index" --column="Format" --hide-column=1 ${ARR_CHOICE[@]}`
+  RESULT=`zenity --title "Image resizer" --text "$NBR_IMAGE files will be resized. Select target format :" --width 400 --height $ZENH --list --column="Index" --column="Format" --hide-column=1 ${ARR_CHOICE[@]}`
 
   # if one format has been selected
-  if [ "$RESULT" ]
+  if [ -n "$RESULT" ]
   then
     # get choice parameters
     NAME="${ARR_NAME[$RESULT]}"
@@ -77,42 +78,34 @@ then
     PREFIX="${ARR_PREFIX[$RESULT]}"
 
     # loop thru files
-    for (( CURRENT=0; CURRENT<NUM_PIX; CURRENT++ ))
+    for (( CURRENT=0; CURRENT<NBR_IMAGE; CURRENT++ ))
     do
       # generate output filemane
-      INPUTFILE=${ARR_PIX[$CURRENT]}
+      INPUTFILE=${ARR_IMAGE[$CURRENT]}
       DIRECTORY=$(dirname "$INPUTFILE")
       BASEFILE=$(basename "$INPUTFILE")
       BASENAME=`echo ${BASEFILE} | sed 's/^\(.*\)[.].*$/\1/g'`
       OUTPUTFILE="$DIRECTORY/$PREFIX/$BASENAME.jpg"
 
       # create sub directory
-      mkdir "$DIRECTORY/$PREFIX"
+      mkdir --parents "$DIRECTORY/$PREFIX"
 
       # display progress
-      echo $((CURRENT*100/NUM_PIX))
+      echo $((CURRENT*100/NBR_IMAGE))
 
-      # if file is an image, resize it
-      PIX_TYPE=`file "$INPUTFILE" | grep "image data"`
-      if [ "$PIX_TYPE" ]
-      then
-        # display current image filename
-        echo "# Resizing $BASEFILE to $NAME format"
+      # display current image filename
+      echo "# Resizing $BASEFILE to $NAME format"
 
-        # get image width and height
-        PIX_WIDTH=`identify -format "%w" "$INPUTFILE"`
-        PIX_HEIGHT=`identify -format "%h" "$INPUTFILE"`
+      # get image width and height
+      PIX_WIDTH=`identify -format "%w" "$INPUTFILE"`
+      PIX_HEIGHT=`identify -format "%h" "$INPUTFILE"`
 
-        # if image is horizontal, convert to target width
-        if [ "$PIX_WIDTH" -gt "$PIX_HEIGHT" ]
-        then
-          convert "$INPUTFILE" -resize "$WIDTH" -quality 85 "$OUTPUTFILE"
-      
-        # else, image is vertical, convert to target height
-        else
-          convert "$INPUTFILE" -resize "x$HEIGHT" -quality 85 "$OUTPUTFILE"
-        fi
-      fi
+      # if image is horizontal, set size to target width, else set size to target height
+      [ "$PIX_WIDTH" -gt "$PIX_HEIGHT" ] && SIZE="$WIDTH" || SIZE="x$HEIGHT"
+
+      # convert picture with auto orientation
+      convert -auto-orient "$INPUTFILE" -resize "$SIZE" -quality $QUALITY "$OUTPUTFILE"
+
     done | zenity --width=500 --height=25 --progress --auto-close --title "Image resizer"
   fi
 fi
