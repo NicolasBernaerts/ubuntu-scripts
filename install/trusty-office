@@ -28,22 +28,12 @@ xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.t
 xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
 
 # LibreOffice thumbnailer
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick
-wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/lo-thumbnailer-icons.zip
-sudo unzip -d /usr/local/sbin lo-thumbnailer-icons.zip
-rm lo-thumbnailer-icons.zip
-sudo wget -O /usr/local/sbin/lo-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer
-sudo chmod +rx /usr/local/sbin/lo-thumbnailer
-sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo.thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
+. ./lo-thumbnailer-install.sh
 
 # Ms Office thumbnailer
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unoconv imagemagick
-wget http://bernaerts.dyndns.org/download/gnome/thumbnailer/msoffice-thumbnailer-icons.zip
-sudo unzip -d /usr/local/sbin msoffice-thumbnailer-icons.zip
-rm msoffice-thumbnailer-icons.zip
-sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
-sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
-sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
+. ./msoffice-thumbnailer-install.sh
 
 # PDF repair extension
 sudo apt-get -y install gvfs-bin libnotify-bin ghostscript zenity
