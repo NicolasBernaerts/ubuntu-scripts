@@ -28,10 +28,8 @@ sudo chmod +x /usr/share/applications/scan2folder.desktop
 wget -O $HOME/.scan2folder.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder.conf
 
 # GIMP XCF thumbnailer
-sudo apt-get -y install gvfs-bin imagemagick xcftools
-sudo wget -O /usr/local/sbin/gimp-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-thumbnailer
-sudo chmod +x /usr/local/sbin/gimp-thumbnailer
-sudo wget -O /usr/share/thumbnailers/gimp.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp.thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
+. ./gimp-tumbnailer-install.sh
 
 # Image resize extension
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
