@@ -7,6 +7,7 @@
 #  25/05/2014, V1.0 - Creation by N. Bernaerts
 #  20/12/2014, V2.0 - Externalize scripts
 #  26/12/2014, V2.1 - Timeout sudo during installation
+#  09/01/2015, V2.2 - Nautilus actions and icons
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -85,6 +86,12 @@ sudo apt-get -y install gnome-shell-extensions
 # gnome shell window bar icons
 gsettings set org.gnome.shell.overrides button-layout :close,minimize,maximize
 
+# enable nautilus actions
+sudo apt-get -y install nautilus-actions 
+
+# enable icons for menus and icons
+gsettings set org.gnome.desktop.interface menus-have-icons true
+gsettings set org.gnome.desktop.interface buttons-have-icons true
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
