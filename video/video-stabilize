@@ -5,7 +5,7 @@
 #  Depends on :
 #    * melt (from ppa:sunab/kdenlive-release)
 #    * x264
-#    * vidsta (libvidstab1.0 package from ppa:sunab/kdenlive-release)
+#    * vidstab (libvidstab1.0 package from ppa:sunab/kdenlive-release)
 #    * avconv
 #    * yad (from ppa:webupd8team/y-ppa-manager)
 #  Revision history :
