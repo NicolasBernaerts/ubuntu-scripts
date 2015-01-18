@@ -22,7 +22,7 @@
 # -------------------------------------------------------
 
 # list of input video extensions
-ARR_EXT=("mp4" "mov" "avi" "mp4" "mkv" "3gp")
+ARR_EXT=("3gp" "avi" "dv" "m4v" "mkv" "mov" "movie" "mp4" "mpeg" "mpg" "qt")
 
 # Default stabilization parameters
 STAB_SHAKINESS="4"
