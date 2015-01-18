@@ -32,7 +32,7 @@ STAB_EXTRA=("show=1" "crop=0")
 
 # Default encoder options (rate in kbits/s)
 VIDEO_CODEC="libx264"
-AUDIO_CODEC="libmp3lame"
+AUDIO_CODEC="aac"
 VIDEO_RATE=20000
 AUDIO_RATE=128
 ENCODE_OPTION=("tune=film" "preset=slow")
