@@ -3,185 +3,191 @@
 #  Video Shooting Stabilization
 #  Command-line & Nautilus script
 #  Depends on :
-#   * melt 0.9.2+
-#   * ffmpeg 0.98+
-#   * yad
+#    * melt (from ppa:sunab/kdenlive-release)
+#    * x264
+#    * vidsta (libvidstab1.0 package from ppa:sunab/kdenlive-release)
+#    * avconv
+#    * yad (from ppa:webupd8team/y-ppa-manager)
 #  Revision history :
-#  04/03/2012 - Creation by N. Bernaerts
-#  04/04/2012 - Add codecs as parameters
-#  09/01/2015 - Completle rewrite for 14.04LTS 
-#               Handles exif rotation thanks to Guy Eagling
+#    04/03/2012 - Creation by N. Bernaerts
+#    04/04/2012 - Add codecs as parameters
+#    17/01/2015 - Completle rewrite for 14.04LTS 
+#                 Handles exif rotation thanks to Guy Eagling
 # -------------------------------------------
 
-# ----------------------------------------------------
-#  User variable section
+# -------------------------------------------------------
+#  User section
+#
 #  Please, do not modify anything out of this section
-# ----------------------------------------------------
+# -------------------------------------------------------
 
 # list of input video extensions
 ARR_EXT=("mp4" "mov" "avi" "mp4" "mkv" "3gp")
 
-# You can define default encoding codec and rates in kbits/s
+# Default stabilization parameters
+STAB_SHAKINESS="4"
+STAB_SMOOTHING="15"
+STAB_OPTZOOM="1"
+STAB_EXTRA=("show=1" "crop=0")
+
+# Default encoder options (rate in kbits/s)
 VIDEO_CODEC="libx264"
-VIDEO_RATE=20000
 AUDIO_CODEC="libmp3lame"
+VIDEO_RATE=20000
 AUDIO_RATE=128
+ENCODE_OPTION=("tune=film" "preset=slow")
 
-# You can setup optional parameters for stabilization & h264 encoding
-OPTION_STABILIZER="shakiness=4"
-OPTION_ENCODER="tune=film preset=slow"
+# -------------------------------------------------------
+#  Retrieve or select video file
+# -------------------------------------------------------
 
-# ------------------------------------
-# retrieve or select video file
-# ------------------------------------
+# get file name and extension
+FILE_PATH="$1"
+FILE_EXT=$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')
 
 # check if file extension given in parameter is in the list
-FILE_PATH="$1"
-FILE_EXT=$(echo "$1" | sed 's/^.*\.\(.*\)$/\1/')
-
-echo "file : $FILE_PATH"
-echo "extension : $FILE_EXT"
-
 [ -f "$FILE_PATH" ] && EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case $FILE_EXT)
-
-echo "ext_ok : $EXT_OK"
 
 # if no file or file not video file, open file selection dialog box
 LIST_EXT=$(echo "*.${ARR_EXT[@]}" | sed 's/ / *\./g')
-[ -z "$EXT_OK" ] && FILE_PATH=$(zenity --file-selection --file-filter="Video file (${LIST_EXT[@]})|${LIST_EXT[@]}" --title="Select video file to stabilize")
+[ -z "$EXT_OK" ] && FILE_PATH=$(yad --center --width=800 --height=500 --window-icon "video" --image "stabilizer" --file --file-filter="Video file (${LIST_EXT[@]})|${LIST_EXT[@]}" --title="Select video file to stabilize")
+
+# -------------------------------------------------------
+#  Analyse video file and select processing parameters
+# -------------------------------------------------------
 
 # if file selected, lets continue
-[ -f "$FILE_PATH" ] && CONTINUE=true || CONTINUE=false
-
-echo "file selected : $FILE_PATH"
-echo "continue : $CONTINUE"
-
-# ----------------
-#  Initialisation
-# ----------------
-
-if [ "$CONTINUE" = "true" ];
+if [ -f "${FILE_PATH}" ];
 then
-  STABILIZE="TRUE"
-  CANCELED="FALSE"
-
   # generate the filenames
-  FILE_BASE="$(echo "$FILE_PATH" | sed 's/^\(.*\)\..*$/\1/')"
-  FILE_MLT="$FILE_BASE.mlt"
-  FILE_LOG="$FILE_BASE.log"
-
-  FILE_STAB="$FILE_BASE-stab.mp4"
+  FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
+  FILE_MLT="${FILE_BASE}.mlt"
+  FILE_LOG="${FILE_BASE}.log"
+  FILE_STAB="${FILE_BASE}-stab.mp4"
 
   # get video metadata
-  FILE_ROTATE=$(exiftool -s3 -rotation "$FILE_PATH")
-  FILE_WIDTH=$(exiftool -s3 -imagewidth "$FILE_PATH")
-  FILE_HEIGHT=$(exiftool -s3 -imageheight "$FILE_PATH")
+  FILE_ROTATE=$(exiftool -s3 -rotation "${FILE_PATH}")
+  FILE_WIDTH=$(exiftool -s3 -imagewidth "${FILE_PATH}")
+  FILE_HEIGHT=$(exiftool -s3 -imageheight "${FILE_PATH}")
+  FILE_BITRATE=$(exiftool -s3 -avgbitrate "${FILE_PATH}")
 
   # get encoding parameters using local number decimal separator (, or .)
   SEPARATOR=$(printf "%'.2f" 1 | sed 's/^1\(.\).*$/\1/')
   VIDEO_RATIO=$(echo "scale=2; $FILE_WIDTH / $FILE_HEIGHT" | bc | sed 's/[\.\,]/'$SEPARATOR'/g')
+
+  # detect if rotation needed
+  [ "$FILE_ROTATE" = "0" ] && CHECK_ROTATE="FALSE" || CHECK_ROTATE="TRUE"
+
+  # set title and text of dialog box
+  TITLE="${FILE_PATH}"
+  TEXT="Select transformation parameters to be applied to original video :\n ( size = $FILE_WIDTH x $FILE_HEIGHT, rate = $FILE_BITRATE )\n"
+
+  # display dialog box
+  CHOICE=$(yad --title "$TITLE" --text "$TEXT" --center --window-icon "video" --image "stabilizer" --width 500 --form --item-separator='|' \
+    --field="Rotate:CHK" "$CHECK_ROTATE" \
+    --field="  - Angle ($FILE_ROTATE° detected):NUM" "$FILE_ROTATE|0..359" --field="  - Resize ratio (should be $VIDEO_RATIO for 90° rotation):CB" "$VIDEO_RATIO|1" \
+    --field="Stabilize:CHK" "TRUE" \
+    --field="  - Shakiness [ 0 ... 10 ]:NUM" "$STAB_SHAKINESS|1..10" --field="  - Smoothing [ 0 ... 100 ]:NUM" "$STAB_SMOOTHING|0..100"  --field="  - Optimal Zoom [ 0, 1, 2 ]:NUM" "$STAB_OPTZOOM|0..2" \
+    --field="Encoder:LBL" "final" \
+    --field="  - $VIDEO_CODEC video (Kbits/s):NUM" "$VIDEO_RATE|1..50000" --field="  - $AUDIO_CODEC audio (Kbits/s):NUM" "$AUDIO_RATE|1..320")
+
+  # retrieve parameters
+  ROTATE=$(echo $CHOICE | cut -d'|' -f1)
+  ROTATE_ANGLE=$(echo $CHOICE | cut -d'|' -f2 | sed 's/^\([0-9]*\).*$/\1/')
+  ROTATE_RATIO=$(echo $CHOICE | cut -d'|' -f3)
+  STABILIZE=$(echo $CHOICE | cut -d'|' -f4)
+  STAB_SHAKINESS=$(echo $CHOICE | cut -d'|' -f5 | sed 's/^\([0-9]*\).*$/\1/')
+  STAB_SMOOTHING=$(echo $CHOICE | cut -d'|' -f6 | sed 's/^\([0-9]*\).*$/\1/')
+  STAB_OPTZOOM=$(echo $CHOICE | cut -d'|' -f7 | sed 's/^\([0-9]*\).*$/\1/')
+  VIDEO_RATE=$(echo $CHOICE | cut -d'|' -f9 | sed 's/^\([0-9]*\).*$/\1/')
+  AUDIO_RATE=$(echo $CHOICE | cut -d'|' -f10 | sed 's/^\([0-9]*\).*$/\1/')
 fi
 
-# --------------------------------------------
-#  function to follow progress of the process
-# --------------------------------------------
-MELT_PROGRESS()
-{
-# loop till the end of melt process
-PERCENTAGE=0
-while [ "$PERCENTAGE" != "100" ]
-do    
-  # wait for 1 second
-  sleep 1
-
-  # if process is still running
-  RESULT=`ps aux | awk '{print $2 }' | grep $PID`
-  if [ "$RESULT" -eq "$PID" ]
-  then
-    # get percentage of completion
-    PERCENTAGE=`cat "${FILE_LOG}" | tail -n 1 | sed 's/^.*percentage:[ ]*\([0-9]*\).*$/\1/g'`
-  else
-    # else, force percentage to 100
-    PERCENTAGE="100"
-  fi 
-
-  # display current percentage
-  echo $PERCENTAGE
-done | yad --width=400 --height=30 --progress --auto-close --title "$TITLE" --text "$TEXT"
-
-# if encode has been canceled, kill the current process
-CANCELED="FALSE"
-RESULT=`ps aux | awk '{print $2 }' | grep $PID`
-if [ "$RESULT" -eq "$PID" ]
+# if rotation and/or stabilisation are selected, encode final video
+if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
 then
-  kill $PID
-  CANCELED="TRUE"
-fi
-}
+  (
+  # if needed, generate stabilizer parameters array
+  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("vidstab" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
 
-# -----------------------------------
-#  Selection of encoding parameters
-# -----------------------------------
-TITLE="Stabilization of ${ORIGINAL}"
-TEXT="\nFinal video file will use $VIDEO_CODEC video and $AUDIO_CODEC audio.\nPlease select the encoding parameters :\n"
-CHOICE=$(yad  --title "$TITLE" --text "$TEXT" --image "dialog-question" --form --field="Video rate (Kbit):NUM" ${VIDEO_RATE} --field="Audio rate (Kbit):NUM" ${AUDIO_RATE})
-#CHOICE=$(zenity  --title "$TITLE" --text "$TEXT" --image "dialog-question" --forms --add-entry="Video bitrate (Mbit)" ${VIDEO_RATE} --add-entry="Audio bitrate (Kbit)" ${AUDIO_RATE})
+  # if needed, convert angle for filter use and set rotation filter
+  X_ANGLE=$(echo "${ROTATE_ANGLE} * 10 / 2" | bc)
+  [ "$ROTATE" = "TRUE" ] && ARR_ROTATE=("affine" "transition.fix_rotate_x=${X_ANGLE}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
 
-echo $CHOICE
+  # generate encoder parameters array
+  ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ENCODE_OPTION[@]}")
 
-# extract the parameters
-STABILIZE=`echo ${CHOICE}  | cut -d"|" -f1`
-VIDEO_RATE=`echo ${CHOICE} | cut -d"|" -f2 | cut -d"," -f1 | cut -d"." -f1`
-AUDIO_RATE=`echo ${CHOICE} | cut -d"|" -f3 | cut -d"," -f1 | cut -d"." -f1`
-
-# -------------------------
-#  Phase 1 : Stabilization
-# -------------------------
-if [ "$STABILIZE" = "TRUE" ]
-then
-  # set text & title of progress window
-  TITLE="1 - Stabilization of ${ORIGINAL}"
-  TEXT="This phase may take a long time ...\n"
-
-  # start the stabilization phase with melt and videostab2 filter
-  #melt -progress "${ORIGINAL}" -filter videostab2 ${OPTION_STABILIZER} -consumer xml:"${FILE_MLT}" all=1 real_time=-2 2>"${FILE_LOG}" &
+  # ------------------------------------------
+  # Rotation / Stabilization analysis
+  # ------------------------------------------
+  melt -progress "${FILE_PATH}" "-filter" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
 
   # get the process id
-  #PID=`ps -ef | grep melt | grep "${ORIGINAL}" | sed 's/^'$USER'[ ]*\([0-9]*\).*$/\1/g'`
+  PID=$(ps aux | grep melt | grep "${FILE_PATH}" | awk '{print $2}')
+
+  while [ "$PID" != "" ] 
+  do    
+    # check if process is still running
+    PID=$(ps aux | awk '{print $2}' | grep $PID)
+
+    # calculate process completion
+    LOG_LINE=$(cat "${FILE_LOG}" | tail -n 1)
+    LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame:[ ]*\([0-9]*\).*$/\1/g')
+    LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage:[ ]*\([0-9]*\).*$/\1/g')
+    [ "$LOG_PERCENT" != "" ] && LOG_PROGRESS=$(echo "${LOG_PERCENT} / 2" | bc)
  
-  # follow the stabilization progress
-  #MELT_PROGRESS
-fi
+    # display process completion
+    echo "# Analysing frame $LOG_FRAME"
+    echo "$LOG_PROGRESS"
 
-# if canceled, no encoding to be done
-if [ "$CANCELED" = "TRUE" ]
-then
-  VIDEO_RATE=0
-fi
+    # wait for 2 seconds
+    sleep 2
+  done
 
-# --------------------
-#  Phase 2 : Encoding
-# --------------------
-if [ "$VIDEO_RATE" -gt "0" ]
-then
-   # set text & title of progress window
-  TITLE="2 - Encoding of ${FILE_STAB}"
-  TEXT="This phase may also take a long time ...\n"
-
-  # start melt encoding process with stabilized video and original audio
-  #melt -progress "${FILE_MLT}" -audio-track "${ORIGINAL}" -consumer avformat:"${FILE_STAB}" vcodec=${VIDEO_CODEC} b=${VIDEO_RATE}k acodec=${AUDIO_CODEC} ab=${AUDIO_RATE}k ${OPTION_ENCODER} 2>"${FILE_LOG}" &
+  # ------------------------------------------
+  #  Final result encoding
+  # ------------------------------------------
+  melt -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} 2>"${FILE_LOG}" &
 
   # get the process id
-  #PID=`ps -ef | grep melt | grep "${FILE_MLT}" | sed 's/^'$USER'[ ]*\([0-9]*\).*$/\1/g'`
- 
+  PID=$(ps aux | grep melt | grep "${FILE_MLT}" | awk '{print $2}')
+
   # follow the stabilization progress
-  #MELT_PROGRESS
+  while [ "$PID" != "" ] 
+  do    
+    # check if process is still running
+    PID=$(ps aux | awk '{print $2}' | grep $PID)
+
+    # calculate process completion
+    LOG_LINE=$(cat "${FILE_LOG}" | tail -n 1)
+    LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame:[ ]*\([0-9]*\).*$/\1/g')
+    LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage:[ ]*\([0-9]*\).*$/\1/g')
+    [ "$LOG_PERCENT" != "" ] && LOG_PROGRESS=$(echo "50 + ( ${LOG_PERCENT} / 2 )" | bc)
+
+    # display process completion
+    echo "# Stabilizing frame $LOG_FRAME"
+    echo "$LOG_PROGRESS"
+
+    # wait for 2 seconds
+    sleep 2
+  done
+
+  # ------------------------------------------
+  #  End of job
+  # ------------------------------------------
+  echo "# File processed and available"
+  echo "100"
+  ) | yad --center --width=600 --window-icon "video" --image "stabilizer" --progress --title "${FILE_PATH}"
 fi
 
-# ------------------------------------
+# -------------------------------------------------------
+#  After job cleanup
+# -------------------------------------------------------
+
+# if process is still running (operation has been canceled), kill the process
+[ "$PID" != "" ] && kill -9 "$PID"
+
 #  cleaning-up of all temporary files
-# ------------------------------------
-rm "${FILE_LOG}"
-rm "${FILE_MLT}"
+[ -f "${FILE_LOG}" ] && rm "${FILE_LOG}"
+[ -f "${FILE_MLT}" ] && rm "${FILE_MLT}"
 
-exit 0
