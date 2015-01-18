@@ -1,0 +1,20 @@
+[Desktop Entry]
+Type=Action
+Icon=stabilizer
+Name[C]=Video rotation and stabilization
+Name[en]=Video rotation and stabilization
+Name[en_US]=Video rotation and stabilization
+Name[fr_FR]=Rotation and stabilisation video
+Tooltip[C]=Tool to rotate and stabilize video shootings
+Tooltip[en]=Tool to rotate and stabilize video shootings
+Tooltip[en_US]=Tool to rotate and stabilize video shootings
+Tooltip[fr_FR]=Outil de rotation et de stabilisation de video
+Profiles=stabilize_video;
+
+[X-Action-Profile stabilize_video]
+Exec=video-stabilize %f
+MimeTypes=video/x-msvideo;video/x-dv;video/x-m4v;video/mkv;video/quicktime;video/x-sgi-movie;video/mp4;video/mpeg;
+Name[C]=Default profile
+Name[en]=Default profile
+Name[en_US]=Default profile
+Name[fr_FR]=Profil par défaut
