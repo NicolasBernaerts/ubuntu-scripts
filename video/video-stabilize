@@ -1,7 +1,9 @@
 #!/bin/bash
-# --------------------------------------------
-#  Video Shooting Stabilization
-#  Command-line & Nautilus script
+# -------------------------------------------------------
+#  Video Stabilizer based on MLT and vid.stub
+#  For installation instructions, please check
+#  http://bernaerts.dyndns.org/linux/74-ubuntu/329-ubuntu-trusty-rotate-stabilize-video-melt-vidstab
+#  
 #  Depends on :
 #    * melt (from ppa:sunab/kdenlive-release)
 #    * x264
@@ -9,11 +11,12 @@
 #    * avconv
 #    * yad (from ppa:webupd8team/y-ppa-manager)
 #  Revision history :
-#    04/03/2012 - Creation by N. Bernaerts
-#    04/04/2012 - Add codecs as parameters
-#    17/01/2015 - Completle rewrite for 14.04LTS 
-#                 Handles exif rotation thanks to Guy Eagling
-# -------------------------------------------
+#    04/03/2012, V1.0 - Creation by N. Bernaerts
+#    04/04/2012, V1.1 - Add codecs as parameters
+#    17/01/2015, V2.0 - Completle rewrite for 14.04LTS 
+#                       Handles exif rotation thanks to Guy Eagling
+#    19/01/2015, V2.1 - Manage .trf files to allow parallel execution
+# -------------------------------------------------------
 
 # -------------------------------------------------------
 #  User section
@@ -60,9 +63,8 @@ LIST_EXT=$(echo "*.${ARR_EXT[@]}" | sed 's/ / *\./g')
 if [ -f "${FILE_PATH}" ];
 then
   # generate the filenames
-  FILE_DIR="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\/.*$/\1/')"
   FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
-  FILE_TRF="${FILE_DIR}/vidstab.trf"
+  FILE_TRF="${FILE_BASE}.trf"
   FILE_MLT="${FILE_BASE}.mlt"
   FILE_LOG="${FILE_BASE}.log"
   FILE_STAB="${FILE_BASE}-stab.mp4"
@@ -110,7 +112,7 @@ if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
 then
   (
   # if needed, generate stabilizer parameters array
-  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("vidstab" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
+  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("vidstab" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
 
   # if needed, convert angle for filter use and set rotation filter
   X_ANGLE=$(echo "${ROTATE_ANGLE} * 10 / 2" | bc)
