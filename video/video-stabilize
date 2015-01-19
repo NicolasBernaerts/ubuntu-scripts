@@ -14,8 +14,9 @@
 #    04/03/2012, V1.0 - Creation by N. Bernaerts
 #    04/04/2012, V1.1 - Add codecs as parameters
 #    17/01/2015, V2.0 - Completle rewrite for 14.04LTS 
-#                       Handles exif rotation thanks to Guy Eagling
-#    19/01/2015, V2.1 - Manage .trf files to allow parallel execution
+#                       Handle exif rotation thanks to Guy Eagling
+#    19/01/2015, V2.1 - Manage per process .trf file to allow parallel execution
+#    19/01/2015, V2.2 - Add .pid file to handle processing cancellation
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -68,8 +69,10 @@ then
   FILE_LOG="${FILE_BASE}.log"
   FILE_STAB="${FILE_BASE}-stab.mp4"
 
-  # generate temporary .trf file
-  FILE_TRF=$(mktemp -t XXXXXXXX.trf) && rm "${FILE_TRF}"
+  # generate temporary files
+  FILE_TMP=$(mktemp -t XXXXXXXX) && rm "${FILE_TMP}"
+  FILE_TRF="${FILE_TMP}.trf"
+  FILE_PID="${FILE_TMP}.pid"
 
   # get video metadata
   FILE_ROTATE=$(exiftool -s3 -rotation "${FILE_PATH}")
@@ -130,6 +133,7 @@ then
 
   # get the process id
   PID=$(ps aux | grep melt | grep "${FILE_PATH}" | awk '{print $2}')
+  echo "${PID}" > "${FILE_PID}"
 
   while [ "$PID" != "" ] 
   do    
@@ -157,6 +161,7 @@ then
 
   # get the process id
   PID=$(ps aux | grep melt | grep "${FILE_MLT}" | awk '{print $2}')
+  echo "${PID}" > "${FILE_PID}"
 
   # follow the stabilization progress
   while [ "$PID" != "" ] 
@@ -181,6 +186,11 @@ then
   # ------------------------------------------
   #  End of job
   # ------------------------------------------
+
+  # remove PID file
+  rm "${FILE_PID}"
+
+  # declare end of processing
   echo "# File processed and available"
   echo "100"
   ) | yad --center --width=600 --window-icon "video" --image "stabilizer" --progress --title "${FILE_PATH}"
@@ -191,9 +201,11 @@ fi
 # -------------------------------------------------------
 
 # if process is still running (operation has been canceled), kill the process
+PID=$(cat "${FILE_PID}")
 [ "$PID" != "" ] && kill -9 "$PID"
 
 #  cleaning-up of all temporary files
 [ -f "${FILE_LOG}" ] && rm "${FILE_LOG}"
 [ -f "${FILE_MLT}" ] && rm "${FILE_MLT}"
 [ -f "${FILE_TRF}" ] && rm "${FILE_TRF}"
+[ -f "${FILE_PID}" ] && rm "${FILE_PID}"
