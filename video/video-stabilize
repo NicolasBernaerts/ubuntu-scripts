@@ -64,10 +64,12 @@ if [ -f "${FILE_PATH}" ];
 then
   # generate the filenames
   FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
-  FILE_TRF="${FILE_BASE}.trf"
   FILE_MLT="${FILE_BASE}.mlt"
   FILE_LOG="${FILE_BASE}.log"
   FILE_STAB="${FILE_BASE}-stab.mp4"
+
+  # generate temporary .trf file
+  FILE_TRF=$(mktemp -t XXXXXXXX.trf) && rm "${FILE_TRF}"
 
   # get video metadata
   FILE_ROTATE=$(exiftool -s3 -rotation "${FILE_PATH}")
@@ -195,4 +197,3 @@ fi
 [ -f "${FILE_LOG}" ] && rm "${FILE_LOG}"
 [ -f "${FILE_MLT}" ] && rm "${FILE_MLT}"
 [ -f "${FILE_TRF}" ] && rm "${FILE_TRF}"
-
