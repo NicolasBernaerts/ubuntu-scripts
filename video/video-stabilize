@@ -60,7 +60,9 @@ LIST_EXT=$(echo "*.${ARR_EXT[@]}" | sed 's/ / *\./g')
 if [ -f "${FILE_PATH}" ];
 then
   # generate the filenames
+  FILE_DIR="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\/.*$/\1/')"
   FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
+  FILE_TRF="${FILE_DIR}/vidstab.trf"
   FILE_MLT="${FILE_BASE}.mlt"
   FILE_LOG="${FILE_BASE}.log"
   FILE_STAB="${FILE_BASE}-stab.mp4"
@@ -190,4 +192,5 @@ fi
 #  cleaning-up of all temporary files
 [ -f "${FILE_LOG}" ] && rm "${FILE_LOG}"
 [ -f "${FILE_MLT}" ] && rm "${FILE_MLT}"
+[ -f "${FILE_TRF}" ] && rm "${FILE_TRF}"
 
