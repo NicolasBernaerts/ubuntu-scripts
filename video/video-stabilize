@@ -117,11 +117,11 @@ if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
 then
   (
   # if needed, generate stabilizer parameters array
-  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("vidstab" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
+  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("-filter" "vidstab" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
 
   # if needed, convert angle for filter use and set rotation filter
   X_ANGLE=$(echo "${ROTATE_ANGLE} * 10 / 2" | bc)
-  [ "$ROTATE" = "TRUE" ] && ARR_ROTATE=("affine" "transition.fix_rotate_x=${X_ANGLE}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
+  [ "$ROTATE" = "TRUE" ] && ARR_ROTATE=("-filter" "affine" "transition.fix_rotate_x=${X_ANGLE}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
 
   # generate encoder parameters array
   ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ENCODE_OPTION[@]}")
@@ -129,7 +129,7 @@ then
   # ------------------------------------------
   # Rotation / Stabilization analysis
   # ------------------------------------------
-  melt -progress "${FILE_PATH}" "-filter" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
+  melt -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
 
   # get the process id
   PID=$(ps aux | grep melt | grep "${FILE_PATH}" | awk '{print $2}')
