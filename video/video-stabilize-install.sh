@@ -4,7 +4,7 @@
 # install melt, x264 and vidstab
 sudo add-apt-repository -y ppa:sunab/kdenlive-release
 sudo apt-get update
-sudo apt-get -y install melt x264 libvidstab1.0
+sudo apt-get -y install melt x264
 
 # install yad
 sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
