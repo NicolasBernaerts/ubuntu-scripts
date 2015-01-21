@@ -176,7 +176,7 @@ then
     [ "$LOG_PERCENT" != "" ] && LOG_PROGRESS=$(echo "50 + ( ${LOG_PERCENT} / 2 )" | bc)
 
     # display process completion
-    echo "# Stabilizing frame $LOG_FRAME"
+    echo "# Generating frame $LOG_FRAME"
     echo "$LOG_PROGRESS"
 
     # wait for 2 seconds
