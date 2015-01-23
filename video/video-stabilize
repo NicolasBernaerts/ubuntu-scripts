@@ -92,11 +92,11 @@ then
   FILE_PID="${FILE_TMP}.pid"
 
   # get video metadata
-  FILE_ROTATE=$(exiftool -s3 -rotation "${FILE_PATH}")
-  FILE_WIDTH=$(exiftool -s3 -imagewidth "${FILE_PATH}")
-  FILE_HEIGHT=$(exiftool -s3 -imageheight "${FILE_PATH}")
-  FILE_BITRATE=$(exiftool -s3 -avgbitrate "${FILE_PATH}")
-
+  ARR_EXIF=$(exiftool -s3 -rotation -imagewidth -imageheight -avgbitrate "${FILE_PATH}")
+  FILE_ROTATE=$(echo $ARR_EXIF | awk '{print $1}')
+  FILE_WIDTH=$(echo $ARR_EXIF | awk '{print $2}')
+  FILE_HEIGHT=$(echo $ARR_EXIF | awk '{print $3}')
+  FILE_BITRATE=$(echo $ARR_EXIF | awk '{print $4 $5}')
 
   # get encoding parameters using local number decimal separator (, or .)
   SEPARATOR=$(printf "%'.2f" 1 | sed 's/^1\(.\).*$/\1/')
