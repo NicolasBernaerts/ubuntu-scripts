@@ -9,6 +9,7 @@
 #    * x264
 #    * vidstab (libvidstab1.0 package from ppa:sunab/kdenlive-release)
 #    * yad (from ppa:webupd8team/y-ppa-manager)
+#    * exiftool (from libimage-exiftool-perl package)
 #  Revision history :
 #    04/03/2012, V1.0 - Creation by N. Bernaerts
 #    04/04/2012, V1.1 - Add codecs as parameters
@@ -52,8 +53,9 @@ CMD_MELT="melt"
 command -v $CMD_MELT >/dev/null 2>&1 || { CMD_MELT="mlt-melt"; }
 command -v $CMD_MELT >/dev/null 2>&1 || { zenity --error --text="Program MELT from MLT framework is needed and not installed on your system."; exit 1; }
 
-# check yad and x264
+# check yad, exiftool and x264
 command -v yad >/dev/null 2>&1 || { zenity --error --text="Program YAD is needed and not installed on your system."; exit 1; }
+command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Program EXIFTOOL is needed and not installed on your system."; exit 1; }
 command -v x264 >/dev/null 2>&1 || { zenity --error --text="Program X264 is needed and not installed on your system."; exit 1; }
 
 # -------------------------------------------------------
