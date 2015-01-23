@@ -8,7 +8,6 @@
 #    * melt (from ppa:sunab/kdenlive-release)
 #    * x264
 #    * vidstab (libvidstab1.0 package from ppa:sunab/kdenlive-release)
-#    * avconv
 #    * yad (from ppa:webupd8team/y-ppa-manager)
 #  Revision history :
 #    04/03/2012, V1.0 - Creation by N. Bernaerts
@@ -17,6 +16,9 @@
 #                       Handle rotation as well thanks to Guy Eagling
 #    19/01/2015, V2.1 - Manage per process .trf file to allow parallel execution
 #    19/01/2015, V2.2 - Add .pid file to handle processing cancellation
+#    23/01/2015, V3.0 - Check tools availability, 
+#                       detect available stabilization filters (vidstab, videostab2 or videostab)
+#                       and add Fedora compatibility (mlt-melt) thanks to Guy Eagling
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -32,7 +34,7 @@ ARR_EXT=("3gp" "avi" "dv" "m4v" "mkv" "mov" "movie" "mp4" "mpeg" "mpg" "qt")
 STAB_SHAKINESS="4"
 STAB_SMOOTHING="15"
 STAB_OPTZOOM="1"
-STAB_EXTRA=("show=1" "crop=0")
+STAB_EXTRA=("show=0" "crop=0")
 
 # Default encoder options (rate in kbits/s)
 VIDEO_CODEC="libx264"
@@ -40,6 +42,19 @@ AUDIO_CODEC="aac"
 VIDEO_RATE=20000
 AUDIO_RATE=128
 ENCODE_OPTION=("tune=film" "preset=slow")
+
+# -------------------------------------------------------
+#  Check tools availability
+# -------------------------------------------------------
+
+# check melt (ubuntu) or mlt-melt (fedora)
+CMD_MELT="melt"
+command -v $CMD_MELT >/dev/null 2>&1 || { CMD_MELT="mlt-melt"; }
+command -v $CMD_MELT >/dev/null 2>&1 || { zenity --error --text="Program MELT from MLT framework is needed and not installed on your system."; exit 1; }
+
+# check yad and x264
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Program YAD is needed and not installed on your system."; exit 1; }
+command -v x264 >/dev/null 2>&1 || { zenity --error --text="Program X264 is needed and not installed on your system."; exit 1; }
 
 # -------------------------------------------------------
 #  Retrieve or select video file
@@ -80,6 +95,7 @@ then
   FILE_HEIGHT=$(exiftool -s3 -imageheight "${FILE_PATH}")
   FILE_BITRATE=$(exiftool -s3 -avgbitrate "${FILE_PATH}")
 
+
   # get encoding parameters using local number decimal separator (, or .)
   SEPARATOR=$(printf "%'.2f" 1 | sed 's/^1\(.\).*$/\1/')
   VIDEO_RATIO=$(echo "scale=2; $FILE_WIDTH / $FILE_HEIGHT" | bc | sed 's/[\.\,]/'$SEPARATOR'/g')
@@ -91,12 +107,17 @@ then
   TITLE="${FILE_PATH}"
   TEXT="Select transformation parameters to be applied to original video :\n ( size = $FILE_WIDTH x $FILE_HEIGHT, rate = $FILE_BITRATE )\n"
 
+  # get list of stabilization filters available from current melt version
+  ARR_FILTER=$(${CMD_MELT} -query filters | grep stab | awk '{print $2}' | sort -r)
+  LST_FILTER=$(echo $ARR_FILTER | sed 's/ /|/g')
+
   # display dialog box
   CHOICE=$(yad --title "$TITLE" --text "$TEXT" --center --window-icon "video" --image "stabilizer" --width 500 --form --item-separator='|' \
     --field="Rotate:CHK" "$CHECK_ROTATE" \
     --field="  - Angle ($FILE_ROTATE° detected):NUM" "$FILE_ROTATE|0..359" --field="  - Resize ratio (should be $VIDEO_RATIO for 90° rotation):CB" "$VIDEO_RATIO|1" \
     --field="Stabilize:CHK" "TRUE" \
-    --field="  - Shakiness [ 0 ... 10 ]:NUM" "$STAB_SHAKINESS|1..10" --field="  - Smoothing [ 0 ... 100 ]:NUM" "$STAB_SMOOTHING|0..100"  --field="  - Optimal Zoom [ 0, 1, 2 ]:NUM" "$STAB_OPTZOOM|0..2" \
+    --field="  - Stabilization filter:CB" "$LST_FILTER" --field="  - Shakiness [ 0 ... 10 ]:NUM" "$STAB_SHAKINESS|1..10" \
+    --field="  - Smoothing [ 0 ... 100 ]:NUM" "$STAB_SMOOTHING|0..100"  --field="  - Optimal Zoom [ 0, 1, 2 ]:NUM" "$STAB_OPTZOOM|0..2" \
     --field="Encoder:LBL" "final" \
     --field="  - $VIDEO_CODEC video (Kbits/s):NUM" "$VIDEO_RATE|1..50000" --field="  - $AUDIO_CODEC audio (Kbits/s):NUM" "$AUDIO_RATE|1..320")
 
@@ -105,11 +126,12 @@ then
   ROTATE_ANGLE=$(echo $CHOICE | cut -d'|' -f2 | sed 's/^\([0-9]*\).*$/\1/')
   ROTATE_RATIO=$(echo $CHOICE | cut -d'|' -f3)
   STABILIZE=$(echo $CHOICE | cut -d'|' -f4)
-  STAB_SHAKINESS=$(echo $CHOICE | cut -d'|' -f5 | sed 's/^\([0-9]*\).*$/\1/')
-  STAB_SMOOTHING=$(echo $CHOICE | cut -d'|' -f6 | sed 's/^\([0-9]*\).*$/\1/')
-  STAB_OPTZOOM=$(echo $CHOICE | cut -d'|' -f7 | sed 's/^\([0-9]*\).*$/\1/')
-  VIDEO_RATE=$(echo $CHOICE | cut -d'|' -f9 | sed 's/^\([0-9]*\).*$/\1/')
-  AUDIO_RATE=$(echo $CHOICE | cut -d'|' -f10 | sed 's/^\([0-9]*\).*$/\1/')
+  STAB_FILTER=$(echo $CHOICE | cut -d'|' -f5)
+  STAB_SHAKINESS=$(echo $CHOICE | cut -d'|' -f6 | sed 's/^\([0-9]*\).*$/\1/')
+  STAB_SMOOTHING=$(echo $CHOICE | cut -d'|' -f7 | sed 's/^\([0-9]*\).*$/\1/')
+  STAB_OPTZOOM=$(echo $CHOICE | cut -d'|' -f8 | sed 's/^\([0-9]*\).*$/\1/')
+  VIDEO_RATE=$(echo $CHOICE | cut -d'|' -f10 | sed 's/^\([0-9]*\).*$/\1/')
+  AUDIO_RATE=$(echo $CHOICE | cut -d'|' -f11 | sed 's/^\([0-9]*\).*$/\1/')
 fi
 
 # if rotation and/or stabilisation are selected, encode final video
@@ -117,7 +139,7 @@ if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
 then
   (
   # if needed, generate stabilizer parameters array
-  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("-filter" "vidstab" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
+  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("-filter" "${STAB_FILTER}" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
 
   # if needed, convert angle for filter use and set rotation filter
   X_ANGLE=$(echo "${ROTATE_ANGLE} * 10 / 2" | bc)
@@ -129,10 +151,10 @@ then
   # ------------------------------------------
   # Rotation / Stabilization analysis
   # ------------------------------------------
-  melt -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
 
   # get the process id
-  PID=$(ps aux | grep melt | grep "${FILE_PATH}" | awk '{print $2}')
+  PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_PATH}" | awk '{print $2}')
   echo "${PID}" > "${FILE_PID}"
 
   while [ "$PID" != "" ] 
@@ -157,10 +179,10 @@ then
   # ------------------------------------------
   #  Final result encoding
   # ------------------------------------------
-  melt -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} 2>"${FILE_LOG}" &
 
   # get the process id
-  PID=$(ps aux | grep melt | grep "${FILE_MLT}" | awk '{print $2}')
+  PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_MLT}" | awk '{print $2}')
   echo "${PID}" > "${FILE_PID}"
 
   # follow the stabilization progress
@@ -201,7 +223,7 @@ fi
 # -------------------------------------------------------
 
 # if process is still running (operation has been canceled), kill the process
-PID=$(cat "${FILE_PID}")
+[ -f "${FILE_PID}" ] && PID=$(cat "${FILE_PID}") || PID=""
 [ "$PID" != "" ] && kill -9 "$PID"
 
 #  cleaning-up of all temporary files
