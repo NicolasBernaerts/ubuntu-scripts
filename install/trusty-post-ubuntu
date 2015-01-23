@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # -------------------------------------------------------
 #  Ubuntu 14.04 LTS Post-installation script
 #
@@ -16,7 +16,7 @@
 # ------------ Architecture detection ---------------
 # ---------------------------------------------------
 
-RESULT=`uname -a | grep x86_64`
+RESULT=$(uname -a | grep x86_64)
 [ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
 [ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
 
