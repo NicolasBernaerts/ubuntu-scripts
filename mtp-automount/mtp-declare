@@ -13,8 +13,13 @@
 #    22/03/2013, V2.0 - Complete rewrite using mtp-detect
 #    22/03/2013, V2.1 - Add fuse.conf test (thanks to Stefan Schanz)
 #    31/05/2014, V2.2 - Add support for xhci & ohci usb ports (thanks to Viktor Aksionov)
-# --------------------------------------------------------------------------
- 
+#    24/01/2015, V2.3 - Check tools availability
+# ---------------------------------------------------
+
+# check tools availability
+command -v go-mtpfs >/dev/null 2>&1 || { zenity --error --text="Please install go-mtpfs"; exit 1; }
+command -v mtp-detect >/dev/null 2>&1 || { zenity --error --text="Please install mtp-detect [mtp-tools]"; exit 1; }
+
 # set string separator as \n
 IFS="
 "
@@ -69,20 +74,20 @@ then
   echo "40" ; echo "# Step 3 - Collection of device data" ; sleep 1
 
   # get VENDOR_ID and DEVICE_ID
-  MTP_VENDOR_ID=`echo "$MTP_SELECT" | sed 's/^\([0-9a-f]*\):[0-9a-f]* - .*$/\1/'`
-  MTP_DEVICE_ID=`echo "$MTP_SELECT" | sed 's/^[0-9a-f]*:\([0-9a-f]*\) - .*$/\1/'`
+  MTP_VENDOR_ID=$(echo "$MTP_SELECT" | sed 's/^\([0-9a-f]*\):[0-9a-f]* - .*$/\1/')
+  MTP_DEVICE_ID=$(echo "$MTP_SELECT" | sed 's/^[0-9a-f]*:\([0-9a-f]*\) - .*$/\1/')
 
   # get BUSNUM and DEVNUM
-  MTP_BUSNUM=`lsusb | grep "$MTP_VENDOR_ID:$MTP_DEVICE_ID" | sed 's/^Bus \([0-9a-f]*\) Device [0-9a-f]*:.*$/\1/g'`
-  MTP_DEVNUM=`lsusb | grep "$MTP_VENDOR_ID:$MTP_DEVICE_ID" | sed 's/^Bus [0-9a-f]* Device \([0-9a-f]*\):.*$/\1/g'`
+  MTP_BUSNUM=$(lsusb | grep "$MTP_VENDOR_ID:$MTP_DEVICE_ID" | sed 's/^Bus \([0-9a-f]*\) Device [0-9a-f]*:.*$/\1/g')
+  MTP_DEVNUM=$(lsusb | grep "$MTP_VENDOR_ID:$MTP_DEVICE_ID" | sed 's/^Bus [0-9a-f]* Device \([0-9a-f]*\):.*$/\1/g')
 
   # get USB device full PCI path and PCI id
-  MTP_PATH=`udevadm info --query=path --name=/dev/bus/usb/$MTP_BUSNUM/$MTP_DEVNUM`
-  MTP_USBID=`echo "$MTP_PATH" | sed 's/^.*\/\([0-9]*:[0-9]*:[0-9a-f]*.[0-9]\)\/.*$/\1/g'`
+  MTP_PATH=$(udevadm info --query=path --name=/dev/bus/usb/$MTP_BUSNUM/$MTP_DEVNUM)
+  MTP_USBID=$(echo "$MTP_PATH" | sed 's/^.*\/\([0-9]*:[0-9]*:[0-9a-f]*.[0-9]\)\/.*$/\1/g')
 
   # get ID_MODEL and ID_MODEL_ID
-  MTP_MODEL=`udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL=" | sed 's/^.*=.\(.*\).$/\1/g'`
-  MTP_MODEL_ID=`udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL_ID=" | sed 's/^.*=.\(.*\).$/\1/g'`
+  MTP_MODEL=$(udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL=" | sed 's/^.*=.\(.*\).$/\1/g')
+  MTP_MODEL_ID=$(udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL_ID=" | sed 's/^.*=.\(.*\).$/\1/g')
   
   # determine USB port type (ehci, ohci or xhci)
   if [ -e "/sys/bus/pci/drivers/ehci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="ehci_hcd"
@@ -144,11 +149,11 @@ then
     sleep 2
      
     # check if device has been detected by go-mtpfs
-    MTP_LINE=`mount | grep "$MTP_MOUNT"`
+    MTP_LINE=$(mount | grep "$MTP_MOUNT")
   done
 
   # GO-MTPFS - check if line in mount is having proper format (starts by DeviceFS and holds fuse.DeviceFs)
-  MTP_OK=`echo $MTP_LINE | sed 's/^DeviceFs(.*) .* fuse.DeviceFs(.*) .*$/ok/g'`
+  MTP_OK=$(echo $MTP_LINE | sed 's/^DeviceFs(.*) .* fuse.DeviceFs(.*) .*$/ok/g')
   if [ "$MTP_OK" != "ok" ]; then MTP_ERROR="mount command returns an improper $MTP_MOUNT line"; fi
 fi
 
@@ -159,14 +164,14 @@ then
   echo "90" ; echo "# Step 7 - Declaration of device mount point" ; sleep 1
 
   # check if /etc/fstab doesn't already handle mount path
-  MTP_OK=`cat "$PATH_FSTAB" | grep "$MTP_MOUNT"`
+  MTP_OK=$(cat "$PATH_FSTAB" | grep "$MTP_MOUNT")
     
   # if device has to be declared in /etc/fstab
   if [ "$MTP_OK" = "" ]
   then
     # get fuse mount caracteristics
-    FSTAB_DEVICE=`mount | grep "$MTP_MOUNT" | sed 's/^.*(\(.*\)) on.*$/\1/g'`
-    FSTAB_FUSE=`mount | grep "$MTP_MOUNT" | sed 's/^.*type .*(\(.*\)) .*$/\1/g'`
+    FSTAB_DEVICE=$(mount | grep "$MTP_MOUNT" | sed 's/^.*(\(.*\)) on.*$/\1/g')
+    FSTAB_FUSE=$(mount | grep "$MTP_MOUNT" | sed 's/^.*type .*(\(.*\)) .*$/\1/g')
 
     # append device mount line to /etc/fstab, any ' ' will be replaced by '\040'
     echo "# declaration of $FSTAB_DEVICE to be mounted under $MTP_MOUNT" >> "$PATH_FSTAB"
