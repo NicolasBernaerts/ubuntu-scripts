@@ -13,7 +13,7 @@
 #   24/01/2015, V1.2 - Check tools availability
 # ---------------------------------------------------
 
-# check yad, exiftool and x264
+# check tools availability
 command -v gvfs-copy >/dev/null 2>&1 || { zenity --error --text="Please install gvfs-copy [gvfs-bin]"; exit 1; }
 command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs [ghostscript]"; exit 1; }
 command -v notify-send >/dev/null 2>&1 || { zenity --error --text="Please install notify-send [libnotify-bin]"; exit 1; }
