@@ -22,7 +22,7 @@ command -v scanimage >/dev/null 2>&1 || { zenity --error --text="Please install 
 
 # initialize default parameters
 CONF_FILE="$HOME/.scan2folder.conf"
-LIST_FORMAT="jpg,png"
+LIST_FORMAT="jpg,png,tiff,pdf,pnm"
 FORMAT="jpg"
 TMP_FILE=$(mktemp)
 DLG_WIDTH=600
@@ -90,9 +90,12 @@ do case $CHOICE in
     # display conversion message
     echo "# Converting $NUMBER document(s) ..."
 
-    # convert to the proper format
-    mogrify -format $FORMAT "$DIRECTORY/$FILE*.pnm"
-    rm "$DIRECTORY/$FILE"*.pnm
+    # if needed, convert to the target format
+    if [ "$FORMAT" != "pnm" ]
+    then
+      mogrify -format $FORMAT "$DIRECTORY/$FILE*.pnm"
+      rm "$DIRECTORY/$FILE"*.pnm
+    fi
 
     # end
     echo 100 
