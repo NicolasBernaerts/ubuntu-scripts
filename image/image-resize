@@ -5,12 +5,16 @@
 #  Depends on :
 #   * imagemagick
 #  Revision history :
-#  23/10/2013, V1.0 - Creation by N. Bernaerts
-#  04/02/2014, V1.1 - Add multiple files selection
-#  01/04/2014, V1.2 - Add format selection
-#  16/12/2014, V1.3 - Add file selection dialog box
-#  16/12/2014, V2.0 - Rewrite parameters and file selection handling
-# -------------------------------------------
+#   23/10/2013, V1.0 - Creation by N. Bernaerts
+#   04/02/2014, V1.1 - Add multiple files selection
+#   01/04/2014, V1.2 - Add format selection
+#   16/12/2014, V1.3 - Add file selection dialog box
+#   16/12/2014, V2.0 - Rewrite parameters and file selection handling
+#   24/01/2015, V2.1 - Check tools availability
+# ---------------------------------------------------
+
+# check tools availability
+command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 
 # set default jpg quality
 QUALITY="85"
@@ -66,7 +70,8 @@ then
 
   # display format selection box
   ZENH=$((150+INDEX*30))
-  RESULT=`zenity --title "Image resizer" --text "$NBR_IMAGE files will be resized. Select target format :" --width 400 --height $ZENH --list --column="Index" --column="Format" --hide-column=1 ${ARR_CHOICE[@]}`
+  RESULT=$(zenity --title "Image resizer" --text "$NBR_IMAGE files will be resized. Select target format :" \
+                  --width 400 --height $ZENH --list --column="Index" --column="Format" --hide-column=1 ${ARR_CHOICE[@]})
 
   # if one format has been selected
   if [ -n "$RESULT" ]
@@ -82,10 +87,10 @@ then
     do
       # generate output filemane
       INPUTFILE=${ARR_IMAGE[$CURRENT]}
-      DIRECTORY=$(dirname "$INPUTFILE")
-      BASEFILE=$(basename "$INPUTFILE")
-      BASENAME=`echo ${BASEFILE} | sed 's/^\(.*\)[.].*$/\1/g'`
-      OUTPUTFILE="$DIRECTORY/$PREFIX/$BASENAME.jpg"
+      DIRECTORY=$(dirname "${INPUTFILE}")
+      BASEFILE=$(basename "${INPUTFILE}")
+      BASENAME=$(echo ${BASEFILE} | sed 's/^\(.*\)[.].*$/\1/g')
+      OUTPUTFILE="${DIRECTORY}/${PREFIX}/${BASENAME}.jpg"
 
       # create sub directory
       mkdir --parents "$DIRECTORY/$PREFIX"
@@ -97,8 +102,8 @@ then
       echo "# Resizing $BASEFILE to $NAME format"
 
       # get image width and height
-      PIX_WIDTH=`identify -format "%w" "$INPUTFILE"`
-      PIX_HEIGHT=`identify -format "%h" "$INPUTFILE"`
+      PIX_WIDTH=$(identify -format "%w" "$INPUTFILE")
+      PIX_HEIGHT=$(identify -format "%h" "$INPUTFILE")
 
       # if image is horizontal, set size to target width, else set size to target height
       [ "$PIX_WIDTH" -gt "$PIX_HEIGHT" ] && SIZE="$WIDTH" || SIZE="x$HEIGHT"
