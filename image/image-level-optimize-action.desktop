@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Action
 Icon=image-level-optimize
-Name[C]=Image levels optimisation
-Name[en]=Image levels optimisation
-Name[en_US]=Image levels optimisation
-Name[fr_FR]=Ajustement des niveaux de l'image
+Name[C]=Levels optimisation
+Name[en]=Levels optimisation
+Name[en_US]=Levels optimisation
+Name[fr_FR]=Ajustement des niveaux
 Tooltip[C]=Tool to automatically optimise image levels (histogram)
 Tooltip[en]=Tool to automatically optimise image levels (histogram)
 Tooltip[en_US]=Tool to automatically optimise image levels (histogram)
