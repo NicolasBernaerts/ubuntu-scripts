@@ -10,7 +10,11 @@
 #   $1 ... $n - files or directories
 # Revision history :
 #   06/01/2015, V1.0 - Creation by N. Bernaerts
-# -------------------------------------------
+#   24/01/2015, V1.1 - Check tools availability
+# ---------------------------------------------------
+
+# check tools availability
+command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 
 # set default image quality or compression (for PNG files)
 JPG_QUALITY="98"
