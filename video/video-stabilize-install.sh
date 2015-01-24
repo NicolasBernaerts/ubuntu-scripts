@@ -14,8 +14,8 @@ sudo apt-get -y install yad
 # install exiftool
 sudo apt-get -y install libimage-exiftool-perl
 
-# install nautilus-actions
-sudo apt-get -y install nautilus-actions
+# if nautilus present, install nautilus-actions
+command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 
 sudo wget -O /usr/local/bin/video-stabilize https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize
 sudo chmod +x /usr/local/bin/video-stabilize
