@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ---------------------------------------------------
 # Repair broken PDF file using gs
 #
