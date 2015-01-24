@@ -10,7 +10,13 @@
 # Revision history :
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
 #   20/11/2014, V1.1 - Add file selection dialog box
+#   24/01/2015, V1.2 - Check tools availability
 # ---------------------------------------------------
+
+# check yad, exiftool and x264
+command -v gvfs-copy >/dev/null 2>&1 || { zenity --error --text="Please install gvfs-copy [gvfs-bin]"; exit 1; }
+command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs [ghostscript]"; exit 1; }
+command -v notify-send >/dev/null 2>&1 || { zenity --error --text="Please install notify-send [libnotify-bin]"; exit 1; }
 
 # check if parameter is given, otherwise open dialog box selection
 [ "$1" != "" ] && ORG_URI="$1" || ORG_URI=$(zenity --file-selection --title="Select PDF file to repair")
