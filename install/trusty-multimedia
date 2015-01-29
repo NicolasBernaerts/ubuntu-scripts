@@ -9,7 +9,7 @@
 sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
 
 # restricted codecs & flash
-sudo apt-get --yes --force-yes install ubuntu-restricted-extras libavcodec-extra x264
+sudo apt-get --yes --force-yes install ubuntu-restricted-extras libav-tools libavcodec-extra x264
 
 # CSS DVD decryption
 sudo sh /usr/share/doc/libdvdread4/install-css.sh
@@ -24,7 +24,7 @@ sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame mp3gain
 sudo apt-get -y install audacity
 
 # misc video tools
-sudo apt-get -y install libav-tools avidemux mkvtoolnix-gui handbrake
+sudo apt-get -y install avidemux mkvtoolnix-gui handbrake
 
 # MKV toolnix
 sudo apt-get -y install mkvtoolnix-gui handbrake
