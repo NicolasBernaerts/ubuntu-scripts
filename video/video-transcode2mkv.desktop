@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/local/bin/video-transcode2mkv
+Name=Video rotation and stabilization
+Categories=GNOME;AudioVideo;AudioVideoEditing;
+MimeType=video/x-msvideo;video/x-dv;video/x-m4v;video/mkv;video/quicktime;video/x-sgi-movie;video/mp4;video/mpeg;
+Icon=video
