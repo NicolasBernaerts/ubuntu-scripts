@@ -13,7 +13,7 @@ Profiles=convert2mkv_video;
 
 [X-Action-Profile convert2mkv_video]
 Exec=video-convert2mkv %f
-MimeTypes=video/x-msvideo;video/x-dv;video/x-m4v;video/mkv;video/quicktime;video/x-sgi-movie;video/mp4;video/mpeg;
+MimeTypes=video/x-msvideo;video/x-dv;video/x-m4v;video/mkv;video/x-matroska;video/quicktime;video/x-sgi-movie;video/mp4;video/mpeg;
 Name[C]=Default profile
 Name[en]=Default profile
 Name[en_US]=Default profile
