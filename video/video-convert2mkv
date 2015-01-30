@@ -227,13 +227,13 @@ mkvmerge --title "${FILE_NAME}" --track-order "${LIST_INDEX}" "${FIELD_COVER[@]}
 # get zenity brother process which is parent of all running tasks 
 PID_ZENITY=$(ps -C zenity h -o pid,command | grep "${FILE_MKV}" | awk '{print $1}')
 PID_PARENT=$(ps -p ${PID_ZENITY} -o ppid=)
-PID_BROTHERS=$(pgrep -d ',' -P ${PID_PARENT})
+PID_CHILDREN=$(pgrep -d ',' -P ${PID_PARENT})
 
 # loop to check that progress dialog has not been cancelled
 while [ "$PID_ZENITY" != "" ]
 do
   # get PID of running processes for the children
-  PID_TOKILL=$(pgrep -d ' ' -P "${PID_BROTHERS}")
+  PID_GRANDCHILDREN=$(pgrep -d ' ' -P "${PID_CHILDREN}")
 
   # check if process is still running
   PID_ZENITY=$(ps h -o pid -p ${PID_ZENITY})
@@ -243,7 +243,7 @@ do
 done
 
 # if some running tasks are still there, kill them
-[ "${PID_TOKILL}" != "" ] && kill -9 ${PID_TOKILL}
+[ "${PID_GRANDCHILDREN}" != "" ] && kill -9 ${PID_GRANDCHILDREN}
 
 # clean all un-needed working files
 rm -f "${FILE_INFO}"
