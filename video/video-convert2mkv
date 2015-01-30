@@ -44,7 +44,8 @@ command -v fdkaac >/dev/null 2>&1 || { zenity --error --text="Please install fdk
 # generate file names
 FILE_PATH="$1"
 FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
-FILE_NAME="$(echo "$FILE_PATH" | sed 's/^.*\/\(.*\)\..*$/\1/')"
+FILE_NAME="$(echo "${FILE_PATH}" | sed 's/^.*\/\(.*\)\..*$/\1/')"
+FILE_EXT="$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')"
 FILE_ORG="${FILE_BASE}-org.${FILE_EXT}"
 FILE_MKV="${FILE_BASE}.mkv"
 FILE_COVER="${FILE_BASE}.tbn"
