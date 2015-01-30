@@ -225,7 +225,7 @@ mkvmerge --title "${FILE_NAME}" --track-order "${LIST_INDEX}" "${FIELD_COVER[@]}
 ) | zenity --window-icon=video --width=500 --title="${FILE_MKV}" --progress --pulsate --auto-close &
 
 # get zenity brother process which is parent of all running tasks 
-PID_ZENITY=$(ps aux | grep "zenity" | grep "${FILE_MKV}" | awk '{print $2}')
+PID_ZENITY=$(ps -C zenity h -o pid,command | grep "${FILE_MKV}" | awk '{print $1}')
 PID_PARENT=$(ps -p ${PID_ZENITY} -o ppid=)
 PID_BROTHERS=$(pgrep -d ',' -P ${PID_PARENT})
 
