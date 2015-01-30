@@ -8,7 +8,9 @@
 #    * mkvmerge (mkvtoolnix)
 #    * fdkaac (fdkaac-encoder ppa)
 #  Revision history :
-#    24/01/2015, V1.0 - Creation by N. Bernaerts
+#    23/01/2015, V1.0 - Creation by N. Bernaerts
+#    24/01/2015, V1.1 - Properly handle progress cancellation
+#                       Change video file detection algorithm
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -21,9 +23,6 @@ RATE_MULTI="384k"
 
 # movie cover extension (must be jpeg file with same name as original video)
 COVER_EXT="tbn"
-
-# list of input video extensions
-ARR_EXT=("3gp" "avi" "dv" "m4v" "mkv" "mov" "movie" "mp4" "mpeg" "mpg" "qt")
 
 #  End of parameter section
 # -------------------------------------------------------
@@ -42,28 +41,8 @@ command -v fdkaac >/dev/null 2>&1 || { zenity --error --text="Please install fdk
 # Retrieve or select video file
 # -------------------------------------------------------
 
-# get file name
-FILE_PATH="$1"
-
-# if no file is given, prompt for file selection
-[ -f "${FILE_PATH}" ] || FILE_PATH="$(zenity --title="Select video file to convert" --file-selection)"
-[ -f "${FILE_PATH}" ] || exit 1
-
-# check if file extension is in the allowed extension list
-FILE_EXT="$(echo "$FILE_PATH" | sed 's/^.*\.\(.*\)$/\1/')"
-[ -f "${FILE_PATH}" ] && EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case "${FILE_EXT}")
-
-# if extension is not allowed, error message and exit
-[ -z "$EXT_OK" ] && { zenity --error --text="This file type can not be converted"; exit 1; }
-
-(
-# ---------------------------------------------------------------------
-# variable initialisation
-# ---------------------------------------------------------------------
-
-echo "# Initialisation - Get metadata from video file"
-
 # generate file names
+FILE_PATH="$1"
 FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
 FILE_NAME="$(echo "$FILE_PATH" | sed 's/^.*\/\(.*\)\..*$/\1/')"
 FILE_ORG="${FILE_BASE}-org.${FILE_EXT}"
@@ -71,8 +50,23 @@ FILE_MKV="${FILE_BASE}.mkv"
 FILE_COVER="${FILE_BASE}.tbn"
 FILE_INFO="${FILE_BASE}.txt"
 
+# if no file is given, prompt for file selection
+[ -f "${FILE_PATH}" ] || FILE_PATH="$(zenity --title="Select video file to convert" --file-selection)"
+
+# if still no file selected, exit
+[ -f "${FILE_PATH}" ] || exit 1
+
 # get file properties
 mediainfo "${FILE_PATH}" > "${FILE_INFO}" 
+
+# if file is not a video file, error message and exit
+IS_VIDEO=$(cat "${FILE_INFO}" | grep "^Video")
+[ "${IS_VIDEO}" = "" ] && { zenity --error --text="This file is not a valid video file"; exit 1; }
+
+(
+# ---------------------------------------------------------------------
+# variable initialisation
+# ---------------------------------------------------------------------
 
 # we assume that video track is 0 by default (may be 1 for certain formats)
 TRACK_SHIFT=0
@@ -189,7 +183,7 @@ do
 
   # convert track to WAV format
   echo "# Audio track ${TRACK_ID} - Converting from ${TRACK_FORMAT} to WAV"
-  avconv -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
+  avconv -y -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
 
   # determine encoding rate
   [ "$TRACK_CHANNEL" = "6" ] && TRACK_RATE=$RATE_MULTI || TRACK_RATE=$RATE_STEREO
@@ -227,14 +221,31 @@ echo "# Final merge - Generating ${FILE_NAME}.mkv"
 mv "${FILE_PATH}" "${FILE_ORG}"
 mkvmerge --title "${FILE_NAME}" --track-order "${LIST_INDEX}" "${FIELD_COVER[@]}" --output "${FILE_MKV}" "${FIELD_AAC[@]}" --no-buttons --no-attachments "${FILE_ORG}" "${FIELD_CONVERT[@]}"
 
-# ---------------------------------------------------------------------
-#  clean all un-needed working files
-# ---------------------------------------------------------------------
+) | zenity --window-icon=video --width=500 --title="${FILE_MKV}" --progress --pulsate --auto-close &
 
-# remove working files
-echo "# Post-processing - Cleaning temporary files"
+# get zenity brother process which is parent of all running tasks 
+PID_ZENITY=$(ps aux | grep "zenity" | grep "${FILE_MKV}" | awk '{print $2}')
+PID_PARENT=$(ps -p ${PID_ZENITY} -o ppid=)
+PID_BROTHERS=$(pgrep -d ',' -P ${PID_PARENT})
+
+# loop to check that progress dialog has not been cancelled
+while [ "$PID_ZENITY" != "" ]
+do
+  # get PID of running processes for the children
+  PID_TOKILL=$(pgrep -d ' ' -P "${PID_BROTHERS}")
+
+  # check if process is still running
+  PID_ZENITY=$(ps h -o pid -p ${PID_ZENITY})
+
+  # sleep for 2 second
+  sleep 2
+done
+
+# if some running tasks are still there, kill them
+[ "${PID_TOKILL}" != "" ] && kill -9 ${PID_TOKILL}
+
+# clean all un-needed working files
 rm -f "${FILE_INFO}"
 rm -f "${FILE_BASE}"-*.mka
 rm -f "${FILE_BASE}"-*.wav 
 rm -f "${FILE_BASE}"-*.m4a
-) | zenity --window-icon=video --width=500 --title="${FILE_MKV}" --auto-close --progress --pulsate
