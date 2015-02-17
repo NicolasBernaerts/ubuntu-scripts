@@ -13,6 +13,7 @@
 #  26/05/2014, V1.1 - Replace yad with zenity
 #  27/09/2014, V2.0 - Rework & multi scanner support
 #  24/01/2015, V2.1 - Check tools availability
+#  17/02/2015, V2.2 - Correct multiple pages bug
 # ---------------------------------------------------
 
 # check tools availability
@@ -79,16 +80,21 @@ do case $CHOICE in
     # display scan message
     echo "# Scanning document from $SOURCE ($DPI dpi) ..."
 
-    # detect if scan is from the glass window
-    [[ $SOURCE == "Flatbed" ]] && PAGE_NUMBER="--batch-count 1" || PAGE_NUMBER=""
-
-    # scan image with needed resolution
-    NUMBER=$(scanimage --device-name="$SCAN_DEVICE" --format=pnm --mode=$MODE --resolution=$DPI $PAGE_NUMBER \
-                       --batch="$DIRECTORY/$FILE-%d.pnm" --source $SOURCE 2>&1 | \
+    # if scan is from auto-document feed, scan multiple pages
+    if [ "$SOURCE" = "ADF" ]
+    then
+      NUMBER=$(scanimage --device-name="$SCAN_DEVICE" --format=pnm --mode=$MODE --resolution=$DPI \
+                         --batch="$DIRECTORY/$FILE-%d.pnm" --source $SOURCE 2>&1 | \
              grep "Scanned" | sed 's/^.*page \([0-9]*\).*$/\1/g' | tail --lines=1)
 
+    # else scan one page
+    else
+      scanimage --device-name="$SCAN_DEVICE" --format=pnm --mode=$MODE --resolution=$DPI --source $SOURCE > $DIRECTORY/$FILE.pnm
+      NUMBER=1
+    fi
+
     # display conversion message
-    echo "# Converting $NUMBER document(s) ..."
+    echo "# Converting $NUMBER pages ..."
 
     # if needed, convert to the target format
     if [ "$FORMAT" != "pnm" ]
