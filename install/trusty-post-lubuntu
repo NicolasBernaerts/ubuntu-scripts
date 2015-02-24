@@ -126,11 +126,3 @@ sudo chmod +x /usr/local/bin/ask-trash-empty
 # ---------------------------------------------------
 
 sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
-
-# -----------------------------------------------------
-# ---------------- Latest HPLIP driver ----------------
-# -----------------------------------------------------
-
-URL_HPLIP=$(wget -q -O - http://hplipopensource.com/hplip-web/install/install/index.html | grep "http://prdownloads.sourceforge.net/hplip/hplip" | sed 's/^<a href=.\(.*\).><img.*$/\1/')
-wget -O hplip.run "$URL_HPLIP"
-sh ./hplip.run
