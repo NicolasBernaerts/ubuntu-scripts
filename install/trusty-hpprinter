@@ -1,0 +1,13 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to install HP printer drivers
+#
+# 25/02/2015, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# get latest driver
+URL_HPLIP=$(wget -q -O - http://hplipopensource.com/hplip-web/install/install/index.html | grep "http://prdownloads.sourceforge.net/hplip/hplip" | sed 's/^<a href=.\(.*\).><img.*$/\1/')
+wget -O hplip.run "$URL_HPLIP"
+
+# install
+sh ./hplip.run
