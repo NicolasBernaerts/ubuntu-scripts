@@ -25,10 +25,10 @@ sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame mp3gain
 sudo apt-get -y install audacity
 
 # misc video tools
-sudo apt-get -y install avidemux mkvtoolnix-gui handbrake
+sudo apt-get -y install avidemux
 
 # MKV toolnix
-sudo apt-get -y install mkvtoolnix-gui handbrake
+sudo apt-get -y install mkvtoolnix-gui
 
 # handbrake video transcoder
 sudo apt-get -y install handbrake
