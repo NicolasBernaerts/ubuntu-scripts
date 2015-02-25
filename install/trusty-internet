@@ -29,7 +29,7 @@ sudo apt-get -y install youtube-dl youtube-dlg
 #sudo chmod +x /usr/local/bin/clipgrab
 #sudo wget -O /usr/share/applications/clipgrab.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/clipgrab/clipgrab.desktop
 #rm -R clipgrab*
-sudo add-apt-repository ppa:clipgrab-team/ppa
+sudo add-apt-repository -y ppa:clipgrab-team/ppa
 sudo apt-get update
 sudo apt-get install clipgrab
 
