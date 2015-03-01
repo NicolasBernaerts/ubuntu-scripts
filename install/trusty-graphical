@@ -21,7 +21,7 @@ sudo apt-get update
 sudo apt-get -y install gimp gimp-plugin-registry
 
 # scan2folder tool
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scan2folder/scan2folder-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
 . ./scan2folder-install.sh
 
 # GIMP XCF thumbnailer
