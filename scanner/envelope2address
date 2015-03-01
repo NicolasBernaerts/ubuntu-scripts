@@ -40,7 +40,7 @@ CONF_FILE="$HOME/.scan2folder.conf"
 
 # default width of dialog box
 DLG_WIDTH=600
-DLG_ICON="internet-mail"
+DLG_ICON="contact-new"
 
 # address position on envelope
 ADDR_POS="250x600+350+600"
