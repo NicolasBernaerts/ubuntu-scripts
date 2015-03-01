@@ -10,6 +10,9 @@
 # grisbi
 sudo apt-get -y install grisbi
 
+# hplip
+sudo apt-get -y install hplip-gui
+
 # gramps (genealogy)
 sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
 sudo apt-get -y install gramps
