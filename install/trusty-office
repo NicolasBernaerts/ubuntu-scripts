@@ -5,6 +5,7 @@
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # 22/12/2014, V1.1 - Add Gramps & dependancies
 # 26/12/2014, V1.2 - Add nvpy (simple note client)
+# 28/02/2015, V1.3 - Add tesseract-ocr
 # -------------------------------------------------------
 
 # grisbi
@@ -12,6 +13,9 @@ sudo apt-get -y install grisbi
 
 # hplip
 sudo apt-get -y install hplip-gui
+
+# ocr client
+sudo apt-get -y install tesseract-ocr-fr
 
 # gramps (genealogy)
 sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
