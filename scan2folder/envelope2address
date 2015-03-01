@@ -1,0 +1,126 @@
+#!/bin/bash
+# ----------------------------------------------
+# Utility to scan envelopes
+#  and retrieve address thru OCR
+# Needs scanner with Auto Document Feed
+# Tested on 2 different HP AIO printer/scanner
+# Uses configuration file from scan2folder
+#
+# Depends on :
+#  * imagemagick (for convert)
+#  * tesseract-ocr
+#  * yad
+#  * sane (for scanimage)
+#
+# Revision history :
+#  28/02/2015, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+IFS=$'\n'
+
+# -----------------------------------------
+#          User parameters
+
+# Dialog box title
+TITLE="Address scanner"
+
+# File to receive addresses
+FILE_ADDRESS="$HOME/Adresses.csv"
+
+# -----------------------------------------
+
+# check tools availability
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
+command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
+command -v scanimage >/dev/null 2>&1 || { zenity --error --text="Please install scanimage"; exit 1; }
+command -v tesseract >/dev/null 2>&1 || { zenity --error --text="Please install tesseract [tesseract-ocr]"; exit 1; }
+
+# default scanner configuration file
+CONF_FILE="$HOME/.scan2folder.conf"
+
+# default width of dialog box
+DLG_WIDTH=600
+
+# address position on envelope
+ADDR_POS="250x600+350+600"
+
+# temporary file name
+FILE_TMP=$(mktemp)
+
+# if possible, load scanner parameters from configuration file
+[ -f "${CONF_FILE}" ] && SCAN_NAME=$(cat $CONF_FILE | grep "scanner-name=" | cut -d"=" -f2-)
+[ -f "${CONF_FILE}" ] && SCAN_DEVICE=$(cat $CONF_FILE | grep "scanner-device=" | cut -d"=" -f2-)
+
+# if no scanner device found, error
+[ "${SCAN_DEVICE}" == "" ] && { zenity --error --text="Please select scanner with Scan to Folder"; exit 1; }
+
+# ----------------------------------------------------
+# Main loop
+# ----------------------------------------------------
+CHOICE=1
+while [ "$CHOICE" == "1" ]
+do 
+  # --------------------------------------
+  #         Validate next scan
+  # --------------------------------------
+
+  # Scan parameter selection dialog
+  TEXT="Scanner used is ${SCAN_NAME}. \n\n Address will be saved to ${FILE_ADDRESS} \n\n Press Scan to process next envelopes."
+  SELECTION=$(yad --center --width=$DLG_WIDTH --window-icon="scanner" --image="scanner" \
+                  --title="${TITLE}" --text="${TEXT}" \
+                  --button="Exit:0" --button="Scan:1")
+  CHOICE=$?
+
+  if [ "$CHOICE" == "1" ]
+  then
+    # --------------------------------------
+    #       Scan envelopes from ADF
+    # --------------------------------------
+    (
+    echo 0
+    echo "# Scanning envelopes ..."
+    scanimage --device-name="$SCAN_DEVICE" --format=pnm --mode="Gray" --resolution=150 --batch="$FILE_TMP-%d.pnm" --source "ADF"
+    echo 100 
+    ) | yad --width=$DLG_WIDTH --center --window-icon="scanner" --image="scanner" \
+            --title "${TITLE}" --progress --pulsate --auto-close --no-buttons
+
+    # --------------------------------------
+    #          Analyse scan
+    # --------------------------------------
+ 
+    # list all scan files
+    ARR_SCAN=$(find /tmp -maxdepth 1 -wholename "$FILE_TMP-*.pnm")
+
+    # if scan is available, loop thru address position
+    for FILE in ${ARR_SCAN[@]}; 
+    do
+      # recover address from scan
+      convert "${FILE}" -crop "${ADDR_POS}" -rotate "-90" -brightness-contrast "0x75" -trim "${FILE_TMP}-addr.pnm"
+      convert "${FILE_TMP}-addr.pnm" -resize "250x" "${FILE_TMP}-addr.png"
+
+      # ocr
+      tesseract "${FILE_TMP}-addr.pnm" "${FILE_TMP}-addr"
+
+      # load lines array
+      unset ARR_LINE
+      ARR_LINE=( $(cat "${FILE_TMP}-addr.txt") )
+
+      # load fields array
+      unset ARR_FIELD
+      for LINE in "${ARR_LINE[@]}"; do
+        ARR_FIELD=("${ARR_FIELD[@]}" "--field=")
+      done
+
+      # dialog to validate OCR result
+      ADDRESS=$(yad --width=$DLG_WIDTH --center --title "${TITLE}" --window-icon="scanner" \
+                    --image="${FILE_TMP}-addr.png" --form "${ARR_FIELD[@]}" "${ARR_LINE[@]}")
+
+      # if address has been validated, append it to database
+      ADDRESS="$(echo "${ADDRESS%?}" | sed 's/|/;/g')"
+      [ "${ADDRESS}" != "" ] && echo "${ADDRESS}" >> "${FILE_ADDRESS}" || break
+    done
+    
+    # remove temporary file
+    rm ${FILE_TMP}*
+  fi
+done
