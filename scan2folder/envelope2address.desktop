@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/local/bin/envelope2address
+Name=Get Address from Envelope OCR
+Categories=Graphics
+MimeType=
+Icon=scanner
