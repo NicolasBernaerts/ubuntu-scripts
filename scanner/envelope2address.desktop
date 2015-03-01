@@ -6,4 +6,4 @@ Exec=/usr/local/bin/envelope2address
 Name=Scan Address from Envelope
 Categories=Graphics
 MimeType=
-Icon=scanner
+Icon=contact-new
