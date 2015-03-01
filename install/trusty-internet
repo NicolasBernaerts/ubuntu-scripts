@@ -4,13 +4,17 @@
 #
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # 10/01/2015, V1.1 - Use clipgrab team PPA
+# 01/03/2015, V1.2 - Add nmap for port detection
 # -------------------------------------------------------
+
+# nmap
+sudo apt-get -y install nmap
 
 # thunderbird
 sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-support
 
 # chromium & filezilla
-sudo apt-get -y install chromium-bsu filezilla
+sudo apt-get -y install chromium-browser filezilla
 
 # Firefox : Hangout plugin
 wget https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
