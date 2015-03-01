@@ -40,6 +40,7 @@ CONF_FILE="$HOME/.scan2folder.conf"
 
 # default width of dialog box
 DLG_WIDTH=600
+DLG_ICON="internet-mail"
 
 # address position on envelope
 ADDR_POS="250x600+350+600"
@@ -66,7 +67,7 @@ do
 
   # Scan parameter selection dialog
   TEXT="Scanner used is ${SCAN_NAME}. \n\n Address will be saved to ${FILE_ADDRESS} \n\n Press Scan to process next envelopes."
-  SELECTION=$(yad --center --width=$DLG_WIDTH --window-icon="scanner" --image="scanner" \
+  SELECTION=$(yad --center --width=${DLG_WIDTH} --window-icon="${DLG_ICON}" --image="${DLG_ICON}" \
                   --title="${TITLE}" --text="${TEXT}" \
                   --button="Exit:0" --button="Scan:1")
   CHOICE=$?
@@ -81,7 +82,7 @@ do
     echo "# Scanning envelopes ..."
     scanimage --device-name="$SCAN_DEVICE" --format=pnm --mode="Gray" --resolution=150 --batch="$FILE_TMP-%d.pnm" --source "ADF"
     echo 100 
-    ) | yad --width=$DLG_WIDTH --center --window-icon="scanner" --image="scanner" \
+    ) | yad --width=$DLG_WIDTH --center --window-icon="${DLG_ICON}" --image="${DLG_ICON}" \
             --title "${TITLE}" --progress --pulsate --auto-close --no-buttons
 
     # --------------------------------------
@@ -112,7 +113,7 @@ do
       done
 
       # dialog to validate OCR result
-      ADDRESS=$(yad --width=$DLG_WIDTH --center --title "${TITLE}" --window-icon="scanner" \
+      ADDRESS=$(yad --width=$DLG_WIDTH --center --title "${TITLE}" --window-icon="${DLG_ICON}" \
                     --image="${FILE_TMP}-addr.png" --form "${ARR_FIELD[@]}" "${ARR_LINE[@]}")
 
       # if address has been validated, append it to database
