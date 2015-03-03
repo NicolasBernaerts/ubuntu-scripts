@@ -20,11 +20,14 @@ sudo apt-get -y install cifs-utils autofs exfat-fuse
 # compression tools
 sudo apt-get -y install p7zip-full rar unrar unzip
 
+# file comparison
+sudo apt-get -y install meld
+
 # disk tools
 sudo apt-get -y install smartmontools disktype unetbootin gparted
 
-# snmp tools
-sudo apt-get -y install snmp snmp-mibs-downloader
+# network tools
+sudo apt-get -y install nmap snmp snmp-mibs-downloader
 
 # keepassx : electronic wallet
 sudo apt-get -y install keepassx
