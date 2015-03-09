@@ -26,10 +26,10 @@
 #                       Add multiple files processing thanks to Hingo's idea
 # -------------------------------------------------------
 
-# Configuration file : ~/.config/video-stabilize.conf
+# Set configuration file : ~/.config/video-stabilize.conf
 FILE_CONF="$HOME/.config/video-stabilize.conf"
 
-# Load configuration from ~/.tool/video-stabilize.conf
+# Load configuration parameters
 ARR_EXT=($(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
 STAB_SHAKINESS=$(cat "${FILE_CONF}" | grep "shakiness" | cut -d'=' -f2)
 STAB_SMOOTHING=$(cat "${FILE_CONF}" | grep "smoothing" | cut -d'=' -f2)
