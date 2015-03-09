@@ -11,6 +11,7 @@
 #    * exiftool (from libimage-exiftool-perl package)
 #    * avconv
 #    * x264
+#
 #  Revision history :
 #    04/03/2012, V1.0 - Creation by N. Bernaerts
 #    04/04/2012, V1.1 - Add codecs as parameters
@@ -19,35 +20,26 @@
 #    19/01/2015, V2.1 - Manage per process .trf file to allow parallel execution
 #    19/01/2015, V2.2 - Add .pid file to handle processing cancellation
 #    23/01/2015, V3.0 - Check tools availability, 
-#                       detect available stabilization filters (vidstab, videostab2 or videostab)
-#                       and add Fedora compatibility (mlt-melt) thanks to Guy Eagling
+#                       Detect available stabilization filters (vidstab, videostab2 or videostab)
+#                       Add Fedora compatibility (mlt-melt) thanks to Guy Eagling
+#    06/03/2015, V3.1 - Externalize parameters to ~/.config/video-stabilize.conf
+#                       Add multiple files processing thanks to Hingo's idea
 # -------------------------------------------------------
 
-# -------------------------------------------------------
-#  Beginning of parameter section
-#
-#  (Please, do not modify anything out of this section)
-#
+# Configuration file : ~/.config/video-stabilize.conf
+FILE_CONF="$HOME/.config/video-stabilize.conf"
 
-# list of input video extensions
-ARR_EXT=("3gp" "avi" "dv" "m4v" "mkv" "mov" "movie" "mp4" "mpeg" "mpg" "qt")
-
-# Default stabilization parameters
-STAB_SHAKINESS="4"
-STAB_SMOOTHING="15"
-STAB_OPTZOOM="1"
-STAB_EXTRA=("show=0" "crop=0")
-
-# Default encoder options (rate in kbits/s)
-VIDEO_CODEC="libx264"
-AUDIO_CODEC="aac"
-VIDEO_RATE=20000
-AUDIO_RATE=128
-ENCODE_OPTION=("tune=film" "preset=slow")
-
-#
-#  End of parameter section
-# -------------------------------------------------------
+# Load configuration from ~/.tool/video-stabilize.conf
+ARR_EXT=($(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
+STAB_SHAKINESS=$(cat "${FILE_CONF}" | grep "shakiness" | cut -d'=' -f2)
+STAB_SMOOTHING=$(cat "${FILE_CONF}" | grep "smoothing" | cut -d'=' -f2)
+STAB_OPTZOOM=$(cat "${FILE_CONF}" | grep "optzoom" | cut -d'=' -f2)
+STAB_EXTRA=($(cat "${FILE_CONF}" | grep "extra" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
+VIDEO_CODEC=$(cat "${FILE_CONF}" | grep "video-codec" | cut -d'=' -f2)
+AUDIO_CODEC=$(cat "${FILE_CONF}" | grep "audio-codec" | cut -d'=' -f2)
+VIDEO_RATE=$(cat "${FILE_CONF}" | grep "video-rate" | cut -d'=' -f2)
+AUDIO_RATE=$(cat "${FILE_CONF}" | grep "audio-rate" | cut -d'=' -f2)
+ENCODE_OPTION=($(cat "${FILE_CONF}" | grep "option" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
 
 # -------------------------------------------------------
 #  Check tools availability
@@ -67,37 +59,44 @@ command -v x264 >/dev/null 2>&1 || { zenity --error --text="Please install x264"
 #  Retrieve or select video file
 # -------------------------------------------------------
 
-# get file name and extension
-FILE_PATH="$1"
-FILE_EXT=$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')
+IFS=$'\n'
 
-# check if file extension given in parameter is in the list
-[ -f "$FILE_PATH" ] && EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case $FILE_EXT)
+# loop thru arguments to check that they are video files
+for arg
+do
+  # get file name and extension
+  FILE_PATH="$arg"
+  FILE_EXT=$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')
 
-# if no file or file not video file, open file selection dialog box
-LIST_EXT=$(echo "*.${ARR_EXT[@]}" | sed 's/ / *\./g')
-[ -z "$EXT_OK" ] && FILE_PATH=$(yad --center --width=800 --height=500 --window-icon "video" --image "stabilizer" \
-                                    --file --file-filter="Video file (${LIST_EXT[@]})|${LIST_EXT[@]}" \
-                                    --title="Select video file to stabilize")
+  # check if file extension given in parameter is in the allowed extension list
+  [ -f "$FILE_PATH" ] && EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case ${FILE_EXT}) || EXT_OK=""
 
-# -------------------------------------------------------
-#  Analyse video file and select processing parameters
-# -------------------------------------------------------
+  # if ok, add it to the video files array
+  [ -n "$EXT_OK" ] && ARR_VIDEO=("${ARR_VIDEO[@]}" "${FILE_PATH}")
+done
 
-# if file selected, lets continue
-if [ -f "${FILE_PATH}" ];
+# if there is no candidate files
+if [ ${#ARR_VIDEO[@]} -eq 0 ]
 then
-  # generate the filenames
-  FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
-  FILE_MLT="${FILE_BASE}.mlt"
-  FILE_LOG="${FILE_BASE}.log"
-  FILE_STAB="${FILE_BASE}-stab.mp4"
+  # generate allowed extension list
+  LIST_EXT=$(echo "*.${ARR_EXT[@]}" | sed 's/ / *\./g')
 
-  # generate temporary files
-  FILE_TMP=$(mktemp -t XXXXXXXX) && rm "${FILE_TMP}"
-  FILE_TRF="${FILE_TMP}.trf"
-  FILE_PID="${FILE_TMP}.pid"
+  # open multiple files selection dialog box
+  LST_VIDEO=$(yad --center --width=800 --height=500 --window-icon "video" --image "stabilizer" \
+                  --file --multiple --file-filter="Video file (${LIST_EXT[@]})|${LIST_EXT[@]}" \
+                  --title="Select video file to stabilize")
 
+  # generate video files array
+  ARR_VIDEO=($(echo "${LST_VIDEO}" | tr "|" "\n"))
+fi 
+
+# -------------------------------------------------------
+#  Analyse video files and select processing parameters
+# -------------------------------------------------------
+
+# loop thru selected video files
+for FILE_PATH in "${ARR_VIDEO[@]}"
+do
   # get video metadata
   ARR_EXIF=$(exiftool -s3 -rotation -imagewidth -imageheight -avgbitrate "${FILE_PATH}")
   FILE_ROTATE=$(echo $ARR_EXIF | awk '{print $1}')
@@ -108,6 +107,7 @@ then
   # get encoding parameters using local number decimal separator (, or .)
   SEPARATOR=$(printf "%'.2f" 1 | sed 's/^1\(.\).*$/\1/')
   VIDEO_RATIO=$(echo "scale=2; ${FILE_WIDTH} / ${FILE_HEIGHT}" | bc | sed 's/[\.\,]/'${SEPARATOR}'/g')
+  [ "$FILE_ROTATE" = "0" -o "$FILE_ROTATE" = "180" ] && LST_RATIO="1|${VIDEO_RATIO}" || LST_RATIO="${VIDEO_RATIO}|1" 
 
   # detect if rotation needed
   [ "$FILE_ROTATE" = "0" ] && CHECK_ROTATE="FALSE" || CHECK_ROTATE="TRUE"
@@ -125,7 +125,7 @@ then
     --form --item-separator='|' \
     --field="Rotate:CHK" "${CHECK_ROTATE}" \
     --field="  - Angle (${FILE_ROTATE}° detected):NUM" "${FILE_ROTATE}|0..359" \
-    --field="  - Resize ratio (${VIDEO_RATIO} for 90°):CB" "${VIDEO_RATIO}|1" \
+    --field="  - Resize ratio (${VIDEO_RATIO} for 90°):CB" "${LST_RATIO}" \
     --field="Stabilize:CHK" "TRUE" \
     --field="  - Stabilization filter:CB" "${LST_FILTER}" \
     --field="  - Shakiness [ 0 ... 10 ]:NUM" "${STAB_SHAKINESS}|1..10" \
@@ -135,7 +135,7 @@ then
     --field="  - ${VIDEO_CODEC} video bitrate (Kbits/s):NUM" "${VIDEO_RATE}|1..50000" \
     --field="  - ${AUDIO_CODEC} audio bitrate (Kbits/s):NUM" "${AUDIO_RATE}|1..320")
 
-  # retrieve parameters
+ # retrieve parameters
   ROTATE=$(echo ${CHOICE} | cut -d'|' -f1)
   ROTATE_ANGLE=$(echo ${CHOICE} | cut -d'|' -f2 | sed 's/^\([0-9]*\).*$/\1/')
   ROTATE_RATIO=$(echo ${CHOICE} | cut -d'|' -f3)
@@ -146,20 +146,79 @@ then
   STAB_OPTZOOM=$(echo ${CHOICE} | cut -d'|' -f8 | sed 's/^\([0-9]*\).*$/\1/')
   VIDEO_RATE=$(echo ${CHOICE} | cut -d'|' -f10 | sed 's/^\([0-9]*\).*$/\1/')
   AUDIO_RATE=$(echo ${CHOICE} | cut -d'|' -f11 | sed 's/^\([0-9]*\).*$/\1/')
-fi
 
-# if rotation and/or stabilisation are selected, encode final video
-if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
-then
+  # if it is needed, add file to processing queue
+  if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
+  then
+    ARR_FILE=("${ARR_FILE[@]}" "${FILE_PATH}")
+    ARR_ROTATE=("${ARR_ROTATE[@]}" "${ROTATE}")
+    ARR_ROTATE_ANGLE=("${ARR_ROTATE_ANGLE[@]}" "${ROTATE_ANGLE}")
+    ARR_ROTATE_RATIO=("${ARR_ROTATE_RATIO[@]}" "${ROTATE_RATIO}")
+    ARR_STABILIZE=("${ARR_STABILIZE[@]}" "${STABILIZE}")
+    ARR_STAB_FILTER=("${ARR_STAB_FILTER[@]}" "${STAB_FILTER}")
+    ARR_STAB_SHAKINESS=("${ARR_STAB_SHAKINESS[@]}" "${STAB_SHAKINESS}")
+    ARR_STAB_SMOOTHING=("${ARR_STAB_SMOOTHING[@]}" "${STAB_SMOOTHING}")
+    ARR_STAB_OPTZOOM=("${ARR_STAB_OPTZOOM[@]}" "${STAB_OPTZOOM}")
+    ARR_VIDEO_RATE=("${ARR_VIDEO_RATE[@]}" "${VIDEO_RATE}")
+    ARR_AUDIO_RATE=("${ARR_AUDIO_RATE[@]}" "${AUDIO_RATE}")
+  fi
+done
+
+# loop thru video files to process
+NUM_FILE=${#ARR_FILE[@]}
+for ((INDEX=0; INDEX < NUM_FILE; INDEX++))
+do
+  # ------------------------------------------
+  # Get file data
+  # ------------------------------------------
+  # get current file path 
+  FILE_PATH="${ARR_FILE[$INDEX]}"
+
+  # generate the filenames
+  FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
+  FILE_STAB="${FILE_BASE}-stab.mp4"
+
+  # generate temporary files
+  DIR_TMP=$(mktemp -d "$HOME/.stab-XXXXXXXX")
+  FILE_TRF="${DIR_TMP}/video.trf"
+  FILE_PID="${DIR_TMP}/video.pid"
+  FILE_MLT="${DIR_TMP}/video.mlt"
+  FILE_LOG="${DIR_TMP}/video.log"
+
+  # get parameters
+  ROTATE="${ARR_ROTATE[$INDEX]}"
+  ROTATE_ANGLE="${ARR_ROTATE_ANGLE[$INDEX]}"
+  ROTATE_RATIO="${ARR_ROTATE_RATIO[$INDEX]}"
+  STABILIZE="${ARR_STABILIZE[$INDEX]}"
+  STAB_FILTER="${ARR_STAB_FILTER[$INDEX]}"
+  STAB_SHAKINESS="${ARR_STAB_SHAKINESS[$INDEX]}"
+  STAB_SMOOTHING="${ARR_STAB_SMOOTHING[$INDEX]}"
+  STAB_OPTZOOM="${ARR_STAB_OPTZOOM[$INDEX]}"
+  VIDEO_RATE="${ARR_VIDEO_RATE[$INDEX]}"
+  AUDIO_RATE="${ARR_AUDIO_RATE[$INDEX]}"
+
   (
+  # initilize transformation arrays
+  unset ARR_STABILIZE
+  unset ARR_ROTATE
+  unset ARR_ENCODE
+
   # if needed, generate stabilizer parameters array
   [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("-filter" "${STAB_FILTER}" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" \
                                               "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
 
-  # if needed, convert angle for filter use and set rotation filter
-  X_ANGLE=$(echo "${ROTATE_ANGLE} * 10 / 2" | bc)
-  [ "$ROTATE" = "TRUE" ] && ARR_ROTATE=("-filter" "affine" "transition.fix_rotate_x=${X_ANGLE}" \
-                                        "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
+  # if needed, set rotation filter
+  if [ "$ROTATE" = "TRUE" ]
+  then
+    # convert angle for filter use
+    X_ANGLE=$(echo "${ROTATE_ANGLE} * 10 / 2" | bc)
+
+    # set rotation filter
+    ARR_ROTATE=("-filter" "affine" "transition.fix_rotate_x=${X_ANGLE}")
+
+    # if different than 1, set transformation ratio
+    [ "${ROTATE_RATIO}" != "1" ] && ARR_ROTATE=("${ARR_ROTATE[@]}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
+  fi
 
   # generate encoder parameters array
   ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ENCODE_OPTION[@]}")
@@ -167,7 +226,7 @@ then
   # ------------------------------------------
   # Rotation / Stabilization analysis
   # ------------------------------------------
-  ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 real_time=-2 2>"${FILE_LOG}" &
 
   # get the process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_PATH}" | awk '{print $2}')
@@ -188,14 +247,14 @@ then
     echo "# Analysing frame ${LOG_FRAME}"
     echo "${LOG_PROGRESS}"
 
-    # wait for 2 seconds
-    sleep 2
+    # wait for 5 seconds
+    sleep 5
   done
 
   # ------------------------------------------
   #  Final result encoding
   # ------------------------------------------
-  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-2 2>"${FILE_LOG}" &
 
   # get the process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_MLT}" | awk '{print $2}')
@@ -217,8 +276,8 @@ then
     echo "# Generating frame ${LOG_FRAME}"
     echo "${LOG_PROGRESS}"
 
-    # wait for 2 seconds
-    sleep 2
+    # wait for 5 seconds
+    sleep 5
   done
 
   # ------------------------------------------
@@ -231,19 +290,17 @@ then
   # declare end of processing
   echo "# File processed and available"
   echo "100"
-  ) | yad --center --width=600 --window-icon "video" --image "stabilizer" --progress --title "${FILE_PATH}"
-fi
+  ) | yad --center --width=600 --window-icon "video" --image "stabilizer" --progress --auto-close --title "[$((${INDEX} + 1))/${NUM_FILE}] ${FILE_PATH}"
 
-# -------------------------------------------------------
-#  After job cleanup
-# -------------------------------------------------------
+  # -------------------------------------------------------
+  #  After job cleanup
+  # -------------------------------------------------------
 
-# if process is still running (operation has been canceled), kill the process
-[ -f "${FILE_PID}" ] && PID=$(cat "${FILE_PID}") || PID=""
-[ "$PID" != "" ] && kill -9 "${PID}"
+  # if process is still running (operation has been canceled), kill the process
+  [ -f "${FILE_PID}" ] && PID=$(cat "${FILE_PID}") || PID=""
+  [ "${PID}" != "" ] && kill -9 "${PID}"
 
-#  cleaning-up of all temporary files
-[ -f "${FILE_LOG}" ] && rm "${FILE_LOG}"
-[ -f "${FILE_MLT}" ] && rm "${FILE_MLT}"
-[ -f "${FILE_TRF}" ] && rm "${FILE_TRF}"
-[ -f "${FILE_PID}" ] && rm "${FILE_PID}"
+  #  cleaning-up of all temporary files
+  rm -R ${DIR_TMP}
+
+done
