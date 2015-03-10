@@ -23,3 +23,5 @@ sudo wget -O /usr/share/icons/stabilizer.png https://raw.githubusercontent.com/N
 sudo wget -O /usr/share/applications/video-stabilize.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
 wget -O $HOME/.local/share/file-manager/actions/video-stabilize-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-action.desktop
+mkdir --parents $HOME/.config
+wget -O $HOME/.config/video-stabilize.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize.conf
