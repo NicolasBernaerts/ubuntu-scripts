@@ -5,5 +5,5 @@ Terminal=false
 Exec=/usr/local/bin/video-stabilize
 Name=Video rotation and stabilization
 Categories=GNOME;AudioVideo;AudioVideoEditing;
-MimeType=video/x-msvideo;video/x-dv;video/x-m4v;video/mkv;video/quicktime;video/x-sgi-movie;video/mp4;video/mpeg;
+MimeType=video/x-msvideo;video/x-dv;video/x-m4v;video/mkv;video/x-matroska;video/quicktime;video/x-sgi-movie;video/mp4;video/mpeg;
 Icon=stabilizer
