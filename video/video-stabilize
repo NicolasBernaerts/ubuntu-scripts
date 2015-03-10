@@ -24,12 +24,13 @@
 #                       Add Fedora compatibility (mlt-melt) thanks to Guy Eagling
 #    06/03/2015, V3.1 - Externalize parameters to ~/.config/video-stabilize.conf
 #                       Add multiple files processing thanks to Hingo's idea
+#    10/03/2015, V3.2 - Update exiftool handling for MKV files 
 # -------------------------------------------------------
 
-# Set configuration file : ~/.config/video-stabilize.conf
+# Configuration file : ~/.config/video-stabilize.conf
 FILE_CONF="$HOME/.config/video-stabilize.conf"
 
-# Load configuration parameters
+# Load configuration from ~/.tool/video-stabilize.conf
 ARR_EXT=($(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
 STAB_SHAKINESS=$(cat "${FILE_CONF}" | grep "shakiness" | cut -d'=' -f2)
 STAB_SMOOTHING=$(cat "${FILE_CONF}" | grep "smoothing" | cut -d'=' -f2)
@@ -97,12 +98,20 @@ fi
 # loop thru selected video files
 for FILE_PATH in "${ARR_VIDEO[@]}"
 do
+  # generate temporary exif file
+  FILE_EXIF=$(mktemp -t stab-XXXXXXXX.exif)
+
   # get video metadata
-  ARR_EXIF=$(exiftool -s3 -rotation -imagewidth -imageheight -avgbitrate "${FILE_PATH}")
-  FILE_ROTATE=$(echo $ARR_EXIF | awk '{print $1}')
-  FILE_WIDTH=$(echo $ARR_EXIF | awk '{print $2}')
-  FILE_HEIGHT=$(echo $ARR_EXIF | awk '{print $3}')
-  FILE_BITRATE=$(echo $ARR_EXIF | awk '{print $4 $5}')
+  exiftool "${FILE_PATH}" > ${FILE_EXIF}
+  FILE_WIDTH=$(cat ${FILE_EXIF} | grep "^Image Width" | cut -d':' -f2 | xargs)
+  FILE_HEIGHT=$(cat ${FILE_EXIF} | grep "^Image Height" | cut -d':' -f2 | xargs)
+  FILE_BITRATE=$(cat ${FILE_EXIF} | grep "^Avg Bitrate" | cut -d':' -f2 | xargs)
+  FILE_ROTATE=$(cat ${FILE_EXIF} | grep "^Rotation" | cut -d':' -f2 | xargs)
+  [ "${FILE_BITRATE}" == "" ] && FILE_BITRATE="Unknown"
+  [ "${FILE_ROTATE}" == "" ] && FILE_ROTATE="0"
+
+  # remove temporary exif file
+  rm ${FILE_EXIF}
 
   # get encoding parameters using local number decimal separator (, or .)
   SEPARATOR=$(printf "%'.2f" 1 | sed 's/^1\(.\).*$/\1/')
