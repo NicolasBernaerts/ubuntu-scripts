@@ -24,7 +24,9 @@
 #                       Add Fedora compatibility (mlt-melt) thanks to Guy Eagling
 #    06/03/2015, V3.1 - Externalize parameters to ~/.config/video-stabilize.conf
 #                       Add multiple files processing thanks to Hingo's idea
-#    10/03/2015, V3.2 - Update exiftool handling for MKV files 
+#    10/03/2015, V3.2 - Update exiftool handling for MKV files
+#    12/03/2015, V3.3 - Add extra parameters to dialog box 
+#                       Change progress calculation to avoid errors
 # -------------------------------------------------------
 
 # Configuration file : ~/.config/video-stabilize.conf
@@ -35,12 +37,12 @@ ARR_EXT=($(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" 
 STAB_SHAKINESS=$(cat "${FILE_CONF}" | grep "shakiness" | cut -d'=' -f2)
 STAB_SMOOTHING=$(cat "${FILE_CONF}" | grep "smoothing" | cut -d'=' -f2)
 STAB_OPTZOOM=$(cat "${FILE_CONF}" | grep "optzoom" | cut -d'=' -f2)
-STAB_EXTRA=($(cat "${FILE_CONF}" | grep "extra" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
+STAB_EXTRA=$(cat "${FILE_CONF}" | grep "extra" | cut -d'=' -f2-)
 VIDEO_CODEC=$(cat "${FILE_CONF}" | grep "video-codec" | cut -d'=' -f2)
 AUDIO_CODEC=$(cat "${FILE_CONF}" | grep "audio-codec" | cut -d'=' -f2)
 VIDEO_RATE=$(cat "${FILE_CONF}" | grep "video-rate" | cut -d'=' -f2)
 AUDIO_RATE=$(cat "${FILE_CONF}" | grep "audio-rate" | cut -d'=' -f2)
-ENCODE_OPTION=($(cat "${FILE_CONF}" | grep "option" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
+ENCODE_OPTION=$(cat "${FILE_CONF}" | grep "option" | cut -d'=' -f2-)
 
 # -------------------------------------------------------
 #  Check tools availability
@@ -140,9 +142,11 @@ do
     --field="  - Shakiness [ 0 ... 10 ]:NUM" "${STAB_SHAKINESS}|1..10" \
     --field="  - Smoothing [ 0 ... 100 ]:NUM" "${STAB_SMOOTHING}|0..100"  \
     --field="  - Optimal Zoom [ 0, 1, 2 ]:NUM" "${STAB_OPTZOOM}|0..2" \
+    --field="  - Extra stabilize options" "${STAB_EXTRA}" \
     --field="Encoder:LBL" "final" \
     --field="  - ${VIDEO_CODEC} video bitrate (Kbits/s):NUM" "${VIDEO_RATE}|1..50000" \
-    --field="  - ${AUDIO_CODEC} audio bitrate (Kbits/s):NUM" "${AUDIO_RATE}|1..320")
+    --field="  - ${AUDIO_CODEC} audio bitrate (Kbits/s):NUM" "${AUDIO_RATE}|1..320" \
+    --field="  - Extra encoder parameters" "${ENCODE_OPTION}")
 
  # retrieve parameters
   ROTATE=$(echo ${CHOICE} | cut -d'|' -f1)
@@ -153,8 +157,10 @@ do
   STAB_SHAKINESS=$(echo ${CHOICE} | cut -d'|' -f6 | sed 's/^\([0-9]*\).*$/\1/')
   STAB_SMOOTHING=$(echo ${CHOICE} | cut -d'|' -f7 | sed 's/^\([0-9]*\).*$/\1/')
   STAB_OPTZOOM=$(echo ${CHOICE} | cut -d'|' -f8 | sed 's/^\([0-9]*\).*$/\1/')
-  VIDEO_RATE=$(echo ${CHOICE} | cut -d'|' -f10 | sed 's/^\([0-9]*\).*$/\1/')
-  AUDIO_RATE=$(echo ${CHOICE} | cut -d'|' -f11 | sed 's/^\([0-9]*\).*$/\1/')
+  STAB_EXTRA=$(echo ${CHOICE} | cut -d'|' -f9)
+  VIDEO_RATE=$(echo ${CHOICE} | cut -d'|' -f11 | sed 's/^\([0-9]*\).*$/\1/')
+  AUDIO_RATE=$(echo ${CHOICE} | cut -d'|' -f12 | sed 's/^\([0-9]*\).*$/\1/')
+  ENCODE_OPTION=$(echo ${CHOICE} | cut -d'|' -f13)
 
   # if it is needed, add file to processing queue
   if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
@@ -168,8 +174,10 @@ do
     ARR_STAB_SHAKINESS=("${ARR_STAB_SHAKINESS[@]}" "${STAB_SHAKINESS}")
     ARR_STAB_SMOOTHING=("${ARR_STAB_SMOOTHING[@]}" "${STAB_SMOOTHING}")
     ARR_STAB_OPTZOOM=("${ARR_STAB_OPTZOOM[@]}" "${STAB_OPTZOOM}")
+    ARR_STAB_EXTRA=("${ARR_STAB_EXTRA[@]}" "${STAB_EXTRA}")
     ARR_VIDEO_RATE=("${ARR_VIDEO_RATE[@]}" "${VIDEO_RATE}")
     ARR_AUDIO_RATE=("${ARR_AUDIO_RATE[@]}" "${AUDIO_RATE}")
+    ARR_ENCODE_OPTION=("${ARR_ENCODE_OPTION[@]}" "${ENCODE_OPTION}")
   fi
 done
 
@@ -203,8 +211,10 @@ do
   STAB_SHAKINESS="${ARR_STAB_SHAKINESS[$INDEX]}"
   STAB_SMOOTHING="${ARR_STAB_SMOOTHING[$INDEX]}"
   STAB_OPTZOOM="${ARR_STAB_OPTZOOM[$INDEX]}"
+  STAB_EXTRA="${ARR_STAB_EXTRA[$INDEX]}"
   VIDEO_RATE="${ARR_VIDEO_RATE[$INDEX]}"
   AUDIO_RATE="${ARR_AUDIO_RATE[$INDEX]}"
+  ENCODE_OPTION="${ARR_ENCODE_OPTION[$INDEX]}"
 
   (
   # initilize transformation arrays
@@ -212,15 +222,20 @@ do
   unset ARR_ROTATE
   unset ARR_ENCODE
 
+  # initial display
+  echo "# Computing parameters"
+  echo "0"
+
   # if needed, generate stabilizer parameters array
+  ARR_EXTRA=($(echo "${STAB_EXTRA}" | cut -d ";" --output-delimiter=" " -f 1-))
   [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("-filter" "${STAB_FILTER}" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" \
-                                              "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${STAB_EXTRA[@]}")
+                                              "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${ARR_EXTRA[@]}")
 
   # if needed, set rotation filter
   if [ "$ROTATE" = "TRUE" ]
   then
     # convert angle for filter use
-    X_ANGLE=$(echo "${ROTATE_ANGLE} * 10 / 2" | bc)
+    X_ANGLE=$((10 * ${ROTATE_ANGLE} / 2))
 
     # set rotation filter
     ARR_ROTATE=("-filter" "affine" "transition.fix_rotate_x=${X_ANGLE}")
@@ -229,12 +244,14 @@ do
     [ "${ROTATE_RATIO}" != "1" ] && ARR_ROTATE=("${ARR_ROTATE[@]}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
   fi
 
-  # generate encoder parameters array
-  ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ENCODE_OPTION[@]}")
-
   # ------------------------------------------
   # Rotation / Stabilization analysis
   # ------------------------------------------
+
+  # information display
+  echo "# Analysing file"
+
+  # launch analysis command
   ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 real_time=-2 2>"${FILE_LOG}" &
 
   # get the process id
@@ -247,22 +264,30 @@ do
     PID=$(ps aux | awk '{print $2}' | grep ${PID})
 
     # calculate process completion
-    LOG_LINE=$(cat "${FILE_LOG}" | tail -n 1)
-    LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame:[ ]*\([0-9]*\).*$/\1/g')
-    LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage:[ ]*\([0-9]*\).*$/\1/g')
-    [ "$LOG_PERCENT" != "" ] && LOG_PROGRESS=$(echo "${LOG_PERCENT} / 2" | bc)
- 
-    # display process completion
-    echo "# Analysing frame ${LOG_FRAME}"
-    echo "${LOG_PROGRESS}"
+    LOG_LINE="$(tail --bytes=50 ${FILE_LOG} | grep 'Frame' | grep 'percentage')"
+    LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame[ :]*\([0-9]*\).*$/\1/')
+    LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage[ :]*\([0-9]*\).*$/\1/')
 
-    # wait for 5 seconds
-    sleep 5
+    # if percentage has been retrieved from log, display process completion
+    [[ ${LOG_FRAME} == +([0-9]) ]] && echo "# Analysing frame ${LOG_FRAME}"
+    [[ ${LOG_PERCENT} == +([0-9]) ]] && echo $((${LOG_PERCENT} / 2))
+
+    # wait for 2 seconds
+    sleep 2
   done
 
   # ------------------------------------------
   #  Final result encoding
   # ------------------------------------------
+
+  # information display
+  echo "# Generating file"
+
+  # generate encoder parameters array
+  ARR_OPTION=($(cat "${ENCODE_OPTION}" | cut -d ";" --output-delimiter=" " -f 1-))
+  ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_OPTION[@]}")
+
+  # launch generation command
   ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-2 2>"${FILE_LOG}" &
 
   # get the process id
@@ -276,17 +301,16 @@ do
     PID=$(ps aux | awk '{print $2}' | grep ${PID})
 
     # calculate process completion
-    LOG_LINE=$(cat "${FILE_LOG}" | tail -n 1)
-    LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame:[ ]*\([0-9]*\).*$/\1/g')
-    LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage:[ ]*\([0-9]*\).*$/\1/g')
-    [ "$LOG_PERCENT" != "" ] && LOG_PROGRESS=$(echo "50 + ( ${LOG_PERCENT} / 2 )" | bc)
+    LOG_LINE="$(tail --bytes=50 ${FILE_LOG} | grep 'Frame' | grep 'percentage')"
+    LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame[ :]*\([0-9]*\).*$/\1/')
+    LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage[ :]*\([0-9]*\).*$/\1/')
 
-    # display process completion
-    echo "# Generating frame ${LOG_FRAME}"
-    echo "${LOG_PROGRESS}"
+    # if percentage has been retrieved from log, display process completion
+    [[ ${LOG_FRAME} == +([0-9]) ]] && echo "# Generating frame ${LOG_FRAME}"
+    [[ ${LOG_PERCENT} == +([0-9]) ]] && echo $((50 + (${LOG_PERCENT} / 2)))
 
-    # wait for 5 seconds
-    sleep 5
+    # wait for 2 seconds
+    sleep 2
   done
 
   # ------------------------------------------
