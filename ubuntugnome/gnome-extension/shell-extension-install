@@ -28,7 +28,7 @@ EXTENSION_ID="$2"
 EXTENSION_PATH="$HOME/.local/share/gnome-shell/extensions";
 
 # get extension description
-wget -O /tmp/extension.txt "$GNOME_SITE/extension-info/?pk=$EXTENSION_ID&shell_version=$GNOME_VERSION"
+wget -O /tmp/extension.txt "${GNOME_SITE}/extension-info/?pk=${EXTENSION_ID}&shell_version=${GNOME_VERSION}"
 
 # get extension UUID
 EXTENSION_UUID=$(cat /tmp/extension.txt | grep "uuid" | sed 's/^.*uuid[\": ]*\([^\"]*\).*$/\1/')
@@ -49,7 +49,7 @@ then
   EXTENSION_LIST=$(gsettings get org.gnome.shell enabled-extensions | sed 's/^.\(.*\).$/\1/')
 
   # check if extension is already enabled
-  EXTENSION_ENABLED=$(echo $EXTENSION_LIST | grep $EXTENSION_UUID)
+  EXTENSION_ENABLED=$(echo ${EXTENSION_LIST} | grep ${EXTENSION_UUID})
 
   if [ "$EXTENSION_ENABLED" = "" ]
   then
