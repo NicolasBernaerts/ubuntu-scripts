@@ -12,6 +12,9 @@
 #   15/03/2015 - Update thanks to Michele Gazzetti
 # -------------------------------------------
 
+# check unzip
+command -v unzip >/dev/null 2>&1 || { zenity --error --text="Please install Unzip"; exit 1; }
+
 # set gnome shell extension site URL
 GNOME_SITE="https://extensions.gnome.org"
 
