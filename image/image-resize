@@ -25,8 +25,8 @@ IFS=$'\n'
 # loop thru arguments to load candidate files or files in directory
 for arg
 do
-[ -f "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" "$arg")
-[ -d "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "$arg" -maxdepth 1 -type f) )
+  [ -f "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" "$arg")
+  [ -d "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "$arg" -maxdepth 1 -type f) )
 done
 NBR_FILE=${#ARR_FILE[@]}
 
@@ -45,17 +45,17 @@ NBR_IMAGE=${#ARR_IMAGE[@]}
 if [ $NBR_IMAGE -gt 0 ];
 then
   # load target formats into array
-  ARR_FORMAT=( `cat "$HOME/.resize-pix.conf" `)
+  ARR_FORMAT=( $(cat "$HOME/.image-resize.conf") )
 
   # extract data and load choice array
   INDEX=0
   for CUR_FORMAT in "${ARR_FORMAT[@]}"
   do
     # get different data
-    NAME=`echo $CUR_FORMAT | cut -d"," -f1`
-    WIDTH=`echo $CUR_FORMAT | cut -d"," -f2`
-    HEIGHT=`echo $CUR_FORMAT | cut -d"," -f3`
-    PREFIX=`echo $CUR_FORMAT | cut -d"," -f4`
+    NAME=$(echo $CUR_FORMAT | cut -d"," -f1)
+    WIDTH=$(echo $CUR_FORMAT | cut -d"," -f2)
+    HEIGHT=$(echo $CUR_FORMAT | cut -d"," -f3)
+    PREFIX=$(echo $CUR_FORMAT | cut -d"," -f4)
 
     # load arrays accordingly
     ARR_NAME=("${ARR_NAME[@]}" "$NAME")
@@ -93,7 +93,7 @@ then
       OUTPUTFILE="${DIRECTORY}/${PREFIX}/${BASENAME}.jpg"
 
       # create sub directory
-      mkdir --parents "$DIRECTORY/$PREFIX"
+      mkdir --parents "${DIRECTORY}/${PREFIX}"
 
       # display progress
       echo $((CURRENT*100/NBR_IMAGE))
@@ -109,7 +109,7 @@ then
       [ "$PIX_WIDTH" -gt "$PIX_HEIGHT" ] && SIZE="$WIDTH" || SIZE="x$HEIGHT"
 
       # convert picture with auto orientation
-      convert -auto-orient "$INPUTFILE" -resize "$SIZE" -quality $QUALITY "$OUTPUTFILE"
+      convert -auto-orient "${INPUTFILE}" -resize "${SIZE}" -quality $QUALITY "${OUTPUTFILE}"
 
     done | zenity --width=500 --height=25 --progress --auto-close --title "Image resizer"
   fi
