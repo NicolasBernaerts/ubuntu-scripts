@@ -9,28 +9,28 @@
 # configuration file
 CONF_FILE="$HOME/.rsync-backup.conf"
 
-# if available, load parameters from configuration file
-if [ -f "$CONF_FILE" ]
-then
-  # data
-  BACKUP_SRC=$(cat $CONF_FILE | grep "folders=" | cut -d"=" -f2-)
+# path to awk script, in the same directory as current script
+AWK_SCRIPT=$(dirname $(readlink -f $0))"/rsync-backup.awk"
 
-  # server
-  BACKUP_SRV=$(cat $CONF_FILE | grep "server=" | cut -d"=" -f2-)
-  BACKUP_PRT=$(cat $CONF_FILE | grep "port=" | cut -d"=" -f2-)
-  BACKUP_OPT=$(cat $CONF_FILE | grep "options=" | cut -d"=" -f2-)
+# check rsync and configuration file availability
+command -v rsync >/dev/null 2>&1 || { zenity --error --text="Please install rsync"; exit 1; }
+[ -f "$CONF_FILE" ] || { zenity --error --text="Please create configuration file ${CONF_FILE}"; exit 1; }
+
+# load parameters : data
+BACKUP_SRC=$(cat $CONF_FILE | grep "folders=" | cut -d"=" -f2-)
+
+# load parameters : server
+BACKUP_SRV=$(cat $CONF_FILE | grep "server=" | cut -d"=" -f2-)
+BACKUP_PRT=$(cat $CONF_FILE | grep "port=" | cut -d"=" -f2-)
+BACKUP_OPT=$(cat $CONF_FILE | grep "options=" | cut -d"=" -f2-)
   
-  # account
-  BACKUP_MOD=$(cat $CONF_FILE | grep "module=" | cut -d"=" -f2-)
-  BACKUP_USR=$(cat $CONF_FILE | grep "user=" | cut -d"=" -f2-)
-  BACKUP_PWD=$(cat $CONF_FILE | grep "password=" | cut -d"=" -f2-)
-fi
+# load parameters : account
+BACKUP_MOD=$(cat $CONF_FILE | grep "module=" | cut -d"=" -f2-)
+BACKUP_USR=$(cat $CONF_FILE | grep "user=" | cut -d"=" -f2-)
+BACKUP_PWD=$(cat $CONF_FILE | grep "password=" | cut -d"=" -f2-)
 
 # set begining time
 TIME_BEGIN=$(date +%s)
-
-# path to awk script, in the same directory as current script
-AWK_SCRIPT=$(dirname $(readlink -f $0))"/rsync-backup.awk"
 
 # create temporary password file
 TMP_PASSWORD=/tmp/rsync-backup.pwd
