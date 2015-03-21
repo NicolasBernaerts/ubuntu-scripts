@@ -1,0 +1,59 @@
+#!/bin/bash
+# 
+# Script to backup data on a Rsync server
+#
+# Depends on rsync and zenity
+# 
+# 05/11/2012 - V1.0 by Nicolas Bernaerts
+
+# ----------  Parameters - Begin  ----------
+# directories to backup (separated by |)
+BACKUP_SRC="$HOME/Documents"
+
+# server parameters
+BACKUP_OPT="-rltv --del --progress"
+BACKUP_SRV=""
+BACKUP_PRT="873"
+BACKUP_MOD=""
+BACKUP_USR=""
+BACKUP_PWD=""
+# ----------  Parameters - End    ----------
+
+# set begining time
+TIME_BEGIN=$(date +%s)
+
+# path to awk script, in the same directory as current script
+AWK_SCRIPT=$(dirname $(readlink -f $0))"/rsync-backup.awk"
+
+# create temporary password file
+TMP_PASSWORD=/tmp/rsync-backup.pwd
+echo $BACKUP_PWD > $TMP_PASSWORD
+chmod 0700 $TMP_PASSWORD
+
+# split data directories chain in an array
+IFS="|" read -a ARR_DIRECTORY <<< "$BACKUP_SRC"
+
+# loop thru the data directories
+NUM_DIRECTORY=${#ARR_DIRECTORY[@]}
+for (( i=0; i<$NUM_DIRECTORY; i++ ));
+do
+  # current directory to be backed-up
+  DIRECTORY=${ARR_DIRECTORY[$i]}
+
+  # progress dialog title
+  INDEX=$(echo "$i + 1" | bc)
+  TITLE="$INDEX/$NUM_DIRECTORY - Backup of $DIRECTORY"
+
+  # backup current directory
+  rsync ${BACKUP_OPT} --password-file=${TMP_PASSWORD} --port=${BACKUP_PRT} ${DIRECTORY} ${BACKUP_USR}@${BACKUP_SRV}::${BACKUP_MOD} | awk -f ${AWK_SCRIPT} | zenity --progress --width=400 --auto-close --auto-kill --title "$TITLE"
+done
+
+# remove temporary password file
+rm $TMP_PASSWORD
+
+# calculate execution time
+TIME_END=$(date +%s)
+TIME_TOTAL=$(($TIME_END-$TIME_BEGIN))
+
+# end of backup notification
+zenity --notification --text="Backup finished in $TIME_TOTAL seconds" &
