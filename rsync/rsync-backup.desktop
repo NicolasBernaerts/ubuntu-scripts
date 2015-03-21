@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+TryExec=
+Exec=/urs/local/bin/rsync-backup
+Categories=Utility
+Icon=deja-dup
+Name[en_US]=Desktop data backup
+Name[en]=Desktop data backup
+Name[C]=Desktop data backup
+Name[fr_FR]=Sauvegarde des données locales
+Tooltip[en_US]=Backup local data on a remote Rsync server
+Tooltip[en]=Backup local data on a remote Rsync server
+Tooltip[C]=Backup local data on a remote Rsync server
+Tooltip[fr_FR]=Sauvegarde les données locales du PC sur un serveur Rsync
