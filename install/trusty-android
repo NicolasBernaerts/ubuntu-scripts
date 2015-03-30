@@ -12,7 +12,7 @@ sudo chmod a+r /etc/udev/rules.d/51-android.rules
 
 # QtABD (to be tested)
 sudo apt-get -y install libqtgui4 libqt4-network libqt4-declarative
-wget http://motyczko.pl/qtadb/QtADB_0.8.1_linux$X86ARCHI.tar.gz
+wget  http://bernaerts.dyndns.org/download/ubuntu/qtadb/QtADB_0.8.1_linux$X86ARCHI.tar.gz
 tar -xvf QtADB*.tar.gz
 sudo mv ./QtADB*/QtADB /usr/local/sbin/qtadb
 sudo chmod +x /usr/local/sbin/qtadb
@@ -20,7 +20,7 @@ rm -R QtADB*
 mkdir -p $HOME/.config/Bracia
 wget -O $HOME/.config/Bracia/QtADB.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/QtADB.conf
 sudo wget -O /usr/share/applications/qtadb.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/qtadb.desktop
-sudo wget -O /usr/share/icons/qtadb.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/qtadb/qtadb.png
+sudo wget -O /usr/share/icons/qtadb.png http://bernaerts.dyndns.org/download/ubuntu/qtadb/qtadb.png
 
 # APK thumbnailer
 sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick python-nautilus
