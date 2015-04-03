@@ -39,7 +39,7 @@ EXTENSION_URL=$(cat /tmp/extension.txt | grep "download_url" | sed 's/^.*downloa
 if [ "$EXTENSION_URL" != "" ]
 then
   # download extension archive
-  wget -O /tmp/extension.zip "${GNOME_SITE]${EXTENSION_URL}"
+  wget -O /tmp/extension.zip "${GNOME_SITE}${EXTENSION_URL}"
 
   # unzip extension to installation folder
   mkdir -p "${EXTENSION_PATH}/${EXTENSION_UUID}"
