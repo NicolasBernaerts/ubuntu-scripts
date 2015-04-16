@@ -4,7 +4,8 @@
 #
 # Depends on rsync and zenity
 # 
-# 05/11/2012 - V1.0 by Nicolas Bernaerts
+# 05/11/2012, V1.0 - Creation by Nicolas Bernaerts
+# 02/04/2015, V2.0 - Externalize parameters
 
 # configuration file
 CONF_FILE="$HOME/.rsync-backup.conf"
