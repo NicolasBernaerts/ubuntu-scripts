@@ -1,0 +1,209 @@
+#!/bin/bash
+# --------------------------------------------
+# Takes screenshot from android devices
+# connected thru ADB
+#
+# More explainations are available at
+#   http://bernaerts.dyndns.org/...
+# Depends on :
+#   * adb
+#   * avconv
+# Revision history :
+#   05/04/2015, V1.0 - Creation by Nicolas Bernaerts
+# ---------------------------------------------------
+
+# configuration file localisation
+FILE_CONF="$HOME/.android-snapshot.conf"
+
+# set title
+TITLE="Android Screenshot"
+
+# check tools availability
+command -v adb >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install adb [android-tools-adb]"; exit 1; }
+command -v avconv >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install avconv"; exit 1; }
+
+# check configuration file
+[ -f "${FILE_CONF}" ] || { zenity --error --title="${TITLE}" --text="Please install configuration file"; exit 1; }
+
+# directory to hold screenshot
+FILE_DIR=$(grep "directory=" "${FILE_CONF}" | cut -d'=' -f2)
+[ "${FILE_DIR}" == "" ] && FILE_DIR=$HOME
+
+# set choice possibilities
+CHOICE_SCREEN=0
+CHOICE_EXIT=1
+
+# separator is line feed
+IFS=$'\n'
+
+# -----------------------------------------------------------
+#  detection of connected devices
+# -----------------------------------------------------------
+
+# ensure adb server is started
+adb start-server
+
+# check if device is connected
+ARR_DETECTED=( $(adb devices | head -n -1 | tail -n +2 | tr '\t' '|') )
+
+# if no device connected, error message
+[ "${#ARR_DETECTED[@]}" -eq "0" ] && { zenity --error --title="${TITLE}" --text="There isn't any device connected in ADB mode"; exit 1; }
+
+# -----------------------------------------------------------
+#  loop thru connected devices to :
+#   - select screenshot method
+#   - if needed, update configuration file
+# -----------------------------------------------------------
+for ADB_DEVICE in "${ARR_DETECTED[@]}"
+do
+  # get serial number
+  DEVICE_SERIAL=$(echo ${ADB_DEVICE} | cut -d'|' -f1)
+
+  # check if device is in the configuration
+  DEVICE_CONF=$(grep "${DEVICE_SERIAL}=" "${FILE_CONF}")
+
+  # if device is not in the configuration file, detect parameters and add them to the file
+  if [ "${DEVICE_CONF}" == "" ]
+  then
+    # get device brand
+    DEVICE_BRAND=$(adb -s ${DEVICE_SERIAL} shell "cat /system/build.prop" | grep "ro.product.brand" | cut -d'=' -f2- | tr -d '\r\n')
+
+    # get device name
+    DEVICE_NAME=$(adb -s ${DEVICE_SERIAL} shell "cat /system/build.prop" | grep "ro.product.model" | cut -d'=' -f2- | tr -d '\r\n')
+
+    # get device screen size
+    DEVICE_SIZE=$(adb -s ${DEVICE_SERIAL} shell "wm size" | grep "size" | cut -d':' -f2 | tr -d ' \r\n')
+
+    # if device name is defined, add device to database
+    if [ "${DEVICE_BRAND} ${DEVICE_NAME}" != "" ]
+    then
+      # generate configuration line
+      DEVICE_CONF="${DEVICE_SERIAL}=${DEVICE_BRAND} ${DEVICE_NAME};${DEVICE_SIZE};"
+  
+      # write back configuration file
+      echo "${DEVICE_CONF}" >> "${FILE_CONF}"
+    fi
+  fi
+
+  # if device configuration exists, add device to the current list
+  if [ "${DEVICE_CONF}" != "" ]
+  then
+    # detect screenshot method
+    DEVICE_SCREENCAP=$(adb -s ${DEVICE_SERIAL} shell "screencap -h" | grep "usage" | cut -d' ' -f2)
+
+    # add device to displayed list
+    ARR_DEVICE=("${ARR_DEVICE[@]}" "${DEVICE_CONF};${DEVICE_SCREENCAP}")
+ fi
+done
+
+# -----------------------------------------------------------
+#  loop to do screenshots
+# -----------------------------------------------------------
+SELECTED_DEVICE=""
+while [ "$CHOICE" != "$CHOICE_EXIT" ]
+do
+  # generate devices list
+  LST_DEVICE="${SELECTED_DEVICE}"
+  for DEVICE in "${ARR_DEVICE[@]}"
+  do
+    # get current device size and name
+    DEVICE_SERIAL=$(echo ${DEVICE} | cut -d'=' -f1)
+    DEVICE_NAME=$(echo ${DEVICE} | cut -d'=' -f2 | cut -d';' -f1)
+
+    # add it to the list with | separator
+    DEVICE_DESCRIPTION="${DEVICE_NAME} (s/n ${DEVICE_SERIAL})"
+    if [ "${DEVICE_DESCRIPTION}" != "${SELECTED_DEVICE}" ]
+    then
+      [ "$LST_DEVICE" == "" ] && LST_DEVICE="${DEVICE_DESCRIPTION}" || LST_DEVICE="${LST_DEVICE}|${DEVICE_DESCRIPTION}"
+    fi
+  done
+  
+  # display dialog box
+  SELECTION=$(yad --title "${TITLE}" --text "${TEXT}" --center --window-icon "phone" --image "phone" --width 500 \
+  --button="Close:$CHOICE_EXIT" --button="Screenshot:$CHOICE_SCREEN" \
+  --form --item-separator='|' --field="Device:CB" "${LST_DEVICE}" )
+  CHOICE=$?
+
+  # if selected, do the screenshot
+  if [ "${CHOICE}" == "${CHOICE_SCREEN}" ]
+  then
+    # start extraction
+    JOB_DONE=""
+
+    # get selected device and retrieve device data
+    SELECTED_DEVICE=$(echo ${SELECTION} | cut -d"|" -f1)
+    DEVICE_SERIAL=$(echo ${SELECTED_DEVICE} | sed 's/^.*s\/n \(.*\).$/\1/')
+    for DEVICE in "${ARR_DEVICE[@]}"
+    do
+      [[ "${DEVICE}" == "${DEVICE_SERIAL}"* ]] && DEVICE_DATA="${DEVICE}"
+    done
+
+    # get device data
+    DEVICE_NAME="$(echo ${DEVICE_DATA} | cut -d'=' -f2 | cut -d';' -f1)"
+    DEVICE_SIZE="$(echo ${DEVICE_DATA} | cut -d'=' -f2 | cut -d';' -f2)"
+    DEVICE_COLOR="$(echo ${DEVICE_DATA} | cut -d'=' -f2 | cut -d';' -f3)"
+    DEVICE_METHOD="$(echo ${DEVICE_DATA} | cut -d'=' -f2 | cut -d';' -f4)"
+
+    # generate timestamped filename
+    FILE="${FILE_DIR}/${DEVICE_NAME}_$(date '+%y%m%d-%I%M%S')"
+
+    # if detected method is screencap
+    if [ "${DEVICE_METHOD}" != "" ] 
+    then
+      (
+      # send screencap command thru adb
+      echo "# Capture screenshot ..."
+      adb -s ${DEVICE_SERIAL} shell "screencap -p > /sdcard/screenshot.png"    
+
+      # pull screenshot back to computer
+      echo "# Pull screenshot to computer ..."
+      adb -s ${DEVICE_SERIAL} pull /sdcard/screenshot.png "${FILE}.png"
+      ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${TITLE} thru Screencap" 
+
+      # extraction is over
+      JOB_DONE="ok"
+    fi
+
+    # no screencap, start framebuffer extraction
+    if [ "${JOB_DONE}" != "ok" ]
+    then
+      (
+      # check if su is available
+      echo "# Check su ..."
+      SU_OK=$(adb -s ${DEVICE_SERIAL} shell "which su")
+
+      # extract framebuffer using su or not
+      echo "# Extract frame buffer ..."
+      [ "${SU_OK}" != "" ] && FRAME_RESULT=$(adb -s ${DEVICE_SERIAL} shell "su -c 'cat /dev/graphics/fb0 > /sdcard/screenshot.raw'") \
+                           || FRAME_RESULT=$(adb -s ${DEVICE_SERIAL} shell "cat /dev/graphics/fb0 > /sdcard/screenshot.raw")
+
+      # pull screenshot back to computer
+      echo "# Pull raw file to computer ..."
+      adb -s ${DEVICE_SERIAL} pull /sdcard/screenshot.raw "${FILE}.raw"
+      ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${TITLE} thru Frame Buffer" 
+
+      # if screen size is unknown, extraction is over
+      [ "${DEVICE_SIZE}" == "" ] && JOB_DONE="ok"
+    fi
+
+    # size is known, convert to png
+    if [ "${JOB_DONE}" != "ok" ]
+    then
+      # if device colorspace is not defined, collect all declared colorspace
+      [ "${DEVICE_COLOR}" == "" ] && DEVICE_COLOR=$(grep "colorspace=" "${FILE_CONF}" | cut -d'=' -f2)
+
+      # generate colorspace to conversion array
+      IFS=',' read -a ARR_COLOR <<< "${DEVICE_COLOR}"
+
+      # loop thru colorspace array to convert raw file
+      for COLORSPACE in "${ARR_COLOR[@]}"
+      do
+        # convert it to png
+        avconv -vframes 1 -vcodec rawvideo -f image2 -pix_fmt ${COLORSPACE} -s ${DEVICE_SIZE} -i "${FILE}.raw" -filter lutrgb=a=255 "${FILE}-${COLORSPACE}.png"
+      done
+
+      # remove raw file
+      rm "${FILE}.raw"
+    fi
+  fi
+done
