@@ -3,6 +3,6 @@ Version=1.0
 Type=Application
 Terminal=false
 Exec=/usr/local/bin/android-screenshot
-Name=Android Device Screenshot Utility
+Name=Android Screenshot Utility
 Categories=Graphics;Utility
 Icon=phone
