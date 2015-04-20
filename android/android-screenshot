@@ -13,7 +13,7 @@
 # ---------------------------------------------------
 
 # configuration file localisation
-FILE_CONF="$HOME/.android-snapshot.conf"
+FILE_CONF="$HOME/.android-screenshot.conf"
 
 # set title
 TITLE="Android Screenshot"
