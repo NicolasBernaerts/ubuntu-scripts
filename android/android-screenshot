@@ -8,6 +8,7 @@
 # Depends on :
 #   * adb
 #   * avconv
+#   * yad
 # Revision history :
 #   05/04/2015, V1.0 - Creation by Nicolas Bernaerts
 # ---------------------------------------------------
@@ -21,6 +22,7 @@ TITLE="Android Screenshot"
 # check tools availability
 command -v adb >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install adb [android-tools-adb]"; exit 1; }
 command -v avconv >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install avconv"; exit 1; }
+command -v yad >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install yad"; exit 1; }
 
 # check configuration file
 [ -f "${FILE_CONF}" ] || { zenity --error --title="${TITLE}" --text="Please install configuration file"; exit 1; }
@@ -158,7 +160,7 @@ do
       # pull screenshot back to computer
       echo "# Pull screenshot to computer ..."
       adb -s ${DEVICE_SERIAL} pull /sdcard/screenshot.png "${FILE}.png"
-      ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${TITLE} thru Screencap" 
+      ) | yad --center --window-icon "phone" --image "phone" --width 500 --progress --pulsate --auto-close --title "${TITLE} thru Screencap" 
 
       # extraction is over
       JOB_DONE="ok"
@@ -180,7 +182,7 @@ do
       # pull screenshot back to computer
       echo "# Pull raw file to computer ..."
       adb -s ${DEVICE_SERIAL} pull /sdcard/screenshot.raw "${FILE}.raw"
-      ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${TITLE} thru Frame Buffer" 
+      ) | yad --center --window-icon "phone" --image "phone" --width 500 --progress --pulsate --auto-close --title "${TITLE} thru Frame Buffer" 
 
       # if screen size is unknown, extraction is over
       [ "${DEVICE_SIZE}" == "" ] && JOB_DONE="ok"
