@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+ExecTry=/opt/zgrviewer/zgrviewer.sh
+Exec=/opt/zgrviewer/zgrviewer.sh -f %f
+Name=GraphViz ZGRViewer
+Categories=Graphics
+MimeType=text/vnd.graphviz
+Icon=text-vnd.graphviz.png
