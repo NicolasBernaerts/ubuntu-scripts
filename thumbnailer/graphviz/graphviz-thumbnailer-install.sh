@@ -8,6 +8,6 @@ sudo chmod +x /usr/local/bin/graphviz-preview
 sudo wget -O /usr/share/applications/graphviz.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz.desktop
 sudo chmod +x /usr/share/applications/graphviz.desktop
 
-sudo wget -O /usr/local/sbin/graphviz-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer
-sudo chmod +x /usr/local/sbin/graphviz-thumbnailer
+sudo wget -O /usr/local/bin/graphviz-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer
+sudo chmod +x /usr/local/bin/graphviz-thumbnailer
 sudo wget -O /usr/share/thumbnailers/graphviz.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz.thumbnailer
