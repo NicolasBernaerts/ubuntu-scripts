@@ -1,7 +1,7 @@
 #!/bin/sh
 # Graphviz thumbnailer
 
-sudo apt-get -y install graphviz imagemagick
+sudo apt-get -y install graphviz imagemagick eog
 
 sudo wget -O /usr/local/bin/graphviz-preview https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-preview
 sudo chmod +x /usr/local/bin/graphviz-preview
