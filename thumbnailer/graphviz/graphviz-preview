@@ -5,19 +5,27 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/333-gnome-shell-graphviz-viewer-thumbnailer
 # Depends on :
-#   * graphviz
-#   * convert (imagemagick package)
+#   * dot (graphviz package)
 #   * eog
 # Parameters :
 #   $1 - full path of DOT file
 # Revision history :
-# 24/04/2015, V1.0 - Creation by N. Bernaerts
+#   24/04/2015, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 
+# check tools availability
+command -v dot >/dev/null 2>&1 || { zenity --error --text="Please install dot [graphviz package]"; exit 1; }
+command -v eog >/dev/null 2>&1 || { zenity --error --text="Please install eog [eye of gnome]"; exit 1; }
+
+# select graphviz file if not given as parameter
+[ "$1" != "" ] && DOT_FILE="$1" || DOT_FILE="$(zenity --file-selection --file-filter='Graphviz files (dot)|*.dot' --title='Select file to preview')"
+
+# if no file selected, exit
+[ "${DOT_FILE}" == "" ] && exit 0
+
 # retrieve file parameters
-DOT_FILE="$1"
-DOT_DIR=$(dirname "$1")
-DOT_NAME=$(basename "$1")
+DOT_DIR=$(dirname "${DOT_FILE}")
+DOT_NAME=$(basename "${DOT_FILE}")
 DOT_BASE="${DOT_NAME%.*}"
 
 # generate temporary local filename
