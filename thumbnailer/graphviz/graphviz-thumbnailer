@@ -1,11 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 # --------------------------------------------
-# Thumbnailer for Graphviz files
+# Thumbnailer for Graphviz .DOT files
+#
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/76-gnome/333-gnome-shell-graphviz-viewer-thumbnailer
 # Depends on :
 # * imagemagick
 # * graphviz
 # Revision history :
-# 04/08/2013 - Creation by N. Bernaerts
+# 04/08/2013, V1.0 - Creation by N. Bernaerts
+# 25/04/2015, V1.1 - Convert to bash
 # -------------------------------------------
 
 # get parameters
@@ -14,7 +18,7 @@ OUTPUT="$2"
 HEIGHT=$3
 
 # go to graphviz DOT file directory
-cd 'dirname "${INPUT}"'
+cd $(dirname "${INPUT}")
 
 # generation
 dot -Tpng "${INPUT}" | convert -resize x${HEIGHT} - "${OUTPUT}"
