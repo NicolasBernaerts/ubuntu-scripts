@@ -5,12 +5,16 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/333-gnome-shell-graphviz-viewer-thumbnailer
 # Depends on :
-# * imagemagick
-# * graphviz
+#   * convert (imagemagick package)
+#   * dot (graphviz package)
 # Revision history :
-# 04/08/2013, V1.0 - Creation by N. Bernaerts
-# 25/04/2015, V1.1 - Convert to bash
+#   04/08/2013, V1.0 - Creation by N. Bernaerts
+#   25/04/2015, V1.1 - Convert to bash
 # -------------------------------------------
+
+# check tools availability
+command -v dot >/dev/null 2>&1 || exit 1
+command -v convert >/dev/null 2>&1 || exit 1
 
 # get parameters
 INPUT="$1"
