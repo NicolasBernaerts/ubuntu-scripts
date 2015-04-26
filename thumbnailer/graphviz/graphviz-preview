@@ -1,0 +1,36 @@
+#!/bin/sh
+# ---------------------------------------------------
+# Preview of Graphviz .DOT files
+#
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/76-gnome/333-gnome-shell-graphviz-viewer-thumbnailer
+# Depends on :
+#   * graphviz
+#   * convert (imagemagick package)
+#   * eog
+# Parameters :
+#   $1 - full path of DOT file
+# Revision history :
+# 24/04/2015, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# retrieve file parameters
+DOT_FILE="$1"
+DOT_DIR=$(dirname "$1")
+DOT_NAME=$(basename "$1")
+DOT_BASE="${DOT_NAME%.*}"
+
+# generate temporary local filename
+TMP_DIR=$(mktemp -d -t preview-XXXXXXXX)
+TMP_PIX="${TMP_DIR}/${DOT_BASE}.png"
+
+# convert graphviz DOT file to PNG
+cd "${DOT_DIR}" 
+dot -Tpng "${DOT_FILE}" > "${TMP_PIX}"
+
+# preview display
+eog "${TMP_PIX}"
+
+# remove temporary files
+rm "${TMP_PIX}"
+rmdir "${TMP_DIR}"
