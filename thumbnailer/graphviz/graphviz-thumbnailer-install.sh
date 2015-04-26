@@ -3,6 +3,7 @@
 
 sudo apt-get -y install graphviz imagemagick eog
 
+sudo wget -O /usr/share/icons/graphviz.png http://bernaerts.dyndns.org/download/ubuntu/graphviz/text-vnd.graphviz.png
 sudo wget -O /usr/local/bin/graphviz-preview https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-preview
 sudo chmod +x /usr/local/bin/graphviz-preview
 sudo wget -O /usr/share/applications/graphviz.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz.desktop
