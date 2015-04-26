@@ -5,9 +5,9 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/xxx
 # Depends on :
-#   * xcftools (for xcf2png)
-#   * imagemagick (for convert)
-#   * gvfs-bin (for gvfs-copy)
+#   * xcf2png (xcftools package)
+#   * convert (imagemagick package)
+#   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - URI of XCF file
 #   $2 - full path of generated thumbnail
@@ -15,6 +15,11 @@
 # Revision history :
 #   26/11/2014, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
+
+# check tools availability 
+command -v gvfs-copy >/dev/null 2>&1 || exit 1
+command -v xcf2png >/dev/null 2>&1 || exit 1
+command -v convert >/dev/null 2>&1 || exit 1
 
 # get parameters
 FILE_URI=$1
