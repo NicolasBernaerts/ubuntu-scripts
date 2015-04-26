@@ -7,8 +7,8 @@
 #   http://bernaerts.dyndns.org/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
 # Depends on :
 #   * unzip
-#   * imagemagick
-#   * gvfs
+#   * composite (imagemagick package)
+#   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - URI of office file
 #   $2 - full path of generated thumbnail
@@ -17,6 +17,11 @@
 # 04/08/2013, V1.0 - Creation by N. Bernaerts
 # 15/11/2014, V2.0 - Use URI to handle network shares
 # ---------------------------------------------------
+
+# check tools availability
+command -v gvfs-copy >/dev/null 2>&1 || exit 1
+command -v unzip >/dev/null 2>&1 || exit 1
+command -v composite >/dev/null 2>&1 || exit 1
 
 # path where to get icons used for generation
 ICONPATH="/usr/local/sbin/lo-thumbnailer-icons"
