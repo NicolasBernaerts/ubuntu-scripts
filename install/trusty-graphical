@@ -31,7 +31,7 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/th
 
 # Graphviz DOT thumbnailer
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
-. ./graphviz-tumbnailer-install.sh
+. ./graphviz-thumbnailer-install.sh
 
 # Image resize extension
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
