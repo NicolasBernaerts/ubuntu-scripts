@@ -7,7 +7,7 @@
 #   http://bernaerts.dyndns.org/linux/76-gnome/284-gnome-shell-generate-apk-thumbnail-nautilus
 # Depends on :
 #   * unzip
-#   * imagemagick (for convert)
+#   * convert (imagemagick package)
 #   * aapt
 #   * gvfs
 # Parameters :
@@ -21,6 +21,12 @@
 #   06/11/2014, V2.1 - Don't use renamed aapt anymore
 #   15/11/2014, V3.0 - Use URI to handle network shares
 # ---------------------------------------------------
+
+# check tools availability 
+command -v gvfs-copy >/dev/null 2>&1 || exit 1
+command -v aapt >/dev/null 2>&1 || exit 1
+command -v unzip >/dev/null 2>&1 || exit 1
+command -v convert >/dev/null 2>&1 || exit 1
 
 # select to display version on the icon
 # set to yes to display version number on the icon
