@@ -7,4 +7,4 @@ Exec=/opt/zgrviewer/zgrviewer.sh -f %f
 Name=GraphViz ZGRViewer
 Categories=Graphics
 MimeType=text/vnd.graphviz
-Icon=text-vnd.graphviz.png
+Icon=graphviz.png
