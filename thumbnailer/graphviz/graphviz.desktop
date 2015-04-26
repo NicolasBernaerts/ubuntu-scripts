@@ -2,9 +2,9 @@
 Version=1.0
 Type=Application
 Terminal=false
-ExecTry=/opt/zgrviewer/zgrviewer.sh
-Exec=/opt/zgrviewer/zgrviewer.sh -f %f
-Name=GraphViz ZGRViewer
-Categories=Graphics
+ExecTry=/usr/local/bin/graphviz-preview
+Exec=/usr/local/bin/graphviz-preview %f
+Name=GraphViz Preview
+Categories=
 MimeType=text/vnd.graphviz
-Icon=graphviz.png
+Icon=
