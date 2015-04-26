@@ -5,10 +5,9 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/325-gnome-shell-generate-msoffice-thumbnail-nautilus
 # Depends on :
-#   * unzip
-#   * imagemagick
 #   * unoconv
-#   * gvfs
+#   * gvfs-copy (gvfs-bin package)
+#   * convert and composite (imagemagick package)
 # Parameters :
 #   $1 - URI of office file
 #   $2 - full path of generated thumbnail
@@ -17,6 +16,12 @@
 # 11/11/2014, V1.0 - Creation by N. Bernaerts
 # 15/11/2014, V2.0 - Change to URI and GVFS to handle thumbnails on network shares
 # ---------------------------------------------------
+
+# check tools availability
+command -v gvfs-copy >/dev/null 2>&1 || exit 1
+command -v unoconv >/dev/null 2>&1 || exit 1
+command -v convert >/dev/null 2>&1 || exit 1
+command -v composite >/dev/null 2>&1 || exit 1
 
 # path where to get icons used for generation
 ICONPATH="/usr/local/sbin/msoffice-thumbnailer-icons"
