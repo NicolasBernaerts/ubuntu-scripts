@@ -4,6 +4,7 @@
 #
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # 07/01/2015, V1.1 - Add image levels optimization extension
+# 25/04/2015, V1.2 - Add Graphviz thumbnailer
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -27,6 +28,10 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/sc
 # GIMP XCF thumbnailer
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
 . ./gimp-tumbnailer-install.sh
+
+# Graphviz DOT thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-tumbnailer-install.sh
+. ./graphviz-tumbnailer-install.sh
 
 # Image resize extension
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
