@@ -26,7 +26,7 @@ wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
 sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 
 # Libreoffice : declare 4.3 PPA & install
-sudo add-apt-repository -y ppa:libreoffice/libreoffice-4-3
+sudo add-apt-repository -y ppa:libreoffice/libreoffice-4-4
 sudo apt-get update
 sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr
 
