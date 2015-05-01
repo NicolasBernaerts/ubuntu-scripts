@@ -22,7 +22,7 @@ sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
 sudo apt-get -y install gramps
 
 # PDF editor
-wget http://code-industry.net/public/master-pdf-editor_1.9.25_${ARCHI}.deb
+wget http://code-industry.net/public/master-pdf-editor_2.2.15_${ARCHI}.deb
 sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 
 # Libreoffice : declare 4.4 PPA & install
