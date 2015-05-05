@@ -115,6 +115,9 @@ sudo chmod +x /usr/local/sbin/update-monitor-position
 mkdir $HOME/.config/autostart
 wget -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position.desktop
 
+# install language selector
+sudo apt-get install language-selector-gnome
+
 # ---------------------------------------------------
 # ------------------- Wifi tweaks -------------------
 # ---------------------------------------------------
