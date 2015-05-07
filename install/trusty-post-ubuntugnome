@@ -124,8 +124,10 @@ sudo apt-get install language-selector-gnome
 
 # Intel Centrino N 6235 - Re-enable AMPDU for iwldvm devices
 # Solves very slow connection since kernel 3.11.10+
-echo options iwlwifi 11n_disable=8 | sudo tee /etc/modprobe.d/iwlwifi-11n.conf
-echo options iwlwifi bt_coex_active=0 | sudo tee -a /etc/modprobe.d/iwlwifi-11n.conf
+echo "options iwlwifi 11n_disable=8 bt_coex_active=0" | sudo tee /etc/modprobe.d/iwlwifi-11n.conf
+
+# RTL8723be cards (HP Stream)
+echo "options rtl8723be fwlps=0 ips=0 swenc=1" | sudo tee /etc/modprobe.d/rtl8723be.conf
 
 # ---------------------------------------------------
 # --------------- Enable sudo timeout ---------------
