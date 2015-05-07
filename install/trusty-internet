@@ -5,6 +5,7 @@
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # 10/01/2015, V1.1 - Use clipgrab team PPA
 # 01/03/2015, V1.2 - Add nmap for port detection
+# 07/05/2015, V1.3 - Add Viber
 # -------------------------------------------------------
 
 # nmap
@@ -41,6 +42,10 @@ sudo apt-get install clipgrab
 wget http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
 sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
 sudo apt-get -y -f install
+
+# viber
+wget http://download.cdn.viber.com/cdn/desktop/Linux/viber.deb
+sudo dpkg -i viber.deb
 
 # telegram client (launch Telegram from command line once to get desktop declaration)
 [ "$ARCHI" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
