@@ -4,6 +4,7 @@
 #
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # 29/01/2015, V1.1 - Add video stabilizer and MKV converter
+# 07/05/2015, V1.2 - Add Kodi
 # -------------------------------------------------------
 
 # auto-accept mscorefonts eula
@@ -35,6 +36,11 @@ sudo apt-get -y install handbrake
 
 # kdenlive video editor
 sudo apt-get -y install kdenlive
+
+# kodi (xbmc)
+sudo add-apt-repository -y ppa:team-xbmc/ppa
+sudo apt-get update
+sudo apt-get -y install kodi
 
 # vlc and declare it as replacement for gnome player
 sudo add-apt-repository -y ppa:videolan/stable-daily
