@@ -12,4 +12,4 @@ echo "options iwlwifi 11n_disable=8 bt_coex_active=0" | sudo tee /etc/modprobe.d
 
 # RTL8723be
 # Solves stability issue on HP Stream 13
-echo "options rtl8723be fwlps=0 ips=0 swenc=1" | sudo tee /etc/modprobe.d/rtl8723be.conf
+echo "options rtl8723be fwlps=0 swlps=0 ips=0 swenc=1" | sudo tee /etc/modprobe.d/rtl8723be.conf
