@@ -77,6 +77,11 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/in
 chmod +x ./trusty-assistance
 . ./trusty-assistance
 
+# wifi tweaks
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-wifi
+chmod +x ./trusty-wifi
+. ./trusty-wifi
+
 # ---------------------------------------------------
 # ---------------- Specific packages ----------------
 # ---------------------------------------------------
