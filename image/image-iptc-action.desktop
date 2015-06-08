@@ -1,0 +1,20 @@
+[Desktop Entry]
+Type=Action
+Icon=image
+Name[C]=Manage main IPTC tags
+Name[en]=Manage main IPTC tags
+Name[en_US]=Manage main IPTC tags
+Name[fr_FR]=Gérer les principaux tags IPTC
+Tooltip[C]=Tool to manage main IPTC tags
+Tooltip[en]=Tool to manage main IPTC tags
+Tooltip[en_US]=Tool to manage main IPTC tags
+Tooltip[fr_FR]=Outil de gestion des principaux tags IPTC
+Profiles=tag_iptc;
+
+[X-Action-Profile tag_iptc]
+Exec=image-iptc %f
+MimeTypes=image/jpeg;image/jpg;image/png;
+Name[C]=Default profile
+Name[en]=Default profile
+Name[en_US]=Default profile
+Name[fr_FR]=Profil par défaut
