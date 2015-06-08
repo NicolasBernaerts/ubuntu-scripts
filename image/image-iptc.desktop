@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/local/bin/image-iptc
+Name=Image IPTC tag manager
+Categories=Graphics;Utility
+MimeType=image/jpeg;image/jpg;image/png;
+Icon=image
