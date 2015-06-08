@@ -40,3 +40,7 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/im
 # Image levels optimize extension
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize-install.sh
 . ./image-level-optimize-install.sh
+
+# Image IPTC tag manager extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-iptc-install.sh
+. ./image-iptc-install.sh
