@@ -1,0 +1,66 @@
+#!/bin/bash
+# ---------------------------------------------------
+#  Tool to write main IPTC tags to image files
+#  Depends on :
+#   * yad
+#   * exiv2
+#  Revision history :
+#   10/03/2014, V1.0 - Creation by N. Bernaerts
+#   08/05/2015, V1.1 - Code cleanup and optimization
+# ---------------------------------------------------
+
+# set separator as line break
+IFS=$'\n'
+
+# check tools availability
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
+command -v exiv2 >/dev/null 2>&1 || { zenity --error --text="Please install exiv2"; exit 1; }
+
+# set input file
+INPUT_FILE="$1"
+
+# if parameter is not a file, select file to handle
+[ -f "${INPUT_FILE}" ] || INPUT_FILE=$(zenity --file-selection --file-filter='Image (jpg,png)| *.jpg *.jpeg *.png' --title="Select image")
+
+if [ -f "${INPUT_FILE}" ]
+then
+  # generate temporary file
+  IPTC_FILE=$(mktemp)
+
+  # read the data embedded into the file
+  exiv2 -pi ${INPUT_FILE} > ${IPTC_FILE}
+  CAPTION=$(grep 'Iptc.Application2.Caption' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
+  DATEPIX=$(grep 'Iptc.Application2.DateCreated' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
+  CITY=$(grep 'Iptc.Application2.City' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
+  COUNTRY=$(grep 'Iptc.Application2.CountryName' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
+
+  # generate the date digits
+  YEAR=$(echo $DATEPIX | cut -f1 -d '-')
+  MONTH=$(echo $DATEPIX | cut -f2 -d '-')
+  DAY=$(echo $DATEPIX | cut -f3 -d '-')
+
+  # display the modification GUI
+  RESULT=$(yad --title="IPTC Tags updater" --width=600 --window-icon="image" --image="image" --text="IPTC tags embedded in ${INPUT_FILE}" --form --field="Caption" --field="City" --field="Country" --field="Day" --field="Month" --field="Year" "$CAPTION" "$CITY" "$COUNTRY" "$DAY" "$MONTH" "$YEAR" --button="gtk-cancel:1" --button="Update:0")
+  CODE=$?
+
+  # if caption is not empty, write it into the file
+  if [ $CODE = "0" ]; then
+    # retreive the values from resulting chain
+    CAPTION=$(echo $RESULT |cut -d '|' -f1)
+    CITY=$(echo $RESULT |cut -d '|' -f2)
+    COUNTRY=$(echo $RESULT |cut -d '|' -f3)
+    DAY=$(printf "%02u" $(echo $RESULT | cut -d '|' -f4))
+    MONTH=$(printf "%02u" $(echo $RESULT | cut -d '|' -f5))
+    YEAR=$(printf "%04u" $(echo $RESULT | cut -d '|' -f6))
+    DATEPIX=$(printf "%s%s%s" $YEAR $MONTH $DAY)
+
+    # update the picture IPTC fields
+    exiv2 -M"set Iptc.Application2.Caption String $CAPTION" \
+          -M"set Iptc.Application2.City String $CITY" \
+          -M"set Iptc.Application2.CountryName String $COUNTRY" \
+          -M"set Iptc.Application2.DateCreated String $DATEPIX" ${INPUT_FILE}
+  fi
+
+  # cleanup temporary files
+  rm ${IPTC_FILE}
+fi
