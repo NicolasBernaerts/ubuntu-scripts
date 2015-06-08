@@ -35,30 +35,30 @@ then
   COUNTRY=$(grep 'Iptc.Application2.CountryName' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
 
   # generate the date digits
-  YEAR=$(echo $DATEPIX | cut -f1 -d '-')
-  MONTH=$(echo $DATEPIX | cut -f2 -d '-')
-  DAY=$(echo $DATEPIX | cut -f3 -d '-')
+  YEAR=$(echo ${DATEPIX} | cut -f1 -d '-')
+  MONTH=$(echo ${DATEPIX} | cut -f2 -d '-')
+  DAY=$(echo ${DATEPIX} | cut -f3 -d '-')
 
   # display the modification GUI
   RESULT=$(yad --title="IPTC Tags updater" --width=600 --window-icon="image" --image="image" --text="IPTC tags embedded in ${INPUT_FILE}" --form --field="Caption" --field="City" --field="Country" --field="Day" --field="Month" --field="Year" "$CAPTION" "$CITY" "$COUNTRY" "$DAY" "$MONTH" "$YEAR" --button="gtk-cancel:1" --button="Update:0")
   CODE=$?
 
   # if caption is not empty, write it into the file
-  if [ $CODE = "0" ]; then
+  if [ ${CODE} = "0" ]; then
     # retreive the values from resulting chain
-    CAPTION=$(echo $RESULT |cut -d '|' -f1)
-    CITY=$(echo $RESULT |cut -d '|' -f2)
-    COUNTRY=$(echo $RESULT |cut -d '|' -f3)
-    DAY=$(printf "%02u" $(echo $RESULT | cut -d '|' -f4))
-    MONTH=$(printf "%02u" $(echo $RESULT | cut -d '|' -f5))
-    YEAR=$(printf "%04u" $(echo $RESULT | cut -d '|' -f6))
-    DATEPIX=$(printf "%s%s%s" $YEAR $MONTH $DAY)
+    CAPTION=$(echo ${RESULT} |cut -d '|' -f1)
+    CITY=$(echo ${RESULT} |cut -d '|' -f2)
+    COUNTRY=$(echo ${RESULT} |cut -d '|' -f3)
+    DAY=$(printf "%02u" $(echo ${RESULT} | cut -d '|' -f4))
+    MONTH=$(printf "%02u" $(echo ${RESULT} | cut -d '|' -f5))
+    YEAR=$(printf "%04u" $(echo ${RESULT} | cut -d '|' -f6))
+    DATEPIX=$(printf "%s%s%s" ${YEAR} ${MONTH} ${DAY})
 
     # update the picture IPTC fields
-    exiv2 -M"set Iptc.Application2.Caption String $CAPTION" \
-          -M"set Iptc.Application2.City String $CITY" \
-          -M"set Iptc.Application2.CountryName String $COUNTRY" \
-          -M"set Iptc.Application2.DateCreated String $DATEPIX" ${INPUT_FILE}
+    [ "${CAPTION}" != "" ] && exiv2 -M"set Iptc.Application2.Caption String ${CAPTION}" ${INPUT_FILE}
+    [ "${CITY}" != "" ] && exiv2 -M"set Iptc.Application2.City String ${CITY}" ${INPUT_FILE}
+    [ "${COUNTRY}" != "" ] && exiv2 -M"set Iptc.Application2.CountryName String ${COUNTRY}" ${INPUT_FILE}
+    [ "${DATEPIX}" != "" ] && exiv2 -M"set Iptc.Application2.DateCreated String ${DATEPIX}" ${INPUT_FILE}
   fi
 
   # cleanup temporary files
