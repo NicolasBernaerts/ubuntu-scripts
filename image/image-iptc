@@ -58,7 +58,8 @@ then
     [ "${CAPTION}" != "" ] && exiv2 -M"set Iptc.Application2.Caption String ${CAPTION}" ${INPUT_FILE}
     [ "${CITY}" != "" ] && exiv2 -M"set Iptc.Application2.City String ${CITY}" ${INPUT_FILE}
     [ "${COUNTRY}" != "" ] && exiv2 -M"set Iptc.Application2.CountryName String ${COUNTRY}" ${INPUT_FILE}
-    [ "${DATEPIX}" != "00000000" ] && exiv2 -M"set Iptc.Application2.DateCreated String ${DATEPIX}" ${INPUT_FILE}
+    [ "${DATEPIX}" != "00000000" ] && exiv2 -M"set Iptc.Application2.DateCreated String ${DATEPIX}" ${INPUT_FILE} \
+                                   || exiv2 del Iptc.Application2.DateCreated ${INPUT_FILE}
   fi
 
   # cleanup temporary files
