@@ -4,7 +4,6 @@
 #   formats are given by ~/.resize-pix.conf
 #  Depends on :
 #   * imagemagick
-#   * exiv2
 #  Revision history :
 #   23/10/2013, V1.0 - Creation by N. Bernaerts
 #   04/02/2014, V1.1 - Add multiple files selection
@@ -18,16 +17,15 @@
 # check tools availability
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 command -v identify >/dev/null 2>&1 || { zenity --error --text="Please install identify [imagemagick]"; exit 1; }
-command -v exiv2 >/dev/null 2>&1 || { zenity --error --text="Please install exiv2"; exit 1; }
 
 # set separator as carriage return
 IFS=$'\n'
 
 # loop thru arguments to load candidate files or files in directory
-for arg
+for ARGUMENT
 do
-  [ -f "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" "$arg")
-  [ -d "$arg" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "$arg" -maxdepth 1 -type f) )
+  [ -f "${ARGUMENT}" ] && ARR_FILE=("${ARR_FILE[@]}" "${ARGUMENT}")
+  [ -d "${ARGUMENT}" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "${ARGUMENT}" -maxdepth 1 -type f) )
 done
 NBR_FILE=${#ARR_FILE[@]}
 
@@ -78,9 +76,6 @@ then
   RESULT=$(zenity --title "Image resizer" --text "$NBR_IMAGE files will be resized. Select target format :" \
                   --width 400 --height $ZENH --list --column="Index" --column="Format" --hide-column=1 ${ARR_CHOICE[@]})
 
-echo "result = " $RESULT
-echo "nbr = " $NBR_IMAGE
-
   # if one format has been selected
   if [ -n "$RESULT" ]
   then
@@ -112,7 +107,7 @@ echo "nbr = " $NBR_IMAGE
       echo $((CURRENT*100/NBR_IMAGE))
 
       # display current image filename
-      echo "# Resizing $BASEFILE to $NAME format"
+      echo "# ${BASEFILE}"
 
       # get image width and height
       PIX_WIDTH=$(identify -format "%w" "${FILE_INPUT}")
@@ -124,6 +119,6 @@ echo "nbr = " $NBR_IMAGE
       # convert picture with auto orientation
       convert -auto-orient "${FILE_INPUT}" -resize "${SIZE}" -quality $QUALITY "${FILE_OUTPUT}"
 
-    done | zenity --width=500 --height=25 --progress --auto-close --title "Image resizer"
+    done | zenity --width=500 --height=25 --progress --auto-close --title "Resizing to > ${NAME} <"
   fi
 fi
