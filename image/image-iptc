@@ -7,6 +7,7 @@
 #  Revision history :
 #   10/03/2014, V1.0 - Creation by N. Bernaerts
 #   08/05/2015, V1.1 - Code cleanup and optimization
+#   16/05/2015, V1.2 - Handle non UTF-8 tags
 # ---------------------------------------------------
 
 # set separator as line break
@@ -15,6 +16,7 @@ IFS=$'\n'
 # check tools availability
 command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
 command -v exiv2 >/dev/null 2>&1 || { zenity --error --text="Please install exiv2"; exit 1; }
+command -v iconv >/dev/null 2>&1 || { zenity --error --text="Please install iconv"; exit 1; }
 
 # set input file
 INPUT_FILE="$1"
@@ -25,14 +27,21 @@ INPUT_FILE="$1"
 if [ -f "${INPUT_FILE}" ]
 then
   # generate temporary file
-  IPTC_FILE=$(mktemp)
+  IPTC_ORIGINAL=$(mktemp)
+  IPTC_UTF8=$(mktemp)
 
   # read the data embedded into the file
-  exiv2 -pi ${INPUT_FILE} > ${IPTC_FILE}
-  CAPTION=$(grep 'Iptc.Application2.Caption' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
-  DATEPIX=$(grep 'Iptc.Application2.DateCreated' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
-  CITY=$(grep 'Iptc.Application2.City' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
-  COUNTRY=$(grep 'Iptc.Application2.CountryName' ${IPTC_FILE} | tr -s ' ' | cut -f4- -d ' ')
+  exiv2 -p i "${INPUT_FILE}" > "${IPTC_ORIGINAL}"
+
+  # detect encoding
+  ENCODING=$(file -i "${IPTC_ORIGINAL}" | cut -d"=" -f2)
+  iconv -f "${ENCODING}" -t "UTF-8" "${IPTC_ORIGINAL}" -o "${IPTC_UTF8}"
+  
+  # recover tags
+  CAPTION=$(grep 'Iptc.Application2.Caption' ${IPTC_UTF8} | tr -s ' ' | cut -f4- -d ' ')
+  DATEPIX=$(grep 'Iptc.Application2.DateCreated' ${IPTC_UTF8} | tr -s ' ' | cut -f4- -d ' ')
+  CITY=$(grep 'Iptc.Application2.City' ${IPTC_UTF8} | tr -s ' ' | cut -f4- -d ' ')
+  COUNTRY=$(grep 'Iptc.Application2.CountryName' ${IPTC_UTF8} | tr -s ' ' | cut -f4- -d ' ')
 
   # generate the date digits
   YEAR=$(echo ${DATEPIX} | cut -f1 -d '-')
@@ -63,5 +72,6 @@ then
   fi
 
   # cleanup temporary files
-  rm ${IPTC_FILE}
+  rm ${IPTC_ORIGINAL}
+  rm ${IPTC_UTF8}
 fi
