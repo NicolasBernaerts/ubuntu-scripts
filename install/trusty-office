@@ -14,8 +14,8 @@ sudo apt-get -y install grisbi
 # hplip
 sudo apt-get -y install hplip-gui
 
-# ocr client
-sudo apt-get -y install tesseract-ocr-fra
+# ocr client and french langage
+sudo apt-get -y install tesseract-ocr-fra aspell-fr
 
 # gramps (genealogy)
 sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
