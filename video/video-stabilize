@@ -27,6 +27,7 @@
 #    10/03/2015, V3.2 - Update exiftool handling for MKV files
 #    12/03/2015, V3.3 - Add extra parameters to dialog box 
 #                       Change progress calculation to avoid errors
+#    29/05/2015, V3.4 - Check presence of ~/.config/video-stabilize.conf 
 # -------------------------------------------------------
 
 # Configuration file : ~/.config/video-stabilize.conf
@@ -57,6 +58,9 @@ command -v $CMD_MELT >/dev/null 2>&1 || { zenity --error --text="Please install 
 command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install Yad"; exit 1; }
 command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install ExifTool"; exit 1; }
 command -v x264 >/dev/null 2>&1 || { zenity --error --text="Please install x264"; exit 1; }
+
+# check configuration file
+[ -f "$FILE_CONF" ] || { zenity --error --text="Please create ~/.config/video-stabilize.conf configuration file"; exit 1; }
 
 # -------------------------------------------------------
 #  Retrieve or select video file
