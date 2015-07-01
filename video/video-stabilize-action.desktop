@@ -14,6 +14,7 @@ Profiles=stabilize_video;
 [X-Action-Profile stabilize_video]
 Exec=video-stabilize %F
 MimeTypes=video/*;
+Capabilities=Local
 Name[C]=Default profile
 Name[en]=Default profile
 Name[en_US]=Default profile
