@@ -50,6 +50,10 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pd
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
 . ./generate-booklet-install.sh
 
+# PDF document generation from multiple files
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
+. ./pdf-generate-install.sh
+
 # nvpy
 sudo apt-get -y install nvpy
 cp /usr/share/doc/nvpy/examples/nvpy-example.cfg $HOME/.nvpy.cfg
