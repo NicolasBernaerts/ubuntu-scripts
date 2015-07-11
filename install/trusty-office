@@ -58,4 +58,4 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pd
 sudo apt-get -y install nvpy
 cp /usr/share/doc/nvpy/examples/nvpy-example.cfg $HOME/.nvpy.cfg
 sudo wget -O /usr/share/icons/simplenote.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/simplenote.png
-wget -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/nvpy.desktop
+wget -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/nvpy.desktop
