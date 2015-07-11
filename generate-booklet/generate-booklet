@@ -5,8 +5,8 @@
 # default format is A4
 #
 # Depends on packages
-#  * pdfjam
 #  * poppler-utils
+#  * texlive-extra-utils
 #
 # Parameter :
 #   $1 - full path of original document
@@ -15,7 +15,12 @@
 #   26/09/2012, V1.0 - Creation by N. Bernaerts
 #   05/05/2014, V2.0 - Add target format selection (thanks to Robin idea)
 #   16/12/2014, V2.1 - Add file selection dialog
+#   10/05/2015, V2.2 - Check tools availability
 # ---------------------------------------------------------
+
+# check mediainfo, mkvmerge, avconv and fdkaac
+command -v pdfinfo >/dev/null 2>&1 || { zenity --error --text="Please install pdfinfo [poppler-utils package]"; exit 1; }
+command -v pdfbook >/dev/null 2>&1 || { zenity --error --text="Please install pdfbook [texlive-extra-utils package]"; exit 1; }
 
 # suffix to be added at the end of booklet file
 DOC_SUFFIX="book"
