@@ -43,11 +43,11 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/th
 . ./msoffice-thumbnailer-install.sh
 
 # PDF repair extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf-repair/pdf-repair-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
 . ./pdf-repair-install.sh
 
 # PDF booklet generation extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/generate-booklet/generate-booklet-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
 . ./generate-booklet-install.sh
 
 # nvpy
