@@ -1,0 +1,126 @@
+#!/bin/bash
+# --------------------------------------------
+#  Generate a PDF document from a given list of documents
+#  Documents are added in final document following
+#  alphabetical order
+#  Depends on :
+#   * imagemagick
+#   * unoconv
+#   * ghostscript
+#  Revision history :
+#   05/07/2015, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# check tools availability
+command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype"; exit 1; }
+command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
+command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
+command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs utility [ghostscript]"; exit 1; }
+
+# set separator as carriage return
+IFS=$'\n'
+
+# set Office files allowed extensions
+# loop thru arguments to load candidate files
+for ARGUMENT
+do
+  [ -f "${ARGUMENT}" ] && ARR_FILE=("${ARR_FILE[@]}" "${ARGUMENT}")
+  [ -d "${ARGUMENT}" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "${ARGUMENT}" -maxdepth 1 -type f) )
+
+  # resulting PDF file name
+  FILE_FINAL="$(dirname "${ARGUMENT}")/merged-document.pdf"
+done
+
+echo $FILE_FINAL
+
+# loop thru candidate files to convert them to pdf
+for FILE in "${ARR_FILE[@]}"
+do
+  # get file name without extension
+  FILE_BASE="$(echo "${FILE}" | sed 's/^\(.*\)\..*$/\1/')"
+
+  # get file extension
+  FILE_EXT="$(echo "${FILE}" | sed 's/^.*\.\(.*\)$/\1/')"
+
+  # resulting PDF file name
+  FILE_PDF="${FILE_BASE}.pdf"
+
+  # get the file mime type (application/msword, ...)
+  MIMETYPE=$(mimetype -b "${FILE}")
+
+  # check if file is a libreoffice file
+  CHECKTYPE=$(echo "${MIMETYPE}" | grep "image/")
+  [ "${CHECKTYPE}" != "" ] && DOCTYPE="image"
+
+  # check if file is a libreoffice file
+  CHECKTYPE=$(echo "${MIMETYPE}" | grep ".opendocument.")
+  [ "${CHECKTYPE}" != "" ] && DOCTYPE="libreoffice"
+
+  # check if file is a ms office file
+  case $MIMETYPE in 
+    # ms-office document
+    "application/msword" | "application/vnd.ms-word" | \
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | \
+    "application/vnd.ms-excel" | \
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | \
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.template" | \
+    "application/vnd.ms-powerpoint" | \
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation" | \
+    "application/vnd.openxmlformats-officedocument.presentationml.template" | \
+    "application/vnd.openxmlformats-officedocument.presentationml.slideshow" )
+      DOCTYPE="ms-office"
+      ;;
+
+    # PDF document
+    "application/pdf" )
+      DOCTYPE="pdf"
+      ;;
+
+    # plain text file
+    "text/plain" )
+      DOCTYPE="text"
+      ;;
+
+    * )
+      ;;
+  esac
+
+  # convert file according to its type
+  case $DOCTYPE in
+    # PDF files
+    "pdf" )
+    ARR_PDF=("${ARR_PDF[@]}" "${FILE}")
+    ;;
+
+    # image files
+    "image" )
+    convert "${FILE}" -compress jpeg -resize 1654x2337 -gravity center -extent 1654x2337 -units PixelsPerInch -density 200x200 "${FILE_PDF}"
+    ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
+    ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
+    ;;
+
+    # office files
+    "libreoffice" | "ms-office" | "text" )
+    unoconv -f pdf -o "${FILE_PDF}" "${FILE}"
+    ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
+    ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
+    ;;
+
+    # other formats, not handled
+    * )
+    ;;
+  esac
+
+done
+
+# order generated PDF files in alphabetical order
+ARR_SORTED=($(sort <<<"${ARR_PDF[*]}"))
+
+# generate resulting PDF
+gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=a4 -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${FILE_FINAL}" ${ARR_SORTED[@]}
+
+# loop to remove temporary files
+for TMP_FILE in "${ARR_TMP[@]}"
+do
+  rm "${TMP_FILE}"
+done
