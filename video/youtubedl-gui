@@ -20,8 +20,11 @@
 TARGET_DIR="$HOME/Downloads"
 # ------------------------------------
 
-IFS='
-'
+IFS=$'\n'
+
+# check youtube-dl and mkvmerge
+command -v youtube-dl >/dev/null 2>&1 || { zenity --error --text="Please install youtube-dl"; exit 1; }
+command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge"; exit 1; }
 
 #  exit if script called without URL parameter
 [ -z "$1" ] && STREAM_ERROR="Error : No URL passed"
@@ -30,7 +33,7 @@ IFS='
 if [ -z "$STREAM_ERROR" ]
 then
   # create temporary directory & set log file
-  TMP_DIR=`mktemp --tmpdir="$TARGET_DIR" -d`
+  TMP_DIR=$(mktemp --tmpdir="$TARGET_DIR" -d)
   STREAM_LOG="$TMP_DIR/youtubedl.log"
 
   # first parameter is stream URL
@@ -39,7 +42,7 @@ then
 
   {
   # get video title
-  STREAM_TITLE=`youtube-dl --get-title "$STREAM_URL"`
+  STREAM_TITLE=$(youtube-dl --get-title "$STREAM_URL")
   [ "$STREAM_TITLE" = "" ] && STREAM_TITLE="No title"
   echo "## Video Title: $STREAM_TITLE" >>"$STREAM_LOG"
 
@@ -53,13 +56,13 @@ fi
 if [ -z "$STREAM_ERROR" ]
 then
   # getting stream title previously logged
-  STREAM_TITLE=`grep "Video Title:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/'`
+  STREAM_TITLE=$(grep "Video Title:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/')
 
   # extract stream table from the log file (all lines after the one starting with 'format ...
-  STREAM_TABLE=`sed -r -n -e '/^format/,${p}' "$STREAM_LOG" | tail -n +2`
+  STREAM_TABLE=$(sed -r -n -e '/^format/,${p}' "$STREAM_LOG" | tail -n +2)
 
   # streams array generation : extract streams list from log, revert line order (best res. first) & extract one data per line
-  STREAM_CHOICE=`echo "$STREAM_TABLE" | sed '1!G;h;$!d' | sed -r 's/([^ ]*)[ ]*([^ ]*)[ ]*([^ ]*)[ ]*(.*)/FALSE\n\1\n\3\n\2\n\4\./'`
+  STREAM_CHOICE=$(echo "$STREAM_TABLE" | sed '1!G;h;$!d' | sed -r 's/([^ ]*)[ ]*([^ ]*)[ ]*([^ ]*)[ ]*(.*)/FALSE\n\1\n\3\n\2\n\4\./')
 
   # if no stream detected by youtube-dl, error 
   [ "$STREAM_CHOICE" == "" ] && STREAM_ERROR="No stream detected.\nThis site may not be compatible with youtube-dl." 
@@ -71,10 +74,10 @@ then
   # display stream selection dialog
   echo "## Selecting stream to download" >>"$STREAM_LOG"
   TEXT="Please select stream to download.\nYou can select video only + audio only streams."
-  STREAM_ID=`zenity --list --checklist --title "$STREAM_TITLE" --text "$TEXT" --height=400 --width=700 --separator='+' --hide-column=2 --print-column=2 --column="Select" --column="Index" --column="Resolution" --column="Format" --column="Comment" $STREAM_CHOICE`
+  STREAM_ID=$(zenity --list --checklist --title "$STREAM_TITLE" --text "$TEXT" --height=400 --width=700 --separator='+' --hide-column=2 --print-column=2 --column="Select" --column="Index" --column="Resolution" --column="Format" --column="Comment" $STREAM_CHOICE)
 
   # handle zenity double answer bug #1267788 (in case)
-  STREAM_ID="`echo $STREAM_ID | sed 's/ /+/g' | cut -d'|' -f1`"
+  STREAM_ID="$(echo $STREAM_ID | sed 's/ /+/g' | cut -d'|' -f1)"
   echo "## Stream(s) selected : $STREAM_ID" >>"$STREAM_LOG"
 
   # if no stream selected, error
@@ -89,7 +92,7 @@ then
   youtube-dl --prefer-ffmpeg -f "$STREAM_ID" --write-thumbnail --write-description --all-subs --restrict-filenames --output "$TMP_DIR/%(title)s-%(width)sx%(height)s.%(ext)s" "$STREAM_URL" >>"$STREAM_LOG" 2>&1 &
 
   # get command PID
-  STREAM_PID=`ps -ef | grep "youtube-dl" | grep "$STREAM_URL" | sed 's/^'$USER'[ ]*\([0-9]*\).*$/\1/g'`
+  STREAM_PID=$(ps -ef | grep "youtube-dl" | grep "$STREAM_URL" | sed 's/^'$USER'[ ]*\([0-9]*\).*$/\1/g')
   echo "## Download process PID: $STREAM_PID" >>"$STREAM_LOG"
 
   {
@@ -101,13 +104,13 @@ then
   do
     # display download percentage, wait for 1 second and check if process is still running
     echo "$STREAM_PERCENT"; sleep 1;
-    STREAM_RUN=`ps aux | awk '{print $2 }' | grep $STREAM_PID`
+    STREAM_RUN=$(ps aux | awk '{print $2 }' | grep ${STREAM_PID})
 
     # get current download percentage
-    CURRENT_PERCENT=`tail -n 1 "$STREAM_LOG" | sed 's/^.* \([0-9.]*%\).*$/\1/' | grep --color=never "%" | sed 's/%//'`
+    CURRENT_PERCENT=$(tail -n 1 "$STREAM_LOG" | sed 's/^.* \([0-9.]*%\).*$/\1/' | grep --color=never "%" | sed 's/%//')
 
     # if no percentage displayed in youtube-dl log, simulate pulsate by adding 5%, else convert % from 0-100 to 0-90
-    [ "$CURRENT_PERCENT" = "" ] && STREAM_PERCENT=`echo "$STREAM_PERCENT+5" | bc` || STREAM_PERCENT=`echo "$CURRENT_PERCENT*90/100" | bc`
+    [ "$CURRENT_PERCENT" = "" ] && STREAM_PERCENT=$(echo "$STREAM_PERCENT+5" | bc) || STREAM_PERCENT=$(echo "$CURRENT_PERCENT*90/100" | bc)
 
     # if pulse is up to 90%, back to 5%
     [ "$STREAM_PERCENT" -gt "90" ] && STREAM_PERCENT="5"
@@ -115,7 +118,7 @@ then
   
   # end of stream download, check if error is looged
   echo "## Stream(s) download - End" >>"$STREAM_LOG"
-  LOG_ERROR=`grep "ERROR" "$STREAM_LOG"`
+  LOG_ERROR=$(grep "ERROR" "$STREAM_LOG")
   [ "$LOG_ERROR" != "" ] && STREAM_ERROR="$LOG_ERROR"
   
   # if no error, mux downloaded files to final MKV
@@ -126,21 +129,21 @@ then
     echo "## Final video - Determining muxing parameters" >>"$STREAM_LOG"
 
     # get description, thumbnail & subtitle filenames
-    STREAM_DESCR=`grep "Writing video description to:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/'`
+    STREAM_DESCR=$(grep "Writing video description to:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/')
     echo "## Video description : $STREAM_DESCR" >>"$STREAM_LOG"
-    STREAM_THUMB=`grep "Writing thumbnail to:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/'`
+    STREAM_THUMB=$(grep "Writing thumbnail to:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/')
     echo "## Video thumbnail : $STREAM_THUMB" >>"$STREAM_LOG"
-    STREAM_SUBS=`grep "Writing video subtitles to:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/'`
+    STREAM_SUBS=$(grep "Writing video subtitles to:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/')
     echo "## Video subtitle : $STREAM_SUBS" >>"$STREAM_LOG"
 
     # try to get stream filename from ffmpeg streams merging result
-    STREAM_FILE=`grep "Merging formats into" "$STREAM_LOG" | sed 's/^.*into .\(.*\).$/\1/'`
+    STREAM_FILE=$(grep "Merging formats into" "$STREAM_LOG" | sed 's/^.*into .\(.*\).$/\1/')
     # else, get filename from direct stream download
-    [ "$STREAM_FILE" == "" ] && STREAM_FILE=`grep "Destination:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/'`
+    [ "$STREAM_FILE" == "" ] && STREAM_FILE=$(grep "Destination:" "$STREAM_LOG" | sed 's/^.*: \(.*\)$/\1/')
     echo "## Video filename : $STREAM_FILE" >>"$STREAM_LOG"
 
     # generate final MKV filename
-    STREAM_MKV=`echo ${STREAM_FILE%.*}`".mkv"
+    STREAM_MKV=$(echo ${STREAM_FILE%.*})".mkv"
    
     # Array of MKV muxing parameters
     # filename & title
@@ -168,7 +171,7 @@ fi
 # if download has been canceled, kill main process and all its children
 if [ -n "$STREAM_PID" ]
 then
-  STREAM_RUN=`ps aux | awk '{print $2 }' | grep $STREAM_PID`
+  STREAM_RUN=$(ps aux | awk '{print $2 }' | grep $STREAM_PID)
   if [ "$STREAM_RUN" == "$STREAM_PID" ]
   then 
     pkill --parent $STREAM_PID
@@ -178,11 +181,11 @@ then
 fi
 
 # if no error, check if there is an error in final log
-[ -z "$STREAM_ERROR" ] && STREAM_ERROR=`grep "ERROR" "$STREAM_LOG"`
+[ -z "$STREAM_ERROR" ] && STREAM_ERROR=$(grep "ERROR" "$STREAM_LOG")
 
 # if error, display error message
 [ "$STREAM_ERROR" != "" ] && zenity --error --no-wrap --title "Download error" --text "$STREAM_ERROR\n(temporary files available in $TMP_DIR till you close this dialog)"
 
 # clean-up of all temporary files
-#rm -R "$TMP_DIR"
+rm -R "$TMP_DIR"
 
