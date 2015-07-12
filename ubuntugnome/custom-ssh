@@ -14,7 +14,7 @@
 # -------------------------------------------------------
 
 # get terminal profile form ssh host
-PROFILE=`echo $2 | cut -d ' ' -f 2`
+PROFILE=$(echo $2 | cut -d ' ' -f 2)
 
 # call gnome terminal with the needed profile
 gnome-terminal --window-with-profile="$PROFILE" "$1" "$2"
