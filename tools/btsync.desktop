@@ -1,4 +1,4 @@
-''[Desktop Entry]
+[Desktop Entry]
 Type=Application
 Exec=btsync --config /home/user/.btsync.conf
 Hidden=false
