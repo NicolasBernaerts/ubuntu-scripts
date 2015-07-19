@@ -101,6 +101,7 @@ do
 
   FILE_COVER="${FILE_BASE}.${COVER_EXT}"
   [ -f "${FILE_COVER}" ] || FILE_COVER="${FILE_DIR}/cover.jpg"
+  [ -f "${FILE_COVER}" ] || FILE_COVER="${FILE_DIR}/folder.jpg"
 
   # -------------------------------------------------------
   # Analyse video file
