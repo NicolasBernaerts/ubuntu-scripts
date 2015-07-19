@@ -5,12 +5,16 @@
 #  Depends on :
 #    * mediainfo
 #    * avconv (libav-tools)
-#    * mkvmerge (mkvtoolnix)
+#    * sox
 #    * fdkaac (fdkaac-encoder ppa)
+#    * mkvmerge (mkvtoolnix)
 #  Revision history :
 #    23/01/2015, V1.0 - Creation by N. Bernaerts
 #    24/01/2015, V1.1 - Properly handle progress cancellation
 #                       Change video file detection algorithm
+#    19/07/2015, V2.0 - Multiple file selection
+#                       Add GUI mode to select tracks
+#                       and to add midnight mode tracks
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -33,196 +37,373 @@ COVER_EXT="tbn"
 
 # check mediainfo, mkvmerge, avconv and fdkaac
 command -v mediainfo >/dev/null 2>&1 || { zenity --error --text="Please install mediainfo"; exit 1; }
-command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge [mkvtoolnix]"; exit 1; }
 command -v avconv >/dev/null 2>&1 || { zenity --error --text="Please install avconv [libav-tools]"; exit 1; }
+command -v sox >/dev/null 2>&1 || { zenity --error --text="Please install sox"; exit 1; }
 command -v fdkaac >/dev/null 2>&1 || { zenity --error --text="Please install fdkaac [fdkaac-encoder from ppa:mc3man/fdkaac-encoder]"; exit 1; }
+command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge [mkvtoolnix]"; exit 1; }
 
 # -------------------------------------------------------
-# Retrieve or select video file
+#  Generate list of video files to process
 # -------------------------------------------------------
 
-# generate file names
-FILE_PATH="$1"
-FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
-FILE_NAME="$(echo "${FILE_PATH}" | sed 's/^.*\/\(.*\)\..*$/\1/')"
-FILE_EXT="$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')"
-FILE_ORG="${FILE_BASE}-org.${FILE_EXT}"
-FILE_MKV="${FILE_BASE}.mkv"
-FILE_COVER="${FILE_BASE}.tbn"
-FILE_INFO="${FILE_BASE}.txt"
-
-# if no file is given, prompt for file selection
-[ -f "${FILE_PATH}" ] || FILE_PATH="$(zenity --title="Select video file to convert" --file-selection)"
-
-# if still no file selected, exit
-[ -f "${FILE_PATH}" ] || exit 1
-
-# get file properties
-mediainfo "${FILE_PATH}" > "${FILE_INFO}" 
-
-# if file is not a video file, error message and exit
-IS_VIDEO=$(cat "${FILE_INFO}" | grep "^Video")
-[ "${IS_VIDEO}" = "" ] && { zenity --error --text="This file is not a valid video file"; exit 1; }
-
-(
-# ---------------------------------------------------------------------
-# variable initialisation
-# ---------------------------------------------------------------------
-
-# we assume that video track is 0 by default (may be 1 for certain formats)
-TRACK_SHIFT=0
-
-# initilize tracks list with video track from main file
-ARR_INDEX=("0:0")
-
-# ---------------------------------------------------------------------
-# loop to analyse the mediainfo file
-# ---------------------------------------------------------------------
-
-while read LINE           
-do 
-  # check if current line holds data (xxxx   : yyyyyy)
-  LINE_DATA="$(echo "$LINE" | grep ":")"
-
-  # if line is empty, end of section 
-  if [ "$LINE" = "" ]      
-  then    
-    # save collected data according to previous track type
-    case $TRACK_TYPE in
-      # video track : track shift is set according to video index as it should start from 0
-      Video)
-        echo "# Track detection - Video track detected with index ${TRACK_ID}"
-        TRACK_SHIFT=$TRACK_ID 
-        ;;
-      # audio track : if AAC, add it to the candidate list, if not, add it to the transcode candidate list
-      Audio) 
-        echo "# Track detection - ${TRACK_FORMAT} track detected with index ${TRACK_ID}"
-        [ "$TRACK_FORMAT" = "AAC" ] && ARR_AAC=("${ARR_AAC[@]}" "$TRACK_ID") || \
-          ARR_TRACK=("${ARR_TRACK[@]}" "$TRACK_ID|$TRACK_LANGUAGE|$TRACK_FORMAT|$TRACK_CHANNEL|$TRACK_RATE|$TRACK_DEFAULT|$TRACK_DELAY|$TRACK_TITLE")
-        ;;
-      # subtitle track : nothing special to do
-      Text)   
-        echo "# Track detection - ${TRACK_FORMAT} track detected with index ${TRACK_ID}"
-        ;;
-      *) 
-        ;;
-    esac
-
-    # reset data for next track
-    TRACK_TYPE=""
-    TRACK_ID=""
-    TRACK_LANGUAGE="und"
-    TRACK_FORMAT=""
-    TRACK_CHANNEL=""
-    TRACK_RATE=""
-    TRACK_DEFAULT="No"
-    TRACK_TITLE=""
-    TRACK_DELAY="0"
-
-  # else if current line is holding track data
-  elif [ "$LINE_DATA" != "" ]
-  then
-    # read header and data from current line
-    TRACK_HEAD="$(echo "$LINE" | sed 's/^\(.*\)[ ]*: .*$/\1/g' | tr -d "/() ")"
-    TRACK_DATA="$(echo "$LINE" | sed 's/^.*[ ]*: \(.*\)$/\1/g')"
-
-    # extract data from current line
-    case $TRACK_HEAD in
-      ID)       TRACK_ID=$((TRACK_DATA - TRACK_SHIFT)) ;;
-      Language) TRACK_LANGUAGE="${TRACK_DATA}" ;;
-      Format)   TRACK_FORMAT="${TRACK_DATA}" ;;
-      Channels) TRACK_CHANNEL="$(echo ${TRACK_DATA} | cut -d' ' -f1)" ;;
-      Bitrate)  TRACK_RATE="${TRACK_DATA}" ;;
-      Default)  TRACK_DEFAULT="${TRACK_DATA}" ;;
-      Title)    TRACK_TITLE="${TRACK_DATA}" ;;
-      Delayrelativetovideo) TRACK_DELAY="$(echo "${TRACK_DATA}" | sed 's/^\([-0-9]*\).*$/\1/g')" ;;
-      *) ;;
-    esac
-
-  # else current line is a track header
-  else
-    # track type is the first word of the header line
-    TRACK_TYPE=$(echo "$LINE" | sed 's/^\([a-zA-Z]*\).*$/\1/')
-
-  fi          
-done < "${FILE_INFO}"
-
-# ---------------------------------------------------------------------
-#  if video cover is present, include cover in final merge
-# ---------------------------------------------------------------------
-
-if [ -f "${FILE_COVER}" ]
-then
-  echo "# Track detection - Video cover detected"
-  FIELD_COVER=("--attachment-description" "Movie cover" "--attachment-mime-type" "image/jpg" "--attachment-name" "cover.jpg" "--attach-file" "${FILE_COVER}") 
-fi
-
-# ---------------------------------------------------------------------
-# loop thru non AAC tracks to transcode them
-# ---------------------------------------------------------------------
-
-TRACK_INDEX=1
-for TRACK in "${ARR_TRACK[@]}"
+# loop thru arguments to retrieve video list
+for arg
 do
-  # get track characteristics
-  TRACK_ID=$(echo "$TRACK" | cut -d'|' -f1)
-  TRACK_LANGUAGE=$(echo "$TRACK" | cut -d'|' -f2)
-  TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
-  TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
-  TRACK_DEFAULT=$(echo "$TRACK" | cut -d'|' -f6)
-  TRACK_DELAY=$(echo "$TRACK" | cut -d'|' -f7)
-  TRACK_TITLE=$(echo "$TRACK" | cut -d'|' -f8)
-
-  # generate temporary filenames
-  FILE_TMP_MKA="${FILE_BASE}-${TRACK_ID}.mka"
-  FILE_TMP_WAV="${FILE_BASE}-${TRACK_ID}.wav"
-  FILE_TMP_AAC="${FILE_BASE}-${TRACK_ID}.m4a"
-
-  # extract audio track to MKA audio file
-  echo "# Audio track ${TRACK_ID} - Extracting ${TRACK_FORMAT} stream"
-  mkvmerge -o "${FILE_TMP_MKA}" --no-video --audio-tracks ${TRACK_ID} --no-subtitles --no-attachments --no-global-tags --no-chapters --no-track-tags --no-buttons "${FILE_PATH}"
-
-  # convert track to WAV format
-  echo "# Audio track ${TRACK_ID} - Converting from ${TRACK_FORMAT} to WAV"
-  avconv -y -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
-
-  # determine encoding rate
-  [ "$TRACK_CHANNEL" = "6" ] && TRACK_RATE=$RATE_MULTI || TRACK_RATE=$RATE_STEREO
-
-  # convert WAV file to AAC
-  echo "# Audio track ${TRACK_ID} - Converting from WAV to AAC (${TRACK_RATE})"
-  fdkaac -o "${FILE_TMP_AAC}" -b ${TRACK_RATE} "${FILE_TMP_WAV}" 
-
-  # gererate track options for current track
-  FIELD_CONVERT=("${FIELD_CONVERT[@]}" "--default-track" "0:${TRACK_DEFAULT}" "--sync" "0:${TRACK_DELAY}" \
-                                       "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_TITLE}" "${FILE_TMP_AAC}")
-
-  # add current audio to the general track order list
-  ARR_INDEX=("${ARR_INDEX[@]}" "${TRACK_INDEX}:0")
-  TRACK_INDEX=$((TRACK_INDEX+1))
+  ARR_VIDEO=("${ARR_VIDEO[@]}" "$arg")
 done
 
-# ---------------------------------------------------------------------
-#  generate audio track arrays used for final merge
-# ---------------------------------------------------------------------
+# if there is no candidate files, prompt for file selection
+[ ${#ARR_VIDEO[@]} -eq 0 ] && VIDEO_FILE=( "$(zenity --title="Select video file to convert" --file-selection)" )
+[ -f "${VIDEO_FILE}" ] && ARR_VIDEO=( "${VIDEO_FILE}" )
 
-# if needed, generate list of AAC audio tracks
-LIST_AAC=$(echo "${ARR_AAC[@]}" | sed 's/ /,/g')
-[ "$LIST_AAC" != "" ] && FIELD_AAC=("--audio-tracks" "${LIST_AAC}") || FIELD_AAC=("--no-audio" )
+# if still no file selected, exit
+[ ${#ARR_VIDEO[@]} -eq 0 ] && exit 1
 
-# generate list of ACC track index
-LIST_INDEX=$(echo "${ARR_INDEX[@]}" | sed 's/ /,/g')
+# set GUI mode
+[ ${#ARR_VIDEO[@]} -eq 1 ] && GUI_MODE="ON" || GUI_MODE="OFF"
 
-# ---------------------------------------------------------------------
-#  final merge
-# ---------------------------------------------------------------------
+(
 
-# generate final MKV including original file and transcoded tracks
-echo "# Final merge - Generating ${FILE_NAME}.mkv"
-mv "${FILE_PATH}" "${FILE_ORG}"
-mkvmerge --title "${FILE_NAME}" --track-order "${LIST_INDEX}" "${FIELD_COVER[@]}" --output "${FILE_MKV}" "${FIELD_AAC[@]}" --no-buttons --no-attachments "${FILE_ORG}" "${FIELD_CONVERT[@]}"
+# -------------------------------------------------------
+#  Main loop to process video files
+# -------------------------------------------------------
 
-) | zenity --window-icon=video --width=500 --title="${FILE_MKV}" --progress --pulsate --auto-close &
+for FILE_PATH in "${ARR_VIDEO[@]}"
+do
+
+  # ---------------------------------------------------------------------
+  # variable initialisation
+  # ---------------------------------------------------------------------
+
+  # we assume that video track is 0 by default (may be 1 for certain formats)
+  TRACK_SHIFT=0
+
+  # initialize file list with original file (for video track)
+  ARR_FILE=("0:0")
+
+  # initialize arrays
+  ARR_AAC_ID=( )
+  ARR_PARAM_AAC=( )
+  ARR_PARAM_AUDIO=( )
+  ARR_PARAM_COVER=( )
+
+  # -------------------------------------------------------
+  #  Generate file names
+  # -------------------------------------------------------
+
+  FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
+  FILE_NAME="$(echo "${FILE_PATH}" | sed 's/^.*\/\(.*\)\..*$/\1/')"
+  FILE_EXT="$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')"
+  FILE_DIR=$(dirname "${FILE_PATH}")
+  FILE_ORG="${FILE_BASE}-org.${FILE_EXT}"
+  FILE_MKV="${FILE_BASE}.mkv"
+  FILE_INFO="${FILE_BASE}.txt"
+
+  FILE_COVER="${FILE_BASE}.${COVER_EXT}"
+  [ -f "${FILE_COVER}" ] || FILE_COVER="${FILE_DIR}/cover.jpg"
+
+  # -------------------------------------------------------
+  # Analyse video file
+  # -------------------------------------------------------
+
+  # get file properties
+  mediainfo "${FILE_PATH}" > "${FILE_INFO}" 
+
+  # if file is a video file it is processed
+  IS_VIDEO=$(cat "${FILE_INFO}" | grep "^Video")
+  if [ "${IS_VIDEO}" != "" ]
+  then
+
+    # ---------------------------------------------------------------------
+    # loop thru mediainfo file to analyse file tracks
+    # ---------------------------------------------------------------------
+
+    ARR_TRACK=( )
+    while read LINE           
+    do 
+      # check if current line holds data (xxxx   : yyyyyy)
+      LINE_DATA="$(echo "$LINE" | grep ":")"
+
+      # if line is empty, end of section 
+      if [ "$LINE" = "" ]      
+      then    
+        # save collected data according to previous track type
+        case $TRACK_TYPE in
+          # video track : track shift is set according to video index as it should start from 0
+          Video)
+            echo "# ${FILE_NAME} - Video #${TRACK_ID} detected"
+            TRACK_SHIFT=$TRACK_ID 
+            ;;
+          # audio track : if AAC, add it to the candidate list, if not, add it to the transcode candidate list
+          Audio) 
+            echo "# ${FILE_NAME} - Audio #${TRACK_ID} detected (${TRACK_FORMAT})"
+            ARR_TRACK=("${ARR_TRACK[@]}" "$TRACK_ID|$TRACK_LANGUAGE|$TRACK_FORMAT|$TRACK_CHANNEL|$TRACK_RATE|$TRACK_DEFAULT|$TRACK_DELAY|$TRACK_TITLE")
+            ;;
+          # subtitle track : nothing special to do
+          Text)   
+            echo "# ${FILE_NAME} - Subtitle #${TRACK_ID} detected (${TRACK_FORMAT})"
+            ;;
+          *) 
+            ;;
+        esac
+
+        # reset data for next track
+        TRACK_TYPE=""
+        TRACK_ID=""
+        TRACK_LANGUAGE="und"
+        TRACK_FORMAT=""
+        TRACK_CHANNEL=""
+        TRACK_RATE=""
+        TRACK_DEFAULT="No"
+        TRACK_TITLE=""
+        TRACK_DELAY="0"
+
+      # else if current line is holding track data
+      elif [ "$LINE_DATA" != "" ]
+      then
+        # read header and data from current line
+        TRACK_HEAD="$(echo "$LINE" | sed 's/^\(.*\)[ ]*: .*$/\1/g' | tr -d "/() ")"
+        TRACK_DATA="$(echo "$LINE" | sed 's/^.*[ ]*: \(.*\)$/\1/g')"
+
+        # extract data from current line
+        case $TRACK_HEAD in
+          ID)       TRACK_ID=$((TRACK_DATA - TRACK_SHIFT)) ;;
+          Language) TRACK_LANGUAGE="${TRACK_DATA}" ;;
+          Format)   TRACK_FORMAT="${TRACK_DATA}" ;;
+          Channels) TRACK_CHANNEL="$(echo ${TRACK_DATA} | cut -d' ' -f1)" ;;
+          Bitrate)  TRACK_RATE="${TRACK_DATA}" ;;
+          Default)  TRACK_DEFAULT="${TRACK_DATA}" ;;
+          Title)    TRACK_TITLE="${TRACK_DATA}" ;;
+          Delayrelativetovideo) TRACK_DELAY="$(echo "${TRACK_DATA}" | sed 's/^\([-0-9]*\).*$/\1/g')" ;;
+          *) ;;
+        esac
+
+      # else current line is a track header
+      else
+        # track type is the first word of the header line
+        TRACK_TYPE=$(echo "$LINE" | sed 's/^\([a-zA-Z]*\).*$/\1/')
+
+      fi          
+    done < "${FILE_INFO}"
+
+    # ---------------------------------------------------------------------
+    # loop thru audio tracks to select tracks to keep in target video
+    # ---------------------------------------------------------------------
+
+    CHOICE=""
+    ARR_SELECT=( )
+    for TRACK in "${ARR_TRACK[@]}"
+    do
+      # get track characteristics
+      TRACK_ID=$(echo "$TRACK" | cut -d'|' -f1)
+      TRACK_LANGUAGE=$(echo "$TRACK" | cut -d'|' -f2)
+      TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
+      TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
+      TRACK_RATE=$(echo "$TRACK" | cut -d'|' -f5)
+
+      # add current track to dialog selection array
+      ARR_SELECT=("${ARR_SELECT[@]}" "TRUE" "${TRACK_ID}" "${TRACK_FORMAT}" "${TRACK_LANGUAGE}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
+
+      # by default, tracks is selected
+      [ "${CHOICE}" = "" ] && CHOICE="${TRACK_ID}" || CHOICE="${CHOICE}|${TRACK_ID}"
+    done
+
+    # if GUI mode, 
+    if [ "${GUI_MODE}" = "ON" ] 
+    then
+      # dialog box to select audio tracks to mux
+      CHOICE=$(zenity --title "${FILE_NAME}" --text="Select audio tracks to mux in target MKV file\n" --width=600 --height=300 --list --checklist --column=Select --column=Number --column=Format --column=Langage --column=Channels --column=Rate "${ARR_SELECT[@]}")
+
+      # if no track selected or cancelled, exit
+      [ "${CHOICE}" = "" ] && exit 1
+    fi
+
+    # set mask of candidate audio track ID
+    AUDIO_CANDIDATE="|${CHOICE}|"
+
+    # ---------------------------------------------------------------------
+    # loop thru selected audio tracks to select tracks where to apply DRC
+    # ---------------------------------------------------------------------
+
+    CHOICE=""
+    ARR_SELECT=( )
+    for TRACK in "${ARR_TRACK[@]}"
+    do
+      # get track characteristics
+      TRACK_ID=$(echo "$TRACK" | cut -d'|' -f1)
+      TRACK_LANGUAGE=$(echo "$TRACK" | cut -d'|' -f2)
+      TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
+      TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
+      TRACK_RATE=$(echo "$TRACK" | cut -d'|' -f5)
+
+      # check if track is selected
+      TRACK_CANDIDATE=$(echo "${AUDIO_CANDIDATE}" | grep "|${TRACK_ID}|")
+
+      # add current track to dialog selection array
+      [ "${TRACK_CANDIDATE}" != "" ] && ARR_SELECT=("${ARR_SELECT[@]}" "TRUE" "${TRACK_ID}" "${TRACK_FORMAT}" "${TRACK_LANGUAGE}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
+    done
+
+    # if GUI mode,
+    if [ "${GUI_MODE}" = "ON" ] 
+    then
+      # dialog box to select audio tracks where to apply DRC
+      CHOICE=$(zenity --title "${FILE_NAME}" --text="Select audio tracks where DRC should be generated\n" --width=600 --height=300 --list --checklist --column=Select --column=Number --column=Format --column=Langage --column=Channels --column=Rate "${ARR_SELECT[@]}")
+    fi
+
+    # set mask of candidate audio track ID for midnight mode
+    AUDIO_NIGHTMODE="|${CHOICE}|"
+
+    # ---------------------------------------------------------------------
+    # loop thru tracks to apply AAC conversion and DRC
+    # ---------------------------------------------------------------------
+
+    NEWTRACK_INDEX=1
+    for TRACK in "${ARR_TRACK[@]}"
+    do
+      # get track characteristics
+      TRACK_ID=$(echo "$TRACK" | cut -d'|' -f1)
+      TRACK_LANGUAGE=$(echo "$TRACK" | cut -d'|' -f2)
+      TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
+      TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
+      TRACK_DEFAULT=$(echo "$TRACK" | cut -d'|' -f6)
+      TRACK_DELAY=$(echo "$TRACK" | cut -d'|' -f7)
+      TRACK_TITLE=$(echo "$TRACK" | cut -d'|' -f8)
+
+      # check if track should be kept in target video
+      TRACK_CANDIDATE=$(echo "${AUDIO_CANDIDATE}" | grep "|${TRACK_ID}|")
+      TRACK_NIGHTMODE=$(echo "${AUDIO_NIGHTMODE}" | grep "|${TRACK_ID}|")
+
+      # if track is selected
+      if [ "${TRACK_CANDIDATE}" != "" ]
+      then
+        # generate temporary filenames
+        FILE_TMP_MKA="${FILE_BASE}-${TRACK_ID}.mka"
+        FILE_TMP_WAV="${FILE_BASE}-${TRACK_ID}.wav"
+        FILE_TMP_AAC="${FILE_BASE}-${TRACK_ID}.m4a"
+        FILE_DRC_WAV="${FILE_BASE}-${TRACK_ID}-drc.wav"
+        FILE_DRC_AAC="${FILE_BASE}-${TRACK_ID}-drc.m4a"
+        FILE_NRM_WAV="${FILE_BASE}-${TRACK_ID}-nrm.wav"
+
+        # if format is already AAC, add current track ID to AAC track array
+        if [ "${TRACK_FORMAT}" = "AAC" ]
+        then
+          # add current track ID to the array of AAC tracks
+          ARR_AAC_ID=("${ARR_AAC_ID[@]}" "${TRACK_ID}")
+
+          # generate track name option
+          ARR_PARAM_AAC=("${ARR_PARAM_AAC[@]}" "--track-name" "${TRACK_ID}:${TRACK_LANGUAGE} (${TRACK_CHANNEL} channels)")
+        fi
+
+        # if format is not AAC or Nightmode is needed, extract audio as WAV
+        if [ "${TRACK_FORMAT}" != "AAC" -o "${TRACK_NIGHTMODE}" != "" ]
+        then
+          # extract audio track to MKA audio file
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Extraction of ${TRACK_FORMAT} stream"
+          mkvmerge -o "${FILE_TMP_MKA}" --no-video --audio-tracks ${TRACK_ID} --no-subtitles --no-attachments --no-global-tags --no-chapters --no-track-tags --no-buttons "${FILE_PATH}"
+        fi
+
+        # if format is not AAC, convert to AAC
+        if [ "${TRACK_FORMAT}" != "AAC" ]
+        then
+          # convert track to WAV format
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to WAV"
+          avconv -y -threads auto -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
+
+          # determine encoding rate
+          [ $TRACK_CHANNEL -ge 5 ] && TRACK_RATE=$RATE_MULTI || TRACK_RATE=$RATE_STEREO
+
+          # convert WAV file to AAC
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Convertion to AAC (${TRACK_RATE})"
+          fdkaac --silent -o "${FILE_TMP_AAC}" -b ${TRACK_RATE} "${FILE_TMP_WAV}" 
+
+          # gererate track options for current track
+          ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:${TRACK_DEFAULT}" "--sync" "0:${TRACK_DELAY}" \
+                                                   "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE}" "${FILE_TMP_AAC}")
+
+          # add current audio to the general track order list
+          ARR_FILE=("${ARR_FILE[@]}" "${NEWTRACK_INDEX}:0")
+          NEWTRACK_INDEX=$((NEWTRACK_INDEX+1))
+        fi
+
+        # if nightmode track is needed, generate AAC stereo night mode track
+        if [ "${TRACK_NIGHTMODE}" != "" ]
+        then
+          # determine encoding rate
+          TRACK_RATE=$RATE_STEREO
+
+          # convert WAV file to stereo
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to stereo WAV"
+          avconv -y -threads auto -i "${FILE_TMP_MKA}" -ac 2 "${FILE_TMP_WAV}"
+
+          # apply night mode correction
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to Midnight Mode"
+          sox --multi-threaded --temp $HOME "${FILE_TMP_WAV}" "${FILE_DRC_WAV}" compand 0.0,1 6:-70,-50,-20 -6 -90 0.1
+
+          # normalize audio track
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Normalization of Midnight Mode"
+          sox --multi-threaded --temp $HOME --norm "${FILE_DRC_WAV}" "${FILE_NRM_WAV}"
+
+          # convert WAV file to AAC
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion of Midnight Mode to AAC (${RATE_STEREO})"
+          fdkaac --silent -o "${FILE_DRC_AAC}" -b ${RATE_STEREO} "${FILE_NRM_WAV}" 
+
+          # gererate track options for current track
+          ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:No" "--sync" "0:${TRACK_DELAY}" \
+                                                   "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE} Night Mode" "${FILE_DRC_AAC}")
+
+          # add current audio to the general track order list
+          ARR_FILE=("${ARR_FILE[@]}" "${NEWTRACK_INDEX}:0")
+          NEWTRACK_INDEX=$((NEWTRACK_INDEX+1))
+        fi
+
+        # remove temporary wav files
+        [ -f "${FILE_TMP_MKA}" ] && rm "${FILE_TMP_MKA}"
+        [ -f "${FILE_TMP_WAV}" ] && rm "${FILE_TMP_WAV}"
+        [ -f "${FILE_DRC_WAV}" ] && rm "${FILE_DRC_WAV}"
+        [ -f "${FILE_NRM_WAV}" ] && rm "${FILE_NRM_WAV}"
+      fi
+    done
+
+    # ---------------------------------------------------------------------
+    #  generate audio track arrays used for final merge
+    # ---------------------------------------------------------------------
+
+    # if needed, generate list of AAC audio tracks
+    LIST_AAC=$(echo "${ARR_AAC_ID[@]}" | sed 's/ /,/g')
+    [ "$LIST_AAC" != "" ] && ARR_PARAM_AAC=("--audio-tracks" "${LIST_AAC}" "${ARR_PARAM_AAC[@]}") || ARR_PARAM_AAC=("--no-audio" )
+
+    # generate list of ACC track index
+    LIST_FILE=$(echo "${ARR_FILE[@]}" | sed 's/ /,/g')
+
+    # ---------------------------------------------------------------------
+    #  if video cover is present, include cover in final merge
+    # ---------------------------------------------------------------------
+
+    if [ -f "${FILE_COVER}" ]
+    then
+      echo "# ${FILE_NAME} - Addition of video cover"
+      ARR_PARAM_COVER=("--attachment-description" "Movie cover" "--attachment-mime-type" "image/jpg" "--attachment-name" "cover.jpg" "--attach-file" "${FILE_COVER}") 
+    fi
+
+    # ---------------------------------------------------------------------
+    #  final merge
+    # ---------------------------------------------------------------------
+
+    # generate final MKV including original file and transcoded tracks
+    echo "# ${FILE_NAME} - Generation of final MKV"
+    mv "${FILE_PATH}" "${FILE_ORG}"
+    mkvmerge --title "${FILE_NAME}" --track-order "${LIST_FILE}" "${ARR_PARAM_COVER[@]}" --output "${FILE_MKV}" "${ARR_PARAM_AAC[@]}" --no-buttons --no-attachments "${FILE_ORG}" "${ARR_PARAM_AUDIO[@]}"
+
+    # clean all temporary M4A files
+    rm -f "${FILE_BASE}"-*.m4a
+  fi
+
+  # remove information file
+  [ -f "${FILE_INFO}" ] && rm "${FILE_INFO}"
+
+done
+
+) | zenity --window-icon=video --width=500 --title="Conversion to MKV with AAC audio" --progress --pulsate --auto-close &
 
 # get zenity brother process which is parent of all running tasks 
 PID_ZENITY=$(ps -C zenity h -o pid,command | grep "${FILE_MKV}" | awk '{print $1}')
@@ -244,9 +425,3 @@ done
 
 # if some running tasks are still there, kill them
 [ "${PID_GRANDCHILDREN}" != "" ] && kill -9 ${PID_GRANDCHILDREN}
-
-# clean all un-needed working files
-rm -f "${FILE_INFO}"
-rm -f "${FILE_BASE}"-*.mka
-rm -f "${FILE_BASE}"-*.wav 
-rm -f "${FILE_BASE}"-*.m4a
