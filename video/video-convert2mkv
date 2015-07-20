@@ -1,29 +1,40 @@
 #!/bin/bash
 # -------------------------------------------------------
-#  Convert video to MKV container and transcode audio to AAC 
+#  Convert video to MKV,
+#   transcode audio to AAC
+#   and convert tracks to midnight mode
 #  
 #  Depends on :
+#    * yad (from ppa:webupd8team/y-ppa-manager)
 #    * mediainfo
 #    * avconv (libav-tools)
 #    * sox
-#    * fdkaac (fdkaac-encoder ppa)
+#    * fdkaac (from ppa:fdkaac-encoder)
 #    * mkvmerge (mkvtoolnix)
+#  
 #  Revision history :
 #    23/01/2015, V1.0 - Creation by N. Bernaerts
 #    24/01/2015, V1.1 - Properly handle progress cancellation
 #                       Change video file detection algorithm
-#    19/07/2015, V2.0 - Multiple file selection
+#    19/07/2015, V2.0 - Handle multiple file selection
 #                       Add GUI mode to select tracks
 #                       and to add midnight mode tracks
+#    20/07/2015, V2.1 - Switch to YAD and select encoding rates
 # -------------------------------------------------------
+
+IFS=$'\n'
 
 # -------------------------------------------------------
 #  Beginning of parameter section
 #  (Please, do not modify anything out of this section)
 
-# converion rate for 2 and 6 channels audio tracks
-RATE_STEREO="192k"
-RATE_MULTI="384k"
+# available encoding rates
+RATE_AVAILABLE="64|128|160|192|256|384"
+
+# encoding rate for midnight mode, stereo and multi channels audio tracks
+RATE_DRC="160"
+RATE_STEREO="192"
+RATE_MULTI="384"
 
 # movie cover extension (must be jpeg file with same name as original video)
 COVER_EXT="tbn"
@@ -36,6 +47,7 @@ COVER_EXT="tbn"
 # -------------------------------------------------------
 
 # check mediainfo, mkvmerge, avconv and fdkaac
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad [yad from ppa:webupd8team/y-ppa-manager]"; exit 1; }
 command -v mediainfo >/dev/null 2>&1 || { zenity --error --text="Please install mediainfo"; exit 1; }
 command -v avconv >/dev/null 2>&1 || { zenity --error --text="Please install avconv [libav-tools]"; exit 1; }
 command -v sox >/dev/null 2>&1 || { zenity --error --text="Please install sox"; exit 1; }
@@ -62,6 +74,32 @@ done
 # set GUI mode
 [ ${#ARR_VIDEO[@]} -eq 1 ] && GUI_MODE="ON" || GUI_MODE="OFF"
 
+
+# -------------------------------------------------------
+#  Select encoding rates
+# -------------------------------------------------------
+
+# set main parameters
+ARR_PARAM_CONFIG=( "--field=${#ARR_VIDEO[@]} video file(s) will be processed:LBL" "files" "--field=Transcode rates (kbits/s):LBL" "rates" "--field=  - Midnight mode:CB" "${RATE_DRC}|${RATE_AVAILABLE}" "--field=  - Stereo:CB" "${RATE_STEREO}|${RATE_AVAILABLE}" "--field=  - Multi channels:CB" "${RATE_MULTI}|${RATE_AVAILABLE}")
+
+# if only one file is selected, propose track selection
+[ ${#ARR_VIDEO[@]} -eq 1 ] && ARR_PARAM_CONFIG=("${ARR_PARAM_CONFIG[@]}" "--field=Select Audio Tracks:CHK" "TRUE")
+
+# display dialog box selection
+#CHOICE=$(yad --center --width=350 --height=200 --window-icon "video" --image "video" --title="MKV/AAC multiplexer" --form --item-separator='|' --field="${#ARR_VIDEO[@]} video file(s) will be processed:LBL" "files" --field="Please, adjust transcoding rates (kbits/s):LBL" "rates" --field="  - Midnight mode:CB" "${RATE_DRC}|${RATE_AVAILABLE}" --field="  - Stereo:CB" "${RATE_STEREO}|${RATE_AVAILABLE}" --field="  - Multi channels:CB" "${RATE_MULTI}|${RATE_AVAILABLE}")
+
+CHOICE=$(yad --center --width=350 --height=200 --window-icon "video" --image "video" --title="MKV/AAC multiplexer" --form --item-separator='|' "${ARR_PARAM_CONFIG[@]}")
+
+# get parameters
+[ "${CHOICE}" = "" ] && exit 1
+RATE=$(echo "${CHOICE}" | cut -d'|' -f3)
+[ "${RATE}" != "" ] && RATE_DRC="${RATE}"
+RATE=$(echo "${CHOICE}" | cut -d'|' -f4)
+[ "${RATE}" != "" ] && RATE_STEREO="${RATE}"
+RATE=$(echo "${CHOICE}" | cut -d'|' -f5)
+[ "${RATE}" != "" ] && RATE_MULTI="${RATE}"
+GUI_MODE=$(echo "${CHOICE}" | cut -d'|' -f6)
+
 (
 
 # -------------------------------------------------------
@@ -70,7 +108,6 @@ done
 
 for FILE_PATH in "${ARR_VIDEO[@]}"
 do
-
   # ---------------------------------------------------------------------
   # variable initialisation
   # ---------------------------------------------------------------------
@@ -191,7 +228,8 @@ do
     # loop thru audio tracks to select tracks to keep in target video
     # ---------------------------------------------------------------------
 
-    CHOICE=""
+    AUDIO_CANDIDATE="|"
+    AUDIO_NIGHTMODE="|"
     ARR_SELECT=( )
     for TRACK in "${ARR_TRACK[@]}"
     do
@@ -203,56 +241,33 @@ do
       TRACK_RATE=$(echo "$TRACK" | cut -d'|' -f5)
 
       # add current track to dialog selection array
-      ARR_SELECT=("${ARR_SELECT[@]}" "TRUE" "${TRACK_ID}" "${TRACK_FORMAT}" "${TRACK_LANGUAGE}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
+      ARR_SELECT=("${ARR_SELECT[@]}" "TRUE" "FALSE" "${TRACK_ID}" "${TRACK_FORMAT}" "${TRACK_LANGUAGE}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
 
       # by default, tracks is selected
-      [ "${CHOICE}" = "" ] && CHOICE="${TRACK_ID}" || CHOICE="${CHOICE}|${TRACK_ID}"
+      AUDIO_CANDIDATE="${AUDIO_CANDIDATE}${TRACK_ID}|"
     done
 
     # if GUI mode, 
-    if [ "${GUI_MODE}" = "ON" ] 
+    if [ "${GUI_MODE}" = "TRUE" ] 
     then
       # dialog box to select audio tracks to mux
-      CHOICE=$(zenity --title "${FILE_NAME}" --text="Select audio tracks to mux in target MKV file\n" --width=600 --height=300 --list --checklist --column=Select --column=Number --column=Format --column=Langage --column=Channels --column=Rate "${ARR_SELECT[@]}")
+      ARR_COLUMN=( "--column=Select:CHK" "--column=Midnight:CHK" "--column=Number:NUM" "--column=Format:TEXT" "--column=Langage:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" )
+      ARR_CHOICE=( $(yad --center --title "${FILE_NAME}" --text="Select tracks to mux in MKV\n" --width=600 --height=300 --list --print-all "${ARR_COLUMN[@]}" "${ARR_SELECT[@]}") )
 
-      # if no track selected or cancelled, exit
-      [ "${CHOICE}" = "" ] && exit 1
+      # loop thru choices to setup selected tracks and midnight mode tracks
+      AUDIO_CANDIDATE="|"
+      for CHOICE in "${ARR_CHOICE[@]}"
+      do
+        # get choices
+        TRACK_CANDIDATE=$(echo "$CHOICE" | cut -d'|' -f1)
+        TRACK_NIGHTMODE=$(echo "$CHOICE" | cut -d'|' -f2)
+        TRACK_ID=$(echo "$CHOICE" | cut -d'|' -f3)
+
+        # set track as selected and/or midnight mode
+        [ "${TRACK_CANDIDATE}" = "TRUE" ] && AUDIO_CANDIDATE="${AUDIO_CANDIDATE}${TRACK_ID}|"
+        [ "${TRACK_NIGHTMODE}" = "TRUE" ] && AUDIO_NIGHTMODE="${AUDIO_NIGHTMODE}${TRACK_ID}|"
+      done
     fi
-
-    # set mask of candidate audio track ID
-    AUDIO_CANDIDATE="|${CHOICE}|"
-
-    # ---------------------------------------------------------------------
-    # loop thru selected audio tracks to select tracks where to apply DRC
-    # ---------------------------------------------------------------------
-
-    CHOICE=""
-    ARR_SELECT=( )
-    for TRACK in "${ARR_TRACK[@]}"
-    do
-      # get track characteristics
-      TRACK_ID=$(echo "$TRACK" | cut -d'|' -f1)
-      TRACK_LANGUAGE=$(echo "$TRACK" | cut -d'|' -f2)
-      TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
-      TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
-      TRACK_RATE=$(echo "$TRACK" | cut -d'|' -f5)
-
-      # check if track is selected
-      TRACK_CANDIDATE=$(echo "${AUDIO_CANDIDATE}" | grep "|${TRACK_ID}|")
-
-      # add current track to dialog selection array
-      [ "${TRACK_CANDIDATE}" != "" ] && ARR_SELECT=("${ARR_SELECT[@]}" "TRUE" "${TRACK_ID}" "${TRACK_FORMAT}" "${TRACK_LANGUAGE}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
-    done
-
-    # if GUI mode,
-    if [ "${GUI_MODE}" = "ON" ] 
-    then
-      # dialog box to select audio tracks where to apply DRC
-      CHOICE=$(zenity --title "${FILE_NAME}" --text="Select audio tracks where DRC should be generated\n" --width=600 --height=300 --list --checklist --column=Select --column=Number --column=Format --column=Langage --column=Channels --column=Rate "${ARR_SELECT[@]}")
-    fi
-
-    # set mask of candidate audio track ID for midnight mode
-    AUDIO_NIGHTMODE="|${CHOICE}|"
 
     # ---------------------------------------------------------------------
     # loop thru tracks to apply AAC conversion and DRC
@@ -274,17 +289,17 @@ do
       TRACK_CANDIDATE=$(echo "${AUDIO_CANDIDATE}" | grep "|${TRACK_ID}|")
       TRACK_NIGHTMODE=$(echo "${AUDIO_NIGHTMODE}" | grep "|${TRACK_ID}|")
 
+      # generate temporary filenames
+      FILE_TMP_MKA="${FILE_BASE}-${TRACK_ID}.mka"
+      FILE_TMP_WAV="${FILE_BASE}-${TRACK_ID}.wav"
+      FILE_TMP_AAC="${FILE_BASE}-${TRACK_ID}.m4a"
+      FILE_DRC_WAV="${FILE_BASE}-${TRACK_ID}-drc.wav"
+      FILE_DRC_AAC="${FILE_BASE}-${TRACK_ID}-drc.m4a"
+      FILE_NRM_WAV="${FILE_BASE}-${TRACK_ID}-nrm.wav"
+
       # if track is selected
       if [ "${TRACK_CANDIDATE}" != "" ]
       then
-        # generate temporary filenames
-        FILE_TMP_MKA="${FILE_BASE}-${TRACK_ID}.mka"
-        FILE_TMP_WAV="${FILE_BASE}-${TRACK_ID}.wav"
-        FILE_TMP_AAC="${FILE_BASE}-${TRACK_ID}.m4a"
-        FILE_DRC_WAV="${FILE_BASE}-${TRACK_ID}-drc.wav"
-        FILE_DRC_AAC="${FILE_BASE}-${TRACK_ID}-drc.m4a"
-        FILE_NRM_WAV="${FILE_BASE}-${TRACK_ID}-nrm.wav"
-
         # if format is already AAC, add current track ID to AAC track array
         if [ "${TRACK_FORMAT}" = "AAC" ]
         then
@@ -293,19 +308,13 @@ do
 
           # generate track name option
           ARR_PARAM_AAC=("${ARR_PARAM_AAC[@]}" "--track-name" "${TRACK_ID}:${TRACK_LANGUAGE} (${TRACK_CHANNEL} channels)")
-        fi
-
-        # if format is not AAC or Nightmode is needed, extract audio as WAV
-        if [ "${TRACK_FORMAT}" != "AAC" -o "${TRACK_NIGHTMODE}" != "" ]
-        then
+        
+        # else format is not AAC, convert it to AAC
+        else
           # extract audio track to MKA audio file
           echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Extraction of ${TRACK_FORMAT} stream"
           mkvmerge -o "${FILE_TMP_MKA}" --no-video --audio-tracks ${TRACK_ID} --no-subtitles --no-attachments --no-global-tags --no-chapters --no-track-tags --no-buttons "${FILE_PATH}"
-        fi
 
-        # if format is not AAC, convert to AAC
-        if [ "${TRACK_FORMAT}" != "AAC" ]
-        then
           # convert track to WAV format
           echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to WAV"
           avconv -y -threads auto -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
@@ -314,8 +323,8 @@ do
           [ $TRACK_CHANNEL -ge 5 ] && TRACK_RATE=$RATE_MULTI || TRACK_RATE=$RATE_STEREO
 
           # convert WAV file to AAC
-          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Convertion to AAC (${TRACK_RATE})"
-          fdkaac --silent -o "${FILE_TMP_AAC}" -b ${TRACK_RATE} "${FILE_TMP_WAV}" 
+          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Convertion to AAC (${TRACK_RATE}k)"
+          fdkaac --silent -o "${FILE_TMP_AAC}" -b ${TRACK_RATE}k "${FILE_TMP_WAV}" 
 
           # gererate track options for current track
           ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:${TRACK_DEFAULT}" "--sync" "0:${TRACK_DELAY}" \
@@ -325,44 +334,45 @@ do
           ARR_FILE=("${ARR_FILE[@]}" "${NEWTRACK_INDEX}:0")
           NEWTRACK_INDEX=$((NEWTRACK_INDEX+1))
         fi
-
-        # if nightmode track is needed, generate AAC stereo night mode track
-        if [ "${TRACK_NIGHTMODE}" != "" ]
-        then
-          # determine encoding rate
-          TRACK_RATE=$RATE_STEREO
-
-          # convert WAV file to stereo
-          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to stereo WAV"
-          avconv -y -threads auto -i "${FILE_TMP_MKA}" -ac 2 "${FILE_TMP_WAV}"
-
-          # apply night mode correction
-          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to Midnight Mode"
-          sox --multi-threaded --temp $HOME "${FILE_TMP_WAV}" "${FILE_DRC_WAV}" compand 0.0,1 6:-70,-50,-20 -6 -90 0.1
-
-          # normalize audio track
-          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Normalization of Midnight Mode"
-          sox --multi-threaded --temp $HOME --norm "${FILE_DRC_WAV}" "${FILE_NRM_WAV}"
-
-          # convert WAV file to AAC
-          echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion of Midnight Mode to AAC (${RATE_STEREO})"
-          fdkaac --silent -o "${FILE_DRC_AAC}" -b ${RATE_STEREO} "${FILE_NRM_WAV}" 
-
-          # gererate track options for current track
-          ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:No" "--sync" "0:${TRACK_DELAY}" \
-                                                   "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE} Night Mode" "${FILE_DRC_AAC}")
-
-          # add current audio to the general track order list
-          ARR_FILE=("${ARR_FILE[@]}" "${NEWTRACK_INDEX}:0")
-          NEWTRACK_INDEX=$((NEWTRACK_INDEX+1))
-        fi
-
-        # remove temporary wav files
-        [ -f "${FILE_TMP_MKA}" ] && rm "${FILE_TMP_MKA}"
-        [ -f "${FILE_TMP_WAV}" ] && rm "${FILE_TMP_WAV}"
-        [ -f "${FILE_DRC_WAV}" ] && rm "${FILE_DRC_WAV}"
-        [ -f "${FILE_NRM_WAV}" ] && rm "${FILE_NRM_WAV}"
       fi
+
+      # if nightmode track is needed, generate AAC stereo night mode track
+      if [ "${TRACK_NIGHTMODE}" != "" ]
+      then
+        # if not already done, extract audio track to MKA audio file
+        echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Extraction of ${TRACK_FORMAT} stream"
+        [ -f "${FILE_TMP_MKA}" ] || mkvmerge -o "${FILE_TMP_MKA}" --no-video --audio-tracks ${TRACK_ID} --no-subtitles --no-attachments --no-global-tags --no-chapters --no-track-tags --no-buttons "${FILE_PATH}"
+
+        # convert WAV file to stereo
+        echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to stereo WAV"
+        avconv -y -threads auto -i "${FILE_TMP_MKA}" -ac 2 "${FILE_TMP_WAV}"
+
+        # apply night mode correction
+        echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to Midnight Mode"
+        sox --multi-threaded --temp $HOME "${FILE_TMP_WAV}" "${FILE_DRC_WAV}" compand 0.0,1 6:-70,-50,-20 -6 -90 0.1
+
+        # normalize audio track
+        echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Normalization of Midnight Mode"
+        sox --multi-threaded --temp $HOME --norm "${FILE_DRC_WAV}" "${FILE_NRM_WAV}"
+
+        # convert WAV file to AAC
+        echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion of Midnight Mode to AAC (${RATE_DRC}k)"
+        fdkaac --silent -o "${FILE_DRC_AAC}" -b ${RATE_DRC}k "${FILE_NRM_WAV}" 
+
+        # gererate track options for current track
+        ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:No" "--sync" "0:${TRACK_DELAY}" \
+                                                 "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE} Night Mode" "${FILE_DRC_AAC}")
+
+        # add current audio to the general track order list
+        ARR_FILE=("${ARR_FILE[@]}" "${NEWTRACK_INDEX}:0")
+        NEWTRACK_INDEX=$((NEWTRACK_INDEX+1))
+      fi
+
+      # remove temporary files
+      [ -f "${FILE_TMP_MKA}" ] && rm "${FILE_TMP_MKA}"
+      [ -f "${FILE_TMP_WAV}" ] && rm "${FILE_TMP_WAV}"
+      [ -f "${FILE_DRC_WAV}" ] && rm "${FILE_DRC_WAV}"
+      [ -f "${FILE_NRM_WAV}" ] && rm "${FILE_NRM_WAV}"
     done
 
     # ---------------------------------------------------------------------
@@ -401,7 +411,6 @@ do
 
   # remove information file
   [ -f "${FILE_INFO}" ] && rm "${FILE_INFO}"
-
 done
 
 ) | zenity --window-icon=video --width=500 --title="Conversion to MKV with AAC audio" --progress --pulsate --auto-close &
