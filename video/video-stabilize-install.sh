@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Video rotation and stabilization
 
 # install melt and vidstab
