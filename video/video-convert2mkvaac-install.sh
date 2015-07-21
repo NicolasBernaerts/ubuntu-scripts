@@ -31,7 +31,7 @@ command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 mkdir --parents $HOME/.local/share/file-manager/actions
 
 # install scripts
-sudo wget -O /usr/local/bin/video-convert2mkv https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkv
-sudo chmod +x /usr/local/bin/video-convert2mkv
-sudo wget -O /usr/share/applications/video-convert2mkv.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkv.desktop
-wget -O $HOME/.local/share/file-manager/actions/video-convert2mkv-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkv-action.desktop
+sudo wget -O /usr/local/bin/video-convert2mkvaac https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac
+sudo chmod +x /usr/local/bin/video-convert2mkvaac
+sudo wget -O /usr/share/applications/video-convert2mkvaac.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.desktop
+wget -O $HOME/.local/share/file-manager/actions/video-convert2mkvaac-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac-action.desktop
