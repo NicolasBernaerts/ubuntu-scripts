@@ -9,10 +9,10 @@ Tooltip[C]=Conversion of any video file to a MKV container with AAC audio
 Tooltip[en]=Conversion of any video file to a MKV container with AAC audio
 Tooltip[en_US]=Conversion of any video file to a MKV container with AAC audio
 Tooltip[fr_FR]=Outil de conversion d'un fichier video en fichier MKV avec audio au format AAC
-Profiles=convert2mkv_video;
+Profiles=convert2mkvaac_video;
 
-[X-Action-Profile convert2mkv_video]
-Exec=video-convert2mkv %F
+[X-Action-Profile convert2mkvaac_video]
+Exec=video-convert2mkvaac %F
 MimeTypes=video/*;
 Name[C]=Default profile
 Name[en]=Default profile
