@@ -19,7 +19,7 @@
 #    19/07/2015, V2.0 - Handle multiple file selection
 #                       Add GUI mode to select tracks
 #                       and to add midnight mode tracks
-#    20/07/2015, V2.1 - Switch to YAD and select encoding rates
+#    20/07/2015, V2.1 - Switch to YAD and select rates
 # -------------------------------------------------------
 
 IFS=$'\n'
