@@ -1,15 +1,26 @@
 #!/bin/sh
 # Video rotation and stabilization
 
-# install melt, x264 and vidstab
-sudo add-apt-repository -y ppa:sunab/kdenlive-release
-sudo apt-get update
-sudo apt-get -y install libvidstab1.0 melt x264
+# install melt and vidstab
+IS_PRESENT=$(command -v melt)
+if [ -z "${IS_PRESENT}" ]
+then
+  sudo add-apt-repository -y ppa:sunab/kdenlive-release
+  sudo apt-get update
+  sudo apt-get -y install libvidstab1.0 melt
+fi
 
 # install yad
-sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
-sudo apt-get update
-sudo apt-get -y install yad
+IS_PRESENT=$(command -v yad)
+if [ -z "${IS_PRESENT}" ]
+then
+  sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
+  sudo apt-get update
+  sudo apt-get -y install yad
+fi
+
+# install x264
+sudo apt-get -y install x264
 
 # install exiftool
 sudo apt-get -y install libimage-exiftool-perl
