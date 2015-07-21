@@ -1,18 +1,26 @@
-#!/bin/sh
+#!/bin/bash
 # Convert any video file to MKV with AAC audio and add midnight mode tracks
 
 # install yad
-sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
-sudo apt-get update
-sudo apt-get -y install yad
+IS_PRESENT=$(command -v yad)
+if [ -z "${IS_PRESENT}" ]
+then
+  sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
+  sudo apt-get update
+  sudo apt-get -y install yad
+fi
+
+# install fdkaac encoder
+IS_PRESENT=$(command -v fdkaac)
+if [ -z "${IS_PRESENT}" ]
+then
+  sudo add-apt-repository -y ppa:mc3man/fdkaac-encoder
+  sudo apt-get update
+  sudo apt-get -y install fdkaac-encoder aac-enc
+fi
 
 # install mediainfo and mkvtoolnix
 sudo apt-get -y install mediainfo mkvtoolnix
-
-# install fdkaac encoder
-sudo add-apt-repository -y ppa:mc3man/fdkaac-encoder
-sudo apt-get update
-sudo apt-get -y install fdkaac-encoder aac-enc
 
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
