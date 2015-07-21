@@ -1,6 +1,10 @@
 #!/bin/bash
 # Video rotation and stabilization
 
+# test Ubuntu distribution
+DISTRO=$(lsb_release -is 2>/dev/null)
+[ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
+
 # install melt and vidstab
 IS_PRESENT=$(command -v melt)
 if [ -z "${IS_PRESENT}" ]
