@@ -30,7 +30,9 @@ sudo apt-get -y install mediainfo libav-tools sox mkvtoolnix
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 mkdir --parents $HOME/.local/share/file-manager/actions
 
-# install scripts
+# install configuration and scripts
+mkdir --parents $HOME/.config
+wget -O $HOME/.config/video-convert2mkvaac.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.conf
 sudo wget -O /usr/local/bin/video-convert2mkvaac https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac
 sudo chmod +x /usr/local/bin/video-convert2mkvaac
 sudo wget -O /usr/share/applications/video-convert2mkvaac.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.desktop
