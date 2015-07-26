@@ -249,9 +249,9 @@ do
     [ "${ROTATE_RATIO}" != "1" ] && ARR_ROTATE=("${ARR_ROTATE[@]}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
   fi
 
-  # ------------------------------------------
-  # Rotation / Stabilization analysis
-  # ------------------------------------------
+  # ----------------------------------------------
+  #   PASS 1 - Rotation / Stabilization analysis
+  # ----------------------------------------------
 
   # information display
   echo "# Analysing file"
@@ -282,7 +282,7 @@ do
   done
 
   # ------------------------------------------
-  #  Final result encoding
+  #  PASS 2 - Final result encoding
   # ------------------------------------------
 
   # information display
