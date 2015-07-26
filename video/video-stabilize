@@ -16,39 +16,25 @@
 #    04/03/2012, V1.0 - Creation by N. Bernaerts
 #    04/04/2012, V1.1 - Add codecs as parameters
 #    17/01/2015, V2.0 - Completle rewrite for Ubuntu 14.04 LTS 
-#                       Handle rotation as well (thanks to Guy Eagling)
+#                       Handle rotation as well thanks to Guy Eagling
 #    19/01/2015, V2.1 - Manage per process .trf file to allow parallel execution
 #    19/01/2015, V2.2 - Add .pid file to handle processing cancellation
 #    23/01/2015, V3.0 - Check tools availability, 
 #                       Detect available stabilization filters (vidstab, videostab2 or videostab)
-#                       Add Fedora compatibility with mlt-melt (thanks to Guy Eagling)
+#                       Add Fedora compatibility (mlt-melt) thanks to Guy Eagling
 #    06/03/2015, V3.1 - Externalize parameters to ~/.config/video-stabilize.conf
-#                       Add multiple files processing (thanks to Hingo's idea)
+#                       Add multiple files processing thanks to Hingo's idea
 #    10/03/2015, V3.2 - Update exiftool handling for MKV files
 #    12/03/2015, V3.3 - Add extra parameters to dialog box 
 #                       Change progress calculation to avoid errors
 #    29/05/2015, V3.4 - Check presence of ~/.config/video-stabilize.conf 
 #    26/07/2015, V3.5 - Change options of first pass to avoid some errors (thanks to Gustavo Lapido Loureiro)
+#                       Add number of thread as encoder option
 # -------------------------------------------------------
 
-# Configuration file : ~/.config/video-stabilize.conf
-FILE_CONF="$HOME/.config/video-stabilize.conf"
-
-# Load configuration from ~/.tool/video-stabilize.conf
-ARR_EXT=($(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
-STAB_SHAKINESS=$(cat "${FILE_CONF}" | grep "shakiness" | cut -d'=' -f2)
-STAB_SMOOTHING=$(cat "${FILE_CONF}" | grep "smoothing" | cut -d'=' -f2)
-STAB_OPTZOOM=$(cat "${FILE_CONF}" | grep "optzoom" | cut -d'=' -f2)
-STAB_EXTRA=$(cat "${FILE_CONF}" | grep "extra" | cut -d'=' -f2-)
-VIDEO_CODEC=$(cat "${FILE_CONF}" | grep "video-codec" | cut -d'=' -f2)
-AUDIO_CODEC=$(cat "${FILE_CONF}" | grep "audio-codec" | cut -d'=' -f2)
-VIDEO_RATE=$(cat "${FILE_CONF}" | grep "video-rate" | cut -d'=' -f2)
-AUDIO_RATE=$(cat "${FILE_CONF}" | grep "audio-rate" | cut -d'=' -f2)
-ENCODE_OPTION=$(cat "${FILE_CONF}" | grep "option" | cut -d'=' -f2-)
-
-# -------------------------------------------------------
-#  Check tools availability
-# -------------------------------------------------------
+# -------------------------------------------------
+#          Check tools availability
+# -------------------------------------------------
 
 # check melt (ubuntu) or mlt-melt (fedora)
 CMD_MELT="melt"
@@ -60,11 +46,31 @@ command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install Yad"; 
 command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install ExifTool"; exit 1; }
 command -v x264 >/dev/null 2>&1 || { zenity --error --text="Please install x264"; exit 1; }
 
+# -------------------------------------------------------
+#      Read parameters from configuration file
+# -------------------------------------------------------
+
+# Configuration file : ~/.config/video-stabilize.conf
+FILE_CONF="$HOME/.config/video-stabilize.conf"
+
 # check configuration file
-[ -f "$FILE_CONF" ] || { zenity --error --text="Please create ~/.config/video-stabilize.conf configuration file"; exit 1; }
+[ -f "$FILE_CONF" ] || { zenity --error --text="Please create and configure ${FILE_CONF}"; exit 1; }
+
+# Load configuration file
+ARR_EXT=($(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
+STAB_SHAKINESS=$(cat "${FILE_CONF}" | grep "shakiness" | cut -d'=' -f2)
+STAB_SMOOTHING=$(cat "${FILE_CONF}" | grep "smoothing" | cut -d'=' -f2)
+STAB_OPTZOOM=$(cat "${FILE_CONF}" | grep "optzoom" | cut -d'=' -f2)
+STAB_EXTRA=$(cat "${FILE_CONF}" | grep "extra" | cut -d'=' -f2-)
+VIDEO_CODEC=$(cat "${FILE_CONF}" | grep "video-codec" | cut -d'=' -f2)
+AUDIO_CODEC=$(cat "${FILE_CONF}" | grep "audio-codec" | cut -d'=' -f2)
+VIDEO_RATE=$(cat "${FILE_CONF}" | grep "video-rate" | cut -d'=' -f2)
+AUDIO_RATE=$(cat "${FILE_CONF}" | grep "audio-rate" | cut -d'=' -f2)
+ENCODE_OPTION=$(cat "${FILE_CONF}" | grep "option" | cut -d'=' -f2-)
+ENCODE_THREAD=$(cat "${FILE_CONF}" | grep "thread" | cut -d'=' -f2-)
 
 # -------------------------------------------------------
-#  Retrieve or select video file
+#          Retrieve or select video file
 # -------------------------------------------------------
 
 IFS=$'\n'
@@ -98,9 +104,9 @@ then
   ARR_VIDEO=($(echo "${LST_VIDEO}" | tr "|" "\n"))
 fi 
 
-# -------------------------------------------------------
-#  Analyse video files and select processing parameters
-# -------------------------------------------------------
+# ---------------------------------------------------------
+#   Analyse video files and select processing parameters
+# ---------------------------------------------------------
 
 # loop thru selected video files
 for FILE_PATH in "${ARR_VIDEO[@]}"
@@ -151,7 +157,7 @@ do
     --field="Encoder:LBL" "final" \
     --field="  - ${VIDEO_CODEC} video bitrate (Kbits/s):NUM" "${VIDEO_RATE}|1..50000" \
     --field="  - ${AUDIO_CODEC} audio bitrate (Kbits/s):NUM" "${AUDIO_RATE}|1..320" \
-    --field="  - Extra encoder parameters" "${ENCODE_OPTION}")
+    --field="  - Extra encoder parameters" "${ENCODE_OPTION}" )
 
  # retrieve parameters
   ROTATE=$(echo ${CHOICE} | cut -d'|' -f1)
@@ -186,13 +192,17 @@ do
   fi
 done
 
+# -------------------------------------------------------
+#     Process files for rotation and stabilization 
+# -------------------------------------------------------
+
 # loop thru video files to process
 NUM_FILE=${#ARR_FILE[@]}
 for ((INDEX=0; INDEX < NUM_FILE; INDEX++))
 do
-  # ------------------------------------------
-  # Get file data
-  # ------------------------------------------
+  # --------------------------------
+  #         Get file data
+  # --------------------------------
   # get current file path 
   FILE_PATH="${ARR_FILE[$INDEX]}"
 
@@ -227,6 +237,10 @@ do
   unset ARR_ROTATE
   unset ARR_ENCODE
 
+  # ------------------------------------------------
+  #    PREPARATION : Setup processing parameters
+  # ------------------------------------------------
+
   # initial display
   echo "# Computing parameters"
   echo "0"
@@ -250,7 +264,7 @@ do
   fi
 
   # ----------------------------------------------
-  #   PASS 1 - Rotation / Stabilization analysis
+  #   PASS 1 : Rotation / Stabilization analysis
   # ----------------------------------------------
 
   # information display
@@ -282,7 +296,7 @@ do
   done
 
   # ------------------------------------------
-  #  PASS 2 - Final result encoding
+  #   PASS 2 : Final result encoding
   # ------------------------------------------
 
   # information display
@@ -290,10 +304,10 @@ do
 
   # generate encoder parameters array
   ARR_OPTION=($(cat "${ENCODE_OPTION}" | cut -d ";" --output-delimiter=" " -f 1-))
-  ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_OPTION[@]}")
+  ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_OPTION[@]}" )
 
   # launch generation command
-  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-3 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-${ENCODE_THREAD} 2>"${FILE_LOG}" &
 
   # get the process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_MLT}" | awk '{print $2}')
@@ -318,10 +332,6 @@ do
     sleep 2
   done
 
-  # ------------------------------------------
-  #  End of job
-  # ------------------------------------------
-
   # remove PID file
   rm "${FILE_PID}"
 
@@ -330,9 +340,9 @@ do
   echo "100"
   ) | yad --center --width=600 --window-icon "video" --image "stabilizer" --progress --auto-close --title "[$((${INDEX} + 1))/${NUM_FILE}] ${FILE_PATH}"
 
-  # -------------------------------------------------------
-  #  After job cleanup
-  # -------------------------------------------------------
+  # -----------------------------
+  #     END : Final cleanup
+  # -----------------------------
 
   # if process is still running (operation has been canceled), kill the process
   [ -f "${FILE_PID}" ] && PID=$(cat "${FILE_PID}") || PID=""
