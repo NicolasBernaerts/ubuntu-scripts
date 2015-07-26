@@ -16,18 +16,19 @@
 #    04/03/2012, V1.0 - Creation by N. Bernaerts
 #    04/04/2012, V1.1 - Add codecs as parameters
 #    17/01/2015, V2.0 - Completle rewrite for Ubuntu 14.04 LTS 
-#                       Handle rotation as well thanks to Guy Eagling
+#                       Handle rotation as well (thanks to Guy Eagling)
 #    19/01/2015, V2.1 - Manage per process .trf file to allow parallel execution
 #    19/01/2015, V2.2 - Add .pid file to handle processing cancellation
 #    23/01/2015, V3.0 - Check tools availability, 
 #                       Detect available stabilization filters (vidstab, videostab2 or videostab)
-#                       Add Fedora compatibility (mlt-melt) thanks to Guy Eagling
+#                       Add Fedora compatibility with mlt-melt (thanks to Guy Eagling)
 #    06/03/2015, V3.1 - Externalize parameters to ~/.config/video-stabilize.conf
-#                       Add multiple files processing thanks to Hingo's idea
+#                       Add multiple files processing (thanks to Hingo's idea)
 #    10/03/2015, V3.2 - Update exiftool handling for MKV files
 #    12/03/2015, V3.3 - Add extra parameters to dialog box 
 #                       Change progress calculation to avoid errors
 #    29/05/2015, V3.4 - Check presence of ~/.config/video-stabilize.conf 
+#    26/07/2015, V3.5 - Change options of first pass to avoid some errors (thanks to Gustavo Lapido Loureiro)
 # -------------------------------------------------------
 
 # Configuration file : ~/.config/video-stabilize.conf
@@ -256,7 +257,7 @@ do
   echo "# Analysing file"
 
   # launch analysis command
-  ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 real_time=-2 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
 
   # get the process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_PATH}" | awk '{print $2}')
@@ -292,7 +293,7 @@ do
   ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_OPTION[@]}")
 
   # launch generation command
-  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-2 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-3 2>"${FILE_LOG}" &
 
   # get the process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_MLT}" | awk '{print $2}')
