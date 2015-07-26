@@ -30,6 +30,7 @@
 #    29/05/2015, V3.4 - Check presence of ~/.config/video-stabilize.conf 
 #    26/07/2015, V3.5 - Change options of first pass to avoid some errors (thanks to Gustavo Lapido Loureiro)
 #                       Add number of thread as encoder option
+#                       Kill process and parent process in case of cancellation
 # -------------------------------------------------------
 
 # -------------------------------------------------
@@ -273,9 +274,10 @@ do
   # launch analysis command
   ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
 
-  # get the process id
+  # save current process and melt command process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_PATH}" | awk '{print $2}')
-  echo "${PID}" > "${FILE_PID}"
+  echo "${BASHPID}" > "${FILE_PID}"
+  echo "${PID}" >> "${FILE_PID}"
 
   while [ "$PID" != "" ] 
   do    
@@ -309,9 +311,10 @@ do
   # launch generation command
   ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-${ENCODE_THREAD} 2>"${FILE_LOG}" &
 
-  # get the process id
+  # save current process and melt command process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_MLT}" | awk '{print $2}')
-  echo "${PID}" > "${FILE_PID}"
+  echo "${BASHPID}" > "${FILE_PID}"
+  echo "${PID}" >> "${FILE_PID}"
 
   # follow the stabilization progress
   while [ "$PID" != "" ] 
@@ -340,13 +343,12 @@ do
   echo "100"
   ) | yad --center --width=600 --window-icon "video" --image "stabilizer" --progress --auto-close --title "[$((${INDEX} + 1))/${NUM_FILE}] ${FILE_PATH}"
 
-  # -----------------------------
-  #     END : Final cleanup
-  # -----------------------------
+  # -----------------------------------------
+  #   END : Final process and files cleanup
+  # -----------------------------------------
 
   # if process is still running (operation has been canceled), kill the process
-  [ -f "${FILE_PID}" ] && PID=$(cat "${FILE_PID}") || PID=""
-  [ "${PID}" != "" ] && kill -9 "${PID}"
+  [ -f "${FILE_PID}" ] && kill -9 $( cat "${FILE_PID}" )
 
   #  cleaning-up of all temporary files
   rm -R ${DIR_TMP}
