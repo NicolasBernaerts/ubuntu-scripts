@@ -29,12 +29,8 @@ sudo wget -O /usr/share/applications/qtadb.desktop https://raw.githubusercontent
 sudo wget -O /usr/share/icons/qtadb.png http://bernaerts.dyndns.org/download/ubuntu/qtadb/qtadb.png
 
 # APK thumbnailer
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick python-nautilus
-wget http://bernaerts.dyndns.org/download/ubuntu/android-tools-aapt_4.2.2_$ARCHI.deb
-sudo dpkg -i android-tools-aapt_*.deb
-sudo wget -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk-thumbnailer
-sudo chmod +x /usr/local/sbin/apk-thumbnailer
-sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/apk-thumbnailer/apk.thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/apk/apk-thumbnailer-install.sh
+. ./apk-thumbnailer-install.sh
 
 # file manager APK extensions
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
