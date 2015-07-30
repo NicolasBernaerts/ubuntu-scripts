@@ -28,16 +28,15 @@ IFS=$'\n'
 #  Beginning of parameter section
 #  (Please, do not modify anything out of this section)
 
-# available encoding rates
-RATE_AVAILABLE="64|128|160|192|256|384"
+# Configuration file : ~/.config/video-convert2mkvaac.conf
+FILE_CONF="$HOME/.config/video-convert2mkvaac.conf"
 
-# encoding rate for midnight mode, stereo and multi channels audio tracks
-RATE_DRC="160"
-RATE_STEREO="192"
-RATE_MULTI="384"
-
-# movie cover extension (must be jpeg file with same name as original video)
-COVER_EXT="tbn"
+# Load configuration
+RATE_AVAILABLE=$(cat "${FILE_CONF}" | grep "available" | cut -d'=' -f2)
+RATE_DRC=$(cat "${FILE_CONF}" | grep "midnight" | cut -d'=' -f2)
+RATE_STEREO=$(cat "${FILE_CONF}" | grep "stereo" | cut -d'=' -f2)
+RATE_MULTI=$(cat "${FILE_CONF}" | grep "multi" | cut -d'=' -f2)
+COVER_EXT=$(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f2)
 
 #  End of parameter section
 # -------------------------------------------------------
