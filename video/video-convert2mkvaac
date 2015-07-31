@@ -25,23 +25,6 @@
 IFS=$'\n'
 
 # -------------------------------------------------------
-#  Beginning of parameter section
-#  (Please, do not modify anything out of this section)
-
-# Configuration file : ~/.config/video-convert2mkvaac.conf
-FILE_CONF="$HOME/.config/video-convert2mkvaac.conf"
-
-# Load configuration
-RATE_AVAILABLE=$(cat "${FILE_CONF}" | grep "available" | cut -d'=' -f2)
-RATE_DRC=$(cat "${FILE_CONF}" | grep "midnight" | cut -d'=' -f2)
-RATE_STEREO=$(cat "${FILE_CONF}" | grep "stereo" | cut -d'=' -f2)
-RATE_MULTI=$(cat "${FILE_CONF}" | grep "multi" | cut -d'=' -f2)
-COVER_EXT=$(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f2)
-
-#  End of parameter section
-# -------------------------------------------------------
-
-# -------------------------------------------------------
 #  Check tools availability
 # -------------------------------------------------------
 
@@ -52,6 +35,23 @@ command -v avconv >/dev/null 2>&1 || { zenity --error --text="Please install avc
 command -v sox >/dev/null 2>&1 || { zenity --error --text="Please install sox"; exit 1; }
 command -v fdkaac >/dev/null 2>&1 || { zenity --error --text="Please install fdkaac [fdkaac-encoder from ppa:mc3man/fdkaac-encoder]"; exit 1; }
 command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge [mkvtoolnix]"; exit 1; }
+
+# -------------------------------------------------------
+#  Read configuration
+# -------------------------------------------------------
+
+# Configuration file : ~/.config/video-convert2mkvaac.conf
+FILE_CONF="$HOME/.config/video-convert2mkvaac.conf"
+
+# check configuration file
+[ -f "$FILE_CONF" ] || { zenity --error --text="Please create and configure ${FILE_CONF}"; exit 1; }
+
+# Load configuration
+RATE_AVAILABLE=$(cat "${FILE_CONF}" | grep "available" | cut -d'=' -f2)
+RATE_DRC=$(cat "${FILE_CONF}" | grep "midnight" | cut -d'=' -f2)
+RATE_STEREO=$(cat "${FILE_CONF}" | grep "stereo" | cut -d'=' -f2)
+RATE_MULTI=$(cat "${FILE_CONF}" | grep "multi" | cut -d'=' -f2)
+COVER_EXT=$(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f2)
 
 # -------------------------------------------------------
 #  Generate list of video files to process
@@ -251,7 +251,13 @@ do
     then
       # dialog box to select audio tracks to mux
       ARR_COLUMN=( "--column=Select:CHK" "--column=Midnight:CHK" "--column=Number:NUM" "--column=Format:TEXT" "--column=Langage:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" )
-      ARR_CHOICE=( $(yad --center --title "${FILE_NAME}" --text="Select tracks to mux in MKV\n" --width=600 --height=300 --list --print-all "${ARR_COLUMN[@]}" "${ARR_SELECT[@]}") )
+      CHOICE=$(yad --center --title "${FILE_NAME}" --text="Select tracks to mux in MKV\n" --width=600 --height=300 --list --print-all "${ARR_COLUMN[@]}" "${ARR_SELECT[@]}")
+
+      # if dialog has been canceled, exit
+      [[ -z "$CHOICE" ]] && exit 0
+
+      # convert result into array
+      ARR_CHOICE=( $(echo $CHOICE) )
 
       # loop thru choices to setup selected tracks and midnight mode tracks
       AUDIO_CANDIDATE="|"
@@ -323,7 +329,7 @@ do
 
           # convert WAV file to AAC
           echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Convertion to AAC (${TRACK_RATE}k)"
-          fdkaac --silent -o "${FILE_TMP_AAC}" -b ${TRACK_RATE}k "${FILE_TMP_WAV}" 
+          fdkaac -o "${FILE_TMP_AAC}" -b ${TRACK_RATE}k "${FILE_TMP_WAV}" 
 
           # gererate track options for current track
           ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:${TRACK_DEFAULT}" "--sync" "0:${TRACK_DELAY}" \
@@ -356,7 +362,7 @@ do
 
         # convert WAV file to AAC
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion of Midnight Mode to AAC (${RATE_DRC}k)"
-        fdkaac --silent -o "${FILE_DRC_AAC}" -b ${RATE_DRC}k "${FILE_NRM_WAV}" 
+        fdkaac -o "${FILE_DRC_AAC}" -b ${RATE_DRC}k "${FILE_NRM_WAV}" 
 
         # gererate track options for current track
         ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:No" "--sync" "0:${TRACK_DELAY}" \
