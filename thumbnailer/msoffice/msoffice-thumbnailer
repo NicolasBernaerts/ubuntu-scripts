@@ -15,6 +15,7 @@
 # Revision history :
 # 11/11/2014, V1.0 - Creation by N. Bernaerts
 # 15/11/2014, V2.0 - Change to URI and GVFS to handle thumbnails on network shares
+# 31/07/2015, V2.1 - More robust unoconv command line (thanks to Vaderqk)
 # ---------------------------------------------------
 
 # check tools availability
@@ -65,7 +66,7 @@ case $MIMETYPE in
 esac
 
 # convert first document page to PDF
-unoconv -e PageRange=1-1 -f pdf -o "${TMP_BASEFILE}.pdf" "${TMP_BASEFILE}.${FILE_EXT}"
+unoconv -e PageRange=1-1 -f pdf "${TMP_BASEFILE}.${FILE_EXT}"
 
 # convert PDF to PNG
 convert "${TMP_BASEFILE}.pdf" "${TMP_BASEFILE}.png"
