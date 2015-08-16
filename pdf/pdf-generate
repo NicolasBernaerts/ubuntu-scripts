@@ -94,7 +94,7 @@ do
 
     # image files
     "image" )
-    convert "${FILE}" -compress jpeg -resize 1654x2337 -gravity center -extent 1654x2337 -units PixelsPerInch -density 200x200 "${FILE_PDF}"
+    convert "${FILE}" -compress jpeg -quality 90 -resize 1654x2337 -gravity center -extent 1654x2337 -units PixelsPerInch -density 200x200 "${FILE_PDF}"
     ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
     ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
     ;;
