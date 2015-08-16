@@ -9,7 +9,7 @@
 #   * ghostscript
 #  Revision history :
 #   05/07/2015, V1.0 - Creation by N. Bernaerts
-#   15/08/2015, V1.1 - Force jpeg quality to 90
+#   15/08/2015, V1.1 - Force jpeg quality to 95
 # ---------------------------------------------------
 
 # check tools availability
@@ -95,7 +95,7 @@ do
 
     # image files
     "image" )
-    convert "${FILE}" -compress jpeg -quality 90 -resize 1654x2337 -gravity center -extent 1654x2337 -units PixelsPerInch -density 200x200 "${FILE_PDF}"
+    convert "${FILE}" -compress jpeg -quality 95 -resize 1654x2337 -gravity center -extent 1654x2337 -units PixelsPerInch -density 200x200 "${FILE_PDF}"
     ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
     ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
     ;;
