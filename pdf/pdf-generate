@@ -9,6 +9,7 @@
 #   * ghostscript
 #  Revision history :
 #   05/07/2015, V1.0 - Creation by N. Bernaerts
+#   15/08/2015, V1.1 - Force jpeg quality to 90
 # ---------------------------------------------------
 
 # check tools availability
