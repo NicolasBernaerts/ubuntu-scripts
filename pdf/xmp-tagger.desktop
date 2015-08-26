@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Exec=xmp-tagger
+Hidden=false
+NoDisplay=false
+Icon=gtk-edit
+Keywords=pdf;jpeg;png;xmp;tag;editor;
+X-GNOME-Autostart-enabled=true
+Name[en_US]=XMP tags editor
+Name[en]=XMP tags editor
+Name[C]=XMP tags editor
+Name[fr_FR]=Editeur de tags XMP
+Comment=Editor for main XMP tags. Works with images and PDF files.
+Comment[en_US]=Editor for main XMP tags. Works with images and PDF files.
+Comment[fr_FR]=Editeur de tags XMP. Utilisable avec des fichiers image et PDF.
+MimeType=application/pdf;image/jpeg;image/png;
+Categories=GNOME;GTK;Viewer;Graphics;Utility;
