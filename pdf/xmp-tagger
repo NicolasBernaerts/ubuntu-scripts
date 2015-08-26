@@ -19,7 +19,7 @@
 
 # check yad, exiftool, iconv and convert
 command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
-command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool"; exit 1; }
+command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool [libimage-exiftool-perl]"; exit 1; }
 command -v iconv >/dev/null 2>&1 || { zenity --error --text="Please install iconv"; exit 1; }
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 
