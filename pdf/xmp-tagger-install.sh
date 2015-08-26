@@ -8,6 +8,15 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 # install tools
 sudo apt-get -y install exiftool iconv imagemagick zenity
 
+# install yad
+IS_PRESENT=$(command -v yad)
+if [ -z "${IS_PRESENT}" ]
+then
+  sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
+  sudo apt-get update
+  sudo apt-get -y install yad
+fi
+
 # install main script
 sudo wget -O /usr/local/bin/xmp-tagger https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/xmp-tagger
 sudo chmod +x /usr/local/bin/xmp-tagger
