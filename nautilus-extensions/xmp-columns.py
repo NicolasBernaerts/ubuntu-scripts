@@ -82,7 +82,7 @@ class XMPColumnExtension(GObject.GObject, Nautilus.ColumnProvider, Nautilus.Info
     if file.get_uri_scheme() != 'file':
       return
         
-    if file.get_mime_type() in ('application/pdf'):
+    if file.get_mime_type() in ('application/pdf' 'image/jpeg' 'image/png'):
       filename = urllib.unquote(file.get_uri()[7:])
       result = self.get_data(filename)
     else:
