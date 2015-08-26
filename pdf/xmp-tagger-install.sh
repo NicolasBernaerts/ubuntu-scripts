@@ -6,7 +6,7 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # install tools
-sudo apt-get -y install exiftool imagemagick zenity
+sudo apt-get -y install libimage-exiftool-perl imagemagick zenity
 
 # install yad
 IS_PRESENT=$(command -v yad)
