@@ -1,10 +1,10 @@
 [Desktop Entry]
 Type=Action
 Icon=image-resize
-Name[C]=Generate PDF document from selected documents
-Name[en]=Generate PDF document from selected documents
-Name[en_US]=Generate PDF document from selected documents
-Name[fr_FR]=Génération d'un document PDF à partir des fichiers
+Name[C]=Generate PDF from selected documents
+Name[en]=Generate PDF from selected documents
+Name[en_US]=Generate PDF from selected documents
+Name[fr_FR]=Génération d'un PDF
 Tooltip[C]=Tool to merge a set of documents to a PDF file
 Tooltip[en]=Tool to merge a set of documents to a PDF file
 Tooltip[en_US]=Tool to merge a set of documents to a PDF file
