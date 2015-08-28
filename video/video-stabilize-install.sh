@@ -12,8 +12,8 @@ then
   MELT="DO_INSTALL"
 else
   # ensure to use melt 0.9.2+
-  current_version=`melt -version | grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+"`
-  smaller_version=`echo -e "$current_version\n0.9.2" | sort -V | head -n 1`
+  current_version=$(melt -version | grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+")
+  smaller_version=$(echo -e "$current_version\n0.9.2" | sort -V | head -n 1)
   if [ $smaller_version = $current_version ]
   then
     MELT="DO_INSTALL"
