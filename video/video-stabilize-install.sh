@@ -9,6 +9,19 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 IS_PRESENT=$(command -v melt)
 if [ -z "${IS_PRESENT}" ]
 then
+  MELT="DO_INSTALL"
+else
+  # ensure to use melt 0.9.2+
+  current_version=`melt -version | grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+"`
+  smaller_version=`echo -e "$current_version\n0.9.2" | sort -V | head -n 1`
+  if [ $smaller_version = $current_version ]
+  then
+    MELT="DO_INSTALL"
+  fi
+fi
+
+if [ "$MELT" = "DO_INSTALL" ]
+then
   sudo add-apt-repository -y ppa:sunab/kdenlive-release
   sudo apt-get update
   sudo apt-get -y install libvidstab1.0 melt
