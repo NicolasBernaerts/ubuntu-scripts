@@ -145,10 +145,10 @@ if [ ${CODE} = "0" ]; then
   THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f7)
 
   # update XMP text fields
-  exiftool -xmp:CreateDate="${YEAR}:${MONTH}:${DAY}" -xmp:Caption="${TITLE}" -xmp:Notes="${CAPTION}" -xmp:City="${CITY}" -xmp:Country="${COUNTRY}" -xmp:Keywords="${KEYWORD}" -xmp:Author="${AUTHOR}" ${INPUT_FILE}
+  exiftool -overwrite_original -xmp:CreateDate="${YEAR}:${MONTH}:${DAY}" -xmp:Caption="${TITLE}" -xmp:Notes="${CAPTION}" -xmp:City="${CITY}" -xmp:Country="${COUNTRY}" -xmp:Keywords="${KEYWORD}" -xmp:Author="${AUTHOR}" ${INPUT_FILE}
 
   # update XMP thumbnail
-  [ -f ${THUMB_ORIGINAL} ] && [ "${THUMBNAIL}" = TRUE ] && exiftool '-xmp:ThumbnailImage<='${THUMB_ORIGINAL} ${INPUT_FILE}
+  [ -f ${THUMB_ORIGINAL} ] && [ "${THUMBNAIL}" = TRUE ] && exiftool -overwrite_original '-xmp:ThumbnailImage<='${THUMB_ORIGINAL} ${INPUT_FILE}
 fi
 
 # cleanup temporary files
