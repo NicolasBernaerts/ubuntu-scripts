@@ -1,7 +1,7 @@
 #!/bin/sh
 # PDF generate extension
 
-sudo apt-get -y install imagemagick unoconv ghostscript zenity
+sudo apt-get -y install imagemagick unoconv ghostscript zenity libfile-mimeinfo-perl
 sudo wget -O /usr/local/bin/pdf-generate https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate
 sudo chmod +x /usr/local/bin/pdf-generate
 mkdir --parents $HOME/.local/share/file-manager/actions
