@@ -62,6 +62,7 @@ do
   case $MIMETYPE in 
     # ms-office document
     "application/msword" | "application/vnd.ms-word" | \
+    "application/vnd.oasis.opendocument.text" | \
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | \
     "application/vnd.ms-excel" | \
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | \
