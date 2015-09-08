@@ -115,16 +115,14 @@ sed -i 's,.*<command>lxsession-default screenshot<\/command>.*,      <command>sc
 sed -i 's,.*<command>lxsession-default screenshot window<\/command>.*,      <command>scrot --focused -e "mv $f '"$SCREENSHOT_DIR"'"<\/command>,' $HOME/.config/openbox/lubuntu-rc.xml
 
 # Declare shortcuts to switch single / dual display
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/dual-display/declare-dualdisplay
-chmod +x ./declare-dualdisplay
-sudo ./declare-dualdisplay
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/dual-display/dual-display-install.sh
+chmod +x ./dual-display-install.sh
+sudo ./dual-display-install.sh
 
 # Declare right click "empty trash" on desktop trash
-sudo apt-get -y install trash-cli
-mkdir --parents $HOME/.local/share/file-manager/actions
-wget -O $HOME/.local/share/file-manager/actions/ask-trash-empty.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty.desktop
-sudo wget -O /usr/local/bin/ask-trash-empty https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty
-sudo chmod +x /usr/local/bin/ask-trash-empty
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/lubuntu/trash-empty/ask-trash-empty-install.sh
+chmod +x ./ask-trash-empty-install.sh
+. ./ask-trash-empty-install.sh
 
 # ---------------------------------------------------
 # -------------- Enable sudo timeout ---------------
