@@ -144,8 +144,11 @@ if [ ${CODE} = "0" ]; then
   KEYWORD=$(echo ${RESULT} | cut -d '|' -f6)
   THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f7)
 
+  # if needed, set date
+  [ "${YEAR}" != "" ] && DATE="${YEAR}:${MONTH}:${DAY}" || DATE=""
+
   # update XMP text fields
-  exiftool -overwrite_original -xmp:DateTime="${YEAR}:${MONTH}:${DAY}" -xmp:Caption="${TITLE}" -xmp:Notes="${CAPTION}" -xmp:City="${CITY}" -xmp:Country="${COUNTRY}" -xmp:Keywords="${KEYWORD}" -xmp:Author="${AUTHOR}" ${INPUT_FILE}
+  exiftool -overwrite_original -xmp:DateTime="${DATE}" -xmp:Caption="${TITLE}" -xmp:Notes="${CAPTION}" -xmp:City="${CITY}" -xmp:Country="${COUNTRY}" -xmp:Keywords="${KEYWORD}" -xmp:Author="${AUTHOR}" ${INPUT_FILE}
 
   # update XMP thumbnail
   [ -f ${THUMB_ORIGINAL} ] && [ "${THUMBNAIL}" = TRUE ] && exiftool -overwrite_original '-xmp:ThumbnailImage<='${THUMB_ORIGINAL} ${INPUT_FILE}
