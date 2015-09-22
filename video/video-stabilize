@@ -31,7 +31,7 @@
 #    26/07/2015, V3.5 - Change options of first pass to avoid some errors (thanks to Gustavo Lapido Loureiro)
 #                       Add number of thread as encoder option
 #                       Kill process and parent process in case of cancellation
-#    22/09/2015, V3.6 - Correction of a bugs in final encoding options (thanks to Ted Bartlett)
+#    22/09/2015, V3.6 - Correction of a bug in final encoding options (thanks to Ted Bartlett)
 # -------------------------------------------------------
 
 # -------------------------------------------------
