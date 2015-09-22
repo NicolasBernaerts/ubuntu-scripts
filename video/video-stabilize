@@ -31,6 +31,7 @@
 #    26/07/2015, V3.5 - Change options of first pass to avoid some errors (thanks to Gustavo Lapido Loureiro)
 #                       Add number of thread as encoder option
 #                       Kill process and parent process in case of cancellation
+#    22/09/2015, V3.6 - Correction of a bugs in final encoding options (thanks to Ted Bartlett)
 # -------------------------------------------------------
 
 # -------------------------------------------------
@@ -305,7 +306,7 @@ do
   echo "# Generating file"
 
   # generate encoder parameters array
-  ARR_OPTION=($(cat "${ENCODE_OPTION}" | cut -d ";" --output-delimiter=" " -f 1-))
+  ARR_OPTION=($(echo "${ENCODE_OPTION}" | cut -d ";" --output-delimiter=" " -f 1-))
   ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_OPTION[@]}" )
 
   # launch generation command
