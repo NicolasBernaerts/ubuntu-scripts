@@ -12,15 +12,12 @@ then
   MELT="DO_INSTALL"
 else
   # ensure to use melt 0.9.2+
-  current_version=$(melt -version | grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+")
-  smaller_version=$(echo -e "$current_version\n0.9.2" | sort -V | head -n 1)
-  if [ $smaller_version = $current_version ]
-  then
-    MELT="DO_INSTALL"
-  fi
+  CURRENT_VERSION=$(melt -version | grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+")
+  SMALLER_VERSION=$(echo -e "${CURRENT_VERSION}\n0.9.2" | sort -V | head -n 1)
+  [ "${SMALLER_VERSION}" = "${CURRENT_VERSION}" ] && MELT="DO_INSTALL"
 fi
 
-if [ "$MELT" = "DO_INSTALL" ]
+if [ "${MELT}" = "DO_INSTALL" ]
 then
   sudo add-apt-repository -y ppa:sunab/kdenlive-release
   sudo apt-get update
