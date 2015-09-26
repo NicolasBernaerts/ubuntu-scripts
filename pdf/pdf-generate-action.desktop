@@ -13,7 +13,7 @@ Profiles=pdf_generate;
 
 [X-Action-Profile pdf_generate]
 Exec=pdf-generate %F
-MimeTypes=image/bmp;image/gif;image/jpeg;image/jpg;image/png;image/tiff;application/msword;application/vnd.ms-word;application/vnd.oasis.opendocument.text;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.openxmlformats-officedocument.spreadsheetml.template;application/vnd.ms-powerpoint;application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.openxmlformats-officedocument.presentationml.template;application/vnd.openxmlformats-officedocument.presentationml.slideshow;text/plain;inode/directory;
+MimeTypes=image/bmp;image/gif;image/jpeg;image/jpg;image/png;image/tiff;application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;application/msword;application/vnd.ms-word;application/vnd.oasis.opendocument.text;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.openxmlformats-officedocument.spreadsheetml.template;application/vnd.ms-powerpoint;application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.openxmlformats-officedocument.presentationml.template;application/vnd.openxmlformats-officedocument.presentationml.slideshow;text/plain;inode/directory;
 Name[C]=Default profile
 Name[en]=Default profile
 Name[en_US]=Default profile
