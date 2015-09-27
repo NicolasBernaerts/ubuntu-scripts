@@ -54,8 +54,7 @@ done
 if [ ${#ARR_FILE[@]} -eq 0 ]
 then
   # open multiple files selection dialog box
-  LST_FILE=$(zenity --center --width=800 --height=500 --window-icon "evince" --image "evince" \
-                    --file --multiple --title="Select file to merge as PDF")
+  LST_FILE=$(zenity --file --multiple --title="Select file to merge as PDF")
 
   # generate video files array
   ARR_FILE=($(echo "${LST_FILE}" | tr "|" "\n"))
