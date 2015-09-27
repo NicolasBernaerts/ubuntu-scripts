@@ -13,27 +13,53 @@
 #   15/08/2015, V1.1 - Force jpeg quality to 95
 # ---------------------------------------------------
 
+# -------------------------------------------------------
 # check tools availability
+# -------------------------------------------------------
+
 command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype"; exit 1; }
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
 command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs utility [ghostscript]"; exit 1; }
 
+# -------------------------------------------------------
+#      Read parameters from configuration file
+# -------------------------------------------------------
+
+# Configuration file : ~/.config/pdf-generate.conf
+FILE_CONF="$HOME/.config/pdf-generate.conf"
+
+# check configuration file
+[ -f "$FILE_CONF" ] || { zenity --error --text="Please create and configure ${FILE_CONF}"; exit 1; }
+
+# Load configuration file
+COMPRESSION=$(cat "${FILE_CONF}" | grep "compression" | cut -d'=' -f2)
+DENSITY=$(cat "${FILE_CONF}" | grep "density" | cut -d'=' -f2)
+
+# -------------------------------------------------------
+#          Retrieve or select input files
+# -------------------------------------------------------
+
 # set separator as carriage return
 IFS=$'\n'
 
-# set Office files allowed extensions
 # loop thru arguments to load candidate files
 for ARGUMENT
 do
   [ -f "${ARGUMENT}" ] && ARR_FILE=("${ARR_FILE[@]}" "${ARGUMENT}")
   [ -d "${ARGUMENT}" ] && ARR_FILE=("${ARR_FILE[@]}" $(find "${ARGUMENT}" -maxdepth 1 -type f) )
-
-  # resulting PDF file name
-  FILE_FINAL="$(dirname "${ARGUMENT}")/merged-document.pdf"
 done
 
-echo $FILE_FINAL
+# if there is no candidate files, open selection dialog
+if [ ${#ARR_FILE[@]} -eq 0 ]
+then
+  # open multiple files selection dialog box
+  LST_FILE=$(zenity --center --width=800 --height=500 --window-icon "evince" --image "evince" \
+                    --file --multiple --title="Select file to merge as PDF")
+
+  # generate video files array
+  ARR_FILE=($(echo "${LST_FILE}" | tr "|" "\n"))
+fi 
 
 # loop thru candidate files to convert them to pdf
 for FILE in "${ARR_FILE[@]}"
@@ -46,6 +72,9 @@ do
 
   # resulting PDF file name
   FILE_PDF="${FILE_BASE}.pdf"
+
+  # resulting PDF file name
+  [ -z "${FILE_FINAL}" ] && FILE_FINAL="${FILE_BASE}-merged.pdf"
 
   # get the file mime type (application/msword, ...)
   MIMETYPE=$(mimetype -b "${FILE}")
@@ -116,11 +145,15 @@ do
 
 done
 
-# order generated PDF files in alphabetical order
-ARR_SORTED=($(sort <<<"${ARR_PDF[*]}"))
+# if some PDF files have to be merged, final merge
+if [ ${#ARR_PDF[@]} -gt 0 ]
+then
+  # order generated PDF files in alphabetical order
+  ARR_SORTED=($(sort <<<"${ARR_PDF[*]}"))
 
-# generate resulting PDF
-gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=a4 -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${FILE_FINAL}" ${ARR_SORTED[@]}
+  # generate resulting PDF
+  gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=a4 -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${FILE_FINAL}" ${ARR_SORTED[@]}
+fi
 
 # loop to remove temporary files
 for TMP_FILE in "${ARR_TMP[@]}"
