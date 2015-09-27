@@ -16,5 +16,6 @@ sudo wget -O /usr/local/bin/pdf-generate https://raw.githubusercontent.com/Nicol
 sudo chmod +x /usr/local/bin/pdf-generate
 
 # desktop integration
+sudo wget -O /usr/share/applications/pdf-generate.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
 wget -O $HOME/.local/share/file-manager/actions/pdf-generate-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-action.desktop
