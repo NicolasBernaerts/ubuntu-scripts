@@ -103,7 +103,7 @@ do
       ;;
 
     # PDF document
-    "application/pdf" )
+    "application/pdf" | "application/x-pdf" | "application/x-bzpdf" | "application/x-gzpdf" )
       DOCTYPE="pdf"
       ;;
 
