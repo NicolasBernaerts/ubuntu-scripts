@@ -60,7 +60,17 @@ then
   ARR_FILE=($(echo "${LST_FILE}" | tr "|" "\n"))
 fi 
 
+# -------------------------------------------------------
+# calculate conversion parameters
+# -------------------------------------------------------
+
+PAGE_WIDTH=$((DENSITY * 8.27))
+PAGE_HEIGHT=$((DENSITY * 11.7))
+
+# -------------------------------------------------------
 # loop thru candidate files to convert them to pdf
+# -------------------------------------------------------
+
 for FILE in "${ARR_FILE[@]}"
 do
   # get file name without extension
@@ -125,7 +135,7 @@ do
 
     # image files
     "image" )
-    convert "${FILE}" -compress jpeg -quality 95 -resize 1654x2337 -gravity center -extent 1654x2337 -units PixelsPerInch -density 200x200 "${FILE_PDF}"
+    convert "${FILE}" -compress jpeg -quality ${QUALITY} -resize ${PAGE_WIDTH}x${PAGE_HEIGHT} -gravity center -extent ${PAGE_WIDTH}x${PAGE_HEIGHT} -units PixelsPerInch -density ${DENSITY}x${DENSITY} "${FILE_PDF}"
     ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
     ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
     ;;
@@ -144,7 +154,10 @@ do
 
 done
 
+# -------------------------------------------------------
 # if some PDF files have to be merged, final merge
+# -------------------------------------------------------
+
 if [ ${#ARR_PDF[@]} -gt 0 ]
 then
   # order generated PDF files in alphabetical order
