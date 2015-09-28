@@ -23,9 +23,9 @@ command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install co
 command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
 command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs utility [ghostscript]"; exit 1; }
 
-# -------------------------------------------------------
-#      Read parameters from configuration file
-# -------------------------------------------------------
+# ---------------------------------------------------------
+#   Read and calculate parameters from configuration file
+# ---------------------------------------------------------
 
 # Configuration file : ~/.config/pdf-generate.conf
 FILE_CONF="$HOME/.config/pdf-generate.conf"
@@ -36,6 +36,10 @@ FILE_CONF="$HOME/.config/pdf-generate.conf"
 # Load configuration file
 COMPRESSION=$(cat "${FILE_CONF}" | grep "compression" | cut -d'=' -f2)
 DENSITY=$(cat "${FILE_CONF}" | grep "density" | cut -d'=' -f2)
+
+# calculate conversion parameters
+PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
+PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
 
 # -------------------------------------------------------
 #          Retrieve or select input files
@@ -60,13 +64,6 @@ then
   # generate video files array
   ARR_FILE=($(echo "${LST_FILE}" | tr "|" "\n"))
 fi 
-
-# -------------------------------------------------------
-# calculate conversion parameters
-# -------------------------------------------------------
-
-PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
-PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
 
 # -------------------------------------------------------
 # loop thru candidate files to convert them to pdf
