@@ -17,6 +17,7 @@
 # check tools availability
 # -------------------------------------------------------
 
+command -v bc >/dev/null 2>&1 || { zenity --error --text="Please install bc"; exit 1; }
 command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype"; exit 1; }
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
@@ -64,8 +65,8 @@ fi
 # calculate conversion parameters
 # -------------------------------------------------------
 
-PAGE_WIDTH=$((DENSITY * 8.27))
-PAGE_HEIGHT=$((DENSITY * 11.7))
+PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
+PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
 
 # -------------------------------------------------------
 # loop thru candidate files to convert them to pdf
