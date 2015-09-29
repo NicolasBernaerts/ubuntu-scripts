@@ -37,10 +37,6 @@ FILE_CONF="$HOME/.config/pdf-generate.conf"
 COMPRESSION=$(cat "${FILE_CONF}" | grep "compression" | cut -d'=' -f2)
 DENSITY=$(cat "${FILE_CONF}" | grep "density" | cut -d'=' -f2)
 
-# calculate conversion parameters
-PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
-PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
-
 # -------------------------------------------------------
 #          Retrieve or select input files
 # -------------------------------------------------------
@@ -66,6 +62,25 @@ then
 fi 
 
 # -------------------------------------------------------
+#       Confirmation and parameters dialog box
+# -------------------------------------------------------
+
+NBR_FILE=${#ARR_FILE[@]}
+RESULT=$(zenity --forms --title="Merge to PDF" --text="${NBR_FILE} file(s) will be merged." --separator="|" \
+                --add-entry="Image compression (1..100)" ${COMPRESSION} \
+                --add-entry="Page density (DPI)" ${DENSITY} )
+
+# if dialog canceled, exit
+ACTION=$?
+[ "${ACTION}" != "0" ] && exit 1
+
+# retrieve parameters and calculate conversion parameters
+COMPRESSION=$(echo "${RESULT}" | cut -d'|' -f1)
+DENSITY=$(echo "${RESULT}" | cut -d'|' -f1)
+PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
+PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
+
+# -------------------------------------------------------
 # loop thru candidate files to convert them to pdf
 # -------------------------------------------------------
 
@@ -86,36 +101,32 @@ do
   # get the file mime type (application/msword, ...)
   MIMETYPE=$(mimetype -b "${FILE}")
 
-  # check if file is a libreoffice file
+  # check if file is a image file (.jpg, .png, .tiff, ...)
   CHECKTYPE=$(echo "${MIMETYPE}" | grep "image/")
   [ "${CHECKTYPE}" != "" ] && DOCTYPE="image"
 
-  # check if file is a libreoffice file
+  # check if file is a libreoffice file (.odt, .ods, ...)
   CHECKTYPE=$(echo "${MIMETYPE}" | grep ".opendocument.")
   [ "${CHECKTYPE}" != "" ] && DOCTYPE="libreoffice"
 
-  # check if file is a ms office file
+  # check if file is a microsoft file 2007+ file (.docx, .xlsx, .pptx, ...)
+  CHECKTYPE=$(echo "${MIMETYPE}" | grep "vnd.openxmlformats-officedocument.")
+  [ "${CHECKTYPE}" != "" ] && DOCTYPE="ms-office"
+
+  # check some specific document types
   case $MIMETYPE in 
-    # ms-office document
-    "application/msword" | "application/vnd.ms-word" | \
-    "application/vnd.oasis.opendocument.text" | \
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document" | \
-    "application/vnd.ms-excel" | \
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | \
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.template" | \
-    "application/vnd.ms-powerpoint" | \
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation" | \
-    "application/vnd.openxmlformats-officedocument.presentationml.template" | \
-    "application/vnd.openxmlformats-officedocument.presentationml.slideshow" )
+    # ms-office document (.doc, .xls, .ppt, ...)
+    "application/msword" | "application/vnd.ms-word" | "application/vnd.oasis.opendocument.text" | \
+    "application/vnd.ms-excel" | "application/vnd.ms-powerpoint" )
       DOCTYPE="ms-office"
       ;;
 
-    # PDF document
+    # PDF document (.pdf)
     "application/pdf" | "application/x-pdf" | "application/x-bzpdf" | "application/x-gzpdf" )
       DOCTYPE="pdf"
       ;;
 
-    # plain text file
+    # plain text file (.txt)
     "text/plain" )
       DOCTYPE="text"
       ;;
@@ -151,14 +162,6 @@ do
   esac
 
 done
-
-# -------------------------------------------------------
-#   Display confirmation dialog
-# -------------------------------------------------------
-
-NBR_FILE=${#ARR_FILE[@]}
-NBR_PDF=${#ARR_PDF[@]}
-
 
 # -------------------------------------------------------
 #   Final merge
