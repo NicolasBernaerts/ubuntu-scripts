@@ -9,8 +9,8 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 sudo apt-get -y install gvfs-bin imagemagick xcftools
 
 # install main script
-sudo wget -O /usr/local/sbin/gimp-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-thumbnailer
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/gimp-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-thumbnailer
 sudo chmod +x /usr/local/sbin/gimp-thumbnailer
 
 # thumbnailer integration
-sudo wget -O /usr/share/thumbnailers/gimp.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp.thumbnailer
+sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/gimp.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp.thumbnailer
