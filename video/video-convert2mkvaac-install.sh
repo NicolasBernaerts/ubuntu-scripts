@@ -31,13 +31,13 @@ command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 
 # install configuration file
 mkdir --parents $HOME/.config
-wget -O $HOME/.config/video-convert2mkvaac.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.conf
+wget --header='Accept-Encoding:none' -O $HOME/.config/video-convert2mkvaac.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.conf
 
 # install main script
-sudo wget -O /usr/local/bin/video-convert2mkvaac https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/video-convert2mkvaac https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac
 sudo chmod +x /usr/local/bin/video-convert2mkvaac
 
 # declare desktop integration
-sudo wget -O /usr/share/applications/video-convert2mkvaac.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.desktop
+sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/video-convert2mkvaac.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
-wget -O $HOME/.local/share/file-manager/actions/video-convert2mkvaac-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac-action.desktop
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/file-manager/actions/video-convert2mkvaac-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac-action.desktop
