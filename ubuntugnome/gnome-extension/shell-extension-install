@@ -8,8 +8,9 @@
 #   $1 = Target Gnome Shell version
 #   $2 = Extension ID on the site
 # Revision history :
-#   13/07/2013 - Creation by N. Bernaerts
-#   15/03/2015 - Update thanks to Michele Gazzetti
+#   13/07/2013 - V1.0 : Creation by N. Bernaerts
+#   15/03/2015 - V1.1 : Update thanks to Michele Gazzetti
+#   02/10/2015 - V1.2 : Disable wget gzip compression
 # -------------------------------------------
 
 # check unzip
