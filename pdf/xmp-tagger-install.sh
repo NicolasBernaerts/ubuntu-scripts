@@ -19,10 +19,10 @@ fi
 
 # install configuration file
 mkdir --parents $HOME/.config
-wget -O $HOME/.config/xmp-tagger.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/xmp-tagger.conf
+wget --header='Accept-Encoding:none' -O $HOME/.config/xmp-tagger.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/xmp-tagger.conf
 
 # install main script
-sudo wget -O /usr/local/bin/xmp-tagger https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/xmp-tagger
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/xmp-tagger https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/xmp-tagger
 sudo chmod +x /usr/local/bin/xmp-tagger
 
 # desktop integration
