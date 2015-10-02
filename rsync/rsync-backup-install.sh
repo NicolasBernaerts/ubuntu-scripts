@@ -9,12 +9,12 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 sudo apt-get -y install rsync
 
 # install configuration file
-wget -O $HOME/.rsync-backup.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup.conf
+wget --header='Accept-Encoding:none' -O $HOME/.rsync-backup.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup.conf
 
 # install main scripts
-sudo wget -O /usr/local/bin/rsync-backup https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup
-sudo wget -O /usr/local/bin/rsync-backup.awk https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup.awk
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/rsync-backup https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/rsync-backup.awk https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup.awk
 sudo chmod +x /usr/local/bin/rsync-backup
 
 # desktop integration
-sudo wget -O /usr/share/applications/rsync-backup.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup.desktop
+sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/rsync-backup.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/rsync/rsync-backup.desktop
