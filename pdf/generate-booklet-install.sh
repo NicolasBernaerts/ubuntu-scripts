@@ -9,10 +9,10 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 sudo apt-get -y install poppler-utils texlive-extra-utils
 
 # install main script
-sudo wget -O /usr/local/bin/generate-booklet https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/generate-booklet https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet
 sudo chmod +x /usr/local/bin/generate-booklet
 
 # desktop integration
-sudo wget -O /usr/share/applications/generate-booklet.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet.desktop
+sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/generate-booklet.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
-wget -O $HOME/.local/share/file-manager/actions/generate-booklet-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-action.desktop
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/file-manager/actions/generate-booklet-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-action.desktop
