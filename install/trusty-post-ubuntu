@@ -38,42 +38,42 @@ sudo apt-get -y dist-upgrade
 # ---------------------------------------------------
 
 # misc utilities and tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
 chmod +x ./trusty-utilities
 . ./trusty-utilities
 
 # office tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
 chmod +x ./trusty-office
 . ./trusty-office
 
 # graphical tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
 chmod +x ./trusty-graphical
 . ./trusty-graphical
 
 # multimedia tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
 chmod +x ./trusty-multimedia
 . ./trusty-multimedia
 
 # internet tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
 chmod +x ./trusty-internet
 . ./trusty-internet
 
 # android tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
 chmod +x ./trusty-android
 . ./trusty-android
 
 # remote assistance
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
 chmod +x ./trusty-assistance
 . ./trusty-assistance
 
 # wifi tweaks
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-wifi
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-wifi
 chmod +x ./trusty-wifi
 . ./trusty-wifi
 
