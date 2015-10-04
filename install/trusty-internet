@@ -18,7 +18,7 @@ sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-supp
 sudo apt-get -y install chromium-browser filezilla
 
 # Firefox : Hangout plugin
-wget https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
+wget --header='Accept-Encoding:none' https://dl.google.com/linux/direct/google-talkplugin_current_${ARCHI}.deb
 sudo gdebi --n google-talkplugin_current_*.deb
 
 # youtube-dl & gui
@@ -39,16 +39,16 @@ sudo apt-get update
 sudo apt-get install clipgrab
 
 # skype 4.3
-wget http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
+wget --header='Accept-Encoding:none' http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
 sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
 sudo apt-get -y -f install
 
 # viber
-wget http://download.cdn.viber.com/cdn/desktop/Linux/viber.deb
+wget --header='Accept-Encoding:none' http://download.cdn.viber.com/cdn/desktop/Linux/viber.deb
 sudo dpkg -i viber.deb
 
 # telegram client (launch Telegram from command line once to get desktop declaration)
 [ "$ARCHI" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
-wget -O tsetup.tar.xz $TELEGRAM_URL
+wget --header='Accept-Encoding:none' -O tsetup.tar.xz $TELEGRAM_URL
 sudo tar xf tsetup.tar.xz -C /usr/local/bin
 /usr/local/bin/Telegram/Telegram &
