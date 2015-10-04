@@ -11,6 +11,8 @@
 #  Revision history :
 #   05/07/2015, V1.0 - Creation by N. Bernaerts
 #   15/08/2015, V1.1 - Force jpeg quality to 95
+#   25/09/2015, V1.2 - Add configuration file
+#   02/10/2015, V2.0 - Code rewrite to handle progress and notification
 # ---------------------------------------------------
 
 # -------------------------------------------------------
@@ -37,6 +39,10 @@ FILE_CONF="$HOME/.config/pdf-generate.conf"
 COMPRESSION=$(cat "${FILE_CONF}" | grep "compression" | cut -d'=' -f2)
 DENSITY=$(cat "${FILE_CONF}" | grep "density" | cut -d'=' -f2)
 
+# calculate page size
+PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
+PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
+
 # -------------------------------------------------------
 #          Retrieve or select input files
 # -------------------------------------------------------
@@ -62,41 +68,13 @@ then
 fi 
 
 # -------------------------------------------------------
-#       Confirmation and parameters dialog box
-# -------------------------------------------------------
-
-NBR_FILE=${#ARR_FILE[@]}
-RESULT=$(zenity --forms --title="Merge to PDF" --text="${NBR_FILE} file(s) will be merged." --separator="|" \
-                --add-entry="Image compression (1..100)" ${COMPRESSION} \
-                --add-entry="Page density (DPI)" ${DENSITY} )
-
-# if dialog canceled, exit
-ACTION=$?
-[ "${ACTION}" != "0" ] && exit 1
-
-# retrieve parameters and calculate conversion parameters
-COMPRESSION=$(echo "${RESULT}" | cut -d'|' -f1)
-DENSITY=$(echo "${RESULT}" | cut -d'|' -f1)
-PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
-PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
-
-# -------------------------------------------------------
-# loop thru candidate files to convert them to pdf
+# loop thru selected files to check convertibility
 # -------------------------------------------------------
 
 for FILE in "${ARR_FILE[@]}"
 do
-  # get file name without extension
-  FILE_BASE="$(echo "${FILE}" | sed 's/^\(.*\)\..*$/\1/')"
-
-  # get file extension
-  FILE_EXT="$(echo "${FILE}" | sed 's/^.*\.\(.*\)$/\1/')"
-
-  # resulting PDF file name
-  FILE_PDF="${FILE_BASE}.pdf"
-
-  # resulting PDF file name
-  [ -z "${FILE_FINAL}" ] && FILE_FINAL="${FILE_BASE}-merged.pdf"
+  # document type undefined
+  DOCTYPE=""
 
   # get the file mime type (application/msword, ...)
   MIMETYPE=$(mimetype -b "${FILE}")
@@ -127,13 +105,70 @@ do
       ;;
 
     # plain text file (.txt)
-    "text/plain" )
+    "text/plain" | "application/x-shellscript" )
       DOCTYPE="text"
       ;;
 
     * )
       ;;
   esac
+
+  # if document type is compatible, add current file as candidate
+  [ "${DOCTYPE}" != "" ] && ARR_CANDIDATE=("${ARR_CANDIDATE[@]}" "${FILE}|${DOCTYPE}")
+
+done
+
+# -------------------------------------------------------
+#       Confirmation dialog box
+# -------------------------------------------------------
+
+# calculate number of files to convert
+NBR_FILE=${#ARR_FILE[@]}
+NBR_CANDIDATE=${#ARR_CANDIDATE[@]}
+
+# if some candidate file exist, order them and display confirmation dialog
+if [ ${NBR_CANDIDATE} -gt 0 ]
+then
+  # order generated PDF files in alphabetical order
+  ARR_CANDIDATE=($(sort <<<"${ARR_CANDIDATE[*]}"))
+
+  # generate final file name
+  FILE=$(echo "${ARR_CANDIDATE[0]}" | cut -d'|' -f1)
+  FILE_FINAL="$(echo "${FILE}" | sed 's/^\(.*\)\..*$/\1/')-merged.pdf"
+
+  # display confirmation dialog box
+  RESULT=$(zenity --question --title="Merge to PDF" --text="${NBR_CANDIDATE} file(s) out of ${NBR_FILE} will be merged to a single PDF file (${DENSITY} DPI)\n\nDo you want to generate ${FILE_FINAL} ?" )
+  ACTION=$?
+
+# else display error dialog
+else
+  # display confirmation dialog box
+  RESULT=$(zenity --error --title="Merge to PDF" --text="There is no file compatible with PDF format." )
+  ACTION=""
+
+fi
+
+# if action canceled or error, exit
+[ "${ACTION}" != "0" ] && exit 1
+
+(
+
+# -------------------------------------------------------
+# loop thru candidate files to convert them to PDF
+# -------------------------------------------------------
+
+for CANDIDATE in "${ARR_CANDIDATE[@]}"
+do
+  # retrieve document type and filename
+  FILE=$(echo "${CANDIDATE}" | cut -d'|' -f1)
+  DOCTYPE=$(echo "${CANDIDATE}" | cut -d'|' -f2)
+
+  # progress display
+  echo "# Conversion of ${FILE}"
+
+  # get file name without extension & generate resulting PDF file name
+  FILE_BASE="$(echo "${FILE}" | sed 's/^\(.*\)\..*$/\1/')"
+  FILE_PDF="${FILE_BASE}.pdf"
 
   # convert file according to its type
   case $DOCTYPE in
@@ -144,7 +179,7 @@ do
 
     # image files
     "image" )
-    convert "${FILE}" -compress jpeg -quality ${QUALITY} -resize ${PAGE_WIDTH}x${PAGE_HEIGHT} -gravity center -extent ${PAGE_WIDTH}x${PAGE_HEIGHT} -units PixelsPerInch -density ${DENSITY}x${DENSITY} "${FILE_PDF}"
+    convert "${FILE}" -compress jpeg -quality ${COMPRESSION} -resize ${PAGE_WIDTH}x${PAGE_HEIGHT} -gravity center -extent ${PAGE_WIDTH}x${PAGE_HEIGHT} -units PixelsPerInch -density ${DENSITY}x${DENSITY} "${FILE_PDF}"
     ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
     ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
     ;;
@@ -169,15 +204,28 @@ done
 
 if [ ${#ARR_PDF[@]} -gt 0 ]
 then
-  # order generated PDF files in alphabetical order
-  ARR_SORTED=($(sort <<<"${ARR_PDF[*]}"))
+  # progress display
+  echo "# Final assembly of ${FILE_FINAL}"
 
   # generate resulting PDF
-  gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=a4 -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${FILE_FINAL}" ${ARR_SORTED[@]}
+  gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=a4 -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${FILE_FINAL}" ${ARR_PDF[@]}
 fi
+
+# -------------------------------------------------------
+#   Temporary files clean-up
+# -------------------------------------------------------
 
 # loop to remove temporary files
 for TMP_FILE in "${ARR_TMP[@]}"
 do
   rm "${TMP_FILE}"
 done
+
+) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "Merge to PDF"
+
+# -------------------------------------------------------
+#   End of job notification
+# -------------------------------------------------------
+
+[ ${#ARR_CANDIDATE[@]} -gt 0 ] && zenity --notification --window-icon="evince" --text="${FILE_FINAL} generated." \
+                               || zenity --notification --window-icon="error" --text="Document type was not compatible for PDF generation."
