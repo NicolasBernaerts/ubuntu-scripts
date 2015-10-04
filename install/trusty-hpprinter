@@ -7,7 +7,7 @@
 
 # get latest driver
 URL_HPLIP=$(wget -q -O - http://hplipopensource.com/hplip-web/install/install/index.html | grep "http://prdownloads.sourceforge.net/hplip/hplip" | sed 's/^<a href=.\(.*\).><img.*$/\1/')
-wget -O hplip.run "$URL_HPLIP"
+wget --header='Accept-Encoding:none' -O hplip.run "$URL_HPLIP"
 
 # install
 sh ./hplip.run
