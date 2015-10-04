@@ -42,42 +42,42 @@ sudo apt-get -y dist-upgrade
 # ---------------------------------------------------
 
 # misc utilities and tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
 chmod +x ./trusty-utilities
 . ./trusty-utilities
 
 # office tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
 chmod +x ./trusty-office
 . ./trusty-office
 
 # graphical tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
 chmod +x ./trusty-graphical
 . ./trusty-graphical
 
 # multimedia tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
 chmod +x ./trusty-multimedia
 . ./trusty-multimedia
 
 # multimedia tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
 chmod +x ./trusty-internet
 . ./trusty-internet
 
 # android tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
 chmod +x ./trusty-android
 . ./trusty-android
 
 # remote assistance
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
 chmod +x ./trusty-assistance
 . ./trusty-assistance
 
 # wifi tweaks
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-wifi
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-wifi
 chmod +x ./trusty-wifi
 . ./trusty-wifi
 
@@ -115,10 +115,10 @@ rm -r $HOME/.thumbnails
 
 # force proper multi-display position at startup
 # see http://bernaerts.dyndns.org/linux/74-ubuntu/309-ubuntu-dual-display-monitor-position-lost
-sudo wget -O /usr/local/sbin/update-monitor-position https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/update-monitor-position https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position
 sudo chmod +x /usr/local/sbin/update-monitor-position
 mkdir $HOME/.config/autostart
-wget -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position.desktop
+wget --header='Accept-Encoding:none' -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position.desktop
 
 # install language selector
 sudo apt-get install language-selector-gnome
