@@ -22,7 +22,7 @@ sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
 sudo apt-get -y install gramps
 
 # PDF editor
-wget http://code-industry.net/public/master-pdf-editor_2.2.15_${ARCHI}.deb
+wget --header='Accept-Encoding:none' http://code-industry.net/public/master-pdf-editor_2.2.15_${ARCHI}.deb
 sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 
 # Libreoffice : declare 4.4 PPA & install
@@ -35,27 +35,27 @@ xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.t
 xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
 
 # LibreOffice thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
 . ./lo-thumbnailer-install.sh
 
 # Ms Office thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
 . ./msoffice-thumbnailer-install.sh
 
 # PDF repair extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
 . ./pdf-repair-install.sh
 
 # PDF booklet generation extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
 . ./generate-booklet-install.sh
 
 # PDF document generation from multiple files
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
 . ./pdf-generate-install.sh
 
 # nvpy
 sudo apt-get -y install nvpy
 cp /usr/share/doc/nvpy/examples/nvpy-example.cfg $HOME/.nvpy.cfg
-sudo wget -O /usr/share/icons/simplenote.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/simplenote.png
-wget -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/nvpy.desktop
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/simplenote.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/simplenote.png
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/nvpy.desktop
