@@ -13,7 +13,7 @@
 SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
 
 # gitso
-wget http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
+wget --header='Accept-Encoding:none' http://gitso.googlecode.com/files/gitso_0.6.2_all.deb
 sudo gdebi --n gitso_0.6.2_all.deb
 
 # include remote assistance site in launcher
