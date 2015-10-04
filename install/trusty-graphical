@@ -22,25 +22,25 @@ sudo apt-get update
 sudo apt-get -y install gimp gimp-plugin-registry
 
 # scan2folder tool
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
 . ./scan2folder-install.sh
 
 # GIMP XCF thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
 . ./gimp-tumbnailer-install.sh
 
 # Graphviz DOT thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
 . ./graphviz-thumbnailer-install.sh
 
 # Image resize extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
 . ./image-resize-install.sh
 
 # Image levels optimize extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize-install.sh
 . ./image-level-optimize-install.sh
 
 # Image IPTC tag manager extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-iptc-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-iptc-install.sh
 . ./image-iptc-install.sh
