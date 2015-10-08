@@ -5,24 +5,15 @@
 DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
-# install melt and vidstab
-IS_PRESENT=$(command -v melt)
-if [ -z "${IS_PRESENT}" ]
-then
-  MELT="DO_INSTALL"
-else
-  # ensure to use melt 0.9.2+
-  CURRENT_VERSION=$(melt -version | grep --only-matching --perl-regexp "\\d+\.\\d+\.\\d+")
-  SMALLER_VERSION=$(echo -e "${CURRENT_VERSION}\n0.9.2" | sort -V | head -n 1)
-  [ "${SMALLER_VERSION}" = "${CURRENT_VERSION}" ] && MELT="DO_INSTALL"
-fi
-
-if [ "${MELT}" = "DO_INSTALL" ]
+# declare sunab/kdenlive-release ppa if not declared
+if ! grep -q "kdenlive-release" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
 then
   sudo add-apt-repository -y ppa:sunab/kdenlive-release
   sudo apt-get update
-  sudo apt-get -y install libvidstab1.0 melt
 fi
+
+# install melt and libvidstab
+sudo apt-get -y install libvidstab1.0 melt
 
 # install yad
 IS_PRESENT=$(command -v yad)
