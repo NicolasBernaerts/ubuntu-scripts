@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Video rotation and stabilization
 
 # test Ubuntu distribution
