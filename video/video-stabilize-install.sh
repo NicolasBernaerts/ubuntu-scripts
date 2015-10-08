@@ -6,7 +6,10 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # declare sunab/kdenlive-release ppa if not declared
-if ! grep -q "kdenlive-release" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+PPA_NAME="sunab/kdenlive-release"
+IS_PRESENT=$(grep "^[^#].*${PPA_NAME}.*" /etc/apt/sources.list /etc/apt/sources.list.d/*)
+if [ -z "${IS_PRESENT}" ]
+then
   sudo add-apt-repository -y ppa:sunab/kdenlive-release
 fi
 
