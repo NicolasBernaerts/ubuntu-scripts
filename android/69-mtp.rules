@@ -1,0 +1,4 @@
+# Motorola Moto G Gen2 (with and without ADB)
+ATTR{idVendor}=="22b8", ATTR{idProduct}=="2e76|2e82", SYMLINK+="libmtp-%k", MODE="660", GROUP="audio", ENV{ID_MTP_DEVICE}="1", ENV{ID_MEDIA_PLAYER}="1"
+# OnePlus One (with and without ADB)
+ATTR{idVendor}=="05c6", ATTR{idProduct}=="6764|6765", SYMLINK+="libmtp-%k", MODE="660", GROUP="audio", ENV{ID_MTP_DEVICE}="1", ENV{ID_MEDIA_PLAYER}="1"
