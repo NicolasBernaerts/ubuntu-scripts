@@ -6,10 +6,14 @@
 # 18/04/2015, V1.1 - Update ADB to v1.0.32
 # -------------------------------------------------------
 
-# adb and fastboot
+# install adb and fastboot
 sudo apt-get -y install android-tools-adb android-tools-fastboot
+
+# declare complementary devices
 sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/51-android.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/51-android.rules
 sudo chmod a+r /etc/udev/rules.d/51-android.rules
+sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/69-mtp.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/69-mtp.rules
+sudo chmod a+r /etc/udev/rules.d/69-mtp.rules
 
 # update to adb 1.0.32
 wget --header='Accept-Encoding:none' -O - https://skia.googlesource.com/skia/+archive/cd048d18e0b81338c1a04b9749a00444597df394/platform_tools/android/bin/linux.tar.gz | tar -zxvf - adb
