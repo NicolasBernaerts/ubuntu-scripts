@@ -7,6 +7,10 @@
 #   * gvfs-bin
 #   * libnotify-bin
 #   * zenity
+#
+# Parameter :
+#   $1 - full path of original PDF
+#
 # Revision history :
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
 #   20/11/2014, V1.1 - Add file selection dialog box
