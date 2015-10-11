@@ -3,11 +3,17 @@
 #  Generate a PDF document from a given list of documents
 #  Documents are added in final document following
 #  alphabetical order
+#
+#  Setup procedure : http://bernaerts.dyndns.org/linux/74-ubuntu/338-ubuntu-generate-pdf-from-documents
+#
 #  Depends on :
 #   * imagemagick
 #   * unoconv
 #   * ghostscript
 #   * mimetype
+#
+# Parameters : full path of documents
+#
 #  Revision history :
 #   05/07/2015, V1.0 - Creation by N. Bernaerts
 #   15/08/2015, V1.1 - Force jpeg quality to 95
