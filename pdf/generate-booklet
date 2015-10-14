@@ -1,10 +1,9 @@
 #!/bin/bash
 # ---------------------------------------------------------
 # Imposition of a PDF document to generate a booklet
-# target format is selectable (A5, A4, ...)
-# default format is A4
+# target format is selectable (A5, A4, ...) and default format is A4
 #
-#  Setup procedure : http://bernaerts.dyndns.org/linux/74-ubuntu/248-ubuntu-imposition-print-book
+# Setup procedure : http://bernaerts.dyndns.org/linux/74-ubuntu/248-ubuntu-imposition-print-book
 #
 # Depends on packages
 #  * poppler-utils
