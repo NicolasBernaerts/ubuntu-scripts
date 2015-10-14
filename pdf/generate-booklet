@@ -4,6 +4,8 @@
 # target format is selectable (A5, A4, ...)
 # default format is A4
 #
+#  Setup procedure : http://bernaerts.dyndns.org/linux/74-ubuntu/248-ubuntu-imposition-print-book
+#
 # Depends on packages
 #  * poppler-utils
 #  * texlive-extra-utils
