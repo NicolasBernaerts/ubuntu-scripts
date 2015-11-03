@@ -5,11 +5,7 @@
 #
 # Setup procedure : http://bernaerts.dyndns.org/linux/74-ubuntu/248-ubuntu-imposition-print-book
 #
-# Depends on packages
-#  * poppler-utils
-#  * texlive-extra-utils
-#  * unoconv
-#  * mimetype
+# Depends on packages : poppler-utils, texlive-extra-utils, unoconv and mimetype
 #
 # Parameter :
 #   $1 - full path of original document
@@ -37,7 +33,6 @@ SUFFIX="book"
 # if a document has been selected, start conversion
 if [ "${FILE}" != "" ];
 then
-
   # document type undefined
   TYPE=""
 
@@ -58,7 +53,6 @@ then
 
   # check specific document types
   case $MIMETYPE in 
-
     # ms-office document (.doc, .xls, .ppt, ...)
     "application/msword" | "application/vnd.ms-word" | "application/vnd.ms-powerpoint" )
       TYPE="ms-office"
@@ -92,11 +86,8 @@ then
   (
   if [ "$FORMAT" != "" ]
   then
-
     # set target format as expected by pdfbook
     OPTION="--${FORMAT,,}paper"
-
-echo $OPTION
 
     # if file is not PDF, convert file to pdf, else use original
     echo "# Conversion of original document to PDF format"
@@ -114,10 +105,7 @@ echo $OPTION
     pdfbook ${OPTION} --signature ${NUMPAGES} --booklet true --landscape "${FILETMP}" -o "${BOOKLET}"
   fi
 
-
-
   # if file is not PDF, remove temporary PDF file
   [ "${TYPE}" != "pdf" ] && rm "${FILETMP}"
   ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${FORMAT} booklet generation"
-
 fi
