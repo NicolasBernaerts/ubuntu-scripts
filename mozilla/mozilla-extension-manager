@@ -1,19 +1,36 @@
 #!/bin/bash
 # -------------------------------------------------------
 #  Command line script to install
-#  Firefox and Thunderbird add-ons
+#  Firefox and Thunderbird extensions
+#
+
 #  as user or global extensions available to all users
 #
 #  Must be run with sudo
 #  Depends on unzip and wget
 #  Parameters :
-#    $1 = URL of extension on https://addons.mozilla.org/
+#    --install : install extension
+#    --remove  : remove extension
+#    --user    : extension as per-user
+#    --global  : extension global to system
+#    https://addons.mozilla.org/... : URL of extension
 #
 #  26/03/2013, V1.0 - Creation by N. Bernaerts
-#  08/11/2015, V2.0 - Complete rewrite, add per-user extensions
+#  08/11/2015, V2.0 - Complete rewrite
+#                     Add install/remove
+#                     Add global/per-user
 # -------------------------------------------------------
 
-# -------------------  constants  ----------------------
+# -------------------------------------------------------
+#   Check tools availability
+# -------------------------------------------------------
+
+command -v unzip >/dev/null 2>&1 || { zenity --error --text="Please install unzip"; exit 1; }
+command -v wget >/dev/null 2>&1 || { zenity --error --text="Please install wget"; exit 1; }
+
+# ------------------------------------------------------
+#   Constants
+# ------------------------------------------------------
 
 # set default add-ons URL base
 URL_FIREFOX="https://addons.mozilla.org/firefox/"
@@ -26,13 +43,6 @@ PATH_GLOBAL_THUNDER="/usr/lib/thunderbird-addons/extensions"
 # installation path for user extensions
 PATH_USER_FIREFOX="$HOME/.mozilla/firefox"
 PATH_USER_THUNDER="$HOME/.thunderbird"
-
-# -------------------------------------------------------
-#   Check tools availability
-# -------------------------------------------------------
-
-command -v unzip >/dev/null 2>&1 || { zenity --error --text="Please install unzip"; exit 1; }
-command -v wget >/dev/null 2>&1 || { zenity --error --text="Please install wget"; exit 1; }
 
 # -------------------------------------------------------
 #   Default values
@@ -48,7 +58,7 @@ EXT_URL=""
 EXT_PATH=""
 
 # extension type (global or per user)
-EXT_TYPE="global"
+EXT_TYPE="user"
 
 # action to be performed (install or remove)
 EXT_ACTION="install"
@@ -59,27 +69,25 @@ EXT_ACTION="install"
 
 for PARAM in "$@"
 do
-  # check "--user"
-  [ "${PARAM}" = "--user" ] && EXT_TYPE="user"
-  
-  # check "--remove"
-  [ "${PARAM}" = "--remove" ] && EXT_ACTION="remove"
+  # action according to parameter
+  case "${PARAM}" in
+    "--user")    EXT_TYPE="user" ;;
+    "--global")  EXT_TYPE="global" ;;
+    "--install") EXT_ACTION="install" ;;
+    "--remove")  EXT_ACTION="remove" ;;
+    *)
+      # get extension URL
+      EXT_URL="${PARAM}"
 
-  # determine if we are dealing with firefox extension
-  RESULT=$(echo "${PARAM}" | grep "${URL_FIREFOX}")
-  if [ "${RESULT}" != "" ]
-  then
-    EXT_FAMILY="firefox"
-	EXT_URL="${PARAM}"
-  fi  
+      # determine if we are dealing with firefox extension
+      RESULT=$(echo "${PARAM}" | grep "${URL_FIREFOX}")
+      [ "${RESULT}" != "" ] && EXT_FAMILY="firefox"  
   
-  # determine if we are dealing with thunderbird extension
-  RESULT=$(echo "${PARAM}" | grep "${URL_THUNDER}")
-  if [ "${RESULT}" != "" ]
-  then
-    EXT_FAMILY="thunder"
-	EXT_URL="${PARAM}"
-  fi  
+      # determine if we are dealing with thunderbird extension
+      RESULT=$(echo "${PARAM}" | grep "${URL_THUNDER}")
+      [ "${RESULT}" != "" ] && EXT_FAMILY="thunder"
+      ;;
+  esac
 done
 
 # -------------------------------------------------------
@@ -94,6 +102,7 @@ then
 
 # thunderbird extension
 elif [ "${EXT_FAMILY}" = "thunder" ]
+then
   PATH_GLOBAL="${PATH_GLOBAL_THUNDER}"
   PATH_USER="${PATH_USER_THUNDER}"
   
@@ -115,7 +124,7 @@ then
 # else determine installation path for user extensions
 else
   # set profile.ini path
-  PROFILE_INI="${PATH_USER}/profile.ini"
+  PROFILE_INI="${PATH_USER}/profiles.ini"
   
   # get profile path
   PROFILE_PATH=$(grep "Path=" ${PROFILE_INI} | head -n 1 | cut -d'=' -f2)
@@ -135,6 +144,12 @@ wget -O addon.xpi "${EXT_URL}"
 # get extension UID from install.rdf
 EXT_UID=$(unzip -p addon.xpi install.rdf | grep "<em:id>" | head -n 1 | sed 's/^.*>\(.*\)<.*$/\1/g')
 
+echo "ID : $EXT_UID"
+echo "Path : ${EXT_PATH}/${EXT_UID}.xpi"
+
+# if .xpi file could not be read, exit
+[ "${EXT_UID}" = "" ] && { zenity --error --text="Could not retrieve extension file from server"; exit 1; }
+
 # action : installation
 if [ "${EXT_ACTION}" = "install" ]
 then
@@ -144,13 +159,12 @@ then
   # installation of global extension
   if [ "${EXT_TYPE}" = "global" ]
   then
+    # copy .xpi to global extension path
+    sudo cp -f addon.xpi "${EXT_PATH}/${EXT_UID}.xpi"
+
     # extract extension to global extension path
     sudo unzip addon.xpi -d "${EXT_PATH}/${EXT_UID}"
 
-    # set root ownership
-    sudo chown -R root:root "${EXT_PATH}/${EXT_UID}"
-    chmod -R a+rX "${EXT_PATH}/${EXT_UID}"
-  
   # else, installation of extension for current user 
   else
     # copy .xpi to user profile extension path
@@ -172,12 +186,13 @@ else
   if [ "${EXT_TYPE}" = "global" ]
   then
     # remove global extension directory
+    sudo rm "${EXT_PATH}/${EXT_UID}.xpi"
     sudo rm -R "${EXT_PATH}/${EXT_UID}"
 
   # else, removal of extension for current user 
   else
     # remove user xpi file and extension directory
-	rm "${EXT_PATH}/${EXT_UID}.xpi"
+    rm "${EXT_PATH}/${EXT_UID}.xpi"
     rm -R "${EXT_PATH}/${EXT_UID}"
   fi
 
