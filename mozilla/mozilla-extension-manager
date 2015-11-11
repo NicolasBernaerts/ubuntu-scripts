@@ -144,9 +144,6 @@ wget -O addon.xpi "${EXT_URL}"
 # get extension UID from install.rdf
 EXT_UID=$(unzip -p addon.xpi install.rdf | grep "<em:id>" | head -n 1 | sed 's/^.*>\(.*\)<.*$/\1/g')
 
-echo "ID : $EXT_UID"
-echo "Path : ${EXT_PATH}/${EXT_UID}.xpi"
-
 # if .xpi file could not be read, exit
 [ "${EXT_UID}" = "" ] && { zenity --error --text="Could not retrieve extension file from server"; exit 1; }
 
@@ -175,7 +172,7 @@ then
   fi
 
   # end message
-  zenity --notification --window-icon="info" --text="${EXT_TYPE} extension ${EXT_UID} installed" &
+  echo "${EXT_TYPE} extension ${EXT_UID} installed"
 
 # action : removal
 else
@@ -197,7 +194,7 @@ else
   fi
 
   # end message
-  zenity --notification --window-icon="info" --text="${EXT_TYPE} extension ${EXT_UID} uninstalled" &
+  echo "${EXT_TYPE} extension ${EXT_UID} removed"
 fi
 
 # remove downloaded file
