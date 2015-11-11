@@ -1,13 +1,13 @@
 #!/bin/bash
 # -------------------------------------------------------
-#  Command line script to install
-#  Firefox and Thunderbird extensions
-#
-
-#  as user or global extensions available to all users
-#
-#  Must be run with sudo
+#  Command line script to handle Firefox and Thunderbird extensions
+#  Manage installation and uninstallation
+#  Handle global and per-user extensions
+#  
 #  Depends on unzip and wget
+#
+#  Manual available at http://bernaerts.dyndns.org/linux/74-ubuntu/271-ubuntu-firefox-thunderbird-addon-commandline
+#
 #  Parameters :
 #    --install : install extension
 #    --remove  : remove extension
