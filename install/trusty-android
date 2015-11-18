@@ -14,6 +14,8 @@ sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/51-android.rules 
 sudo chmod a+r /etc/udev/rules.d/51-android.rules
 sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/69-mtp.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/69-mtp.rules
 sudo chmod a+r /etc/udev/rules.d/69-mtp.rules
+mkdir --parent ~/.android
+wget --header='Accept-Encoding:none' -O ~/.android/adb_usb.ini https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/adb_usb.ini
 
 # update to adb 1.0.32
 wget --header='Accept-Encoding:none' -O - https://skia.googlesource.com/skia/+archive/cd048d18e0b81338c1a04b9749a00444597df394/platform_tools/android/bin/linux.tar.gz | tar -zxvf - adb
