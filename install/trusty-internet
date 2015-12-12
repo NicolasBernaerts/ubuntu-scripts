@@ -33,10 +33,9 @@ sudo apt-get update
 sudo apt-get install clipgrab
 
 # skype 4.3
-wget --header='Accept-Encoding:none' http://download.skype.com/linux/skype-ubuntu-precise_4.3.0.37-1_i386.deb
-sudo dpkg --force-all -i skype-ubuntu-precise_*.deb
-sudo apt-get -y -f install
-rm skype-ubuntu-precise_*.deb
+sudo add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
+sudo apt-get update
+sudo apt-get install skype
 
 # viber
 wget --header='Accept-Encoding:none' http://download.cdn.viber.com/cdn/desktop/Linux/viber.deb
