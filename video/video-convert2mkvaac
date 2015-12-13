@@ -21,6 +21,7 @@
 #                       and to add midnight mode tracks
 #    20/07/2015, V2.1 - Switch to YAD and select rates
 #    12/12/2015, V2.2 - Make track langage editable
+#    12/12/2015, V2.3 - Add default track selection
 # -------------------------------------------------------
 
 IFS=$'\n'
@@ -74,7 +75,6 @@ done
 # set GUI mode
 [ ${#ARR_VIDEO[@]} -eq 1 ] && GUI_MODE="ON" || GUI_MODE="OFF"
 
-
 # -------------------------------------------------------
 #  Select encoding rates
 # -------------------------------------------------------
@@ -86,8 +86,6 @@ ARR_PARAM_CONFIG=( "--field=${#ARR_VIDEO[@]} video file(s) will be processed:LBL
 [ ${#ARR_VIDEO[@]} -eq 1 ] && ARR_PARAM_CONFIG=("${ARR_PARAM_CONFIG[@]}" "--field=Select Audio Tracks:CHK" "TRUE")
 
 # display dialog box selection
-#CHOICE=$(yad --center --width=350 --height=200 --window-icon "video" --image "video" --title="MKV/AAC multiplexer" --form --item-separator='|' --field="${#ARR_VIDEO[@]} video file(s) will be processed:LBL" "files" --field="Please, adjust transcoding rates (kbits/s):LBL" "rates" --field="  - Midnight mode:CB" "${RATE_DRC}|${RATE_AVAILABLE}" --field="  - Stereo:CB" "${RATE_STEREO}|${RATE_AVAILABLE}" --field="  - Multi channels:CB" "${RATE_MULTI}|${RATE_AVAILABLE}")
-
 CHOICE=$(yad --center --width=350 --height=200 --window-icon "video" --image "video" --title="MKV/AAC multiplexer" --form --item-separator='|' "${ARR_PARAM_CONFIG[@]}")
 
 # get parameters
@@ -237,11 +235,16 @@ do
       TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
       TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
       TRACK_RATE=$(echo "$TRACK" | cut -d'|' -f5)
+      TRACK_DEFAULT=$(echo "$TRACK" | cut -d'|' -f6)
+
+      # set if track is a default one
+      [ ${TRACK_DEFAULT} = "Yes" ] && TRACK_DEFAULT="TRUE" || TRACK_DEFAULT="FALSE" 
 
       # add current track to dialog selection array
-      ARR_SELECT=("${ARR_SELECT[@]}" "${TRACK_ID}" "TRUE" "FALSE" "${TRACK_LANGUAGE}" "${TRACK_FORMAT}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
+      ARR_SELECT=("${ARR_SELECT[@]}" "${TRACK_ID}" "${TRACK_DEFAULT}" "TRUE" "FALSE" "${TRACK_LANGUAGE}" "${TRACK_FORMAT}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
 
       # set current track as candidate, without midnight mode and given langage
+      ARR_DEFAULT[${TRACK_ID}]="${TRACK_DEFAULT}"
       ARR_LANGAGE[${TRACK_ID}]="${TRACK_LANGAGE}"
       ARR_CANDIDATE[${TRACK_ID}]="TRUE"
       ARR_NIGHTMODE[${TRACK_ID}]="FALSE"
@@ -251,7 +254,7 @@ do
     if [ "${GUI_MODE}" = "TRUE" ] 
     then
       # dialog box to select audio tracks to mux
-      ARR_COLUMN=( "--column=Number:NUM" "--column=Select:CHK" "--column=Midnight:CHK" "--column=Langage:TEXT" "--column=Format:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" )
+      ARR_COLUMN=( "--column=Number:NUM" "--column=Default:RD" "--column=Select:CHK" "--column=Midnight:CHK" "--column=Langage:TEXT" "--column=Format:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" )
       ARR_CHOICE=( $(yad --center --title "${FILE_NAME}" --text="Select tracks to mux in MKV\n" --width=600 --height=300 --list --editable --print-all "${ARR_COLUMN[@]}" "${ARR_SELECT[@]}") )
 
       # if dialog has been canceled, exit
@@ -262,11 +265,13 @@ do
       do
         # get choices
         TRACK_ID=$(echo "$CHOICE" | cut -d'|' -f1)
-        TRACK_CANDIDATE=$(echo "$CHOICE" | cut -d'|' -f2)
-        TRACK_NIGHTMODE=$(echo "$CHOICE" | cut -d'|' -f3)
-        TRACK_LANGAGE=$(echo "$CHOICE" | cut -d'|' -f4)
+        TRACK_DEFAULT=$(echo "$CHOICE" | cut -d'|' -f2)
+        TRACK_CANDIDATE=$(echo "$CHOICE" | cut -d'|' -f3)
+        TRACK_NIGHTMODE=$(echo "$CHOICE" | cut -d'|' -f4)
+        TRACK_LANGAGE=$(echo "$CHOICE" | cut -d'|' -f5)
 
         # set track as selected and/or midnight mode and given langage
+        ARR_DEFAULT[${TRACK_ID}]="${TRACK_DEFAULT}"
         ARR_CANDIDATE[${TRACK_ID}]="${TRACK_CANDIDATE}"
         ARR_NIGHTMODE[${TRACK_ID}]="${TRACK_NIGHTMODE}"
         ARR_LANGAGE[${TRACK_ID}]="${TRACK_LANGAGE}"
@@ -284,11 +289,11 @@ do
       TRACK_ID=$(echo "$TRACK" | cut -d'|' -f1)
       TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
       TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
-      TRACK_DEFAULT=$(echo "$TRACK" | cut -d'|' -f6)
       TRACK_DELAY=$(echo "$TRACK" | cut -d'|' -f7)
       TRACK_TITLE=$(echo "$TRACK" | cut -d'|' -f8)
 
       # get if track is selected, with midnight mode and its langage
+      TRACK_DEFAULT=${ARR_DEFAULT[${TRACK_ID}]}
       TRACK_LANGUAGE=${ARR_LANGAGE[${TRACK_ID}]}
       TRACK_CANDIDATE=${ARR_CANDIDATE[${TRACK_ID}]}
       TRACK_NIGHTMODE=${ARR_NIGHTMODE[${TRACK_ID}]}
@@ -310,6 +315,9 @@ do
           # add current track ID to the array of AAC tracks
           ARR_AAC_ID=("${ARR_AAC_ID[@]}" "${TRACK_ID}")
 
+          # determine if current track is default audio
+          [ ${TRACK_DEFAULT} = "TRUE" ] && ARR_PARAM_AAC=("${ARR_PARAM_AAC[@]}" "--default-track" "${TRACK_ID}:1") || ARR_PARAM_AAC=("${ARR_PARAM_AAC[@]}" "--default-track" "${TRACK_ID}:0")
+
           # generate track langage and name option
           ARR_PARAM_AAC=("${ARR_PARAM_AAC[@]}" "--language" "${TRACK_ID}:${TRACK_LANGUAGE}" "--track-name" "${TRACK_ID}:${TRACK_LANGUAGE} (${TRACK_CHANNEL} channels)")
         
@@ -330,9 +338,11 @@ do
           echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Convertion to AAC (${TRACK_RATE}k)"
           fdkaac -o "${FILE_TMP_AAC}" -b ${TRACK_RATE}k "${FILE_TMP_WAV}" 
 
+          # determine if current track is default audio
+          [ ${TRACK_DEFAULT} = "TRUE" ] && ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:1") || ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:0")
+
           # gererate track options for current track
-          ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:${TRACK_DEFAULT}" "--sync" "0:${TRACK_DELAY}" \
-                                                   "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE}" "${FILE_TMP_AAC}")
+          ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--sync" "0:${TRACK_DELAY}" "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE} (${TRACK_CHANNEL} channels)" "${FILE_TMP_AAC}")
 
           # add current audio to the general track order list
           ARR_FILE=("${ARR_FILE[@]}" "${NEWTRACK_INDEX}:0")
@@ -364,8 +374,7 @@ do
         fdkaac -o "${FILE_DRC_AAC}" -b ${RATE_DRC}k "${FILE_NRM_WAV}" 
 
         # gererate track options for current track
-        ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:No" "--sync" "0:${TRACK_DELAY}" \
-                                                 "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE} Night Mode" "${FILE_DRC_AAC}")
+        ARR_PARAM_AUDIO=("${ARR_PARAM_AUDIO[@]}" "--default-track" "0:0"  "--sync" "0:${TRACK_DELAY}" "--language" "0:${TRACK_LANGUAGE}" "--track-name" "0:${TRACK_LANGUAGE} Night Mode" "${FILE_DRC_AAC}")
 
         # add current audio to the general track order list
         ARR_FILE=("${ARR_FILE[@]}" "${NEWTRACK_INDEX}:0")
