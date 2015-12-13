@@ -20,6 +20,7 @@
 #                       Add GUI mode to select tracks
 #                       and to add midnight mode tracks
 #    20/07/2015, V2.1 - Switch to YAD and select rates
+#    12/12/2015, V2.2 - Make track langage editable
 # -------------------------------------------------------
 
 IFS=$'\n'
@@ -136,7 +137,6 @@ do
   FILE_INFO="${FILE_BASE}.txt"
 
   FILE_COVER="${FILE_BASE}.${COVER_EXT}"
-  [ -f "${FILE_COVER}" ] || FILE_COVER="${FILE_BASE}.jpg"
   [ -f "${FILE_COVER}" ] || FILE_COVER="${FILE_DIR}/cover.jpg"
   [ -f "${FILE_COVER}" ] || FILE_COVER="${FILE_DIR}/folder.jpg"
 
@@ -228,8 +228,6 @@ do
     # loop thru audio tracks to select tracks to keep in target video
     # ---------------------------------------------------------------------
 
-    AUDIO_CANDIDATE="|"
-    AUDIO_NIGHTMODE="|"
     ARR_SELECT=( )
     for TRACK in "${ARR_TRACK[@]}"
     do
@@ -241,37 +239,37 @@ do
       TRACK_RATE=$(echo "$TRACK" | cut -d'|' -f5)
 
       # add current track to dialog selection array
-      ARR_SELECT=("${ARR_SELECT[@]}" "TRUE" "FALSE" "${TRACK_ID}" "${TRACK_FORMAT}" "${TRACK_LANGUAGE}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
+      ARR_SELECT=("${ARR_SELECT[@]}" "${TRACK_ID}" "TRUE" "FALSE" "${TRACK_LANGUAGE}" "${TRACK_FORMAT}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
 
-      # by default, tracks is selected
-      AUDIO_CANDIDATE="${AUDIO_CANDIDATE}${TRACK_ID}|"
+      # set current track as candidate, without midnight mode and given langage
+      ARR_LANGAGE[${TRACK_ID}]="${TRACK_LANGAGE}"
+      ARR_CANDIDATE[${TRACK_ID}]="TRUE"
+      ARR_NIGHTMODE[${TRACK_ID}]="FALSE"
     done
 
     # if GUI mode, 
     if [ "${GUI_MODE}" = "TRUE" ] 
     then
       # dialog box to select audio tracks to mux
-      ARR_COLUMN=( "--column=Select:CHK" "--column=Midnight:CHK" "--column=Number:NUM" "--column=Format:TEXT" "--column=Langage:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" )
-      CHOICE=$(yad --center --title "${FILE_NAME}" --text="Select tracks to mux in MKV\n" --width=600 --height=300 --list --print-all "${ARR_COLUMN[@]}" "${ARR_SELECT[@]}")
+      ARR_COLUMN=( "--column=Number:NUM" "--column=Select:CHK" "--column=Midnight:CHK" "--column=Langage:TEXT" "--column=Format:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" )
+      ARR_CHOICE=( $(yad --center --title "${FILE_NAME}" --text="Select tracks to mux in MKV\n" --width=600 --height=300 --list --editable --print-all "${ARR_COLUMN[@]}" "${ARR_SELECT[@]}") )
 
       # if dialog has been canceled, exit
-      [[ -z "$CHOICE" ]] && exit 0
-
-      # convert result into array
-      ARR_CHOICE=( $(echo $CHOICE) )
+      [[ -z "${ARR_CHOICE[0]}" ]] && exit 0
 
       # loop thru choices to setup selected tracks and midnight mode tracks
-      AUDIO_CANDIDATE="|"
       for CHOICE in "${ARR_CHOICE[@]}"
       do
         # get choices
-        TRACK_CANDIDATE=$(echo "$CHOICE" | cut -d'|' -f1)
-        TRACK_NIGHTMODE=$(echo "$CHOICE" | cut -d'|' -f2)
-        TRACK_ID=$(echo "$CHOICE" | cut -d'|' -f3)
+        TRACK_ID=$(echo "$CHOICE" | cut -d'|' -f1)
+        TRACK_CANDIDATE=$(echo "$CHOICE" | cut -d'|' -f2)
+        TRACK_NIGHTMODE=$(echo "$CHOICE" | cut -d'|' -f3)
+        TRACK_LANGAGE=$(echo "$CHOICE" | cut -d'|' -f4)
 
-        # set track as selected and/or midnight mode
-        [ "${TRACK_CANDIDATE}" = "TRUE" ] && AUDIO_CANDIDATE="${AUDIO_CANDIDATE}${TRACK_ID}|"
-        [ "${TRACK_NIGHTMODE}" = "TRUE" ] && AUDIO_NIGHTMODE="${AUDIO_NIGHTMODE}${TRACK_ID}|"
+        # set track as selected and/or midnight mode and given langage
+        ARR_CANDIDATE[${TRACK_ID}]="${TRACK_CANDIDATE}"
+        ARR_NIGHTMODE[${TRACK_ID}]="${TRACK_NIGHTMODE}"
+        ARR_LANGAGE[${TRACK_ID}]="${TRACK_LANGAGE}"
       done
     fi
 
@@ -284,16 +282,16 @@ do
     do
       # get track characteristics
       TRACK_ID=$(echo "$TRACK" | cut -d'|' -f1)
-      TRACK_LANGUAGE=$(echo "$TRACK" | cut -d'|' -f2)
       TRACK_FORMAT=$(echo "$TRACK" | cut -d'|' -f3)
       TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
       TRACK_DEFAULT=$(echo "$TRACK" | cut -d'|' -f6)
       TRACK_DELAY=$(echo "$TRACK" | cut -d'|' -f7)
       TRACK_TITLE=$(echo "$TRACK" | cut -d'|' -f8)
 
-      # check if track should be kept in target video
-      TRACK_CANDIDATE=$(echo "${AUDIO_CANDIDATE}" | grep "|${TRACK_ID}|")
-      TRACK_NIGHTMODE=$(echo "${AUDIO_NIGHTMODE}" | grep "|${TRACK_ID}|")
+      # get if track is selected, with midnight mode and its langage
+      TRACK_LANGUAGE=${ARR_LANGAGE[${TRACK_ID}]}
+      TRACK_CANDIDATE=${ARR_CANDIDATE[${TRACK_ID}]}
+      TRACK_NIGHTMODE=${ARR_NIGHTMODE[${TRACK_ID}]}
 
       # generate temporary filenames
       FILE_TMP_MKA="${FILE_BASE}-${TRACK_ID}.mka"
@@ -304,7 +302,7 @@ do
       FILE_NRM_WAV="${FILE_BASE}-${TRACK_ID}-nrm.wav"
 
       # if track is selected
-      if [ "${TRACK_CANDIDATE}" != "" ]
+      if [ "${TRACK_CANDIDATE}" = "TRUE" ]
       then
         # if format is already AAC, add current track ID to AAC track array
         if [ "${TRACK_FORMAT}" = "AAC" ]
@@ -312,8 +310,8 @@ do
           # add current track ID to the array of AAC tracks
           ARR_AAC_ID=("${ARR_AAC_ID[@]}" "${TRACK_ID}")
 
-          # generate track name option
-          ARR_PARAM_AAC=("${ARR_PARAM_AAC[@]}" "--track-name" "${TRACK_ID}:${TRACK_LANGUAGE} (${TRACK_CHANNEL} channels)")
+          # generate track langage and name option
+          ARR_PARAM_AAC=("${ARR_PARAM_AAC[@]}" "--language" "${TRACK_ID}:${TRACK_LANGUAGE}" "--track-name" "${TRACK_ID}:${TRACK_LANGUAGE} (${TRACK_CHANNEL} channels)")
         
         # else format is not AAC, convert it to AAC
         else
@@ -343,7 +341,7 @@ do
       fi
 
       # if nightmode track is needed, generate AAC stereo night mode track
-      if [ "${TRACK_NIGHTMODE}" != "" ]
+      if [ "${TRACK_NIGHTMODE}" = "TRUE" ]
       then
         # if not already done, extract audio track to MKA audio file
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Extraction of ${TRACK_FORMAT} stream"
