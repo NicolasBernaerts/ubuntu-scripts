@@ -21,7 +21,8 @@
 #                       and to add midnight mode tracks
 #    20/07/2015, V2.1 - Switch to YAD and select rates
 #    12/12/2015, V2.2 - Make track langage editable
-#    12/12/2015, V2.3 - Add default track selection
+#    13/12/2015, V2.3 - Add default track selection
+#    18/12/2015, V2.4 - Correct nasty bug with PID < 10000
 # -------------------------------------------------------
 
 IFS=$'\n'
@@ -430,7 +431,7 @@ done
 
 # get zenity brother process which is parent of all running tasks 
 PID_ZENITY=$(ps -C zenity h -o pid,command | grep "${FILE_MKV}" | awk '{print $1}')
-PID_PARENT=$(ps -p ${PID_ZENITY} -o ppid=)
+PID_PARENT=$(ps -p ${PID_ZENITY} -o ppid= | tr -d ' ')
 PID_CHILDREN=$(pgrep -d ',' -P ${PID_PARENT})
 
 # loop to check that progress dialog has not been cancelled
@@ -440,7 +441,8 @@ do
   PID_GRANDCHILDREN=$(pgrep -d ' ' -P "${PID_CHILDREN}")
 
   # check if process is still running
-  PID_ZENITY=$(ps h -o pid -p ${PID_ZENITY})
+  PID_ZENITY=$(ps h -o pid -p ${PID_ZENITY} | tr -d ' ')
+echo $PID_ZENITY
 
   # sleep for 2 second
   sleep 2
