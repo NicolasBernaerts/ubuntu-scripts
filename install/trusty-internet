@@ -45,6 +45,6 @@ rm viber.deb
 # telegram client (launch Telegram from command line once to get desktop declaration)
 [ "$ARCHI" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
 wget --header='Accept-Encoding:none' -O tsetup.tar.xz $TELEGRAM_URL
-sudo tar xf tsetup.tar.xz -C /usr/local/bin
+tar xf tsetup.tar.xz -C $HOME/.local
 rm tsetup.tar.xz
-/usr/local/bin/Telegram/Telegram &
+$HOME/.local/Telegram/Telegram &
