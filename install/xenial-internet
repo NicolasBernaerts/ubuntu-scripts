@@ -32,7 +32,7 @@ sudo apt-get -y install youtube-dl youtube-dlg
 # skype 4.3
 sudo add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
 sudo apt-get update
-sudo apt-get install skype
+sudo apt-get -y install skype
 
 # viber
 #wget --header='Accept-Encoding:none' http://download.cdn.viber.com/cdn/desktop/Linux/viber.deb
