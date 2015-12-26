@@ -1,0 +1,44 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to install graphical tools
+#
+# 20/12/2015, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# misc graphical apps
+sudo apt-get -y install exiv2 gcolor2 imagemagick dcraw
+
+# eye of gnome viewer
+sudo apt-get -y install eog
+
+# hugin panorama
+sudo apt-get -y install hugin
+
+# gimp : declare 2.8 PPA & install
+#sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp
+#sudo apt-get update
+sudo apt-get -y install gimp gimp-plugin-registry
+
+# scan2folder tool
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
+#. ./scan2folder-install.sh
+
+# GIMP XCF thumbnailer
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
+. ./gimp-tumbnailer-install.sh
+
+# Graphviz DOT thumbnailer
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
+. ./graphviz-thumbnailer-install.sh
+
+# Image resize extension
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
+. ./image-resize-install.sh
+
+# Image levels optimize extension
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize-install.sh
+. ./image-level-optimize-install.sh
+
+# Image IPTC tag manager extension
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-iptc-install.sh
+. ./image-iptc-install.sh
