@@ -1,0 +1,101 @@
+#!/bin/bash
+# -------------------------------------------------------
+#  Ubuntu 16.04 LTS Post-installation script
+#
+#  This script will run some commands as sudo
+# 
+#  20/12/2015, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
+RESULT=$(uname -a | grep x86_64)
+[ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
+[ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# -------------- Disable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sh -c 'echo "\nDefaults timestamp_timeout=-1">>/etc/sudoers'
+
+# ---------------------------------------------------
+# --------------- Full System Update ----------------
+# ---------------------------------------------------
+
+sudo apt-get update
+sudo apt-get -y dist-upgrade
+
+# ---------------------------------------------------
+# ----------------- Common Packages  ----------------
+# ---------------------------------------------------
+
+# misc utilities and tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-utilities
+chmod +x ./xenial-utilities
+. ./xenial-utilities
+
+# office tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-office
+chmod +x ./xenial-office
+. ./xenial-office
+
+# graphical tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-graphical
+chmod +x ./xenial-graphical
+. ./xenial-graphical
+
+# multimedia tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-multimedia
+chmod +x ./xenial-multimedia
+. ./xenial-multimedia
+
+# internet tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-internet
+chmod +x ./xenial-internet
+. ./xenial-internet
+
+# android tools
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-android
+#chmod +x ./xenial-android
+#. ./xenial-android
+
+# remote assistance
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-assistance
+#chmod +x ./xenial-assistance
+#. ./xenial-assistance
+
+# wifi tweaks
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-wifi
+#chmod +x ./xenial-wifi
+#. ./xenial-wifi
+
+# ---------------------------------------------------
+# ---------------- Specific packages ----------------
+# ---------------------------------------------------
+
+# gnome classic session
+sudo apt-get -y install gnome-session-fallback gnome-tweak-tool
+
+# ---------------------------------------------------
+# ------------------ Package cleanup ----------------
+# ---------------------------------------------------
+
+# packages
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+
+# purge thumbnails cache
+rm -r $HOME/.thumbnails
+
+# ---------------------------------------------------
+# -------------- Enable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
