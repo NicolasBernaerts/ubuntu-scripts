@@ -32,6 +32,7 @@
 #                       Add number of thread as encoder option
 #                       Kill process and parent process in case of cancellation
 #    22/09/2015, V3.6 - Correction of a bug in final encoding options (thanks to Ted Bartlett)
+#    21/02/2016, V3.7 - Handle scientific notation for video rate (thanks to Aslanex)
 # -------------------------------------------------------
 
 # -------------------------------------------------
@@ -157,22 +158,22 @@ do
     --field="  - Optimal Zoom [ 0, 1, 2 ]:NUM" "${STAB_OPTZOOM}|0..2" \
     --field="  - Extra stabilize options" "${STAB_EXTRA}" \
     --field="Encoder:LBL" "final" \
-    --field="  - ${VIDEO_CODEC} video bitrate (Kbits/s):NUM" "${VIDEO_RATE}|1..50000" \
+    --field="  - ${VIDEO_CODEC} video bitrate (Kbits/s):NUM" "${VIDEO_RATE}|1..50000|100" \
     --field="  - ${AUDIO_CODEC} audio bitrate (Kbits/s):NUM" "${AUDIO_RATE}|1..320" \
     --field="  - Extra encoder parameters" "${ENCODE_OPTION}" )
 
- # retrieve parameters
+  # retrieve parameters
   ROTATE=$(echo ${CHOICE} | cut -d'|' -f1)
-  ROTATE_ANGLE=$(echo ${CHOICE} | cut -d'|' -f2 | sed 's/^\([0-9]*\).*$/\1/')
+  ROTATE_ANGLE=$(echo ${CHOICE} | cut -d'|' -f2)
   ROTATE_RATIO=$(echo ${CHOICE} | cut -d'|' -f3)
   STABILIZE=$(echo ${CHOICE} | cut -d'|' -f4)
   STAB_FILTER=$(echo ${CHOICE} | cut -d'|' -f5)
-  STAB_SHAKINESS=$(echo ${CHOICE} | cut -d'|' -f6 | sed 's/^\([0-9]*\).*$/\1/')
-  STAB_SMOOTHING=$(echo ${CHOICE} | cut -d'|' -f7 | sed 's/^\([0-9]*\).*$/\1/')
-  STAB_OPTZOOM=$(echo ${CHOICE} | cut -d'|' -f8 | sed 's/^\([0-9]*\).*$/\1/')
+  STAB_SHAKINESS=$(echo ${CHOICE} | cut -d'|' -f6)
+  STAB_SMOOTHING=$(echo ${CHOICE} | cut -d'|' -f7)
+  STAB_OPTZOOM=$(echo ${CHOICE} | cut -d'|' -f8)
   STAB_EXTRA=$(echo ${CHOICE} | cut -d'|' -f9)
-  VIDEO_RATE=$(echo ${CHOICE} | cut -d'|' -f11 | sed 's/^\([0-9]*\).*$/\1/')
-  AUDIO_RATE=$(echo ${CHOICE} | cut -d'|' -f12 | sed 's/^\([0-9]*\).*$/\1/')
+  VIDEO_RATE=$(echo ${CHOICE} | cut -d'|' -f11 | tr ',' '.' | awk '{ print sprintf("%.0f", $1); }')
+  AUDIO_RATE=$(echo ${CHOICE} | cut -d'|' -f12)
   ENCODE_OPTION=$(echo ${CHOICE} | cut -d'|' -f13)
 
   # if it is needed, add file to processing queue
