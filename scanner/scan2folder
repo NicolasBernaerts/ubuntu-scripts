@@ -55,7 +55,7 @@ then
   SOURCE=$(cat ${CONF_FILE} | grep "default-source=" | cut -d"=" -f2)
   FORMAT=$(cat ${CONF_FILE} | grep "default-format=" | cut -d"=" -f2)
   DIRECTORY=$(cat ${CONF_FILE} | grep "default-dir=" | cut -d"=" -f2-)
-  PDFMERGE=$(cat ${CONF_FILE} | grep "pdf-merge=" | cut -d"=" -f2)
+  MERGEPDF=$(cat ${CONF_FILE} | grep "merge-pdf=" | cut -d"=" -f2)
 fi
 
 # if scanner not selected, force selection. Otherwise, display scan parameters dialog
@@ -132,7 +132,7 @@ do case ${CHOICE} in
     echo "default-source=${SOURCE}" >> ${CONF_FILE}
     echo "default-format=${FORMAT}" >> ${CONF_FILE}
     echo "default-dir=${DIRECTORY}" >> ${CONF_FILE}
-    echo "pdf-merge=${PDFMERGE}" >> ${CONF_FILE}
+    echo "merge-pdf=${MERGEPDF}" >> ${CONF_FILE}
 
     # back to parameter dialog box
     CHOICE=${CHOICE_PARAM}
