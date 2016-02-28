@@ -10,8 +10,8 @@ sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/image-resize https:/
 sudo chmod +x /usr/local/bin/image-resize
 
 # desktop integration
-sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/image-resize.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize.desktop
 sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/image-resize.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize.png
+sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/image-resize.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize.desktop
 
 # nautilus action
 mkdir --parents $HOME/.local/share/file-manager/actions
