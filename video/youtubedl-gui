@@ -24,7 +24,7 @@ IFS=$'\n'
 
 # check youtube-dl and mkvmerge
 command -v youtube-dl >/dev/null 2>&1 || { zenity --error --text="Please install youtube-dl"; exit 1; }
-command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge"; exit 1; }
+command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge [mkvtoolnix package]"; exit 1; }
 
 #  exit if script called without URL parameter
 [ -z "$1" ] && STREAM_ERROR="Error : No URL passed"
