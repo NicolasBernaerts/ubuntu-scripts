@@ -8,7 +8,7 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 
 # install youtube-dl and mkvmerge
 sudo apt-get update
-sudo apt-get -y install youtube-dl mkvmerge
+sudo apt-get -y install youtube-dl mkvtoolnix
 
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/youtubedl-gui https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui
