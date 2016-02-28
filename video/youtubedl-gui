@@ -23,6 +23,7 @@ TARGET_DIR="$HOME/Downloads"
 IFS=$'\n'
 
 # check youtube-dl and mkvmerge
+command -v zenity >/dev/null 2>&1 || { echo "Please install zenity"; exit 1; }
 command -v youtube-dl >/dev/null 2>&1 || { zenity --error --text="Please install youtube-dl"; exit 1; }
 command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge [mkvtoolnix package]"; exit 1; }
 
