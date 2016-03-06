@@ -3,11 +3,17 @@
 # Script to install HP printer drivers
 #
 # 25/02/2015, V1.0 - Creation by N. Bernaerts
+# 05/03/2016, V1.1 - Update
 # -------------------------------------------------------
 
+# driver site
+DRIVER_SITE="http://hplipopensource.com/hplip-web/install/install/index.html"
+ 
 # get latest driver
-URL_HPLIP=$(wget -q -O - http://hplipopensource.com/hplip-web/install/install/index.html | grep "http://prdownloads.sourceforge.net/hplip/hplip" | sed 's/^<a href=.\(.*\).><img.*$/\1/')
-wget --header='Accept-Encoding:none' -O hplip.run "$URL_HPLIP"
-
-# install
-sh ./hplip.run
+wget --header='Accept-Encoding:none' -O hplip.html "${DRIVER_SITE}"
+DRIVER_URL=$(cat hplip.html | grep "http://prdownloads.sourceforge.net/hplip" | cut -d'"' -f2)
+DRIVER_FILE=$(echo "${DRIVER_URL}" | cut -d'/' -f5)
+wget --header='Accept-Encoding:none' -O "${DRIVER_FILE}" "${DRIVER_URL}"
+ 
+# install driver
+sh "./${DRIVER_FILE}"
