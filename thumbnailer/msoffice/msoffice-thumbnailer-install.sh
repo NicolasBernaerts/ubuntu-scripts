@@ -8,10 +8,12 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 # install tools
 sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unoconv imagemagick
 
-# install helper files
-wget --header='Accept-Encoding:none' http://bernaerts.dyndns.org/download/gnome/thumbnailer/msoffice-thumbnailer-icons.zip
-sudo unzip -d /usr/local/sbin msoffice-thumbnailer-icons.zip
-rm msoffice-thumbnailer-icons.zip
+# install thumbnailer icons
+sudo mkdir /usr/local/sbin/msoffice-thumbnailer-icons
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-mask.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-mask.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-word.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-word.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-excel.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-excel.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-powerpoint.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-powerpoint.png
 
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
