@@ -13,7 +13,7 @@ sudo mkdir /usr/local/sbin/lo-thumbnailer-icons
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-mask.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-mask.png
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-database.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-database.png
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-graphics.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-graphics.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-presentation.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/icons/libreoffice/lo-presentation.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-presentation.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-presentation.png
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-spreadsheet.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-spreadsheet.png
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-text.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-text.png
 
