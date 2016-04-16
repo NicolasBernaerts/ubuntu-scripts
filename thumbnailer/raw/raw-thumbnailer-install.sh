@@ -1,5 +1,5 @@
 #!/bin/sh
-# APK thumbnailer
+# RAW files thumbnailer
 
 # install ufraw-batch
 sudo apt-get install ufraw-batch
