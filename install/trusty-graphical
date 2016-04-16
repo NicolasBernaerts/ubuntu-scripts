@@ -5,6 +5,7 @@
 # 20/12/2014, V1.0 - Creation by N. Bernaerts
 # 07/01/2015, V1.1 - Add image levels optimization extension
 # 25/04/2015, V1.2 - Add Graphviz thumbnailer
+# 16/04/2016, V1.3 - Add RawTherapee and Raw thumbnailer
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -21,6 +22,11 @@ sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp
 sudo apt-get update
 sudo apt-get -y install gimp gimp-plugin-registry
 
+# rawtherapee
+sudo add-apt-repository ppa:dhor/myway
+sudo apt-get update
+sudo apt-get -y install rawtherapee
+
 # scan2folder tool
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
 . ./scan2folder-install.sh
@@ -28,6 +34,10 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 # GIMP XCF thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
 . ./gimp-tumbnailer-install.sh
+
+# RAW thumbnailer
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-tumbnailer-install.sh
+. ./raw-tumbnailer-install.sh
 
 # Graphviz DOT thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
