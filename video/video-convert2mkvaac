@@ -429,24 +429,22 @@ done
 
 ) | zenity --window-icon=video --width=500 --title="Conversion to MKV with AAC audio" --progress --pulsate --auto-close &
 
-# get zenity brother process which is parent of all running tasks 
-PID_ZENITY=$(ps -C zenity h -o pid,command | grep "${FILE_MKV}" | awk '{print $1}')
-PID_PARENT=$(ps -p ${PID_ZENITY} -o ppid= | tr -d ' ')
-PID_CHILDREN=$(pgrep -d ',' -P ${PID_PARENT})
+# get zenity process and child proces which is parent of all running tasks 
+PID_ZENITY=${!}
+PID_CHILD=$(pgrep -o -P $$)
 
 # loop to check that progress dialog has not been cancelled
 while [ "$PID_ZENITY" != "" ]
 do
   # get PID of running processes for the children
-  PID_GRANDCHILDREN=$(pgrep -d ' ' -P "${PID_CHILDREN}")
+  PID_TASKS=$(pgrep -d ' ' -P "${PID_CHILD}")
 
   # check if process is still running
-  PID_ZENITY=$(ps h -o pid -p ${PID_ZENITY} | tr -d ' ')
-echo $PID_ZENITY
+  PID_ZENITY=$(ps h -o pid --pid ${PID_ZENITY} | xargs)
 
   # sleep for 2 second
   sleep 2
 done
 
 # if some running tasks are still there, kill them
-[ "${PID_GRANDCHILDREN}" != "" ] && kill -9 ${PID_GRANDCHILDREN}
+[ "${PID_TASKS}" != "" ] && kill -9 ${PID_TASKS}
