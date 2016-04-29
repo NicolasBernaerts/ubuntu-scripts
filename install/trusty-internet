@@ -6,6 +6,7 @@
 # 10/01/2015, V1.1 - Use clipgrab team PPA
 # 01/03/2015, V1.2 - Add nmap for port detection
 # 07/05/2015, V1.3 - Add Viber
+# 29/04/2016, V1.4 - Add Whatsie
 # -------------------------------------------------------
 
 # nmap
@@ -41,6 +42,12 @@ sudo apt-get -y install skype
 wget --header='Accept-Encoding:none' http://download.cdn.viber.com/cdn/desktop/Linux/viber.deb
 sudo dpkg -i viber.deb
 rm viber.deb
+
+# whatsapp client whatsie
+sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-keys 1537994D
+echo "deb http://dl.bintray.com/aluxian/deb stable main" | sudo tee /etc/apt/sources.list.d/whatsie.list
+sudo apt-get update
+sudo apt -y install whatsie
 
 # telegram client (launch Telegram from command line once to get desktop declaration)
 [ "$ARCHI" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
