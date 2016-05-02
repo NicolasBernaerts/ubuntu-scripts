@@ -6,6 +6,7 @@
 # 07/01/2015, V1.1 - Add image levels optimization extension
 # 25/04/2015, V1.2 - Add Graphviz thumbnailer
 # 16/04/2016, V1.3 - Add RawTherapee and Raw thumbnailer
+# 02/05/2016, V1.4 - Add SweetHome3D and models
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -26,6 +27,9 @@ sudo apt-get -y install gimp gimp-plugin-registry
 sudo add-apt-repository ppa:dhor/myway
 sudo apt-get update
 sudo apt-get -y install rawtherapee
+
+# SweetHome 3D and models
+sudo apt-get -y install sweethome3d sweethome3d-furniture sweethome3d-furniture-nonfree
 
 # scan2folder tool
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
