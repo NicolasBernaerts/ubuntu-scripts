@@ -30,6 +30,12 @@ sudo apt-get -y install rawtherapee
 
 # SweetHome 3D and models
 sudo apt-get -y install sweethome3d sweethome3d-furniture sweethome3d-furniture-nonfree
+#  Update Contributions to latest version 
+curl -O -J -L http://heanet.dl.sourceforge.net/project/sweethome3d/SweetHome3D-models/3DModels-1.6.2/3DModels-Contributions-1.6.2.zip
+unzip -p 3DModels-Contributions-1.6.2.zip Contributions.sh3f | sudo tee /usr/share/sweethome3d/furniture/Contributions.sh3f >/dev/null
+#  Update Scopia to latest version
+curl -O -J -L http://netcologne.dl.sourceforge.net/project/sweethome3d/SweetHome3D-models/3DModels-1.6.2/3DModels-Scopia-1.6.2.zip
+unzip -p 3DModels-Scopia-1.6.2.zip Scopia.sh3f | sudo tee /usr/share/sweethome3d/furniture/Scopia.sh3f >/dev/null
 
 # scan2folder tool
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
