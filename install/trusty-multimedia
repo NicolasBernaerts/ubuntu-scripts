@@ -37,6 +37,11 @@ sudo apt-get -y install handbrake
 # kdenlive video editor
 sudo apt-get -y install kdenlive
 
+# audio recorder
+sudo add-apt-repository  ppa:osmoma/audio-recorder
+sudo apt-get update
+sudo apt-get -y install audio-recorder
+
 # kodi (xbmc)
 sudo add-apt-repository -y ppa:team-xbmc/ppa
 sudo apt-get update
