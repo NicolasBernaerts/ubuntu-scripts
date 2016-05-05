@@ -6,6 +6,7 @@
 # 22/12/2014, V1.1 - Add Gramps & dependancies
 # 26/12/2014, V1.2 - Add nvpy (simple note client)
 # 28/02/2015, V1.3 - Add tesseract-ocr
+# 04/05/2016, V1.4 - Replace nvpy with official SimpleNote
 # -------------------------------------------------------
 
 # grisbi
@@ -54,8 +55,8 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
 . ./pdf-generate-install.sh
 
-# nvpy
-sudo apt-get -y install nvpy
-cp /usr/share/doc/nvpy/examples/nvpy-example.cfg $HOME/.nvpy.cfg
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/simplenote.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/simplenote.png
-wget --header='Accept-Encoding:none' -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/nvpy.desktop
+# Simple Note
+URL_DEB=$(wget -O - https://simplenote.com/ | grep "download" | grep ".deb" | sed 's/.*\(https.*.deb\).*/\1/')
+wget -O simplenote.deb ${URL_DEB}
+sudo dpkg -i simplenote.deb
+rm simplenote.deb
