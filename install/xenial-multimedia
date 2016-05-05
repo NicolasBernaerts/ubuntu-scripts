@@ -40,16 +40,19 @@ sudo apt-get -y install kdenlive
 #sudo apt-get update
 #sudo apt-get -y install kodi kodi-pvr-tvheadend-hts 
 
+# audio recorder
+sudo add-apt-repository ppa:audio-recorder/ppa
+sudo apt-get update
+sudo apt-get -y install audio-recorder
+
 # vlc and declare it as replacement for gnome player
-#sudo add-apt-repository -y ppa:videolan/stable-daily
-#sudo apt-get update
 sudo apt-get -y install vlc
 sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
 
 # Convert video to MKV container and transcode audio to AAC
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkv-install.sh
-#. ./video-convert2mkv-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkv-install.sh
+. ./video-convert2mkv-install.sh
 
 # Video Stabilizer based on MLT and vid.stab
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-install.sh
-#. ./video-stabilize-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-install.sh
+. ./video-stabilize-install.sh
