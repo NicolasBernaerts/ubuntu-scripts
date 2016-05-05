@@ -3,16 +3,17 @@
 # Script to install office tools
 #
 # 20/12/2015, V1.0 - Creation by N. Bernaerts
+# 04/05/2016, V1.1 - Add Simple Note client
 # -------------------------------------------------------
 
 # grisbi
-#sudo apt-get -y install grisbi
+sudo apt-get -y install grisbi
 
 # hplip
-#sudo apt-get -y install hplip-gui
+sudo apt-get -y install hplip-gui
 
 # ocr client and french langage
-#sudo apt-get -y install tesseract-ocr-fra aspell-fr
+sudo apt-get -y install tesseract-ocr-fra aspell-fr
 
 # gramps (genealogy)
 #sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
@@ -22,10 +23,11 @@
 #wget --header='Accept-Encoding:none' http://code-industry.net/public/master-pdf-editor_2.2.15_${ARCHI}.deb
 #sudo gdebi --n master-pdf-editor_1.9.25_*.deb
 
-# Libreoffice : declare 4.4 PPA & install
-#sudo add-apt-repository -y ppa:libreoffice/libreoffice-5-0
-#sudo apt-get update
-#sudo apt-get -y install libreoffice libreoffice-gtk libreoffice-style-sifr
+# Simple Note
+URL_DEB=$(wget -O - https://simplenote.com/ | grep "download" | grep ".deb" | sed 's/.*\(https.*.deb\).*/\1/')
+wget -O simplenote.deb ${URL_DEB}
+sudo dpkg -i simplenote.deb
+rm simplenote.deb
 
 # declare file association 
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
@@ -50,9 +52,3 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 # PDF document generation from multiple files
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
 . ./pdf-generate-install.sh
-
-# nvpy
-#sudo apt-get -y install nvpy
-#cp /usr/share/doc/nvpy/examples/nvpy-example.cfg $HOME/.nvpy.cfg
-#sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/simplenote.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nvpy/simplenote.png
-#wget --header='Accept-Encoding:none' -O $HOME/.local/share/applications/nvpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/nvpy.desktop
