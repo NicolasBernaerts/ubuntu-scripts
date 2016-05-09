@@ -60,3 +60,11 @@ URL_DEB=$(wget -O - https://simplenote.com/ | grep "download" | grep ".deb" | se
 wget -O simplenote.deb ${URL_DEB}
 sudo dpkg -i simplenote.deb
 rm simplenote.deb
+
+# emoji
+rm -f $HOME/.fonts/EmojiOneColor-SVGinOT.ttf
+rm -f $HOME/.local/share/fonts/EmojiOneColor-SVGinOT.ttf
+rm -f $HOME/.config/fontconfig/fonts.conf
+sudo add-apt-repository ppa:eosrei/fonts
+sudo apt-get update
+sudo apt-get -y install fonts-emojione-svginot
