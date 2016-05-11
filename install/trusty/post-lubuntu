@@ -43,44 +43,44 @@ sudo apt-get -y dist-upgrade
 # ---------------------------------------------------
 
 # misc utilities and tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-utilities
-chmod +x ./trusty-utilities
-. ./trusty-utilities
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/utilities
+chmod +x ./utilities
+. ./utilities
 
 # office tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-office
-chmod +x ./trusty-office
-. ./trusty-office
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/office
+chmod +x ./office
+. ./office
 
 # graphical tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-graphical
-chmod +x ./trusty-graphical
-. ./trusty-graphical
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/graphical
+chmod +x ./graphical
+. ./graphical
 
 # multimedia tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-multimedia
-chmod +x ./trusty-multimedia
-. ./trusty-multimedia
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/multimedia
+chmod +x ./multimedia
+. ./multimedia
 
 # internet tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-internet
-chmod +x ./trusty-internet
-. ./trusty-internet
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/internet
+chmod +x ./internet
+. ./internet
 
 # android tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-android
-chmod +x ./trusty-android
-. ./trusty-android
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/android
+chmod +x ./android
+. ./android
 
 # remote assistance
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-assistance
-chmod +x ./trusty-assistance
-. ./trusty-assistance
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/assistance
+chmod +x ./assistance
+. ./assistance
 
 # wifi tweaks
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty-wifi
-chmod +x ./trusty-wifi
-. ./trusty-wifi
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/trusty/wifi
+chmod +x ./wifi
+. ./wifi
 
 # ---------------------------------------------------
 # ---------------- Specific packages ----------------
