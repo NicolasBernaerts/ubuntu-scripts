@@ -11,6 +11,8 @@
 # ------------- User defined variable ---------------
 # ---------------------------------------------------
 
+DISTRINAME="xenial"
+
 # ---------------------------------------------------
 # ------------ Architecture detection ---------------
 # ---------------------------------------------------
@@ -23,7 +25,7 @@ RESULT=$(uname -a | grep x86_64)
 # -------------- Disable sudo timeout ---------------
 # ---------------------------------------------------
 
-sudo sh -c 'echo "\nDefaults timestamp_timeout=-1">>/etc/sudoers'
+sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
 
 # ---------------------------------------------------
 # --------------- Full System Update ----------------
@@ -37,44 +39,44 @@ sudo apt-get -y dist-upgrade
 # ---------------------------------------------------
 
 # misc utilities and tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-utilities
-chmod +x ./xenial-utilities
-. ./xenial-utilities
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/utilities
+chmod +x ./utilities
+. ./utilities
 
 # office tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-office
-chmod +x ./xenial-office
-. ./xenial-office
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/office
+chmod +x ./office
+. ./office
 
 # graphical tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-graphical
-chmod +x ./xenial-graphical
-. ./xenial-graphical
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/graphical
+chmod +x ./graphical
+. ./graphical
 
 # multimedia tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-multimedia
-chmod +x ./xenial-multimedia
-. ./xenial-multimedia
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/multimedia
+chmod +x ./multimedia
+. ./multimedia
 
 # internet tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-internet
-chmod +x ./xenial-internet
-. ./xenial-internet
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/internet
+chmod +x ./internet
+. ./internet
 
 # android tools
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-android
-#chmod +x ./xenial-android
-#. ./xenial-android
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/android
+#chmod +x ./android
+#. ./android
 
 # remote assistance
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-assistance
-#chmod +x ./xenial-assistance
-#. ./xenial-assistance
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/assistance
+#chmod +x ./assistance
+#. ./assistance
 
 # wifi tweaks
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial-wifi
-#chmod +x ./xenial-wifi
-#. ./xenial-wifi
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/wifi
+#chmod +x ./wifi
+#. ./wifi
 
 # ---------------------------------------------------
 # ---------------- Specific packages ----------------
