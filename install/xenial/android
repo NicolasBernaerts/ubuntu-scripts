@@ -1,0 +1,42 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to install android tools
+#
+# 10/05/2016, V1.0 - Migrated from Trusty
+# -------------------------------------------------------
+
+# install adb and fastboot
+sudo apt-get -y install android-tools-adb android-tools-fastboot
+
+# declare complementary devices
+sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/51-android.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/51-android.rules
+sudo chmod a+r /etc/udev/rules.d/51-android.rules
+sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/69-mtp.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/69-mtp.rules
+sudo chmod a+r /etc/udev/rules.d/69-mtp.rules
+mkdir --parent ~/.android
+wget --header='Accept-Encoding:none' -O ~/.android/adb_usb.ini https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/adb_usb.ini
+
+# APK thumbnailer
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/apk/apk-thumbnailer-install.sh
+. ./apk-thumbnailer-install.sh
+
+# file manager APK extensions
+mkdir --parents $HOME/.local/share/nautilus-python/extensions
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-columns.py
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
+
+# android screenshot utility
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/android-screenshot-install.sh
+. ./android-screenshot-install.sh
+
+# QtABD (to be tested)
+sudo apt-get -y install libqtgui4 libqt4-network libqt4-declarative
+wget --header='Accept-Encoding:none' http://bernaerts.dyndns.org/download/ubuntu/qtadb/QtADB_0.8.1_linux$X86ARCHI.tar.gz
+tar -xvf QtADB*.tar.gz
+sudo mv ./QtADB*/QtADB /usr/local/sbin/qtadb
+sudo chmod +x /usr/local/sbin/qtadb
+rm -R QtADB*
+mkdir -p $HOME/.config/Bracia
+wget --header='Accept-Encoding:none' -O $HOME/.config/Bracia/QtADB.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/QtADB.conf
+sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/qtadb.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/qtadb.desktop
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/qtadb.png http://bernaerts.dyndns.org/download/ubuntu/qtadb/qtadb.png
