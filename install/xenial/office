@@ -2,7 +2,7 @@
 # -------------------------------------------------------
 # Script to install office tools
 #
-# 20/12/2015, V1.0 - Creation by N. Bernaerts
+# 20/12/2015, V1.0 - Migrated from Trusty
 # 04/05/2016, V1.1 - Add Simple Note client
 # -------------------------------------------------------
 
@@ -16,18 +16,16 @@ sudo apt-get -y install hplip-gui
 sudo apt-get -y install tesseract-ocr-fra aspell-fr
 
 # gramps (genealogy)
-#sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
-#sudo apt-get -y install gramps
+sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
 
 # PDF editor
-#wget --header='Accept-Encoding:none' http://code-industry.net/public/master-pdf-editor_2.2.15_${ARCHI}.deb
-#sudo gdebi --n master-pdf-editor_1.9.25_*.deb
+wget --header='Accept-Encoding:none' http://get.code-industry.net/public/master-pdf-editor-3.7.02_${ARCHI}.deb
+sudo gdebi --n master-pdf-editor*.deb
 
 # Simple Note
 URL_DEB=$(wget -O - https://simplenote.com/ | grep "download" | grep ".deb" | sed 's/.*\(https.*.deb\).*/\1/')
 wget -O simplenote.deb ${URL_DEB}
 sudo dpkg -i simplenote.deb
-rm simplenote.deb
 
 # declare file association 
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
