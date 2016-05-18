@@ -24,7 +24,7 @@ sudo add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) pa
 sudo apt-get update
 sudo apt-get -y install skype
 
-# telegram client (launch Telegram from command line once to get desktop declaration)
+# telegram client
 sudo add-apt-repository -y ppa:atareao/telegram
 sudo apt-get update
 sudo apt-get -y install telegram
