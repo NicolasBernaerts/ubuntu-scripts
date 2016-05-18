@@ -3,6 +3,7 @@
 # Script to install graphical tools
 #
 # 15/05/2016, V1.0 - Migrated from Trusty
+# 16/05/2016, V1.1 - Add SweetHome3D and update to latest version
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -16,6 +17,11 @@ sudo apt-get -y install hugin
 
 # gimp
 sudo apt-get -y install gimp gimp-plugin-registry
+
+# sweethome3d
+sudo apt-get install sweethome3d sweethome3d-furniture sweethome3d-furniture-nonfree
+sudo mv /usr/share/sweethome3d/sweethome3d.jar /usr/share/sweethome3d/org-sweethome3d.jar
+wget -O /usr/share/sweethome3d/sweethome3d.jar https://sourceforge.net/projects/sweethome3d/files/SweetHome3D/SweetHome3D-5.2/SweetHome3D-5.2.jar/download
 
 # GIMP XCF thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
