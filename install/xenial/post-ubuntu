@@ -5,6 +5,7 @@
 #  This script will run some commands as sudo
 # 
 #  20/12/2015, V1.0 - Migrated from Trusty
+#  16/05/2016, V1.1 - GTK tweak to allow Nautilus windows resize
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -84,6 +85,9 @@ chmod +x ./assistance
 
 # gnome classic session
 sudo apt-get -y install gnome-session-flashback gnome-tweak-tool
+
+# tweak to allow nautilus windows resize under compiz
+wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/config/gtk.css
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
