@@ -2,7 +2,7 @@
 # -------------------------------------------------------
 # Script to install graphical tools
 #
-# 20/12/2015, V1.0 - Creation by N. Bernaerts
+# 15/05/2016, V1.0 - Migrated from Trusty
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -14,14 +14,8 @@ sudo apt-get -y install eog
 # hugin panorama
 sudo apt-get -y install hugin
 
-# gimp : declare 2.8 PPA & install
-#sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp
-#sudo apt-get update
+# gimp
 sudo apt-get -y install gimp gimp-plugin-registry
-
-# scan2folder tool
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
-#. ./scan2folder-install.sh
 
 # GIMP XCF thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
@@ -42,3 +36,7 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 # Image IPTC tag manager extension
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-iptc-install.sh
 . ./image-iptc-install.sh
+
+# scan2folder tool
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
+. ./scan2folder-install.sh
