@@ -4,7 +4,7 @@
 #
 #  This script will run some commands as sudo
 # 
-#  20/12/2015, V1.0 - Creation by N. Bernaerts
+#  20/12/2015, V1.0 - Migrated from Trusty
 # -------------------------------------------------------
 
 # ---------------------------------------------------
@@ -38,6 +38,11 @@ sudo apt-get -y dist-upgrade
 # ----------------- Common Packages  ----------------
 # ---------------------------------------------------
 
+# wifi tweaks
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/wifi
+chmod +x ./wifi
+. ./wifi
+
 # misc utilities and tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/utilities
 chmod +x ./utilities
@@ -64,26 +69,21 @@ chmod +x ./internet
 . ./internet
 
 # android tools
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/android
-#chmod +x ./android
-#. ./android
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/android
+chmod +x ./android
+. ./android
 
 # remote assistance
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/assistance
-#chmod +x ./assistance
-#. ./assistance
-
-# wifi tweaks
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/wifi
-#chmod +x ./wifi
-#. ./wifi
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/assistance
+chmod +x ./assistance
+. ./assistance
 
 # ---------------------------------------------------
 # ---------------- Specific packages ----------------
 # ---------------------------------------------------
 
 # gnome classic session
-sudo apt-get -y install gnome-session-fallback gnome-tweak-tool
+sudo apt-get -y install gnome-session-flashback gnome-tweak-tool
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
