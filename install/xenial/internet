@@ -9,7 +9,7 @@
 sudo apt-get -y install nmap
 
 # thunderbird
-sudo apt-get -y install thunderbird thunderbird-locale-fr thunderbird-gnome-support
+sudo apt-get -y install thunderbird-gnome-support
 
 # chromium & filezilla
 sudo apt-get -y install chromium-browser filezilla
