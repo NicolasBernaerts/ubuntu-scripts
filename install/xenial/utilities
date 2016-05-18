@@ -14,9 +14,6 @@ sudo apt-get -y install linux-firmware-nonfree xbacklight preload
 # package management tools
 sudo apt-get -y install ppa-purge synaptic gdebi deborphan
 
-# trackpad and mouse management
-sudo apt-get -y install gpointing-device-settings
-
 # filesystem clients
 sudo apt-get -y install cifs-utils autofs exfat-fuse
 
