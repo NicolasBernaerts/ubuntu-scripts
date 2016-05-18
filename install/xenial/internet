@@ -5,8 +5,8 @@
 # 20/12/2015, V1.0 - Migrated from Trusty
 # -------------------------------------------------------
 
-# nmap
-sudo apt-get -y install nmap
+# network tools
+sudo apt-get -y install nmap snmp snmp-mibs-downloader
 
 # thunderbird
 sudo apt-get -y install thunderbird-gnome-support
