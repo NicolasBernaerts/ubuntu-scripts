@@ -1,0 +1,20 @@
+#!/bin/bash
+# -------------------------------------------------------
+#  Remote assistance installation script
+#
+#  Uses gitso
+#
+#  Needs to configure support site
+# 
+#  15/05/2016, V1.0 - Migrated from Trusty
+# -------------------------------------------------------
+
+# define remote support address (for gitso)
+SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
+
+# install package gitso
+sudo apt-get -y install gitso
+
+# include remote assistance site in launcher
+cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
+sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
