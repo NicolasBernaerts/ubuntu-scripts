@@ -2,8 +2,11 @@
 # -------------------------------------------------------
 # Script to install misc utilities & tools
 #
-# 20/12/2015, V1.0 - Creation by N. Bernaerts
+# 20/12/2015, V1.0 - Migrated from Trusty
 # -------------------------------------------------------
+
+# yad editor (used by many scripts)
+sudo apt-get -y install yad
 
 # system extension really needed
 sudo apt-get -y install linux-firmware-nonfree xbacklight preload
@@ -26,20 +29,12 @@ sudo apt-get -y install meld
 # disk tools
 sudo apt-get -y install smartmontools disktype unetbootin gparted
 
-# network tools
-#sudo apt-get -y install nmap snmp snmp-mibs-downloader
-
 # keepassx : electronic wallet
 sudo apt-get -y install keepassx
 
 # alacarte : menu editor
 sudo apt-get -y install alacarte
 
-# yad editor (from WebUpd8 PPA)
-sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
-sudo apt-get update
-sudo apt-get -y install yad
-  
 # photorec and qphotorec (recovery of files from SDCard)
 #sudo apt-get -y install testdisk
 #wget --header='Accept-Encoding:none' http://heanet.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
