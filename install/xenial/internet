@@ -3,6 +3,7 @@
 # Script to install internet tools
 #
 # 20/12/2015, V1.0 - Migrated from Trusty
+# 20/05/2016, V1.1 - Add Whatsie
 # -------------------------------------------------------
 
 # network tools
@@ -23,6 +24,12 @@ sudo apt-get -y install youtube-dl youtube-dlg
 sudo add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
 sudo apt-get update
 sudo apt-get -y install skype
+
+# whatsapp client whatsie
+sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-keys 1537994D
+echo "deb http://dl.bintray.com/aluxian/deb stable main" | sudo tee /etc/apt/sources.list.d/whatsie.list
+sudo apt-get update
+sudo apt-get -y install whatsie
 
 # telegram client
 sudo add-apt-repository -y ppa:atareao/telegram
