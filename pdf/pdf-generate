@@ -111,7 +111,7 @@ do
       ;;
 
     # plain text file (.txt)
-    "text/plain" | "application/x-shellscript" )
+    "text/plain" | "text/html" | "application/x-shellscript" )
       DOCTYPE="text"
       ;;
 
