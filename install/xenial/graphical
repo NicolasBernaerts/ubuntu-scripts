@@ -19,7 +19,7 @@ sudo apt-get -y install hugin
 sudo apt-get -y install gimp gimp-plugin-registry
 
 # sweethome3d
-sudo apt-get install sweethome3d sweethome3d-furniture sweethome3d-furniture-nonfree
+sudo apt-get -y install sweethome3d sweethome3d-furniture sweethome3d-furniture-nonfree
 # backup current version
 sudo mv /usr/share/sweethome3d/sweethome3d.jar /usr/share/sweethome3d/org-sweethome3d.jar
 sudo mv /usr/share/sweethome3d/furniture /usr/share/sweethome3d/org-furniture
