@@ -11,6 +11,7 @@
 #   * unoconv
 #   * ghostscript
 #   * mimetype
+#   * wkhtmltopdf
 #
 #  Parameters : full path of documents
 #
@@ -19,6 +20,7 @@
 #   15/08/2015, V1.1 - Force jpeg quality to 95
 #   25/09/2015, V1.2 - Add configuration file
 #   02/10/2015, V2.0 - Code rewrite to handle progress and notification
+#   01/05/2016, V2.1 - Add HTML conversion
 # ---------------------------------------------------
 
 # -------------------------------------------------------
@@ -29,6 +31,7 @@ command -v bc >/dev/null 2>&1 || { zenity --error --text="Please install bc"; ex
 command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype"; exit 1; }
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
+command -v wkhtmltopdf >/dev/null 2>&1 || { zenity --error --text="Please install wkhtmltopdf"; exit 1; }
 command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs utility [ghostscript]"; exit 1; }
 
 # ---------------------------------------------------------
@@ -111,8 +114,13 @@ do
       ;;
 
     # plain text file (.txt)
-    "text/plain" | "text/html" | "application/x-shellscript" )
+    "text/plain" | "application/x-shellscript" )
       DOCTYPE="text"
+      ;;
+
+    # plain text file (.txt)
+    "text/html" )
+      DOCTYPE="html"
       ;;
 
     * )
@@ -197,6 +205,13 @@ do
     ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
     ;;
 
+    # html files
+    "html" )
+    wkhtmltopdf "${FILE}" "${FILE_PDF}" 
+    ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
+    ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
+    ;;
+
     # other formats, not handled
     * )
     ;;
@@ -235,3 +250,4 @@ done
 
 [ ${#ARR_CANDIDATE[@]} -gt 0 ] && zenity --notification --window-icon="evince" --text="${FILE_FINAL} generated." \
                                || zenity --notification --window-icon="error" --text="Document type was not compatible for PDF generation."
+        
