@@ -8,7 +8,7 @@ command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 gsettings set org.gnome.desktop.interface menus-have-icons true
 
 # main packages installation
-sudo apt-get -y install imagemagick unoconv ghostscript zenity libfile-mimeinfo-perl
+sudo apt-get -y install imagemagick unoconv ghostscript zenity libfile-mimeinfo-perl wkhtmltopdf
 
 # install configuration file 
 mkdir --parents $HOME/.config
