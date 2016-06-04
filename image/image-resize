@@ -100,11 +100,8 @@ then
       BASENAME=$(echo ${BASEFILE} | sed 's/^\(.*\)[.].*$/\1/g')
 
       # generate file names
-      FILE_OUTPUT="${DIRECTORY}/${PREFIX}/${BASENAME}.${TYPE}"
+      FILE_OUTPUT="${DIRECTORY}/${PREFIX}-${BASENAME}.${TYPE}"
       FILE_TAG="${DIRECTORY}/${BASENAME}.exv"
-
-      # create sub directory
-      mkdir --parents "${DIRECTORY}/${PREFIX}"
 
       # display progress
       echo $((CURRENT*100/NBR_IMAGE))
