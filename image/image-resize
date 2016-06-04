@@ -18,6 +18,9 @@
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 command -v identify >/dev/null 2>&1 || { zenity --error --text="Please install identify [imagemagick]"; exit 1; }
 
+# configuration file
+FILE_CONF="$HOME/.config/image-resize.conf"
+
 # set separator as carriage return
 IFS=$'\n'
 
@@ -44,7 +47,7 @@ NBR_IMAGE=${#ARR_IMAGE[@]}
 if [ $NBR_IMAGE -gt 0 ];
 then
   # load target formats into array
-  ARR_FORMAT=( $(cat "$HOME/.image-resize.conf") )
+  ARR_FORMAT=( $(cat "${FILE_CONF}") )
 
   # extract data and load choice array
   INDEX=0
