@@ -5,7 +5,7 @@
 sudo apt-get -y install imagemagick
 
 # main script
-wget --header='Accept-Encoding:none' -O $HOME/.image-resize.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize.conf
+wget --header='Accept-Encoding:none' -O $HOME/.config/image-resize.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize.conf
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/image-resize https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize
 sudo chmod +x /usr/local/bin/image-resize
 
