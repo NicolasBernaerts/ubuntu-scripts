@@ -1,0 +1,53 @@
+#!/bin/bash
+# ---------------------------------------------------
+# Functions used to read INI files.
+#
+# Provided functions are :
+#  * INI_List_Sections - Return list of sections
+#  * INI_Read_Key      - read a key from a section
+#
+# Revision history :
+#   06/06/2016, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# ------------- #
+# INI_Read_Key  #
+# ------------- #
+# Read a key value from a section of a INI file
+# Parameters : 
+#  $1 - Path to INI file
+#  $2 - Section name
+#  $3 - Key name
+function INI_Read_Key
+{
+  # calculate lenght of section header
+  SIZE=${#2}
+  SIZE=$((SIZE+2))
+
+  while read LINE; 
+  do
+    # remove non printable char
+    LINE=$(echo ${LINE} | tr -dc '[[:print:]]' )
+
+    # reset section for lines startign with [
+    [ "${LINE:0:1}" = "[" ] && SECTION_FOUND="ko"
+  
+    # detect the right section
+    [ "${LINE:0:${SIZE}}" = "[$2]" ] && SECTION_FOUND="ok"
+  
+    # if in the right section, filter needed key and display content 
+    [ "${SECTION_FOUND}" = "ok" ] && echo ${LINE} | grep "^$3=" | cut -d'=' -f2-
+  done < "$1"
+}
+
+# ------------------ #
+# INI_List_Sections  #
+# ------------------ #
+# List sections of a INI file
+# Parameters : 
+#  $1 - Path to INI file
+function INI_List_Sections 
+{
+  # display all text in between [...]
+  cat "$1" | grep "\[.*\]" | sed 's/^\[\(.*\)\].*$/\1/'
+}
