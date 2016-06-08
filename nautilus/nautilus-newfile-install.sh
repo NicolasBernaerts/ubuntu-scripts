@@ -22,6 +22,6 @@ sudo chmod +x /usr/local/bin/nautilus-newfile-action
 mkdir --parents $HOME/.config/nautilus-actions/newfile
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile.ini" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/newfile/newfile.ini
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New Calc Sheet.ods" https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/nautilus/newfile/New%20Calc%20Sheet.ods?raw=true
-wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New Writer Document.ods" https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/nautilus/newfile/New%20Writer%20Document.odt?raw=true
+wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New Writer Document.odt" https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/nautilus/newfile/New%20Writer%20Document.odt?raw=true
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New Bash Script.sh" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/newfile/New%20Bash%20Script.sh
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New File.txt" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/newfile/New%20File.txt
