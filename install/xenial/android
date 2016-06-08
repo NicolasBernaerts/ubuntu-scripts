@@ -22,8 +22,8 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 
 # file manager APK extensions
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-columns.py
-wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus-extensions/apk-properties.py
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-columns.py
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-properties.py
 
 # android screenshot utility
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/android-screenshot-install.sh
