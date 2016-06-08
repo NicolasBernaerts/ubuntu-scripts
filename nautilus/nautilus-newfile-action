@@ -1,0 +1,34 @@
+#!/bin/bash
+# ---------------------------------------------------
+# Handle nautilus action
+#  to create an empty file from a model
+#
+# Models are stored in 
+#  ~/.config/nautilus-actions
+# and declared in 
+#  ~/.config/nautilus-actions/nautilus-newfile.ini
+#
+# Revision history :
+#   03/06/2016, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# load functions to handle INI files
+. /usr/local/bin/read-ini-file
+
+# get module as parameter
+SECTION=$1
+DIRECTORY=$2
+
+# configuration directory and file
+CONF_DIR="${HOME}/.config/nautilus-actions"
+CONF_FILE="${CONF_DIR}/newfile.ini"
+
+# get data
+MODEL=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" model)
+OPTION=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" option)
+
+# copy model to current directory
+cp "${CONF_DIR}/newfile-model/${MODEL}" "${DIRECTORY}/${MODEL}"
+
+# set execute bit if needed
+[ "${OPTION}" = "execute" ] && chmod +x "${DIRECTORY}/${MODEL}"
