@@ -1,0 +1,80 @@
+#!/bin/bash
+# ---------------------------------------------------
+# Declare all model files for Nautilus 
+# Create file extension
+#
+# All models are declared in 
+#  .config/nautilus-newfile.conf
+#
+# Depends on :
+
+# Revision history :
+#   03/06/2016, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# ---------------------------------------------------
+#  Initialisation
+# ---------------------------------------------------
+
+# load functions to handle INI files
+. /usr/local/bin/read-ini-file
+
+# action file
+ACTION_SCRIPT="/usr/local/bin/nautilus-newfile-action"
+
+# configuration directory and file
+CONF_DIR="$HOME/.config/nautilus-actions"
+CONF_FILE="${CONF_DIR}/newfile.ini"
+
+# desktop action files directory
+ACTION_DIR="$HOME/.local/share/file-manager/actions"
+
+# remove all previous action desktop files
+rm -f ${ACTION_DIR}/newfile-*.desktop
+
+# ---------------------------------------------------
+#  Read configuration and generate desktop files
+# ---------------------------------------------------
+
+# list sections
+ARR_SECTION=( $(INI_List_Sections "${CONF_FILE}") )
+
+# loop thru sections
+for SECTION in "${ARR_SECTION[@]}"
+do
+
+  # get data
+  LABEL=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" label)
+  ICON=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" icon)
+
+  # set action desktop file name
+  FILE_DESKTOP="${ACTION_DIR}/newfile-${SECTION}.desktop"
+  
+  # write [Desktop Entry] section
+  echo "[Desktop Entry]" > "${FILE_DESKTOP}"
+  echo "Type=Action" >> "${FILE_DESKTOP}"
+  echo "Name=${LABEL}" >> "${FILE_DESKTOP}"
+  echo "Icon=${ICON}" >> "${FILE_DESKTOP}"
+  echo "Tooltip=${LABEL}" >> "${FILE_DESKTOP}"
+  echo "ToolbarLabel=${LABEL}" >> "${FILE_DESKTOP}"
+  echo "TargetLocation=true" >> "${FILE_DESKTOP}"
+  echo "Profiles=${SECTION};" >> "${FILE_DESKTOP}"
+  echo "" >> "${FILE_DESKTOP}"
+  
+  # write [X-Action-Profile ] section
+  echo "[X-Action-Profile ${SECTION}]" >> "${FILE_DESKTOP}"
+  echo "Exec=${ACTION_SCRIPT} ${SECTION} %f" >> "${FILE_DESKTOP}"
+  echo "MimeType=inode/directory;" >> "${FILE_DESKTOP}"
+  echo "Name=Default profile" >> "${FILE_DESKTOP}"
+
+  # set execute rights
+  chmod +x "${FILE_DESKTOP}"
+
+done
+
+# ---------------------------------------------------
+#  Restart nautilus to load config
+# ---------------------------------------------------
+
+# restart nautilus
+nautilus -q
