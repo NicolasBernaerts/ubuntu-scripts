@@ -28,7 +28,7 @@ MODEL=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" model)
 OPTION=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" option)
 
 # copy model to current directory
-cp "${CONF_DIR}/newfile-model/${MODEL}" "${DIRECTORY}/${MODEL}"
+cp "${CONF_DIR}/newfile/${MODEL}" "${DIRECTORY}/${MODEL}"
 
 # set execute bit if needed
 [ "${OPTION}" = "execute" ] && chmod +x "${DIRECTORY}/${MODEL}"
