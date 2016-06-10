@@ -80,11 +80,16 @@ chmod +x ./assistance
 . ./assistance
 
 # ---------------------------------------------------
-# ---------------- Specific packages ----------------
+# ----------------------  Gnome  --------------------
 # ---------------------------------------------------
 
 # gnome classic session
 sudo apt-get -y install gnome-session-flashback gnome-tweak-tool
+
+# nautilus empty files right click menus
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
+chmod +x ./nautilus-newfile-install.sh
+. ./nautilus-newfile-install.sh
 
 # ---------------------------------------------------
 # ---------------------  Tweaks  --------------------
@@ -96,7 +101,6 @@ wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://ra
 # touchpad : add palm detection
 sudo mkdir --parent /etc/X11/xorg.conf.d
 sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
-
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
