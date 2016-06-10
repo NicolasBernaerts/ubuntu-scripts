@@ -41,42 +41,34 @@ sudo apt-get -y dist-upgrade
 
 # wifi tweaks
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/wifi
-chmod +x ./wifi
 . ./wifi
 
 # misc utilities and tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/utilities
-chmod +x ./utilities
 . ./utilities
 
 # office tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/office
-chmod +x ./office
 . ./office
 
 # graphical tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/graphical
-chmod +x ./graphical
 . ./graphical
 
 # multimedia tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/multimedia
-chmod +x ./multimedia
 . ./multimedia
 
 # internet tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/internet
-chmod +x ./internet
 . ./internet
 
 # android tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/android
-chmod +x ./android
 . ./android
 
 # remote assistance
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/assistance
-chmod +x ./assistance
 . ./assistance
 
 # ---------------------------------------------------
@@ -88,7 +80,6 @@ sudo apt-get -y install gnome-session-flashback gnome-tweak-tool
 
 # nautilus empty files right click menus
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
-chmod +x ./nautilus-newfile-install.sh
 . ./nautilus-newfile-install.sh
 
 # ---------------------------------------------------
