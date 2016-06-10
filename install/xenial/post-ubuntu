@@ -82,6 +82,9 @@ sudo apt-get -y install gnome-session-flashback gnome-tweak-tool
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
 . ./nautilus-newfile-install.sh
 
+# remove nautilus action root menu in nautilus
+cat $HOME/.config/nautilus-actions/nautilus-actions.conf | sed 's/items-create-root-menu=.*/items-create-root-menu=false/' > $HOME/.config/nautilus-actions/nautilus-actions.conf
+
 # ---------------------------------------------------
 # ---------------------  Tweaks  --------------------
 # ---------------------------------------------------
