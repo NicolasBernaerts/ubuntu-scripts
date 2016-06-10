@@ -75,7 +75,7 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 # ----------------------  Gnome  --------------------
 # ---------------------------------------------------
 
-# graphical tools
+# gnome environment
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/gnome
 . ./gnome
 
