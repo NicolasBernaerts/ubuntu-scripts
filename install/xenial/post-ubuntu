@@ -86,8 +86,18 @@ chmod +x ./assistance
 # gnome classic session
 sudo apt-get -y install gnome-session-flashback gnome-tweak-tool
 
+# ---------------------------------------------------
+# ---------------------  Tweaks  --------------------
+# ---------------------------------------------------
+
 # tweak to allow nautilus windows resize under compiz
 wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/config/gtk.css
+
+# touchpad : add palm detection in /etc/rc.local
+sed 's/.*exit 0.*/# touchpad options\n&/' /etc/rc.local | sudo tee /etc/rc.local
+sed 's/.*exit 0.*/synclient PalmDetect=1\n&/' /etc/rc.local | sudo tee /etc/rc.local
+sed 's/.*exit 0.*/synclient PalmMinWidth=4\n&/' /etc/rc.local | sudo tee /etc/rc.local
+sed 's/.*exit 0.*/\n&/' /etc/rc.local | sudo tee /etc/rc.local
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
