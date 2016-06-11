@@ -1,13 +1,10 @@
 #!/bin/bash
 # ---------------------------------------------------
-# Declare all model files for Nautilus 
-# Create file extension
+# Declare new action manus in Nautilus for Empty file creation
 #
-# All models are declared in 
-#  .config/nautilus-newfile.conf
+# All models are declared in ~/.config/nautilus-actions/newfile.ini
+# and available under ~/.config/nautilus-actions/newfile/
 #
-# Depends on :
-
 # Revision history :
 #   03/06/2016, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
