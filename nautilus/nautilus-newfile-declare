@@ -2,8 +2,8 @@
 # ---------------------------------------------------
 # Declare new action manus in Nautilus for Empty file creation
 #
-# All models are declared in ~/.config/nautilus-actions/newfile.ini
-# and available under ~/.config/nautilus-actions/newfile/
+# For installation instructions, please check
+#  http://bernaerts.dyndns.org/linux/344-nautilus-new-document-creation-menu
 #
 # Revision history :
 #   03/06/2016, V1.0 - Creation by N. Bernaerts
