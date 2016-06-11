@@ -1,7 +1,6 @@
 #!/bin/bash
 # ---------------------------------------------------
-# Handle nautilus action
-#  to create an empty file from a model
+# Handle nautilus action to create an empty file from a model
 #
 # For installation instructions, please check
 #  http://bernaerts.dyndns.org/linux/344-nautilus-new-document-creation-menu
