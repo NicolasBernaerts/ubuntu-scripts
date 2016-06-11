@@ -1,6 +1,6 @@
 #!/bin/bash
 # ---------------------------------------------------
-# Declare new action manus in Nautilus for Empty file creation
+# Declare new action menus in Nautilus for empty file creation
 #
 # For installation instructions, please check
 #  http://bernaerts.dyndns.org/linux/344-nautilus-new-document-creation-menu
