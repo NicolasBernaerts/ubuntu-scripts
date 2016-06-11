@@ -3,10 +3,8 @@
 # Handle nautilus action
 #  to create an empty file from a model
 #
-# Models are stored in 
-#  ~/.config/nautilus-actions
-# and declared in 
-#  ~/.config/nautilus-actions/nautilus-newfile.ini
+# For installation instructions, please check
+#  http://bernaerts.dyndns.org/linux/344-nautilus-new-document-creation-menu
 #
 # Revision history :
 #   03/06/2016, V1.0 - Creation by N. Bernaerts
