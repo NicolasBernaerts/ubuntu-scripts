@@ -8,6 +8,10 @@ command -v nautilus >/dev/null 2>&1 || { echo "Nautilus has not been detected. P
 sudo apt-get update
 sudo apt-get -y install nautilus-actions
 
+# nautilus : remove nautilus action root menu
+mv $HOME/.config/nautilus-actions/nautilus-actions.conf $HOME/.config/nautilus-actions/nautilus-actions.conf.org
+cat $HOME/.config/nautilus-actions/nautilus-actions.conf.org | sed 's/items-create-root-menu=.*/items-create-root-menu=false/' > $HOME/.config/nautilus-actions/nautilus-actions.conf
+
 # install functions to read INI files
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/read-ini-file https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/read-ini-file
 sudo chmod +x /usr/local/bin/read-ini-file
