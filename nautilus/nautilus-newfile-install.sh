@@ -18,9 +18,11 @@ sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/nautilus-newfile-act
 sudo chmod +x /usr/local/bin/nautilus-newfile-declare
 sudo chmod +x /usr/local/bin/nautilus-newfile-action
 
-# install configuration file and model files
-mkdir --parents $HOME/.config/nautilus-actions/newfile
+# install .ini configuration file
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile.ini" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/newfile/newfile.ini
+
+# install empty docuemnt models
+mkdir --parents $HOME/.config/nautilus-actions/newfile
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New Calc Sheet.ods" https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/nautilus/newfile/New%20Calc%20Sheet.ods?raw=true
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New Writer Document.odt" https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/nautilus/newfile/New%20Writer%20Document.odt?raw=true
 wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile/New Bash Script.sh" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/newfile/New%20Bash%20Script.sh
