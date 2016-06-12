@@ -50,20 +50,20 @@ do
   # write [Desktop Entry] section
   echo "[Desktop Entry]" > "${FILE_DESKTOP}"
   echo "Type=Action" >> "${FILE_DESKTOP}"
-  echo "Name=${LABEL}" >> "${FILE_DESKTOP}"
-  echo "Icon=${ICON}" >> "${FILE_DESKTOP}"
-  echo "Tooltip=${LABEL}" >> "${FILE_DESKTOP}"
-  echo "ToolbarLabel=${LABEL}" >> "${FILE_DESKTOP}"
+  echo "Name[C]=${LABEL}" >> "${FILE_DESKTOP}"
+  echo "Icon[C]=${ICON}" >> "${FILE_DESKTOP}"
+  echo "Tooltip[C]=${LABEL}" >> "${FILE_DESKTOP}"
+  echo "ToolbarLabel[C]=${LABEL}" >> "${FILE_DESKTOP}"
   echo "TargetLocation=true" >> "${FILE_DESKTOP}"
-  echo "Profiles=${SECTION};" >> "${FILE_DESKTOP}"
+  echo "MimeType=inode/directory;" >> "${FILE_DESKTOP}"
+  echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
+  echo "Profiles=directory;" >> "${FILE_DESKTOP}"
   echo "" >> "${FILE_DESKTOP}"
   
   # write [X-Action-Profile ] section
-  echo "[X-Action-Profile ${SECTION}]" >> "${FILE_DESKTOP}"
+  echo "[X-Action-Profile directory]" >> "${FILE_DESKTOP}"
   echo "Exec=${ACTION_SCRIPT} ${SECTION} %f" >> "${FILE_DESKTOP}"
-  echo "MimeType=inode/directory;" >> "${FILE_DESKTOP}"
-  echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
-  echo "Name=Default profile" >> "${FILE_DESKTOP}"
+  echo "Name=Default" >> "${FILE_DESKTOP}"
 
   # set execute rights
   chmod +x "${FILE_DESKTOP}"
