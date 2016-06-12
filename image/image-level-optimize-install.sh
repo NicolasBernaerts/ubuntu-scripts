@@ -10,7 +10,7 @@ sudo chmod +x /usr/local/bin/image-level-optimize
 
 # desktop integration
 sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/image-level-optimize.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize.png
-sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/image-level-optimize.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize.desktop
+#sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/image-level-optimize.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize.desktop
 
 # nautilus action
 mkdir --parents $HOME/.local/share/file-manager/actions
