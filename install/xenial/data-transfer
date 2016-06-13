@@ -8,6 +8,9 @@
 #   10/06/2016, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 
+# check xdg-user-dir
+command -v xdg-user-dir >/dev/null 2>&1 || { zenity --error --text="Please install xdg-user-dir utility"; exit 1; }
+
 # set environments to backup/restore
 #   ApplicationOrFolderName|DataPath|BackupMode (tar:compress to tar.gz / dir:copy to directory)
 CFG_DESKTOP="desktop|$(xdg-user-dir DESKTOP)|dir"
