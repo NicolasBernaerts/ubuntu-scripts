@@ -1,0 +1,40 @@
+#!/bin/bash
+# --------------------------------------------
+#
+#  Call :
+#   bash data-transfer
+#
+#  Revision history :
+#   05/07/2015, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+OPERATION=$1
+
+# declare apps to handle
+ARR_APP=( "bureau|$HOME/Bureau" "firefox|$HOME/.mozilla/firefox" "thunderbird|$HOME/.thunderbird" "telegram|$HOME/.TelegramDesktop" "whatsie|$HOME/.config/Whatsie" "skype|$HOME/.Skype" )
+
+# get key path
+KEY_SCRIPT=$(readlink -f $0)
+KEY_DIR=$(dirname "${KEY_SCRIPT}")
+
+# loop thru applications
+for APP in "${ARR_APP[@]}"
+do
+  # get data
+  APP_NAME=$(echo ${APP} | cut -d'|' -f1)
+  APP_PATH=$(echo ${APP} | cut -d'|' -f2)
+
+  if [ "${OPERATION}" = "backup" -a -d "${APP_PATH}" ]
+  then
+    rm "${KEY_DIR}/${APP_NAME}.tar.gz"
+    cd "${APP_PATH}"
+    tar -zcvf "${KEY_DIR}/${APP_NAME}.tar.gz" *
+  fi
+
+  if [ "${OPERATION}" = "restore" -a -f "${KEY_DIR}/${APP_NAME}.tar.gz" ]
+  then
+    [ -d "${APP_PATH}" ] && rm --recursive ${APP_PATH}/* || mkdir --parent ${APP_PATH}
+    cd "${APP_PATH}"
+    tar -zxvf "${KEY_DIR}/${APP_NAME}.tar.gz"
+  fi
+done
