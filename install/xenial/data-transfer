@@ -8,33 +8,95 @@
 #   05/07/2015, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 
-OPERATION=$1
+# set environments to backup/restore
+# ApplicationName | DataPath | BackupMode (tar:compress to tar.gz / dir:copy to directory)
+CFG_DESKTOP="desktop|$(xdg-user-dir DESKTOP)|dir"
+CFG_DOCUMENTS="documents|$(xdg-user-dir DOCUMENTS)|tar"
+CFG_MUSIC="music|$(xdg-user-dir MUSIC)|dir"
+CFG_PICTURES="pictures|$(xdg-user-dir PICTURES)|dir"
+CFG_VIDEOS="videos|$(xdg-user-dir VIDEOS)|dir"
+CFG_SSH="ssh|$HOME/.ssh|tar"
+CFG_FIREFOX="firefox|$HOME/.mozilla/firefox|tar"
+CFG_THUNDERBIRD="thunderbird|$HOME/.thunderbird|tar"
+CFG_TELEGRAM="telegram|$HOME/.TelegramDesktop|tar"
+CFG_WHATSIE="whatsie|$HOME/.config/Whatsie|tar"
+CFG_SKYPE="skype|$HOME/.Skype|tar"
 
-# declare apps to handle
-ARR_APP=( "bureau|$HOME/Bureau" "firefox|$HOME/.mozilla/firefox" "thunderbird|$HOME/.thunderbird" "telegram|$HOME/.TelegramDesktop" "whatsie|$HOME/.config/Whatsie" "skype|$HOME/.Skype" )
+# by default, backup mode
+RUN_MODE="backup"
+
+# iterate thru parameters
+while test ${#} -gt 0
+do
+  case $1 in
+    --backup) RUN_MODE="backup"; shift; ;;
+    --restore) RUN_MODE="restore"; shift; ;;
+    --desktop) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DESKTOP}" ); shift; ;;
+    --documents) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DOCUMENTS}" ); shift; ;;
+    --music) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_MUSIC}" ); shift; ;;
+    --pictures) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_PICTURES}" ); shift; ;;
+    --videos) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_VIDEOS}" ); shift; ;;
+    --ssh) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SSH}" ); shift; ;;
+    --firefox) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_FIREFOX}" ); shift; ;;
+    --thunderbird) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_THUNDERBIRD}" ); shift; ;;
+    --telegram) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_TELEGRAM}" ); shift; ;;
+    --whatsie) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_WHATSIE}" ); shift; ;;
+    --skype) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SKYPE}" ); shift; ;;
+    --all) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DESKTOP}" "${CFG_DOCUMENTS}" "${CFG_MUSIC}" "${CFG_PICTURES}" "${CFG_VIDEOS}" "${CFG_SSH}" "${CFG_FIREFOX}" "${CFG_THUNDERBIRD}" "${CFG_TELEGRAM}" "${CFG_WHATSIE}" "${CFG_SKYPE}"); shift; ;;
+    *) shift; ;;
+  esac
+done
 
 # get key path
-KEY_SCRIPT=$(readlink -f $0)
-KEY_DIR=$(dirname "${KEY_SCRIPT}")
+BACKUP_SCRIPT=$(readlink -f $0)
+BACKUP_DIR=$(dirname "${BACKUP_SCRIPT}")
 
 # loop thru applications
-for APP in "${ARR_APP[@]}"
+for APP_TODO in "${ARR_TODO[@]}"
 do
   # get data
-  APP_NAME=$(echo ${APP} | cut -d'|' -f1)
-  APP_PATH=$(echo ${APP} | cut -d'|' -f2)
+  APP_NAME=$(echo ${APP_TODO} | cut -d'|' -f1)
+  APP_PATH=$(echo ${APP_TODO} | cut -d'|' -f2)
+  APP_MODE=$(echo ${APP_TODO} | cut -d'|' -f3)
 
-  if [ "${OPERATION}" = "backup" -a -d "${APP_PATH}" ]
+  # backup mode
+  if [ "${RUN_MODE}" = "backup" ];
   then
-    rm "${KEY_DIR}/${APP_NAME}.tar.gz"
-    cd "${APP_PATH}"
-    tar -zcvf "${KEY_DIR}/${APP_NAME}.tar.gz" *
+    # tar.gz mode
+    if [ -d "${APP_PATH}" -a "${APP_MODE}" = "tar" ];
+    then
+      rm "${BACKUP_DIR}/${APP_NAME}.tar.gz"
+      cd "${APP_PATH}"
+      tar -zcvf "${BACKUP_DIR}/${APP_NAME}.tar.gz" *
+    fi
+
+    # directory mode
+    if [ -d "${APP_PATH}" -a "${APP_MODE}" = "dir" ];
+    then
+      rmdir --parents "${BACKUP_DIR}/${APP_NAME}"
+      mkdir "${BACKUP_DIR}/${APP_NAME}"
+      cp --recursive ${APP_PATH}/* "${BACKUP_DIR}/${APP_NAME}"
+    fi
   fi
 
-  if [ "${OPERATION}" = "restore" -a -f "${KEY_DIR}/${APP_NAME}.tar.gz" ]
+  # restore mode
+  if [ "${RUN_MODE}" = "restore" ];
   then
-    [ -d "${APP_PATH}" ] && rm --recursive ${APP_PATH}/* || mkdir --parent ${APP_PATH}
-    cd "${APP_PATH}"
-    tar -zxvf "${KEY_DIR}/${APP_NAME}.tar.gz"
+    # tar.gz mode
+    if [ -f "${BACKUP_DIR}/${APP_NAME}.tar.gz" -a "${APP_MODE}" = "tar" ];
+    then
+      [ -d "${APP_PATH}" ] || mkdir --parents "${APP_PATH}"
+      rm --recursive ${APP_PATH}/*
+      cd "${APP_PATH}"
+      tar -zxvf "${BACKUP_DIR}/${APP_NAME}.tar.gz"
+    fi
+
+    # directory mode
+    if [ -d "${BACKUP_DIR}/${APP_NAME}" -a "${APP_MODE}" = "dir" ];
+    then
+      [ -d "${APP_PATH}" ] || mkdir --parents "${APP_PATH}"
+      rm --recursive ${APP_PATH}/*
+      cp --recursive ${BACKUP_DIR}/${APP_NAME}/* "${APP_PATH}"
+    fi
   fi
 done
