@@ -1,15 +1,15 @@
 #!/bin/bash
 # --------------------------------------------
 #
-#  Call :
-#   bash data-transfer
+#  Call should be done like :
+#   bash /full/path/to/media/data-transfer --parameters
 #
 #  Revision history :
-#   05/07/2015, V1.0 - Creation by N. Bernaerts
+#   10/06/2016, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 
 # set environments to backup/restore
-# ApplicationName | DataPath | BackupMode (tar:compress to tar.gz / dir:copy to directory)
+#   ApplicationOrFolderName|DataPath|BackupMode (tar:compress to tar.gz / dir:copy to directory)
 CFG_DESKTOP="desktop|$(xdg-user-dir DESKTOP)|dir"
 CFG_DOCUMENTS="documents|$(xdg-user-dir DOCUMENTS)|tar"
 CFG_MUSIC="music|$(xdg-user-dir MUSIC)|dir"
@@ -25,6 +25,29 @@ CFG_SKYPE="skype|$HOME/.Skype|tar"
 # by default, backup mode
 RUN_MODE="backup"
 
+# help message if no parameter
+if [ ${#} -eq 0 ];
+then
+    echo "Script to backup/restore user data on the media where script runs"
+    echo "Parameters are :"
+    echo "  --backup         Backup mode"
+    echo "  --restore        Restore mode"
+    echo "  --desktop        Desktop folder"
+    echo "  --documents      Documents folder"
+    echo "  --music          Music folder"
+    echo "  --pictures       Pictures folder"
+    echo "  --videos         Videos folder"
+    echo "  --all-folders    All previous folders"
+    echo "  --ssh            OpenSSH data"
+    echo "  --firefox        Firefox data"
+    echo "  --thunderbird    Thunderbird data"
+    echo "  --telegram       Telegram data"
+    echo "  --whatsie        WhatsIe data"
+    echo "  --skype          Skype data"
+    echo "  --all-apps       All previous applications data"
+    exit 1
+fi
+
 # iterate thru parameters
 while test ${#} -gt 0
 do
@@ -36,13 +59,14 @@ do
     --music) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_MUSIC}" ); shift; ;;
     --pictures) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_PICTURES}" ); shift; ;;
     --videos) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_VIDEOS}" ); shift; ;;
+    --all-folders) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DESKTOP}" "${CFG_DOCUMENTS}" "${CFG_MUSIC}" "${CFG_PICTURES}" "${CFG_VIDEOS}" ); shift; ;;
     --ssh) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SSH}" ); shift; ;;
     --firefox) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_FIREFOX}" ); shift; ;;
     --thunderbird) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_THUNDERBIRD}" ); shift; ;;
     --telegram) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_TELEGRAM}" ); shift; ;;
     --whatsie) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_WHATSIE}" ); shift; ;;
     --skype) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SKYPE}" ); shift; ;;
-    --all) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DESKTOP}" "${CFG_DOCUMENTS}" "${CFG_MUSIC}" "${CFG_PICTURES}" "${CFG_VIDEOS}" "${CFG_SSH}" "${CFG_FIREFOX}" "${CFG_THUNDERBIRD}" "${CFG_TELEGRAM}" "${CFG_WHATSIE}" "${CFG_SKYPE}"); shift; ;;
+    --all-apps) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SSH}" "${CFG_FIREFOX}" "${CFG_THUNDERBIRD}" "${CFG_TELEGRAM}" "${CFG_WHATSIE}" "${CFG_SKYPE}" ); shift; ;;
     *) shift; ;;
   esac
 done
