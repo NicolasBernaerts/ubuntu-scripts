@@ -4,6 +4,8 @@
 #  Call should be done like :
 #   bash /full/path/to/media/data-transfer ...
 #
+#  All backup files will be stored under /full/path/to/media
+#
 #  Revision history :
 #   10/06/2016, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
