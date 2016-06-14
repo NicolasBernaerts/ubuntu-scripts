@@ -2,7 +2,7 @@
 # --------------------------------------------
 #
 #  Call should be done like :
-#   bash /full/path/to/media/data-transfer --parameters
+#   bash /full/path/to/media/data-transfer ...
 #
 #  Revision history :
 #   10/06/2016, V1.0 - Creation by N. Bernaerts
@@ -12,18 +12,18 @@
 command -v xdg-user-dir >/dev/null 2>&1 || { zenity --error --text="Please install xdg-user-dir utility"; exit 1; }
 
 # set environments to backup/restore
-#   ApplicationOrFolderName|DataPath|BackupMode (tar:compress to tar.gz / dir:copy to directory)
-CFG_DESKTOP="desktop|$(xdg-user-dir DESKTOP)|dir"
-CFG_DOCUMENTS="documents|$(xdg-user-dir DOCUMENTS)|tar"
-CFG_MUSIC="music|$(xdg-user-dir MUSIC)|dir"
-CFG_PICTURES="pictures|$(xdg-user-dir PICTURES)|dir"
-CFG_VIDEOS="videos|$(xdg-user-dir VIDEOS)|dir"
-CFG_SSH="ssh|$HOME/.ssh|tar"
-CFG_FIREFOX="firefox|$HOME/.mozilla/firefox|tar"
-CFG_THUNDERBIRD="thunderbird|$HOME/.thunderbird|tar"
-CFG_TELEGRAM="telegram|$HOME/.TelegramDesktop|tar"
-CFG_WHATSIE="whatsie|$HOME/.config/Whatsie|tar"
-CFG_SKYPE="skype|$HOME/.Skype|tar"
+#   ApplicationOrFolderName|BackupMode (tar:compress to tar.gz / dir:copy to directory)|DataPath
+CFG_DESKTOP="desktop|dir|$(xdg-user-dir DESKTOP)"
+CFG_DOCUMENTS="documents|tar|$(xdg-user-dir DOCUMENTS)"
+CFG_MUSIC="music|dir|$(xdg-user-dir MUSIC)"
+CFG_PICTURES="pictures|dir|$(xdg-user-dir PICTURES)"
+CFG_VIDEOS="videos|dir|$(xdg-user-dir VIDEOS)"
+CFG_SSH="ssh|tar|$HOME/.ssh"
+CFG_FIREFOX="firefox|tar|$HOME/.mozilla/firefox"
+CFG_THUNDERBIRD="thunderbird|tar|$HOME/.thunderbird"
+CFG_TELEGRAM="telegram|tar|$HOME/.TelegramDesktop"
+CFG_WHATSIE="whatsie|tar|$HOME/.config/Whatsie"
+CFG_SKYPE="skype|tar|$HOME/.Skype"
 
 # by default, backup mode
 RUN_MODE="backup"
@@ -83,8 +83,8 @@ for APP_TODO in "${ARR_TODO[@]}"
 do
   # get data
   APP_NAME=$(echo ${APP_TODO} | cut -d'|' -f1)
-  APP_PATH=$(echo ${APP_TODO} | cut -d'|' -f2)
-  APP_MODE=$(echo ${APP_TODO} | cut -d'|' -f3)
+  APP_MODE=$(echo ${APP_TODO} | cut -d'|' -f2)
+  APP_PATH=$(echo ${APP_TODO} | cut -d'|' -f3)
 
   # backup mode
   if [ "${RUN_MODE}" = "backup" ];
