@@ -23,6 +23,7 @@
 #    12/12/2015, V2.2 - Make track langage editable
 #    13/12/2015, V2.3 - Add default track selection
 #    18/12/2015, V2.4 - Correct nasty bug with PID < 10000
+#    03/06/2016, V2.5 - Remove any multi-threaded option to avoid audio time shift
 # -------------------------------------------------------
 
 IFS=$'\n'
@@ -330,7 +331,7 @@ do
 
           # convert track to WAV format
           echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to WAV"
-          avconv -y -threads auto -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
+          avconv -y -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
 
           # determine encoding rate
           [ $TRACK_CHANNEL -ge 5 ] && TRACK_RATE=$RATE_MULTI || TRACK_RATE=$RATE_STEREO
@@ -360,15 +361,15 @@ do
 
         # convert WAV file to stereo
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to stereo WAV"
-        avconv -y -threads auto -i "${FILE_TMP_MKA}" -ac 2 "${FILE_TMP_WAV}"
+        avconv -y -i "${FILE_TMP_MKA}" -ac 2 "${FILE_TMP_WAV}"
 
         # apply night mode correction
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to Midnight Mode"
-        sox --multi-threaded --temp $HOME "${FILE_TMP_WAV}" "${FILE_DRC_WAV}" compand 0.0,1 6:-70,-50,-20 -6 -90 0.1
+        sox --temp $HOME "${FILE_TMP_WAV}" "${FILE_DRC_WAV}" compand 0.0,1 6:-70,-50,-20 -6 -90 0.1
 
         # normalize audio track
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Normalization of Midnight Mode"
-        sox --multi-threaded --temp $HOME --norm "${FILE_DRC_WAV}" "${FILE_NRM_WAV}"
+        sox --temp $HOME --norm "${FILE_DRC_WAV}" "${FILE_NRM_WAV}"
 
         # convert WAV file to AAC
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion of Midnight Mode to AAC (${RATE_DRC}k)"
