@@ -238,14 +238,15 @@ do
       TRACK_CHANNEL=$(echo "$TRACK" | cut -d'|' -f4)
       TRACK_RATE=$(echo "$TRACK" | cut -d'|' -f5)
       TRACK_DEFAULT=$(echo "$TRACK" | cut -d'|' -f6)
+      TRACK_TITLE=$(echo "$TRACK" | cut -d'|' -f8)
 
       # set if track is a default one
       [ ${TRACK_DEFAULT} = "Yes" ] && TRACK_DEFAULT="TRUE" || TRACK_DEFAULT="FALSE" 
 
       # add current track to dialog selection array
-      ARR_SELECT=("${ARR_SELECT[@]}" "${TRACK_ID}" "${TRACK_DEFAULT}" "TRUE" "FALSE" "${TRACK_LANGUAGE}" "${TRACK_FORMAT}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
+      ARR_SELECT=("${ARR_SELECT[@]}" "${TRACK_ID}" "${TRACK_DEFAULT}" "TRUE" "FALSE" "${TRACK_LANGUAGE} (${TRACK_TITLE})" "${TRACK_FORMAT}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
 
-      # set current track as candidate, without midnight mode and given langage
+      # set current track as candidate, without midnight mode and given langage (${TRACK_TITLE})
       ARR_DEFAULT[${TRACK_ID}]="${TRACK_DEFAULT}"
       ARR_LANGAGE[${TRACK_ID}]="${TRACK_LANGAGE}"
       ARR_CANDIDATE[${TRACK_ID}]="TRUE"
