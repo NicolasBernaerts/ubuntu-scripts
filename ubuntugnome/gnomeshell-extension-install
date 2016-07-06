@@ -34,8 +34,8 @@ INSTALL_SUDO=""
 # help message if no parameter
 if [ ${#} -eq 0 ];
 then
-    echo "Install extension from Gnome Shell Extensions site."
-    echo "Extension ID should be retrieved from https://extensions.gnome.org/."
+    echo "Install/remove extension from Gnome Shell Extensions site https://extensions.gnome.org/"
+    echo "Extension ID should be retrieved from https://extensions.gnome.org/extension/<ID>/extension-name/"
     echo "Parameters are :"
     echo "  --install               Install extension (default)"
     echo "  --remove                Remove extension"
