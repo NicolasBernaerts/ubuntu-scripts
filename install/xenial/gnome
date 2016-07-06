@@ -21,3 +21,6 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 
 # tweak to allow nautilus windows resize under compiz
 wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/config/gtk.css
+
+# console management of gnomeshell extensions
+sudo wget -O /usr/local/bin/gnomeshell-extension-install "https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-install"
