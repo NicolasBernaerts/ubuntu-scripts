@@ -24,6 +24,7 @@
 #    13/12/2015, V2.3 - Add default track selection
 #    18/12/2015, V2.4 - Correct nasty bug with PID < 10000
 #    03/06/2016, V2.5 - Remove any multi-threaded option to avoid audio time shift
+#    05/06/2016, V2.6 - Add audio tracks description
 # -------------------------------------------------------
 
 IFS=$'\n'
@@ -244,7 +245,7 @@ do
       [ ${TRACK_DEFAULT} = "Yes" ] && TRACK_DEFAULT="TRUE" || TRACK_DEFAULT="FALSE" 
 
       # add current track to dialog selection array
-      ARR_SELECT=("${ARR_SELECT[@]}" "${TRACK_ID}" "${TRACK_DEFAULT}" "TRUE" "FALSE" "${TRACK_LANGUAGE} (${TRACK_TITLE})" "${TRACK_FORMAT}" "${TRACK_CHANNEL}" "${TRACK_RATE}" ) 
+      ARR_SELECT=("${ARR_SELECT[@]}" "${TRACK_ID}" "${TRACK_DEFAULT}" "TRUE" "FALSE" "${TRACK_LANGUAGE}" "${TRACK_FORMAT}" "${TRACK_CHANNEL}" "${TRACK_RATE}" "${TRACK_TITLE}") 
 
       # set current track as candidate, without midnight mode and given langage (${TRACK_TITLE})
       ARR_DEFAULT[${TRACK_ID}]="${TRACK_DEFAULT}"
@@ -257,7 +258,7 @@ do
     if [ "${GUI_MODE}" = "TRUE" ] 
     then
       # dialog box to select audio tracks to mux
-      ARR_COLUMN=( "--column=Number:NUM" "--column=Default:RD" "--column=Select:CHK" "--column=Midnight:CHK" "--column=Langage:TEXT" "--column=Format:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" )
+      ARR_COLUMN=( "--column=Number:NUM" "--column=Default:RD" "--column=Select:CHK" "--column=Midnight:CHK" "--column=Langage:TEXT" "--column=Format:TEXT" "--column=Channels:NUM" "--column=Rate:NUM" "--column=Description:TEXT" )
       ARR_CHOICE=( $(yad --center --title "${FILE_NAME}" --text="Select tracks to mux in final MKV container.\nTo get list of available langages, please use following command :\n  # mkvmerge --list-languages" --width=700 --height=300 --list --editable --print-all "${ARR_COLUMN[@]}" "${ARR_SELECT[@]}") )
 
       # if dialog has been canceled, exit
