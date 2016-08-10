@@ -10,6 +10,7 @@
 #   15/03/2015 - V1.1 : Update thanks to Michele Gazzetti
 #   02/10/2015 - V1.2 : Disable wget gzip compression
 #   05/07/2016 - V2.0 : Complete rewrite (system path updated thanks to Morgan Read)
+#   09/08/2016 - V2.1 : Handle exact or next available version installation (idea from eddy-geek)
 # -------------------------------------------
 
 # check tools availability
@@ -72,13 +73,11 @@ done
 # create temporary files
 TMP_DESC=$(mktemp -t ext-XXXXXXXX.txt)
 TMP_ZIP=$(mktemp -t ext-XXXXXXXX.zip)
+TMP_VERSION=$(mktemp -t ext-XXXXXXXX.ver)
 rm ${TMP_DESC} ${TMP_ZIP}
 
 # get extension description
-wget --quiet --header='Accept-Encoding:none' -O "${TMP_DESC}" "${GNOME_SITE}/extension-info/?pk=${EXTENSION_ID}&shell_version=${GNOME_VERSION}"
-
-# get extension download URL
-EXTENSION_URL=$(grep "\"${GNOME_VERSION}\"" "${TMP_DESC}" | sed 's/^.*download_url[\": ]*\([^\"]*\).*$/\1/')
+wget --quiet --header='Accept-Encoding:none' -O "${TMP_DESC}" "${GNOME_SITE}/extension-info/?pk=${EXTENSION_ID}"
 
 # get extension name
 EXTENSION_NAME=$(sed 's/^.*name[\": ]*\([^\"]*\).*$/\1/' "${TMP_DESC}")
@@ -89,9 +88,6 @@ EXTENSION_DESCR=$(sed 's/^.*description[\": ]*\([^\"]*\).*$/\1/' "${TMP_DESC}")
 # get extension UUID
 EXTENSION_UUID=$(sed 's/^.*uuid[\": ]*\([^\"]*\).*$/\1/' "${TMP_DESC}")
 
-# check if page not found
-NOT_FOUND=$( grep "404 - Page not Found" "${TMP_DESC}")
-
 # if ID not known
 if [ ! -s "${TMP_DESC}" ];
 then
@@ -101,14 +97,35 @@ then
 elif [ "${ACTION}" = "install" ];
 then
 
-  # if download URL is not available,
-  if [ "${EXTENSION_URL}" = "" ]
+  # extract all available versions
+  sed "s/\([0-9]*\.[0-9]*[0-9\.]*\)/\n\1/g" "${TMP_DESC}" | grep "pk" | grep "version" | sed "s/^\([0-9\.]*\).*$/\1/" > "${TMP_VERSION}"
+
+  # check if current version is available
+  VERSION_AVAILABLE=$(grep "^${GNOME_VERSION}$" "${TMP_VERSION}")
+
+  # if version is not available, get the next one available
+  if [ "${VERSION_AVAILABLE}" = "" ]
   then
-    # wrong version
-    echo "Extension ${EXTENSION_NAME} (Id ${EXTENSION_ID}) is not available for Gnome Shell version ${GNOME_VERSION}."
+    echo "${GNOME_VERSION}" >> "${TMP_VERSION}"
+    VERSION_AVAILABLE=$(cat "${TMP_VERSION}" | sort -V | sed "1,/${GNOME_VERSION}/d" | head -n 1)
+  fi
+
+  # if still no version is available, error message
+  if [ "${VERSION_AVAILABLE}" = "" ]
+  then
+    echo "Gnome Shell version is ${GNOME_VERSION}."
+    echo "Extension ${EXTENSION_NAME} is not available for this version."
+    echo "Available versions are :"
+    sed "s/\([0-9]*\.[0-9]*[0-9\.]*\)/\n\1/g" "${TMP_DESC}" | grep "pk" | grep "version" | sed "s/^\([0-9\.]*\).*$/\1/" | sort -V | xargs
 
   # else, install extension
   else
+    # get extension description
+    wget --quiet --header='Accept-Encoding:none' -O "${TMP_DESC}" "${GNOME_SITE}/extension-info/?pk=${EXTENSION_ID}&shell_version=${VERSION_AVAILABLE}"
+
+    # get extension download URL
+    EXTENSION_URL=$(sed 's/^.*download_url[\": ]*\([^\"]*\).*$/\1/' "${TMP_DESC}")
+
     # download extension archive
     wget --quiet --header='Accept-Encoding:none' -O "${TMP_ZIP}" "${GNOME_SITE}${EXTENSION_URL}"
 
@@ -125,21 +142,23 @@ then
     [ "$EXTENSION_ENABLED" = "" ] && gsettings set org.gnome.shell enabled-extensions "[${EXTENSION_LIST},'${EXTENSION_UUID}']"
 
     # success message
-    echo "Extension ${EXTENSION_NAME} (Id ${EXTENSION_ID}, uuid ${EXTENSION_UUID}) is installed in ${INSTALL_MODE} mode."
+    echo "Gnome Shell version is ${GNOME_VERSION}."
+    echo "Extension ${EXTENSION_NAME} version ${VERSION_AVAILABLE} has been installed in ${INSTALL_MODE} mode (Id ${EXTENSION_ID}, Uuid ${EXTENSION_UUID})"
     echo "Restart Gnome Shell to take effect."
 
   fi
 
 # else, it is remove mode
 else
+
     # remove extension folder
     ${INSTALL_SUDO} rm -f -r "${EXTENSION_PATH}/${EXTENSION_UUID}"
 
     # success message
-    echo "Extension ${EXTENSION_NAME} (Id ${EXTENSION_ID}, uuid ${EXTENSION_UUID}) has been removed in ${INSTALL_MODE} mode."
+    echo "Extension ${EXTENSION_NAME} has been removed in ${INSTALL_MODE} mode (Id ${EXTENSION_ID}, Uuid ${EXTENSION_UUID})"
     echo "Restart Gnome Shell to take effect."
 
 fi
 
 # remove temporary files
-rm -f ${TMP_DESC} ${TMP_ZIP}
+rm -f ${TMP_DESC} ${TMP_ZIP} ${TMP_VERSION}
