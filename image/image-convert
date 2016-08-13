@@ -1,0 +1,129 @@
+#!/bin/bash
+# -------------------------------------------------------------------------------
+#  Convert image files to a list of formats described in ~/.image-convert.conf
+#
+#  Depends on :
+#    * convert [imagemagick]
+#    * identify [imagemagick]
+#
+#  Revision history :
+#    12/08/2016, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------------------------------
+
+# -------------------------------------------------------
+#   Initialisation
+# -------------------------------------------------------
+
+# check tools availability
+command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
+command -v identify >/dev/null 2>&1 || { zenity --error --text="Please install identify [imagemagick]"; exit 1; }
+
+# configuration file
+FILE_CONF="$HOME/.config/image-convert.conf"
+
+# -------------------------------------------------------
+#   Loop to load arguments
+# -------------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+  echo "Tool to convert pictures from Nautilus."
+  echo "Parameters are :"
+  echo "  --format <format>       Format of conversion (described in ${FILE_CONF})"
+  echo "  <file1> <file2> ...     List of files"
+  exit
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+  case "$1" in
+    "--format") 
+      shift
+      NAME="$1"
+      shift
+      ;;
+    *) 
+      FILETYPE=$(file --mime-type "$1"  | sed 's/^.*: *\([a-z]*\).*$/\1/')
+      [ "$FILETYPE" = "image" ] && ARR_FILE=("${ARR_FILE[@]}" "$1")
+      shift
+      ;;
+   esac
+done
+
+# -------------------------------------------------------
+#   Error check
+# -------------------------------------------------------
+
+# calculate number of image files
+NBR_FILE=${#ARR_FILE[@]}
+
+# check for configuration file
+[ ! -f "${FILE_CONF}" ] && { zenity --error --title "Image conversion" --text "Format description file ${FILE_CONF} is not present"; exit; } 
+
+# check if at least one image to convert
+[ ${NBR_FILE} -eq 0 ] && { zenity --error --title "Image conversion" --text "There is no compatible image file in your selection"; exit; }
+
+# check that format is selected
+[ ${NAME} = "" ] && { zenity --error --title "Image conversion" --text "You need to provide a conversion format (--format)"; exit; }
+
+# get format data from configuration file
+CONVERT_DATA=$(grep "^${NAME}=" "${FILE_CONF}")
+[ ${CONVERT_DATA} = "" ] && { zenity --error --title "Image conversion" --text "Conversion format ${NAME} not present in ${FILE_CONF}"; exit; }
+
+# -------------------------------------------------------
+#   Conversion Data
+# -------------------------------------------------------
+
+# get format data
+DESCRIPTION=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f1)
+WIDTH=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f3)
+HEIGHT=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f4)
+TYPE=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f5)
+QUALITY=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f6)
+
+# -------------------------------------------------------
+#   File conversion
+# -------------------------------------------------------
+
+# set progress dialog box title
+[ "${WIDTH}" = "-" ] && TITLE="Conversion to ${DESCRIPTION}" || TITLE="Conversion to ${DESCRIPTION} (${WIDTH}x${HEIGHT})"
+
+# loop thru image files
+INDEX=0
+for IMAGE in "${ARR_FILE[@]}"
+do
+
+  # generate output filemane
+  DIRECTORY=$(dirname "${IMAGE}")
+  BASEFILE=$(basename "${IMAGE}")
+  BASENAME=$(echo ${BASEFILE} | sed 's/^\(.*\)[.].*$/\1/g')
+
+  # generate file names (change extension for type conversion, append suffix for format conversion)
+  [ "${WIDTH}" = "-" ] && OUTPUT="${DIRECTORY}/${BASENAME}.${TYPE}" || OUTPUT="${DIRECTORY}/${BASENAME}-${NAME}.${TYPE}"
+
+  # display progress
+  echo $((INDEX*100/NBR_FILE))
+
+  # display current image filename
+  echo "# ${BASEFILE}"
+
+  # get image width and height
+  PIX_WIDTH=$(identify -format "%w" "${IMAGE}")
+  PIX_HEIGHT=$(identify -format "%h" "${IMAGE}")
+
+  # if no size specified ( - ), set it to image size
+  [ "${WIDTH}" = "-" ] && WIDTH=${PIX_WIDTH}
+  [ "${HEIGHT}" = "-" ] && HEIGHT=${PIX_HEIGHT}
+
+  # if image is horizontal, set size to target width, else set size to target height
+  [ "${PIX_WIDTH}" -gt "${PIX_HEIGHT}" ] && SIZE="${WIDTH}" || SIZE="x${HEIGHT}"
+
+  # convert picture with auto orientation
+  convert -auto-orient "${IMAGE}" -resize "${SIZE}" -quality "${QUALITY}" "${OUTPUT}"
+
+  # index increment
+  INDEX=$((INDEX+1))
+
+done | zenity --width=500 --height=25 --progress --auto-close --title "${TITLE}"
