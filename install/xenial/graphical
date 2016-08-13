@@ -4,6 +4,7 @@
 #
 # 15/05/2016, V1.0 - Migrated from Trusty
 # 16/05/2016, V1.1 - Add SweetHome3D and update to latest version
+# 12/08/2016, V1.2 - Replace image-resize by image-convert
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -55,9 +56,9 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
 . ./graphviz-thumbnailer-install.sh
 
-# Image resize extension
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
-. ./image-resize-install.sh
+# Image convert extension
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
+. ./image-convert-install.sh
 
 # Image levels optimize extension
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize-install.sh
