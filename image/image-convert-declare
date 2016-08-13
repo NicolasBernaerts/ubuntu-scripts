@@ -1,0 +1,96 @@
+#!/bin/bash
+# ---------------------------------------------------------------
+# Declare all model files for Nautilus Image convert extension
+#
+# All formats are declared in ~/.config/image-convert.conf
+#
+# Revision history :
+#   12/08/2016, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------------------
+
+# ---------------------------------------------------
+#  Initialisation
+# ---------------------------------------------------
+
+# desktop action files directory
+ACTION_DIR="$HOME/.local/share/file-manager/actions"
+
+# action file
+ACTION_SCRIPT="/usr/local/bin/image-convert"
+
+# configuration file
+CONVERT_CONF="$HOME/.config/image-convert.conf"
+
+# remove all previous menu and action desktop files
+rm -f ${ACTION_DIR}/image-convert-*.desktop
+
+# ---------------------------------------------------
+#  Generate Action files
+# ---------------------------------------------------
+
+# load available formats to temporary file
+FILE_TMP=$(mktemp -t format-XXXXXXXX.tmp)
+grep "=" "${CONVERT_CONF}" > "${FILE_TMP}"
+
+# loop thru formats
+while read LINE; do
+
+  # get data
+  NAME=$(echo "${LINE}" | cut -d"=" -f1 )
+  LABEL=$(echo "${LINE}" | cut -d"=" -f2 | cut -d',' -f1)
+  ICON=$(echo "${LINE}" | cut -d"=" -f2 | cut -d',' -f2)
+  WIDTH=$(echo "${LINE}" | cut -d"=" -f2 | cut -d',' -f3)
+  HEIGHT=$(echo "${LINE}" | cut -d"=" -f2 | cut -d',' -f4)
+  TYPE=$(echo "${LINE}" | cut -d"=" -f2 | cut -d',' -f5)
+
+  # set conversion title
+  [ "${WIDTH}" = "-" ] && TITLE="${LABEL}" || TITLE="${LABEL} (${WIDTH}x${HEIGHT})"
+
+  # set mimetype (exclude self type if neeeded)
+  MIMETYPE="image/*;"
+  [ "${WIDTH}" = "-" ] && MIMETYPE="${MIMETYPE} !image/${NAME};"
+
+  # set action desktop file name
+  FILE_DESKTOP="${ACTION_DIR}/image-convert-${NAME}.desktop"
+
+  # add desktop file to menu items list
+  ITEM_LIST="${ITEM_LIST}image-convert-${NAME};"
+
+  # write [Desktop Entry] section
+  echo "[Desktop Entry]" > "${FILE_DESKTOP}"
+  echo "Type=Action" >> "${FILE_DESKTOP}"
+  echo "Name[C]=${TITLE}" >> "${FILE_DESKTOP}"
+  echo "Icon[C]=${ICON}" >> "${FILE_DESKTOP}"
+  echo "Tooltip[C]=${TITLE}" >> "${FILE_DESKTOP}"
+  echo "Profiles=convert;" >> "${FILE_DESKTOP}"
+  echo "" >> "${FILE_DESKTOP}"
+  
+  # write [X-Action-Profile ] section
+  echo "[X-Action-Profile convert]" >> "${FILE_DESKTOP}"
+  echo "MimeType=${MIMETYPE}" >> "${FILE_DESKTOP}"
+  echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
+  echo "Exec=${ACTION_SCRIPT} --format ${NAME} %F" >> "${FILE_DESKTOP}"
+
+done < "${FILE_TMP}"
+
+# ---------------------------------------------------
+#  Generate Menu file
+# ---------------------------------------------------
+
+# set menu desktop file name
+FILE_DESKTOP="${ACTION_DIR}/image-convert-menu.desktop"
+
+# write [Desktop Entry] section
+echo "[Desktop Entry]" > "${FILE_DESKTOP}"
+echo "Type=Menu" >> "${FILE_DESKTOP}"
+echo "Name[C]=Convert to ..." >> "${FILE_DESKTOP}"
+echo "Tooltip[C]=Tools to convert image files to various formats" >> "${FILE_DESKTOP}"
+echo "Icon[C]=emblem-photos" >> "${FILE_DESKTOP}"
+echo "ItemsList=${ITEM_LIST}" >> "${FILE_DESKTOP}"
+
+# ---------------------------------------------------
+#  Restart nautilus to load config
+# ---------------------------------------------------
+
+# restart nautilus
+nautilus -q
