@@ -125,5 +125,5 @@ do
 
   # index increment
   INDEX=$((INDEX+1))
-
+  
 done | zenity --width=500 --height=25 --progress --auto-close --title "${TITLE}"
