@@ -1,9 +1,0 @@
-[Desktop Entry]
-Version=1.0
-Type=Application
-Terminal=false
-Exec=/usr/local/bin/image-resize
-Name=Image Resize
-Categories=Graphics;Utility
-MimeType=image/bmp;image/gif;image/jpeg;image/jpg;image/png;image/tiff;
-Icon=image-resize
