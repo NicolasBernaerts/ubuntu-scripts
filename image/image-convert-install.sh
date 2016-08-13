@@ -22,4 +22,4 @@ sudo chmod +x /usr/local/bin/image-convert-declare
 wget --header='Accept-Encoding:none' -O "$HOME/.config/image-convert.conf" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert.conf
 
 # declare image-convert nautilus extension
-/usr/local/bin/image-convert-declare
+/usr/local/bin/image-convert-declare --install
