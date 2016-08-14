@@ -1,13 +1,37 @@
 #!/bin/bash
-# ---------------------------------------------------
-# Declare new action menus in Nautilus for empty file creation
+# -------------------------------------------------------------
+# Declare all model files for Nautilus New File extension
 #
-# For installation instructions, please check
-#  http://bernaerts.dyndns.org/linux/344-nautilus-new-document-creation-menu
+# All models are declared in ~/.config/nautilus-newfile.conf
 #
 # Revision history :
 #   03/06/2016, V1.0 - Creation by N. Bernaerts
-# ---------------------------------------------------
+#   13/08/2016, V1.1 - Add --install and --remove parameters
+# -------------------------------------------------------------
+
+# -------------------------------------------------------
+#   Loop to load arguments
+# -------------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+  echo "Tool to declare Nautilus New File extension."
+  echo "Parameters are :"
+  echo "  --install       Install the extension"
+  echo "  --remove        Remove the extension"
+  exit
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+  case "$1" in
+    "--install") MODE="install"; shift; ;;
+    "--remove") MODE="remove"; shift; ;;
+    *) shift; ;;
+   esac
+done
 
 # ---------------------------------------------------
 #  Initialisation
@@ -26,53 +50,70 @@ CONF_FILE="${CONF_DIR}/newfile.ini"
 # desktop action files directory
 ACTION_DIR="$HOME/.local/share/file-manager/actions"
 
+# list sections
+ARR_SECTION=( $(INI_List_Sections "${CONF_FILE}") )
+
+# initialise items list
+ITEM_LIST=""
+
+# ---------------------------------------------------
+#  Removal
+# ---------------------------------------------------
+
 # remove all previous action desktop files
 rm -f ${ACTION_DIR}/newfile-*.desktop
 
 # ---------------------------------------------------
-#  Read configuration and generate desktop files
+#  Installation
 # ---------------------------------------------------
 
-# list sections
-ARR_SECTION=( $(INI_List_Sections "${CONF_FILE}") )
+if [ "${MODE}" = "install" ]
+then
 
-# loop thru sections
-for SECTION in "${ARR_SECTION[@]}"
-do
+  # ------------------------------
+  #  Generate Action files
+  # ------------------------------
 
-  # get data
-  LABEL=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" label)
-  ICON=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" icon)
+  # loop thru sections
+  for SECTION in "${ARR_SECTION[@]}"
+  do
 
-  # set action desktop file name
-  FILE_DESKTOP="${ACTION_DIR}/newfile-${SECTION}.desktop"
+    # get data
+    LABEL=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" label)
+    ICON=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" icon)
+
+    # set action desktop file name
+    FILE_DESKTOP="${ACTION_DIR}/newfile-${SECTION}.desktop"
   
-  # write [Desktop Entry] section
-  echo "[Desktop Entry]" > "${FILE_DESKTOP}"
-  echo "Type=Action" >> "${FILE_DESKTOP}"
-  echo "Name[C]=${LABEL}" >> "${FILE_DESKTOP}"
-  echo "Icon[C]=${ICON}" >> "${FILE_DESKTOP}"
-  echo "Tooltip[C]=${LABEL}" >> "${FILE_DESKTOP}"
-  echo "ToolbarLabel[C]=${LABEL}" >> "${FILE_DESKTOP}"
-  echo "TargetLocation=true" >> "${FILE_DESKTOP}"
-  echo "MimeType=inode/directory;" >> "${FILE_DESKTOP}"
-  echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
-  echo "Profiles=directory;" >> "${FILE_DESKTOP}"
-  echo "" >> "${FILE_DESKTOP}"
+    # write [Desktop Entry] section
+    echo "[Desktop Entry]" > "${FILE_DESKTOP}"
+    echo "Type=Action" >> "${FILE_DESKTOP}"
+    echo "Name[C]=${LABEL}" >> "${FILE_DESKTOP}"
+    echo "Icon[C]=${ICON}" >> "${FILE_DESKTOP}"
+    echo "Tooltip[C]=${LABEL}" >> "${FILE_DESKTOP}"
+    echo "ToolbarLabel[C]=${LABEL}" >> "${FILE_DESKTOP}"
+    echo "TargetLocation=true" >> "${FILE_DESKTOP}"
+    echo "TargetToolbar=true" >> "${FILE_DESKTOP}"
+    echo "TargetContext=false" >> "${FILE_DESKTOP}"
+    echo "MimeType=inode/directory;" >> "${FILE_DESKTOP}"
+    echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
+    echo "Profiles=directory;" >> "${FILE_DESKTOP}"
+    echo "" >> "${FILE_DESKTOP}"
   
-  # write [X-Action-Profile ] section
-  echo "[X-Action-Profile directory]" >> "${FILE_DESKTOP}"
-  echo "Exec=${ACTION_SCRIPT} ${SECTION} %f" >> "${FILE_DESKTOP}"
-  echo "Name=Default" >> "${FILE_DESKTOP}"
+    # write [X-Action-Profile ] section
+    echo "[X-Action-Profile directory]" >> "${FILE_DESKTOP}"
+    echo "Exec=${ACTION_SCRIPT} ${SECTION} %f" >> "${FILE_DESKTOP}"
 
-  # set execute rights
-  chmod +x "${FILE_DESKTOP}"
+    # add section to items list
+    ITEM_LIST="${ITEM_LIST}newfile-${SECTION};"
 
-done
+  done
+
+fi
 
 # ---------------------------------------------------
-#  Restart nautilus to load config
+#  Restart nautilus
 # ---------------------------------------------------
 
-# restart nautilus
+# restart nautilus to update configuration
 nautilus -q
