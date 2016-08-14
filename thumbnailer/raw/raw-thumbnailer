@@ -24,11 +24,6 @@ FILE_PATH=$1
 FILE_THUMB=$2
 HEIGHT=$3
 
-echo "$1 $2 $3" >> ~/log.txt
-
-# get filename extension
-#FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
-
 # generate temporary filename
 TMP_JPG=$(mktemp -t XXXXXXXX.jpg)
 TMP_PPM=$(mktemp -t XXXXXXXX.ppm)
