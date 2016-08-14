@@ -4,9 +4,9 @@
 # test Nautilus
 command -v nautilus >/dev/null 2>&1 || { echo "Nautilus has not been detected. Please install it first."; exit 1; }
 
-# install nautilus-actions and imagemagick
+# install nautilus-actions, xdg-utils, imagemagick and dcraw
 sudo apt-get update
-sudo apt-get -y install nautilus-actions imagemagick
+sudo apt-get -y install nautilus-actions xdg-utils imagemagick dcraw
 
 # nautilus : remove nautilus action root menu
 mv $HOME/.config/nautilus-actions/nautilus-actions.conf $HOME/.config/nautilus-actions/nautilus-actions.conf.org
