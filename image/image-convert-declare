@@ -97,13 +97,13 @@ then
     echo "Name[C]=${TITLE}" >> "${FILE_DESKTOP}"
     echo "Icon[C]=${ICON}" >> "${FILE_DESKTOP}"
     echo "Tooltip[C]=${TITLE}" >> "${FILE_DESKTOP}"
+    echo "MimeType=${MIMETYPE}" >> "${FILE_DESKTOP}"
+    echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
     echo "Profiles=convert;" >> "${FILE_DESKTOP}"
     echo "" >> "${FILE_DESKTOP}"
   
     # write [X-Action-Profile ] section
     echo "[X-Action-Profile convert]" >> "${FILE_DESKTOP}"
-    echo "MimeType=${MIMETYPE}" >> "${FILE_DESKTOP}"
-    echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
     echo "Exec=${ACTION_SCRIPT} --format ${NAME} %F" >> "${FILE_DESKTOP}"
 
   done < "${FILE_TMP}"
