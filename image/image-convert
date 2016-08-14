@@ -3,11 +3,13 @@
 #  Convert image files to a list of formats described in ~/.image-convert.conf
 #
 #  Depends on :
-#    * convert [imagemagick]
-#    * identify [imagemagick]
+#    * imagemagick (convert and identify)
+#    * xdg-utils (xdg-mime)
+#    * dcraw
 #
 #  Revision history :
 #    12/08/2016, V1.0 - Creation by N. Bernaerts
+#    13/08/2016, V1.1 - Add RAW image handling, performance tweaks
 # -------------------------------------------------------------------------------
 
 # -------------------------------------------------------
@@ -15,6 +17,8 @@
 # -------------------------------------------------------
 
 # check tools availability
+command -v xdg-mime >/dev/null 2>&1 || { zenity --error --text="Please install xdg-mime [xdg-utils]"; exit 1; }
+command -v dcraw >/dev/null 2>&1 || { zenity --error --text="Please install dcraw"; exit 1; }
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 command -v identify >/dev/null 2>&1 || { zenity --error --text="Please install identify [imagemagick]"; exit 1; }
 
@@ -30,7 +34,7 @@ if [ $# -eq 0 ]
 then
   echo "Tool to convert pictures from Nautilus."
   echo "Parameters are :"
-  echo "  --format <format>       Format of conversion (described in ${FILE_CONF})"
+  echo "  --format <format>       Conversion format to use (described in ${FILE_CONF})"
   echo "  <file1> <file2> ...     List of files"
   exit
 fi
@@ -45,7 +49,7 @@ do
       shift
       ;;
     *) 
-      FILETYPE=$(file --mime-type "$1"  | sed 's/^.*: *\([a-z]*\).*$/\1/')
+      FILETYPE=$(xdg-mime query filetype "$1" | cut -d'/' -f1)
       [ "$FILETYPE" = "image" ] && ARR_FILE=("${ARR_FILE[@]}" "$1")
       shift
       ;;
@@ -83,12 +87,18 @@ HEIGHT=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f4)
 TYPE=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f5)
 QUALITY=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f6)
 
+# if only file format change, no suffix will be added
+[ "${WIDTH}" = "-" -a "${HEIGHT}" = "-" ] && SIZE_CHANGE="no" || SIZE_CHANGE="yes"
+
 # -------------------------------------------------------
 #   File conversion
 # -------------------------------------------------------
 
+# create temporary file
+TMP_PPM=$(mktemp -t convert-XXXXXXXX.ppm)
+
 # set progress dialog box title
-[ "${WIDTH}" = "-" ] && TITLE="Conversion to ${DESCRIPTION}" || TITLE="Conversion to ${DESCRIPTION} (${WIDTH}x${HEIGHT})"
+[ "${SIZE_CHANGE}" = "no" ] && TITLE="Conversion to ${DESCRIPTION}" || TITLE="Conversion to ${DESCRIPTION} (${WIDTH}x${HEIGHT})"
 
 # loop thru image files
 INDEX=0
@@ -101,7 +111,7 @@ do
   BASENAME=$(echo ${BASEFILE} | sed 's/^\(.*\)[.].*$/\1/g')
 
   # generate file names (change extension for type conversion, append suffix for format conversion)
-  [ "${WIDTH}" = "-" ] && OUTPUT="${DIRECTORY}/${BASENAME}.${TYPE}" || OUTPUT="${DIRECTORY}/${BASENAME}-${NAME}.${TYPE}"
+  [ "${SIZE_CHANGE}" = "no" ] && OUTPUT="${DIRECTORY}/${BASENAME}.${TYPE}" || OUTPUT="${DIRECTORY}/${BASENAME}-${NAME}.${TYPE}"
 
   # display progress
   echo $((INDEX*100/NBR_FILE))
@@ -109,16 +119,29 @@ do
   # display current image filename
   echo "# ${BASEFILE}"
 
+  # check if we are dealing with RAW file
+  IS_RAW=$(dcraw -i -v "${IMAGE}"  | grep raw | cut -d':' -f2 | xargs)
+
+  # if image is RAW, convert it to temporary PPM
+  if [ ${IS_RAW} -gt 0 ]
+  then
+    # convert RAW to PPM
+    dcraw -w -c "${IMAGE}" > "${TMP_PPM}"
+
+    # set PPM as original image
+    IMAGE="${TMP_PPM}"
+  fi 
+
   # get image width and height
   PIX_WIDTH=$(identify -format "%w" "${IMAGE}")
   PIX_HEIGHT=$(identify -format "%h" "${IMAGE}")
 
   # if no size specified ( - ), set it to image size
-  [ "${WIDTH}" = "-" ] && WIDTH=${PIX_WIDTH}
-  [ "${HEIGHT}" = "-" ] && HEIGHT=${PIX_HEIGHT}
+  [ "${WIDTH}" = "-" ] && TARGET_WIDTH=${PIX_WIDTH} || TARGET_WIDTH=${WIDTH}
+  [ "${HEIGHT}" = "-" ] && TARGET_HEIGHT=${PIX_HEIGHT} || TARGET_HEIGHT=${HEIGHT}
 
   # if image is horizontal, set size to target width, else set size to target height
-  [ "${PIX_WIDTH}" -gt "${PIX_HEIGHT}" ] && SIZE="${WIDTH}" || SIZE="x${HEIGHT}"
+  [ "${PIX_WIDTH}" -gt "${PIX_HEIGHT}" ] && SIZE="${TARGET_WIDTH}" || SIZE="x${TARGET_HEIGHT}"
 
   # convert picture with auto orientation
   convert -auto-orient "${IMAGE}" -resize "${SIZE}" -quality "${QUALITY}" "${OUTPUT}"
@@ -127,3 +150,6 @@ do
   INDEX=$((INDEX+1))
   
 done | zenity --width=500 --height=25 --progress --auto-close --title "${TITLE}"
+
+# remove temporary file
+rm -f "${TMP_PPM}"
