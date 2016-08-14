@@ -88,10 +88,10 @@ then
     # write [Desktop Entry] section
     echo "[Desktop Entry]" > "${FILE_DESKTOP}"
     echo "Type=Action" >> "${FILE_DESKTOP}"
-    echo "Name[C]=${LABEL}" >> "${FILE_DESKTOP}"
+    echo "Name[C]=New ${LABEL}" >> "${FILE_DESKTOP}"
     echo "Icon[C]=${ICON}" >> "${FILE_DESKTOP}"
-    echo "Tooltip[C]=${LABEL}" >> "${FILE_DESKTOP}"
-    echo "ToolbarLabel[C]=${LABEL}" >> "${FILE_DESKTOP}"
+    echo "Tooltip[C]=New ${LABEL}" >> "${FILE_DESKTOP}"
+    echo "ToolbarLabel[C]=New ${LABEL}" >> "${FILE_DESKTOP}"
     echo "TargetLocation=true" >> "${FILE_DESKTOP}"
     echo "TargetToolbar=true" >> "${FILE_DESKTOP}"
     echo "TargetContext=false" >> "${FILE_DESKTOP}"
