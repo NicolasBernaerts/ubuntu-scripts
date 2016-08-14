@@ -5,6 +5,7 @@
 # 15/05/2016, V1.0 - Migrated from Trusty
 # 16/05/2016, V1.1 - Add SweetHome3D and update to latest version
 # 12/08/2016, V1.2 - Replace image-resize by image-convert
+# 13/08/2016, V1.3 - Add raw-thumbnailer
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -55,6 +56,10 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 # Graphviz DOT thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
 . ./graphviz-thumbnailer-install.sh
+
+# RAW pictures thumbnailer
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer-install.sh
+. ./raw-thumbnailer-install.sh
 
 # Image convert extension
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
