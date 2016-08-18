@@ -65,13 +65,9 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
 . ./image-convert-install.sh
 
-# Image levels optimize extension
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-level-optimize-install.sh
-. ./image-level-optimize-install.sh
-
-# Image IPTC tag manager extension
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-iptc-install.sh
-. ./image-iptc-install.sh
+# Image XMP tagger extension
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/xmp-tagger-install.sh
+. ./xmp-tagger-install.sh
 
 # scan2folder tool
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
