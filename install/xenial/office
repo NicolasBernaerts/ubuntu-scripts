@@ -39,10 +39,6 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
 . ./msoffice-thumbnailer-install.sh
 
-# PDF repair extension
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
-. ./pdf-repair-install.sh
-
 # PDF booklet generation extension
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
 . ./generate-booklet-install.sh
