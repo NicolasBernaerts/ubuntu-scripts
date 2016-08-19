@@ -1,0 +1,100 @@
+#!/bin/bash
+# -------------------------------------------------------
+#  UbuntuGnome 16.04 LTS Post-installation script
+#
+#  This script will run some commands as sudo
+# 
+#  15/08/2016, V1.0 - Migrated from Trusty
+# -------------------------------------------------------
+
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+DISTRINAME="xenial"
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
+RESULT=$(uname -a | grep x86_64)
+[ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
+[ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# -------------- Disable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
+
+# ---------------------------------------------------
+# --------------- Full System Update ----------------
+# ---------------------------------------------------
+
+sudo apt-get update
+sudo apt-get -y dist-upgrade
+
+# ---------------------------------------------------
+# ----------------- Common Packages  ----------------
+# ---------------------------------------------------
+
+# wifi tweaks
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/wifi
+. ./wifi
+
+# misc utilities and tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/utilities
+. ./utilities
+
+# office tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/office
+. ./office
+
+# graphical tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/graphical
+. ./graphical
+
+# multimedia tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/multimedia
+. ./multimedia
+
+# internet tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/internet
+. ./internet
+
+# android tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/android
+. ./android
+
+# remote assistance
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/assistance
+. ./assistance
+
+# gnomeshell
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/gnomeshell
+. ./gnomeshell
+
+# ---------------------------------------------------
+# ---------------------  Tweaks  --------------------
+# ---------------------------------------------------
+
+# touchpad : add palm detection
+sudo mkdir --parent /etc/X11/xorg.conf.d
+sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
+
+# ---------------------------------------------------
+# ------------------ Package cleanup ----------------
+# ---------------------------------------------------
+
+# packages
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+
+# purge thumbnails cache
+rm -r $HOME/.thumbnails
+
+# ---------------------------------------------------
+# -------------- Enable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
