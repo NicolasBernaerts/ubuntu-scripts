@@ -1,0 +1,20 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to configure GnomeShell environment
+#
+# 16/08/2016, V1.0 - Creation
+# -------------------------------------------------------
+
+# install nautilus-action
+sudo apt-get -y install nautilus-action
+
+# nautilus : remove nautilus action root menu
+mv $HOME/.config/nautilus-actions/nautilus-actions.conf $HOME/.config/nautilus-actions/nautilus-actions.conf.org
+cat $HOME/.config/nautilus-actions/nautilus-actions.conf.org | sed 's/items-create-root-menu=.*/items-create-root-menu=false/' > $HOME/.config/nautilus-actions/nautilus-actions.conf
+
+# nautilus : add new empty files right click menu
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
+. ./nautilus-newfile-install.sh
+
+# console management of gnomeshell extensions
+sudo wget -O /usr/local/bin/gnomeshell-extension-install "https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-install"
