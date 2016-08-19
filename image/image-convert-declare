@@ -1,5 +1,5 @@
 #!/bin/bash
-# ---------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # Declare all model files for Nautilus Image convert extension
 #
 # All formats are declared in ~/.config/image-convert.conf
@@ -7,7 +7,8 @@
 # Revision history :
 #   12/08/2016, V1.0 - Creation by N. Bernaerts
 #   13/08/2016, V1.1 - Add --install and --remove parameters
-# ---------------------------------------------------------------
+#   17/08/2016, v1.2 - Update for Gnome 3.18, generate menu before action files
+# -------------------------------------------------------------------------------
 
 # -------------------------------------------------------
 #   Loop to load arguments
@@ -60,12 +61,42 @@ rm -f ${ACTION_DIR}/image-convert-*.desktop
 if [ "${MODE}" = "install" ]
 then
   # -----------------------
-  #  Generate Action files
+  #  List all Action files
   # -----------------------
 
   # load available formats to temporary file
   FILE_TMP=$(mktemp -t format-XXXXXXXX.tmp)
   grep "=" "${CONVERT_CONF}" > "${FILE_TMP}"
+
+  # loop thru formats
+  while read LINE; do
+
+    # get data
+    NAME=$(echo "${LINE}" | cut -d"=" -f1 )
+
+    # add desktop file to menu items list
+    ITEM_LIST="${ITEM_LIST}image-convert-${NAME};"
+
+  done < "${FILE_TMP}"
+
+  # ----------------------
+  #  Generate Menu file
+  # ----------------------
+
+  # set menu desktop file name
+  FILE_DESKTOP="${ACTION_DIR}/image-convert-menu.desktop"
+
+  # write [Desktop Entry] section
+  echo "[Desktop Entry]" > "${FILE_DESKTOP}"
+  echo "Type=Menu" >> "${FILE_DESKTOP}"
+  echo "Name[C]=Convert to ..." >> "${FILE_DESKTOP}"
+  echo "Tooltip[C]=Tools to convert image files to various formats" >> "${FILE_DESKTOP}"
+  echo "Icon[C]=emblem-photos" >> "${FILE_DESKTOP}"
+  echo "ItemsList=${ITEM_LIST}" >> "${FILE_DESKTOP}"
+
+  # ------------------------
+  #  Generate Action files
+  # ------------------------
 
   # loop thru formats
   while read LINE; do
@@ -88,9 +119,6 @@ then
     # set action desktop file name
     FILE_DESKTOP="${ACTION_DIR}/image-convert-${NAME}.desktop"
 
-    # add desktop file to menu items list
-    ITEM_LIST="${ITEM_LIST}image-convert-${NAME};"
-
     # write [Desktop Entry] section
     echo "[Desktop Entry]" > "${FILE_DESKTOP}"
     echo "Type=Action" >> "${FILE_DESKTOP}"
@@ -107,21 +135,6 @@ then
     echo "Exec=${ACTION_SCRIPT} --format ${NAME} %F" >> "${FILE_DESKTOP}"
 
   done < "${FILE_TMP}"
-
-  # ----------------------
-  #  Generate Menu file
-  # ----------------------
-
-  # set menu desktop file name
-  FILE_DESKTOP="${ACTION_DIR}/image-convert-menu.desktop"
-
-  # write [Desktop Entry] section
-  echo "[Desktop Entry]" > "${FILE_DESKTOP}"
-  echo "Type=Menu" >> "${FILE_DESKTOP}"
-  echo "Name[C]=Convert to ..." >> "${FILE_DESKTOP}"
-  echo "Tooltip[C]=Tools to convert image files to various formats" >> "${FILE_DESKTOP}"
-  echo "Icon[C]=emblem-photos" >> "${FILE_DESKTOP}"
-  echo "ItemsList=${ITEM_LIST}" >> "${FILE_DESKTOP}"
 
 fi
 
