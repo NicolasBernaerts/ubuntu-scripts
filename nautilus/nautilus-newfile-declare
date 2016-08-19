@@ -77,7 +77,6 @@ then
   # loop thru sections
   for SECTION in "${ARR_SECTION[@]}"
   do
-
     # get data
     LABEL=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" label)
     ICON=$(INI_Read_Key "${CONF_FILE}" "${SECTION}" icon)
@@ -106,7 +105,6 @@ then
 
     # add section to items list
     ITEM_LIST="${ITEM_LIST}newfile-${SECTION};"
-
   done
 
 fi
