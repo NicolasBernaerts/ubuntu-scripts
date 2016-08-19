@@ -21,3 +21,6 @@ sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
 
 # thumbnailer integration
 sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
+
+# if present, disable gsf-office.thumbnailer (used in UbuntuGnome 16.04)
+[ -f /usr/share/thumbnailers/gsf-office.thumbnailer ] && mv /usr/share/thumbnailers/gsf-office.thumbnailer /usr/share/thumbnailers/gsf-office.thumbnailer.org
