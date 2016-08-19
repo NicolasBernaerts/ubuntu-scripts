@@ -108,7 +108,7 @@ do
     then
       rmdir --parents "${BACKUP_DIR}/${APP_NAME}"
       mkdir "${BACKUP_DIR}/${APP_NAME}"
-      cp --recursive ${APP_PATH}/* "${BACKUP_DIR}/${APP_NAME}"
+      cp --recursive --verbose ${APP_PATH}/* "${BACKUP_DIR}/${APP_NAME}"
     fi
   fi
 
@@ -128,8 +128,8 @@ do
     if [ -d "${BACKUP_DIR}/${APP_NAME}" -a "${APP_MODE}" = "dir" ];
     then
       [ -d "${APP_PATH}" ] || mkdir --parents "${APP_PATH}"
-      rm --force --recursive ${APP_PATH}/*
-      cp --recursive ${BACKUP_DIR}/${APP_NAME}/* "${APP_PATH}"
+      rm --recursive --force ${APP_PATH}/*
+      cp --recursive --verbose ${BACKUP_DIR}/${APP_NAME}/* "${APP_PATH}"
     fi
   fi
 done
