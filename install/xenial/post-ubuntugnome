@@ -84,10 +84,10 @@ sudo mkdir --parent /etc/X11/xorg.conf.d
 sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
 
 # update libgphoto2 to correct broken GoPro USB access
-wget http://launchpadlibrarian.net/266609862/libgphoto2-port12_2.5.10-3_amd64.deb
-sudo dpkg -i libgphoto2-port12_2.5.10-3_amd64.deb
-wget http://launchpadlibrarian.net/266609860/libgphoto2-6_2.5.10-3_amd64.deb
-sudo dpkg -i libgphoto2-6_2.5.10-3_amd64.deb
+wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-port12_2.5.10-3_${ARCHI}.deb
+sudo dpkg -i libgphoto2-port12_2.5.10-3_${ARCHI}.deb
+wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-6_2.5.10-3_${ARCHI}.deb
+sudo dpkg -i libgphoto2-6_2.5.10-3_${ARCHI}.deb
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
