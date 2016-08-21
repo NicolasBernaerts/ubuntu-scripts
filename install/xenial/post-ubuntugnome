@@ -88,6 +88,8 @@ wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-po
 sudo dpkg -i libgphoto2-port12_2.5.10-3_${ARCHI}.deb
 wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-6_2.5.10-3_${ARCHI}.deb
 sudo dpkg -i libgphoto2-6_2.5.10-3_${ARCHI}.deb
+wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-l10n_2.5.10-3_all.deb
+sudo dpkg -i libgphoto2-l10n_2.5.10-3_all.deb
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
