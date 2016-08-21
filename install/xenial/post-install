@@ -127,11 +127,14 @@ fi
 
 case ${DISTRI_TYPE} in
     "UBUNTU") 
+      # gnome session fallback
+      wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-fallback
+      . ./gnome-fallback
       ;;
     "UBUNTUGNOME") 
       # gnomeshell
-      wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnomeshell
-      . ./gnomeshell
+      wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
+      . ./gnome-shell
       ;;
     *) 
       ;;
