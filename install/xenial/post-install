@@ -1,0 +1,171 @@
+#!/bin/bash
+# ---------------------------------------------------------------------------------
+#  Ubuntu 16.04 LTS Post-installation script
+#
+#  This script will run some commands as sudo
+# 
+#  20/12/2015, V1.0 - Migrated from Trusty
+#  16/05/2016, V1.1 - GTK tweak to allow Nautilus windows resize
+#  20/08/2016, V2.0 - Complete rework to merge different distribution post-install
+# ---------------------------------------------------------------------------------
+
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+DISTRI_NAME="xenial"
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
+RESULT=$(uname -a | grep x86_64)
+[ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
+[ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# -------------- Parameters handling ----------------
+# ---------------------------------------------------
+
+# help message if no parameter
+if [ ${#} -eq 0 ];
+then
+    echo "Script to finalise Ubuntu ${DISTRI_NAME} installation."
+    echo "It will install some important packages not provided by default installation."
+    echo "Distribution choice is :"
+    echo "  --ubuntu          Run post-installation for a Ubuntu distribution (unity)"
+    echo "  --ubuntugnome     Run post-installation for a Ubuntu Gnome distribution"
+    echo "Extra parameters are :"
+    echo "  --wifi            Add some tweaks for problematic wifi cards"
+    echo "  --ssd             Add some tweaks for SSD disk"
+    echo "  --assistance      Add remote assistance tools"
+    exit 1
+fi
+
+# iterate thru parameters
+while test ${#} -gt 0
+do
+  case $1 in
+    --ubuntu) DISTRI_TYPE="UBUNTU"; shift; ;;
+    --ubuntugnome) DISTRI_TYPE="UBUNTUGNOME"; shift; ;;
+    --wifi) WIFI="ok"; shift; ;;
+    --ssd) SSD="ok"; shift; ;;
+    --assistance) ASSIST="ok"; shift; ;;
+    *) shift; ;;
+  esac
+done
+
+# ---------------------------------------------------
+# -------------- Disable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
+
+# ---------------------------------------------------
+# --------------- Full System Update ----------------
+# ---------------------------------------------------
+
+sudo apt-get update
+sudo apt-get -y dist-upgrade
+
+# ---------------------------------------------------
+# ----------------- Common Packages  ----------------
+# ---------------------------------------------------
+
+# office tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
+. ./office
+
+# graphical tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
+. ./graphical
+
+# multimedia tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
+. ./multimedia
+
+# internet tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
+. ./internet
+
+# android tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
+. ./android
+
+# misc utilities and tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
+. ./utilities
+
+# ---------------------------------------------------
+# -----------------  Common options  ----------------
+# ---------------------------------------------------
+
+# wifi tweaks
+if [ "${WIFI}" = "ok" ]
+then
+  wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
+  . ./wifi
+fi
+
+# SSD tweaks
+if [ "${SSD}" = "ok" ]
+then
+  wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
+  . ./ssd
+fi
+
+# remote assistance
+if [ "${ASSIST}" = "ok" ]
+then
+  wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
+  . ./assistance
+fi
+
+# ---------------------------------------------------
+# -------------  Distribution specific  -------------
+# ---------------------------------------------------
+
+case ${DISTRI_TYPE} in
+    "UBUNTU") 
+      ;;
+    "UBUNTUGNOME") 
+      # gnomeshell
+      wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnomeshell
+      . ./gnomeshell
+      ;;
+    *) 
+      ;;
+esac
+
+# ---------------------------------------------------
+# ------------------- Common tweaks -----------------
+# ---------------------------------------------------
+
+# touchpad : add palm detection
+sudo mkdir --parent /etc/X11/xorg.conf.d
+sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
+
+# update libgphoto2 to correct broken GoPro USB access
+wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-port12_2.5.10-3_${ARCHI}.deb
+sudo dpkg -i libgphoto2-port12_2.5.10-3_${ARCHI}.deb
+wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-6_2.5.10-3_${ARCHI}.deb
+sudo dpkg -i libgphoto2-6_2.5.10-3_${ARCHI}.deb
+wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-l10n_2.5.10-3_all.deb
+sudo dpkg -i libgphoto2-l10n_2.5.10-3_all.deb
+
+# ---------------------------------------------------
+# ------------------ Package cleanup ----------------
+# ---------------------------------------------------
+
+# packages
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
+
+# purge thumbnails cache
+rm -r $HOME/.thumbnails
+
+# ---------------------------------------------------
+# -------------- Enable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
