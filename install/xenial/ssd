@@ -1,0 +1,19 @@
+#!/bin/sh
+# -------------------------------------------------------
+# Script to tweak configuration for SSD disks
+#
+# 19/08/2016, V1.0 - Creation
+# -------------------------------------------------------
+
+# add noatime parameters to partitions
+sudo sed -i "s/errors=remount-ro/noatime,errors=remount-ro/g" /etc/fstab
+
+# set /tmp as tmpfs
+echo "" | sudo tee -a /etc/fstab
+echo "# SSD tweak : temporary directories as tmpfs" | sudo tee -a /etc/fstab
+echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0" | sudo tee -a /etc/fstab
+
+# almost disable swapiness
+echo "" | sudo tee -a /etc/sysctl.conf
+echo "# minimize swap use to a minimum" | sudo tee -a /etc/sysctl.conf
+echo "vm.swappiness=1" | sudo tee -a /etc/sysctl.conf
