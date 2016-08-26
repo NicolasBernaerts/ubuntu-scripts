@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=xmp-tagger
+Exec=tags-xmp
 Hidden=false
 NoDisplay=false
 Icon=gtk-edit
