@@ -66,7 +66,7 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 . ./image-convert-install.sh
 
 # Image XMP tagger extension
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/xmp-tagger-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/xmp-tagger-install.sh
 . ./xmp-tagger-install.sh
 
 # scan2folder tool
