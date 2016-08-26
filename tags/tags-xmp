@@ -28,7 +28,7 @@ command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install co
 # -------------------------------------------------------
 
 # Configuration file : ~/.config/image-tag-xmp.conf
-FILE_CONF="$HOME/.config/xmp-tagger.conf"
+FILE_CONF="$HOME/.config/tags-xmp.conf"
 
 # check configuration file
 [ -f "$FILE_CONF" ] || { zenity --error --text="Please create and configure ${FILE_CONF}"; exit 1; }
