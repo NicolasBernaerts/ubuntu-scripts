@@ -24,7 +24,7 @@ wget --header='Accept-Encoding:none' -O $HOME/.config/tags-xmp.conf https://raw.
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-xmp https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp
 sudo chmod +x /usr/local/bin/tags-xmp
+
 # desktop integration
-#sudo wget -O /usr/share/applications/xmp-tagger.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/xmp-tagger.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
-wget -O $HOME/.local/share/file-manager/actions/xmp-tagger-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/xmp-tagger-action.desktop
+wget -O $HOME/.local/share/file-manager/actions/tags-xmp-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp-action.desktop
