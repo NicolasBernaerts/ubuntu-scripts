@@ -12,7 +12,7 @@ Tooltip[fr_FR]=Gestion des tags XMP
 Profiles=xmp_tagger;
 
 [X-Action-Profile xmp_tagger]
-Exec=xmp-tagger %f
+Exec=tags-xmp %f
 MimeTypes=application/pdf;image/jpeg;image/png;
 Name[en_US]=Default profile
 Name[en]=Default profile
