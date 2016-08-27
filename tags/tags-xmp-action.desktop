@@ -1,19 +1,11 @@
 [Desktop Entry]
 Type=Action
-Icon=gtk-edit
-Name[en_US]=Manage XMP tags
-Name[en]=Manage XMP tags
+Icon=tags
 Name[C]=Manage XMP tags
-Name[fr_FR]=Edition des tags XMP
-Tooltip[en_US]=Manage XMP tags
-Tooltip[en]=Manage XMP tags
-Tooltip[C]=Manage XMP tags
-Tooltip[fr_FR]=Gestion des tags XMP
-Profiles=xmp_tagger;
-
-[X-Action-Profile xmp_tagger]
-Exec=tags-xmp %f
+TTooltip[C]=Manage XMP tags
 MimeTypes=application/pdf;image/jpeg;image/png;
-Name[en_US]=Default profile
-Name[en]=Default profile
-Name[C]=Default profile
+Profiles=xmp;
+
+[X-Action-Profile xmp]
+TryExec=/usr/local/bin/tags-xmp
+Exec=/usr/local/bin/tags-xmp %F
