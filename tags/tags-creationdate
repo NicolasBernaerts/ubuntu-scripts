@@ -4,7 +4,6 @@
 #
 #  Depends on :
 #   * exiftool
-#   * iconv
 #
 #  Revision history :
 #   20/08/2016, V1.0 - Creation by N. Bernaerts
@@ -68,15 +67,13 @@ INDEX=0
 for FILE_PIX in "${ARR_FILE[@]}"
 do
   # display progress
-  echo $((INDEX*100/NBR_FILE))
+  echo $(((INDEX*100+25)/NBR_FILE))
+  echo "# File $((INDEX+1)) / ${NBR_FILE} - Reading EXIF tags"
 
   # get file data
   FILE_DIR=$(dirname "${FILE_PIX}")
   FILE_NAME=$(basename "${FILE_PIX}")
   FILE_EXT=$(echo "${FILE_PIX}" | sed 's/^.*\.\(.*\)$/\1/')
-
-  # display current image filename
-  echo "# ${INDEX}/${NBR_FILE} ${FILE_NAME} - Reading EXIF tags"
 
   # read the data embedded into the photo
   rm -f "${FILE_TAG}"
@@ -108,8 +105,9 @@ do
   # if asked, set system dates
   if [ "${DATEPIX}" != "" -a "${SET_SYSTEM}" = "ok" ]
   then
-    # display current image filename
-    echo "# ${INDEX}/${NBR_FILE} ${FILE_NAME} - Setting system dates"
+    # display progress
+    echo $(((INDEX*100+50)/NBR_FILE))
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Setting system dates"
 
     # create reference file
     rm -f ${FILE_REF}
@@ -122,8 +120,9 @@ do
   # if asked, rename file
   if [ "${DATEPIX}" != "" -a "${SET_RENAME}" = "ok" ]
   then
-    # display current image filename
-    echo "# ${INDEX}/${NBR_FILE} ${FILE_NAME} - Renaming file"
+    # display progress
+    echo $(((INDEX*100+75)/NBR_FILE))
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Renaming file"
 
     # generate new file base name
     FILE_NAME="${PIX_YEAR}${PIX_MONTH}${PIX_DAY}_${PIX_HOUR}${PIX_MINUTE}${PIX_SECOND}"
@@ -155,10 +154,13 @@ do
     [ ! -f "${FILE_NEW}" ] && mv "${FILE_PIX}" "${FILE_NEW}"
   fi
 
+  # display progress
+  echo $(((INDEX*100+100)/NBR_FILE))
+
   # index increment
   INDEX=$((INDEX+1))
 
-done | zenity --width=500 --height=25 --progress --auto-close --title "${TITLE}"
+done | zenity --width=400 --no-cancel --progress --auto-close --title "${TITLE}"
 
 # cleanup temporary files
 rm -f ${FILE_TAG} ${FILE_UTF} ${FILE_REF}
