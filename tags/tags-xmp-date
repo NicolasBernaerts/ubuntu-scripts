@@ -1,0 +1,164 @@
+#!/bin/bash
+# --------------------------------------------------------------------
+#  Tool to set system dates according to photo creation date
+#
+#  Depends on :
+#   * exiftool
+#   * iconv
+#
+#  Revision history :
+#   20/08/2016, V1.0 - Creation by N. Bernaerts
+# --------------------------------------------------------------------
+
+# -------------------------------------------------------
+#   Initialisation
+# -------------------------------------------------------
+
+# check exiftool and iconv
+command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool [libimage-exiftool-perl]"; exit 1; }
+command -v iconv >/dev/null 2>&1 || { zenity --error --text="Please install iconv"; exit 1; }
+
+# generate temporary files
+FILE_TAG=$(mktemp --tmpdir "XXXXXXXX.tag")
+FILE_UTF=$(mktemp --tmpdir "XXXXXXXX.utf8")
+FILE_REF=$(mktemp --tmpdir "XXXXXXXX.ref")
+rm -f ${FILE_TAG} ${FILE_UTF} ${FILE_REF}
+
+# -------------------------------------------------------
+#   Loop to load arguments
+# -------------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+  echo "Tool to tweak system date and filename of picture files according to EXIF creation date"
+  echo "Parameters are :"
+  echo "  --system                Set system dates to EXIF creation date"
+  echo "  --rename                Rename file as yyyymmdd-hhmmss"
+  echo "  --country               Add country tag to filename"
+  echo "  --city                  Add city tag to filename"
+  echo "  <photo1> <photo2> ...   List of picture files"
+  exit
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+  case "$1" in
+    "--system") SET_SYSTEM="ok"; shift; ;;
+    "--rename") SET_RENAME="ok"; shift; ;;
+    "--country") SET_COUNTRY="ok"; shift; ;;
+    "--city") SET_CITY="ok"; shift; ;;
+    *) [ -f "$1" ] && ARR_FILE=("${ARR_FILE[@]}" "$1"); shift; ;;
+   esac
+done
+
+# -------------------------------------------------------
+#   Loop thru image files
+# -------------------------------------------------------
+
+# calculate number of image files
+NBR_FILE=${#ARR_FILE[@]}
+
+# set progress dialog box title
+TITLE="Updating ${NBR_FILE} images from EXIF creation date tag"
+
+# loop thru image files
+INDEX=0
+for FILE_PIX in "${ARR_FILE[@]}"
+do
+  # display progress
+  echo $((INDEX*100/NBR_FILE))
+
+  # get file data
+  FILE_DIR=$(dirname "${FILE_PIX}")
+  FILE_NAME=$(basename "${FILE_PIX}")
+  FILE_EXT=$(echo "${FILE_PIX}" | sed 's/^.*\.\(.*\)$/\1/')
+
+  # display current image filename
+  echo "# ${INDEX}/${NBR_FILE} ${FILE_NAME} - Reading EXIF tags"
+
+  # read the data embedded into the photo
+  rm -f "${FILE_TAG}"
+  exiftool -G -s -args "$FILE_PIX" > "${FILE_TAG}"
+
+  # detect encoding and convert to UTF8
+  ENCODING=$(file -i "${FILE_TAG}" | cut -d"=" -f2)
+  iconv -f "${ENCODING}" -t "UTF-8" "${FILE_TAG}" -o "${FILE_UTF}"
+
+  # get photo creation date (tags are read in this order : XMP, IPTC, EXIF and GPS)
+  DATEPIX=$(grep "^-XMP:DateTime=" ${FILE_UTF} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-IPTC:DateCreated=" ${FILE_UTF} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:CreateDate=" ${FILE_UTF} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:DateTimeOriginal=" ${FILE_UTF} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-Composite:GPSDateTime=" ${FILE_UTF} | cut -d'=' -f2)
+
+  # if create date is available, get all date data
+  if [ "${DATEPIX}" != "" ]
+  then
+    # retrieve date digits
+    PIX_YEAR=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f1)
+    PIX_MONTH=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f2)
+    PIX_DAY=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f3)
+    PIX_HOUR=$(echo ${DATEPIX} | cut -d' ' -f2 | cut -d ':' -f1)
+    PIX_MINUTE=$(echo ${DATEPIX} | cut -d' ' -f2 | cut -d ':' -f2)
+    PIX_SECOND=$(echo ${DATEPIX} | cut -d' ' -f2 | cut -d ':' -f3)
+  fi
+
+  # if asked, set system dates
+  if [ "${DATEPIX}" != "" -a "${SET_SYSTEM}" = "ok" ]
+  then
+    # display current image filename
+    echo "# ${INDEX}/${NBR_FILE} ${FILE_NAME} - Setting system dates"
+
+    # create reference file
+    rm -f ${FILE_REF}
+    touch -d "${PIX_YEAR}${PIX_MONTH}${PIX_DAY} ${PIX_HOUR}:${PIX_MINUTE}:${PIX_SECOND}" "${FILE_REF}"
+
+    # set photo system dates according to reference file
+    touch -r "${FILE_REF}" "${FILE_PIX}"
+  fi
+
+  # if asked, rename file
+  if [ "${DATEPIX}" != "" -a "${SET_RENAME}" = "ok" ]
+  then
+    # display current image filename
+    echo "# ${INDEX}/${NBR_FILE} ${FILE_NAME} - Renaming file"
+
+    # generate new file base name
+    FILE_NAME="${PIX_YEAR}${PIX_MONTH}${PIX_DAY}_${PIX_HOUR}${PIX_MINUTE}${PIX_SECOND}"
+
+    # if needed, append photo country
+    if [ "${SET_COUNTRY}" = "ok" ]
+    then
+      # get photo country from XMP tag
+      COUNTRY=$(grep "^-XMP:Country=" ${FILE_UTF} | cut -d'=' -f2)
+
+      # if country defined, append it to the name
+      [ "${COUNTRY}" != "" ] && FILE_NAME="${FILE_NAME}-${COUNTRY}"
+    fi
+
+    # if needed, append photo city
+    if [ "${SET_CITY}" = "ok" ]
+    then
+      # get photo city from XMP tag
+      CITY=$(grep "^-XMP:City=" ${FILE_UTF} | cut -d'=' -f2)
+
+      # if city defined, append it to the name
+      [ "${CITY}" != "" ] && FILE_NAME="${FILE_NAME}-${CITY}"
+    fi
+
+    # append path and extension
+    FILE_NEW="${FILE_DIR}/${FILE_NAME}.${FILE_EXT}"
+
+    # change filename
+    [ ! -f "${FILE_NEW}" ] && mv "${FILE_PIX}" "${FILE_NEW}"
+  fi
+
+  # index increment
+  INDEX=$((INDEX+1))
+
+done | zenity --width=500 --height=25 --progress --auto-close --title "${TITLE}"
+
+# cleanup temporary files
+rm -f ${FILE_TAG} ${FILE_UTF} ${FILE_REF}
