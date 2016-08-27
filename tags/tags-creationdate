@@ -4,6 +4,7 @@
 #
 #  Depends on :
 #   * exiftool
+#   * iconv
 #
 #  Revision history :
 #   20/08/2016, V1.0 - Creation by N. Bernaerts
@@ -18,10 +19,12 @@ command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install e
 command -v iconv >/dev/null 2>&1 || { zenity --error --text="Please install iconv"; exit 1; }
 
 # generate temporary files
-FILE_TAG=$(mktemp --tmpdir "XXXXXXXX.tag")
 FILE_UTF=$(mktemp --tmpdir "XXXXXXXX.utf8")
 FILE_REF=$(mktemp --tmpdir "XXXXXXXX.ref")
-rm -f ${FILE_TAG} ${FILE_UTF} ${FILE_REF}
+rm -f ${FILE_UTF} ${FILE_REF}
+
+# load common functions
+. tags-common
 
 # -------------------------------------------------------
 #   Loop to load arguments
@@ -75,20 +78,11 @@ do
   FILE_NAME=$(basename "${FILE_PIX}")
   FILE_EXT=$(echo "${FILE_PIX}" | sed 's/^.*\.\(.*\)$/\1/')
 
-  # read the data embedded into the photo
-  rm -f "${FILE_TAG}"
-  exiftool -G -s -args "$FILE_PIX" > "${FILE_TAG}"
+  # read EXIF data
+  get-dump "${FILE_PIX}" "${FILE_UTF}"
 
-  # detect encoding and convert to UTF8
-  ENCODING=$(file -i "${FILE_TAG}" | cut -d"=" -f2)
-  iconv -f "${ENCODING}" -t "UTF-8" "${FILE_TAG}" -o "${FILE_UTF}"
-
-  # get photo creation date (tags are read in this order : XMP, IPTC, EXIF and GPS)
-  DATEPIX=$(grep "^-XMP:DateTime=" ${FILE_UTF} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-IPTC:DateCreated=" ${FILE_UTF} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:CreateDate=" ${FILE_UTF} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:DateTimeOriginal=" ${FILE_UTF} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-Composite:GPSDateTime=" ${FILE_UTF} | cut -d'=' -f2)
+  # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
+  DATEPIX=$(get-date ${FILE_UTF})
 
   # if create date is available, get all date data
   if [ "${DATEPIX}" != "" ]
@@ -130,8 +124,8 @@ do
     # if needed, append photo country
     if [ "${SET_COUNTRY}" = "ok" ]
     then
-      # get photo country from XMP tag
-      COUNTRY=$(grep "^-XMP:Country=" ${FILE_UTF} | cut -d'=' -f2)
+      # get photo country from tags
+      COUNTRY=$(get-country ${FILE_UTF})
 
       # if country defined, append it to the name
       [ "${COUNTRY}" != "" ] && FILE_NAME="${FILE_NAME}-${COUNTRY}"
@@ -140,8 +134,8 @@ do
     # if needed, append photo city
     if [ "${SET_CITY}" = "ok" ]
     then
-      # get photo city from XMP tag
-      CITY=$(grep "^-XMP:City=" ${FILE_UTF} | cut -d'=' -f2)
+      # get photo city from tags
+      CITY=$(get-city ${FILE_UTF})
 
       # if city defined, append it to the name
       [ "${CITY}" != "" ] && FILE_NAME="${FILE_NAME}-${CITY}"
@@ -163,4 +157,4 @@ do
 done | zenity --width=400 --no-cancel --progress --auto-close --title "${TITLE}"
 
 # cleanup temporary files
-rm -f ${FILE_TAG} ${FILE_UTF} ${FILE_REF}
+rm -f ${FILE_UTF} ${FILE_REF}
