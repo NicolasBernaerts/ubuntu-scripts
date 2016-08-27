@@ -46,6 +46,9 @@ NBR_FILE=$#
 #                  Initialisation
 # -------------------------------------------------------
 
+# load common functions
+. tags-common
+
 # Configuration file : ~/.config/image-tag-xmp.conf
 FILE_CONF="$HOME/.config/tags-xmp.conf"
 
@@ -59,7 +62,6 @@ AUTHOR=$(cat "${FILE_CONF}" | grep "author" | cut -d'=' -f2)
 THUMBNAIL=$(cat "${FILE_CONF}" | grep "thumbnail" | cut -d'=' -f2)
 
 # temporary files
-TAG_ORIGINAL=$(mktemp --tmpdir "XXXXXXXX.org")
 TAG_UTF8=$(mktemp --tmpdir "XXXXXXXX.utf8")
 THUMB_ORIGINAL=$(mktemp --tmpdir "XXXXXXXX.jpg")
 rm -f "${TAG_ORIGINAL}" "${TAG_UTF8}" "${THUMB_ORIGINAL}"
@@ -74,23 +76,33 @@ then
   INPUT_FILE="$1"
 
   # read EXIF data
-  exiftool -G -s -args "${INPUT_FILE}" > "${TAG_ORIGINAL}"
+  get-dump "${INPUT_FILE}" "${TAG_UTF8}"
+
+  # extract or generate thumbnail
+  get-thumbnail "${INPUT_FILE}" "${THUMB_ORIGINAL}"
+
+  # get photo title (tags are read in this order : XMP, IPTC, PDF and EXIF)
+  TITLE=$(get-title ${TAG_UTF8})
+
+  # get photo caption (tags are read in this order : XMP, IPTC, PDF and EXIF)
+  CAPTION=$(get-caption ${TAG_UTF8})
+
+  # get keywords (tags are read in this order : XMP and IPTC)
+  KEYWORD=$(get-keywords ${TAG_UTF8})
+
+  # get author (tags are read in this order : XMP)
+  AUTHOR=$(get-author ${TAG_UTF8})
+
+  # get photo city (tags are read in this order : XMP, IPTC, PDF and configuration file)
+  CITY=$(get-city ${TAG_UTF8})
+  [ "${CITY}" = "" ] && CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
+
+  # get photo country (tags are read in this order : XMP, IPTC, PDF and configuration file)
+  COUNTRY=$(get-country ${TAG_UTF8})
+  [ "${COUNTRY}" = "" ] && COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
 
   # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
-  DATEPIX=$(grep "^-XMP:DateTime=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-IPTC:DateCreated=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-PDF:CreateDate=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:CreateDate=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:DateTimeOriginal=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-Composite:GPSDateTime=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-
-  # extract or generate thumbnail without any metadata
-  exiftool -b -ThumbnailImage ${INPUT_FILE} > ${THUMB_ORIGINAL}
-  [ ! -s "${THUMB_ORIGINAL}" ] && convert -strip -define jpeg:size=128x128 -auto-orient "${INPUT_FILE}[0]" -resize "128x" -quality 85 ${THUMB_ORIGINAL}
-
-  # detect encoding and convert to UTF8
-  ENCODING=$(file -i "${TAG_ORIGINAL}" | cut -d"=" -f2)
-  iconv -f "${ENCODING}" -t "UTF-8" "${TAG_ORIGINAL}" -o "${TAG_UTF8}"
+  DATEPIX=$(get-date ${TAG_UTF8})
 
   # generate the date digits and time
   YEAR=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f1)
@@ -98,34 +110,6 @@ then
   DAY=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f3)
   TIME=$(echo ${DATEPIX} | cut -d' ' -f2)
   [ "${TIME}" = "" ] && TIME="12:00:00"
-
-  # get photo title (tags are read in this order : XMP, IPTC, PDF and EXIF)
-  TITLE=$(grep "^-XMP:Caption=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${TITLE}" = "" ] && TITLE=$(grep "^-IPTC:ObjectName=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${TITLE}" = "" ] && TITLE=$(grep "^-PDF:Title=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${TITLE}" = "" ] && TITLE=$(grep "^-EXIF:DocumentName=" ${TAG_UTF8} | cut -d'=' -f2)
-
-  # get photo caption (tags are read in this order : XMP, IPTC, PDF and EXIF)
-  CAPTION=$(grep "^-XMP:Notes=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${CAPTION}" = "" ] && CAPTION=$(grep "^-IPTC:Caption-Abstract=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${CAPTION}" = "" ] && CAPTION=$(grep "^-PDF:Notes=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${CAPTION}" = "" ] && CAPTION=$(grep "^-EXIF:ImageDescription=" ${TAG_UTF8} | cut -d'=' -f2)
-
-  # get keywords (tags are read in this order : XMP, IPTC and PDF)
-  KEYWORD=$(grep "^-XMP:Keywords=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${KEYWORD}" = "" ] && KEYWORD=$(grep "^-IPTC:Keywords=" ${TAG_UTF8} | cut -d'=' -f2)
-
-  # get photo city (tags are read in this order : XMP, IPTC, PDF and configuration file)
-  CITY=$(grep "^-XMP:City=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${CITY}" = "" ] && CITY=$(grep "^-IPTC:City=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${CITY}" = "" ] && CITY=$(grep "^-PDF:City=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${CITY}" = "" ] && CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
-
-  # get photo country (tags are read in this order : XMP, IPTC, PDF and configuration file)
-  COUNTRY=$(grep "^-XMP:Country=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${COUNTRY}" = "" ] && COUNTRY=$(grep "^-IPTC:Country-PrimaryLocationName=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${COUNTRY}" = "" ] && COUNTRY=$(grep "^-PDF:Country=" ${TAG_UTF8} | cut -d'=' -f2)
-  [ "${COUNTRY}" = "" ] && COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
 
   #  Display the tags editing dialog
   RESULT=$(yad --center --title="XMP Tags - ${INPUT_FILE}" --width=800 --image="${THUMB_ORIGINAL}" --date-format="%d/%m/%Y" --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Date:DT" --field="Time" --field="Keywords" --field="Author" --field="Include thumbnail:CHK" "${TITLE}" "${CAPTION}" "${CITY}" "${COUNTRY}" "${DAY}/${MONTH}/${YEAR}" "${TIME}" "${KEYWORD}" "${AUTHOR}" "${THUMBNAIL}" --button="gtk-cancel:1" --button="gtk-ok:0" )
@@ -192,18 +176,13 @@ do
     echo "# File $((INDEX+1)) / ${NBR_FILE} - Tags generation"
 
     # read the data embedded into the file
-    exiftool -G -s -args "${INPUT_FILE}" > "${TAG_ORIGINAL}"
+    get-dump "${INPUT_FILE}" "${TAG_UTF8}"
 
     # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
-    DATEPIX=$(grep "^-XMP:DateTime=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-    [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-IPTC:DateCreated=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-    [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-PDF:CreateDate=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-    [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:CreateDate=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-    [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:DateTimeOriginal=" ${TAG_ORIGINAL} | cut -d'=' -f2)
-    [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-Composite:GPSDateTime=" ${TAG_ORIGINAL} | cut -d'=' -f2)
+    [ "${DATEPIX}" != "" ] && DATE="${DATEPIX}" || DATE=$(get-date ${TAG_UTF8})
 
     # prepare exiftool parameters
-    ARR_PARAM=("-xmp:DateTime=${DATEPIX}")
+    ARR_PARAM=("-xmp:DateTime=${DATE}")
     [ "${TITLE}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=")
     [ "${TITLE}" != "-" -a "${TITLE}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=${TITLE}")
     [ "${CAPTION}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Notes=")
