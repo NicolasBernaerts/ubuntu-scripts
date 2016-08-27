@@ -30,8 +30,11 @@ sudo chmod +x /usr/local/bin/tags-creationdate
 # desktop integration : icon
 sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/tags.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags.png
 
-# desktop integration : root menu
+# desktop integration : preparation
 mkdir --parents $HOME/.local/share/file-manager/actions
+rm $HOME/.local/share/file-manager/actions/tags-*.desktop
+
+# desktop integration : root menu
 wget -O $HOME/.local/share/file-manager/actions/tags-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-menu.desktop
 
 # desktop integration : entries
