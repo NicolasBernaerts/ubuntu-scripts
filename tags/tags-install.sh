@@ -22,6 +22,8 @@ mkdir --parents $HOME/.config
 wget --header='Accept-Encoding:none' -O $HOME/.config/tags-xmp.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp.conf
 
 # install main script
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-common https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-common
+sudo chmod +x /usr/local/bin/tags-common
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-xmp https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp
 sudo chmod +x /usr/local/bin/tags-xmp
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-creationdate https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-creationdate
