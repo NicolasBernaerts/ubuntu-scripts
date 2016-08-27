@@ -1,12 +1,12 @@
 [Desktop Entry]
 Type=Action
 Icon=tags
-Name[C]=Set system dates with creation date
+Name[C]=EXIF - Set system dates with creation date
 Tooltip[C]=Set System dates according to EXIF creation date 
 MimeType=image/*;
 Capabilities=Writable
 Profiles=systemdate;
 
 [X-Action-Profile systemdate]
-TryExec=/usr/local/bin/tags-xmp-date
-Exec=/usr/local/bin/tags-xmp-date --system %F
+TryExec=/usr/local/bin/tags-creationdate
+Exec=/usr/local/bin/tags-creationdate --system %F
