@@ -64,7 +64,7 @@ THUMBNAIL=$(cat "${FILE_CONF}" | grep "thumbnail" | cut -d'=' -f2)
 # temporary files
 TAG_UTF8=$(mktemp --tmpdir "XXXXXXXX.utf8")
 THUMB_ORIGINAL=$(mktemp --tmpdir "XXXXXXXX.jpg")
-rm -f "${TAG_ORIGINAL}" "${TAG_UTF8}" "${THUMB_ORIGINAL}"
+rm -f "${TAG_UTF8}" "${THUMB_ORIGINAL}"
 
 # -------------------------------------------------------
 #              Individual file parameters
@@ -225,4 +225,4 @@ do
 done | zenity --width=400 --no-cancel --progress --auto-close --title "${DIALOG_TITLE}"
 
 # cleanup temporary files
-rm -f "${TAG_ORIGINAL}" "${TAG_UTF8}" "${THUMB_ORIGINAL}"
+rm -f "${TAG_UTF8}" "${THUMB_ORIGINAL}"
