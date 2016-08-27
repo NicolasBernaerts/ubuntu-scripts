@@ -1,12 +1,12 @@
 #!/bin/sh
-# XMP tags editor extension
+# image tags extensions
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # install tools
-sudo apt-get -y install libimage-exiftool-perl imagemagick zenity
+sudo apt-get -y install libimage-exiftool-perl imagemagick
 
 # install yad
 IS_PRESENT=$(command -v yad)
@@ -24,7 +24,17 @@ wget --header='Accept-Encoding:none' -O $HOME/.config/tags-xmp.conf https://raw.
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-xmp https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp
 sudo chmod +x /usr/local/bin/tags-xmp
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-creationdate https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-creationdate
+sudo chmod +x /usr/local/bin/tags-creationdate
 
-# desktop integration
+# desktop integration : icon
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/tags.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags.png
+
+# desktop integration : root menu
 mkdir --parents $HOME/.local/share/file-manager/actions
+wget -O $HOME/.local/share/file-manager/actions/tags-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-menu.desktop
+
+# desktop integration : entries
 wget -O $HOME/.local/share/file-manager/actions/tags-xmp-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp-action.desktop
+wget -O $HOME/.local/share/file-manager/actions/tags-creationdate-rename.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-creationdate-rename.desktop
+wget -O $HOME/.local/share/file-manager/actions/tags-creationdate-system.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-creationdate-system.desktop
