@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Action
 Icon=tags
-Name[C]=Manage XMP tags
+Name[C]=XMP - Update tags
 TTooltip[C]=Manage XMP tags
 MimeTypes=application/pdf;image/jpeg;image/png;
 Profiles=xmp;
