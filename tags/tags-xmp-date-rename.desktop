@@ -8,5 +8,5 @@ Capabilities=Writable
 Profiles=rename;
 
 [X-Action-Profile rename]
-TryExec=/usr/local/bin/tags-creationdate
-Exec=/usr/local/bin/tags-creationdate --rename --country --city %F
+TryExec=/usr/local/bin/tags-xmp-date
+Exec=/usr/local/bin/tags-xmp-date --rename --country --city %F
