@@ -89,9 +89,9 @@ then
   # write [Desktop Entry] section
   echo "[Desktop Entry]" > "${FILE_DESKTOP}"
   echo "Type=Menu" >> "${FILE_DESKTOP}"
+  echo "Icon=emblem-photos" >> "${FILE_DESKTOP}"
   echo "Name[C]=Convert to ..." >> "${FILE_DESKTOP}"
   echo "Tooltip[C]=Tools to convert image files to various formats" >> "${FILE_DESKTOP}"
-  echo "Icon[C]=emblem-photos" >> "${FILE_DESKTOP}"
   echo "ItemsList=${ITEM_LIST}" >> "${FILE_DESKTOP}"
 
   # ------------------------
@@ -122,8 +122,8 @@ then
     # write [Desktop Entry] section
     echo "[Desktop Entry]" > "${FILE_DESKTOP}"
     echo "Type=Action" >> "${FILE_DESKTOP}"
+    echo "Icon=${ICON}" >> "${FILE_DESKTOP}"
     echo "Name[C]=${TITLE}" >> "${FILE_DESKTOP}"
-    echo "Icon[C]=${ICON}" >> "${FILE_DESKTOP}"
     echo "Tooltip[C]=${TITLE}" >> "${FILE_DESKTOP}"
     echo "MimeType=${MIMETYPE}" >> "${FILE_DESKTOP}"
     echo "Capabilities=Writable" >> "${FILE_DESKTOP}"
