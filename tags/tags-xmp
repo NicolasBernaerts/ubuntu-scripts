@@ -1,16 +1,19 @@
 #!/bin/bash
 # ---------------------------------------------------
 #  Tool to write main XMP tags to compatible files
+#
 #  Depends on :
 #   * yad
 #   * exiftool
 #   * iconv
 #   * convert
+#
 #  Revision history :
 #   10/03/2014, V1.0 - Creation by N. Bernaerts
 #   08/05/2015, V1.1 - Code cleanup and optimization
 #   16/05/2015, V1.2 - Handle non UTF-8 tags
 #   20/08/2015, V2.0 - Complete rewrite for XMP tags
+#   20/08/2016, V2.1 - Mass tagging capability
 # ---------------------------------------------------
 
 # -------------------------------------------------
@@ -24,7 +27,30 @@ command -v iconv >/dev/null 2>&1 || { zenity --error --text="Please install icon
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 
 # -------------------------------------------------------
-#      Read parameters from configuration file
+#   Loop to load arguments
+# -------------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+  echo "Tool to write main XMP tags to compatible files"
+  echo "Parameters are :"
+  echo "  <photo1> <photo2> ...   List of picture files"
+  exit
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+  ARR_FILE=("${ARR_FILE[@]}" "$1")
+  shift
+done
+
+# calculate number of image files
+NBR_FILE=${#ARR_FILE[@]}
+
+# -------------------------------------------------------
+#                  Initialisation
 # -------------------------------------------------------
 
 # Configuration file : ~/.config/image-tag-xmp.conf
@@ -33,126 +59,173 @@ FILE_CONF="$HOME/.config/tags-xmp.conf"
 # check configuration file
 [ -f "$FILE_CONF" ] || { zenity --error --text="Please create and configure ${FILE_CONF}"; exit 1; }
 
-# Load configuration file
+# load default values from configuration file
+CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
+COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
 AUTHOR=$(cat "${FILE_CONF}" | grep "author" | cut -d'=' -f2)
 THUMBNAIL=$(cat "${FILE_CONF}" | grep "thumbnail" | cut -d'=' -f2)
 
-# -------------------------------------------------------
-#          Retrieve or select file to tag
-# -------------------------------------------------------
-
-# set separator as line break
-IFS=$'\n'
-
-# set input file
-INPUT_FILE="$1"
-
-# if parameter is not a file, select file to handle
-[ -f "${INPUT_FILE}" ] || INPUT_FILE=$(zenity --file-selection --title="Select file to edit XMP tags")
-
-# if no input file, exit
-[ -f "${INPUT_FILE}" ] || exit 1
-
-# -------------------------------------------------------
-#          Generate file thumbnail
-# -------------------------------------------------------
-
-# generate random file name
-THUMB_ORIGINAL=$(mktemp --tmpdir "XXXXXXXX.jpg")
-
-# generate thumbnail
-convert -auto-orient "${INPUT_FILE}[0]" -resize "240x" -quality 85 "${THUMB_ORIGINAL}"
-
-# -------------------------------------------------------
-#          Collect tags from file
-#          Tags are read from 
-#            XMP, IPTC, PDF and EXIF groups
-# -------------------------------------------------------
-
-# generate random file name for tags
+# temporary files
 TAG_ORIGINAL=$(mktemp --tmpdir "XXXXXXXX.org")
 TAG_UTF8=$(mktemp --tmpdir "XXXXXXXX.utf8")
-
-# read the data embedded into the file
-exiftool -G -s -args "${INPUT_FILE}" > "${TAG_ORIGINAL}"
-
-# detect encoding and convert to UTF8
-ENCODING=$(file -i "${TAG_ORIGINAL}" | cut -d"=" -f2)
-iconv -f "${ENCODING}" -t "UTF-8" "${TAG_ORIGINAL}" -o "${TAG_UTF8}"
-
-# get photo title (tags are read in this order : XMP, IPTC, PDF and EXIF)
-TITLE=$(grep "^-XMP:Caption=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${TITLE}" = "" ] && TITLE=$(grep "^-IPTC:ObjectName=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${TITLE}" = "" ] && TITLE=$(grep "^-PDF:Title=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${TITLE}" = "" ] && TITLE=$(grep "^-EXIF:DocumentName=" ${TAG_UTF8} | cut -d'=' -f2)
-
-# get photo caption (tags are read in this order : XMP, IPTC, PDF and EXIF)
-CAPTION=$(grep "^-XMP:Notes=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${CAPTION}" = "" ] && CAPTION=$(grep "^-IPTC:Caption-Abstract=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${CAPTION}" = "" ] && CAPTION=$(grep "^-PDF:Notes=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${CAPTION}" = "" ] && CAPTION=$(grep "^-EXIF:ImageDescription=" ${TAG_UTF8} | cut -d'=' -f2)
-
-# get keywords (tags are read in this order : XMP, IPTC and PDF)
-KEYWORD=$(grep "^-XMP:Keywords=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${KEYWORD}" = "" ] && KEYWORD=$(grep "^-IPTC:Keywords=" ${TAG_UTF8} | cut -d'=' -f2)
-
-# get photo city (tags are read in this order : XMP, IPTC, PDF and configuration file)
-CITY=$(grep "^-XMP:City=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${CITY}" = "" ] && CITY=$(grep "^-IPTC:City=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${CITY}" = "" ] && CITY=$(grep "^-PDF:City=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${CITY}" = "" ] && CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
-
-# get photo country (tags are read in this order : XMP, IPTC, PDF and configuration file)
-COUNTRY=$(grep "^-XMP:Country=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${COUNTRY}" = "" ] && COUNTRY=$(grep "^-IPTC:Country-PrimaryLocationName=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${COUNTRY}" = "" ] && COUNTRY=$(grep "^-PDF:Country=" ${TAG_UTF8} | cut -d'=' -f2)
-[ "${COUNTRY}" = "" ] && COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
-
-# get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
-DATEPIX=$(grep "^-XMP:DateTime=" ${TAG_UTF8} | cut -d'=' -f2 | cut -d' ' -f1)
-[ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-IPTC:DateCreated=" ${TAG_UTF8} | cut -d'=' -f2 | cut -d' ' -f1)
-[ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-PDF:CreateDate=" ${TAG_UTF8} | cut -d'=' -f2 | cut -d' ' -f1)
-[ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:CreateDate=" ${TAG_UTF8} | cut -d'=' -f2 | cut -d' ' -f1)
-
-# generate the date digits
-YEAR=$(echo ${DATEPIX} | cut -f1 -d ':')
-MONTH=$(echo ${DATEPIX} | cut -f2 -d ':')
-DAY=$(echo ${DATEPIX} | cut -f3 -d ':')
+THUMB_ORIGINAL=$(mktemp --tmpdir "XXXXXXXX.jpg")
+rm -f "${TAG_ORIGINAL}" "${TAG_UTF8}" "${THUMB_ORIGINAL}"
 
 # -------------------------------------------------------
-#          Display the tags editing dialog
+#              Mass tagging parameters
 # -------------------------------------------------------
 
-# display the modification GUI
-RESULT=$(yad --center --title="XMP Tags - ${INPUT_FILE}" --width=800 --image="${THUMB_ORIGINAL}" --date-format="%d/%m/%Y" --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Date:DT" --field="Keywords" --field="Include thumbnail:CHK" "${TITLE}" "${CAPTION}" "${CITY}" "${COUNTRY}" "${DAY}/${MONTH}/${YEAR}" "${KEYWORD}" "${THUMBNAIL}" --button="gtk-cancel:1" --button="Update:0")
-CODE=$?
+# if multiple files, display mass tagging dialog box
+if [ ${NBR_FILE} -gt 1 ]
+then
+  # Display the mass tags editing dialog
+  RESULT=$(yad --center --title="XMP Mass Tagging (${NBR_FILE} files)" --width=800 --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Keywords" --field="Author" --field="Include thumbnail:CHK" "${TITLE}" "${CAPTION}" "${CITY}" "${COUNTRY}" "${KEYWORD}" "${AUTHOR}" "${THUMBNAIL}" --button="gtk-cancel:1" --button="gtk-ok:0")
+  CANCEL=$?
 
-# -------------------------------------------------------
-#                Update file tags
-# -------------------------------------------------------
+  # if dialog has been canceled, exit
+  [ ${CANCEL} = "1" ] && exit
 
-# if caption is not empty, write it into the file
-if [ ${CODE} = "0" ]; then
-  # retreive the values from resulting chain
+  # dialog has not been canceled, retreive values from resulting chain
   TITLE=$(echo ${RESULT} |cut -d '|' -f1)
   CAPTION=$(echo ${RESULT} |cut -d '|' -f2)
   CITY=$(echo ${RESULT} |cut -d '|' -f3)
   COUNTRY=$(echo ${RESULT} |cut -d '|' -f4)
-  DAY=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f1)
-  MONTH=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f2)
-  YEAR=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f3)
-  KEYWORD=$(echo ${RESULT} | cut -d '|' -f6)
+  KEYWORD=$(echo ${RESULT} | cut -d '|' -f5)
+  AUTHOR=$(echo ${RESULT} | cut -d '|' -f6)
   THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f7)
-
-  # if needed, set date
-  [ "${YEAR}" != "" ] && DATE="${YEAR}:${MONTH}:${DAY}" || DATE=""
-
-  # update XMP text fields
-  exiftool -overwrite_original -xmp:DateTime="${DATE}" -xmp:Caption="${TITLE}" -xmp:Notes="${CAPTION}" -xmp:City="${CITY}" -xmp:Country="${COUNTRY}" -xmp:Keywords="${KEYWORD}" -xmp:Author="${AUTHOR}" ${INPUT_FILE}
-
-  # update XMP thumbnail
-  [ -f ${THUMB_ORIGINAL} ] && [ "${THUMBNAIL}" = TRUE ] && exiftool -overwrite_original '-xmp:ThumbnailImage<='${THUMB_ORIGINAL} ${INPUT_FILE}
 fi
 
+# -------------------------------------------------------
+#                Loop thru image files
+# -------------------------------------------------------
+
+INDEX=1
+for INPUT_FILE in "${ARR_FILE[@]}"
+do
+
+  # read the data embedded into the file
+  echo "File ${INDEX}/${NBR_FILE}"
+  exiftool -G -s -args "${INPUT_FILE}" > "${TAG_ORIGINAL}"
+
+  # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
+  DATEPIX=$(grep "^-XMP:DateTime=" ${TAG_ORIGINAL} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-IPTC:DateCreated=" ${TAG_ORIGINAL} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-PDF:CreateDate=" ${TAG_ORIGINAL} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:CreateDate=" ${TAG_ORIGINAL} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-EXIF:DateTimeOriginal=" ${TAG_ORIGINAL} | cut -d'=' -f2)
+  [ "${DATEPIX}" = "" ] && DATEPIX=$(grep "^-Composite:GPSDateTime=" ${TAG_ORIGINAL} | cut -d'=' -f2)
+
+  # if individual file, display complete dialog box with thumbnail and tags
+  if [ ${NBR_FILE} -eq 1 ]
+  then
+    # extract or generate thumbnail without any metadata
+    exiftool -b -ThumbnailImage ${INPUT_FILE} > ${THUMB_ORIGINAL}
+    [ ! -s "${THUMB_ORIGINAL}" ] && convert -strip -define jpeg:size=128x128 -auto-orient "${INPUT_FILE}[0]" -resize "128x" -quality 85 ${THUMB_ORIGINAL}
+
+    # detect encoding and convert to UTF8
+    ENCODING=$(file -i "${TAG_ORIGINAL}" | cut -d"=" -f2)
+    iconv -f "${ENCODING}" -t "UTF-8" "${TAG_ORIGINAL}" -o "${TAG_UTF8}"
+
+    # generate the date digits and time
+    YEAR=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f1)
+    MONTH=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f2)
+    DAY=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f3)
+    TIME=$(echo ${DATEPIX} | cut -d' ' -f2)
+    [ "${TIME}" = "" ] && TIME="12:00:00"
+
+    # get photo title (tags are read in this order : XMP, IPTC, PDF and EXIF)
+    TITLE=$(grep "^-XMP:Caption=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${TITLE}" = "" ] && TITLE=$(grep "^-IPTC:ObjectName=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${TITLE}" = "" ] && TITLE=$(grep "^-PDF:Title=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${TITLE}" = "" ] && TITLE=$(grep "^-EXIF:DocumentName=" ${TAG_UTF8} | cut -d'=' -f2)
+
+    # get photo caption (tags are read in this order : XMP, IPTC, PDF and EXIF)
+    CAPTION=$(grep "^-XMP:Notes=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${CAPTION}" = "" ] && CAPTION=$(grep "^-IPTC:Caption-Abstract=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${CAPTION}" = "" ] && CAPTION=$(grep "^-PDF:Notes=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${CAPTION}" = "" ] && CAPTION=$(grep "^-EXIF:ImageDescription=" ${TAG_UTF8} | cut -d'=' -f2)
+
+    # get keywords (tags are read in this order : XMP, IPTC and PDF)
+    KEYWORD=$(grep "^-XMP:Keywords=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${KEYWORD}" = "" ] && KEYWORD=$(grep "^-IPTC:Keywords=" ${TAG_UTF8} | cut -d'=' -f2)
+
+    # get photo city (tags are read in this order : XMP, IPTC, PDF and configuration file)
+    CITY=$(grep "^-XMP:City=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${CITY}" = "" ] && CITY=$(grep "^-IPTC:City=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${CITY}" = "" ] && CITY=$(grep "^-PDF:City=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${CITY}" = "" ] && CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
+
+    # get photo country (tags are read in this order : XMP, IPTC, PDF and configuration file)
+    COUNTRY=$(grep "^-XMP:Country=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${COUNTRY}" = "" ] && COUNTRY=$(grep "^-IPTC:Country-PrimaryLocationName=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${COUNTRY}" = "" ] && COUNTRY=$(grep "^-PDF:Country=" ${TAG_UTF8} | cut -d'=' -f2)
+    [ "${COUNTRY}" = "" ] && COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
+
+    #  Display the tags editing dialog
+    RESULT=$(yad --center --title="XMP Tags - ${INPUT_FILE} (${INDEX}/${NBR_FILE})" --width=800 --image="${THUMB_ORIGINAL}" --date-format="%d/%m/%Y" --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Date:DT" --field="Time" --field="Keywords" --field="Author" --field="Include thumbnail:CHK" "${TITLE}" "${CAPTION}" "${CITY}" "${COUNTRY}" "${DAY}/${MONTH}/${YEAR}" "${TIME}" "${KEYWORD}" "${AUTHOR}" "${THUMBNAIL}" --button="gtk-cancel:1" --button="Skip:2" --button="gtk-ok:0" )
+    CANCEL=$?
+
+    # if dialog has been canceled, cleanup temporary files and exit
+    if [ ${CANCEL} = "1" ]
+    then
+      rm -f "${TAG_ORIGINAL}" "${TAG_UTF8}" "${THUMB_ORIGINAL}"
+      exit
+   
+    # else, if photo has not been skipped, retrieve tags from dialog
+    elif [ ${CANCEL} = "0" ]
+    then
+      # retreive the values from resulting chain
+      TITLE=$(echo ${RESULT} |cut -d '|' -f1)
+      CAPTION=$(echo ${RESULT} |cut -d '|' -f2)
+      CITY=$(echo ${RESULT} |cut -d '|' -f3)
+      COUNTRY=$(echo ${RESULT} |cut -d '|' -f4)
+      DAY=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f1)
+      MONTH=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f2)
+      YEAR=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f3)
+      TIME=$(echo ${RESULT} | cut -d '|' -f6)
+      KEYWORD=$(echo ${RESULT} | cut -d '|' -f7)
+      AUTHOR=$(echo ${RESULT} | cut -d '|' -f8)
+      THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f9)
+
+      # set time and date
+      [ "${TIME}" = "" ] && TIME="12:00:00"
+      [ "${YEAR}" = "" ] && DATEPIX="" || DATEPIX="${YEAR}:${MONTH}:${DAY} ${TIME}"
+    fi
+  fi
+
+  # if current photo is not skipped, update it
+  if [ ${CANCEL} = "0" ]
+  then
+    # prepare exiftool parameters
+    ARR_PARAM=("-xmp:DateTime=${DATEPIX}")
+    [ "${TITLE}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=")
+    [ "${TITLE}" != "-" -a "${TITLE}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=${TITLE}")
+    [ "${CAPTION}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Notes=")
+    [ "${CAPTION}" != "-" -a "${CAPTION}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Notes=${CAPTION}")
+    [ "${CITY}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:City=")
+    [ "${CITY}" != "-" -a "${CITY}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:City=${CITY}")
+    [ "${COUNTRY}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Country=")
+    [ "${COUNTRY}" != "-" -a "${COUNTRY}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Country=${COUNTRY}")
+    [ "${KEYWORD}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Keywords=")
+    [ "${KEYWORD}" != "-" -a "${KEYWORD}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Keywords=${KEYWORD}")
+    [ "${AUTHOR}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Author=")
+    [ "${AUTHOR}" != "-" -a "${AUTHOR}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Author=${AUTHOR}")
+
+    # update XMP tags
+    exiftool -overwrite_original "${ARR_PARAM[@]}" "${INPUT_FILE}"
+
+    # if needed, update thumbnail
+    if [ "${THUMBNAIL}" = "TRUE" ] 
+    then
+      rm -f ${THUMB_ORIGINAL}
+      convert -strip -define jpeg:size=240x240 -auto-orient "${INPUT_FILE}[0]" -resize "240x" -quality 80 ${THUMB_ORIGINAL}
+      exiftool -overwrite_original '-ThumbnailImage<='${THUMB_ORIGINAL} "${INPUT_FILE}"
+    fi
+
+    # index increment
+    INDEX=$((INDEX+1))
+  fi
+done
+
 # cleanup temporary files
-rm "${TAG_ORIGINAL}" "${TAG_UTF8}" "${THUMB_ORIGINAL}"
+rm -f "${TAG_ORIGINAL}" "${TAG_UTF8}" "${THUMB_ORIGINAL}"
