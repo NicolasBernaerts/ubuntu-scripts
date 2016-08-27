@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Action
+Icon=tags
+Name[C]=EXIF - Rename files with creation date
+Tooltip[C]=Rename file according to its EXIF creation date 
+MimeType=image/all;
+Capabilities=Writable
+Profiles=rename;
+
+[X-Action-Profile rename]
+TryExec=/usr/local/bin/tags-creationdate
+Exec=/usr/local/bin/tags-creationdate --rename --country --city %F
