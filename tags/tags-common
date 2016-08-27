@@ -1,0 +1,187 @@
+#!/bin/bash
+# ---------------------------------------------------
+#  XMP tags common functions
+#
+#  Revision history :
+#   20/08/2016, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# -------------------------------------------------------
+#  Get EXIF tags dump from image file
+#
+#  Parameters :
+#    $1 - original image file
+#    $2 - file where to place dump
+# -------------------------------------------------------
+function get-dump ()
+{
+  # temporary file
+  TAG_TMP=$(mktemp --tmpdir "XXXXXXXX.tmp")
+
+  # read EXIF data
+  exiftool -G -s -args "$1" > "${TAG_TMP}"
+
+  # detect encoding
+  ENCODING=$(file -i "${TAG_TMP}" | cut -d"=" -f2)
+
+  # convert dump to UTF8
+  iconv -f "${ENCODING}" -t "UTF-8" "${TAG_TMP}" -o "$2"
+
+  # clean temporary file
+  rm "${TAG_TMP}"
+}
+
+# -------------------------------------------------------
+#  Get Creation Date from EXIF tags
+#
+#  Tags are read in this order : XMP, IPTC, PDF and EXIF
+#  Date should be YYYY:MM:DD HH:MM:SS
+#
+#  Parameters :
+#    $1 - file with tags dump
+# -------------------------------------------------------
+function get-date ()
+{
+  # read tag
+  TAG_VALUE=$(grep "^-XMP:DateTime=" "$1" | cut -d'=' -f2 | grep ":")
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-IPTC:DateCreated=" "$1" | cut -d'=' -f2 | grep ":")
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-PDF:CreateDate=" "$1" | cut -d'=' -f2 | grep ":")
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-EXIF:CreateDate=" "$1" | cut -d'=' -f2 | grep ":")
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-EXIF:DateTimeOriginal=" "$1" | cut -d'=' -f2 | grep ":")
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-Composite:GPSDateTime=" "$1" | cut -d'=' -f2 | grep ":")
+
+  # keep only YYYY:MM:DD HH:MM:SS
+  TAG_VALUE=$(echo "${TAG_VALUE}" | sed "s/^\([0-9 :]*\).*$/\1/")
+
+  # return result
+  echo "${TAG_VALUE}"
+}
+
+# -------------------------------------------------------
+#  Get Title from EXIF tags
+#
+#  Tags are read in this order : XMP, IPTC, PDF and EXIF
+#
+#  Parameters :
+#    $1 - file with tags dump
+# -------------------------------------------------------
+function get-title ()
+{
+  # read tag
+  TAG_VALUE=$(grep "^-XMP:Caption=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-IPTC:ObjectName=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-PDF:Title=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-EXIF:DocumentName=" "$1" | cut -d'=' -f2)
+
+  # return result
+  echo "${TAG_VALUE}"
+}
+
+# -------------------------------------------------------
+#  Get Caption from EXIF tags
+#
+#  Tags are read in this order : XMP, IPTC, PDF and EXIF
+#
+#  Parameters :
+#    $1 - file with tags dump
+# -------------------------------------------------------
+function get-caption ()
+{
+  # read tag
+  TAG_VALUE=$(grep "^-XMP:Notes=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-IPTC:Caption-Abstract=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-PDF:Notes=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-EXIF:ImageDescription=" "$1" | cut -d'=' -f2)
+
+  # return result
+  echo "${TAG_VALUE}"
+}
+
+# -------------------------------------------------------
+#  Get Keywords from EXIF tags
+#
+#  Tags are read in this order : XMP and IPTC
+#
+#  Parameters :
+#    $1 - file with tags dump
+# -------------------------------------------------------
+function get-keywords ()
+{
+  # read tag
+  TAG_VALUE=$(grep "^-XMP:Keywords=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-IPTC:Keywords=" "$1" | cut -d'=' -f2)
+
+  # return result
+  echo "${TAG_VALUE}"
+}
+
+# -------------------------------------------------------
+#  Get City from EXIF tags
+#
+#  Tags are read in this order : XMP, IPTC and PDF
+#
+#  Parameters :
+#    $1 - file with tags dump
+# -------------------------------------------------------
+function get-city ()
+{
+  # read tag
+  TAG_VALUE=$(grep "^-XMP:City=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-IPTC:City=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-PDF:City=" "$1" | cut -d'=' -f2)
+
+  # return result
+  echo "${TAG_VALUE}"
+}
+
+# -------------------------------------------------------
+#  Get Country from EXIF tags
+#
+#  Tags are read in this order : XMP, IPTC and PDF
+#
+#  Parameters :
+#    $1 - file with tags dump
+# -------------------------------------------------------
+function get-country ()
+{
+  # read tag
+  TAG_VALUE=$(grep "^-XMP:Country=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-IPTC:Country-PrimaryLocationName=" "$1" | cut -d'=' -f2)
+  [ "${TAG_VALUE}" = "" ] && TAG_VALUE=$(grep "^-PDF:Country=" "$1" | cut -d'=' -f2)
+
+  # return result
+  echo "${TAG_VALUE}"
+}
+
+# -------------------------------------------------------
+#  Get Author from EXIF tags
+#
+#  Tags are read in this order : XMP
+#
+#  Parameters :
+#    $1 - file with tags dump
+# -------------------------------------------------------
+function get-author ()
+{
+  # read tag
+  TAG_VALUE=$(grep "^-XMP:Author=" "$1" | cut -d'=' -f2)
+
+  # return result
+  echo "${TAG_VALUE}"
+}
+
+# -------------------------------------------------------
+#  Get Thumbnail from EXIF tags
+#
+#  Parameters :
+#    $1 - original image file
+#    $2 - file where to place thumbnail
+# -------------------------------------------------------
+function get-thumbnail ()
+{
+  # try to extract thumbnail from EXIF tags
+  exiftool -b -ThumbnailImage "$1" > "$2"
+
+  # if failed, generate thumbnail from image (without any metadata)
+  [ ! -s "$2" ] && convert -strip -define jpeg:size=128x128 -auto-orient "$1[0]" -resize "128x" -quality 85 "$2"
+}
