@@ -33,14 +33,15 @@
 #                       Kill process and parent process in case of cancellation
 #    22/09/2015, V3.6 - Correction of a bug in final encoding options (thanks to Ted Bartlett)
 #    21/02/2016, V3.7 - Handle scientific notation for video rate (thanks to Aslanex)
+#    24/08/2016, V3.8 - Use specific build of melt for vid.stab (Ubuntu Xenial 16.04)
 # -------------------------------------------------------
 
 # -------------------------------------------------
 #          Check tools availability
 # -------------------------------------------------
 
-# check melt (ubuntu) or mlt-melt (fedora)
-CMD_MELT="melt"
+# check /opt/mlt/melt (specific build) or melt (ubuntu) or mlt-melt (fedora)
+[ -f /opt/mlt-vidstab/melt ] && CMD_MELT="/opt/mlt-vidstab/melt" || CMD_MELT="melt"
 command -v $CMD_MELT >/dev/null 2>&1 || { CMD_MELT="mlt-melt"; }
 command -v $CMD_MELT >/dev/null 2>&1 || { zenity --error --text="Please install Melt from MLT framework"; exit 1; }
 
