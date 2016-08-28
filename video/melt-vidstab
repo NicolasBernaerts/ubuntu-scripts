@@ -1,0 +1,13 @@
+#!/bin/bash
+# -------------------------------------------------------
+#  Wrapper for melt linked with vid.stab
+#
+#  For installation instructions, please check
+#  http://bernaerts.dyndns.org/linux/74-ubuntu/xxx-ubuntu-trusty-rotate-stabilize-video-melt-vidstab
+#  
+#  Revision history :
+#    20/08/2016, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# wrap melt call to force use of libraries in /opt/mlt-vidstab/lib
+/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 --library-path /opt/mlt-vidstab/lib /opt/mlt-vidstab/bin/melt "$@"
