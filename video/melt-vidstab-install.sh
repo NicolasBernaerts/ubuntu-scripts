@@ -12,6 +12,7 @@ sudo mkdir --parent /opt/mlt-vidstab/bin /opt/mlt-vidstab/lib
 wget https://launchpad.net/~sunab/+archive/ubuntu/kdenlive-release/+build/9289708/+files/melt_6.0.0-0ubuntu0~sunab~xenial1_amd64.deb
 dpkg --fsys-tarfile melt_6.0.0-0ubuntu0~sunab~xenial1_amd64.deb | tar xOf - ./usr/bin/melt > melt
 sudo mv melt /opt/mlt-vidstab/bin
+sudo chmod +x /opt/mlt-vidstab/bin/melt
 
 # extract files from libmlt6
 wget https://launchpad.net/~sunab/+archive/ubuntu/kdenlive-release/+build/9289708/+files/libmlt6_6.0.0-0ubuntu0~sunab~xenial1_amd64.deb
@@ -40,3 +41,4 @@ sudo mv libvidstab.so.1.0 /opt/mlt-vidstab/lib
 
 # install melt wrapper
 sudo wget --header='Accept-Encoding:none' -O /opt/mlt-vidstab/melt https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/melt-vidstab
+sudo chmod +x /opt/mlt-vidstab/melt
