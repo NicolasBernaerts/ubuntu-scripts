@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------
-# Apply time shift and update XMP tag "Creation date"
+# Apply time shift and update Creation date tags
 #  of the selected picture files
 #
 #  Depends on :
@@ -75,7 +75,7 @@ do
 
   # display progress
   echo $(((INDEX*100+50)/NBR_FILE))
-  echo "# File $((INDEX+1)) / ${NBR_FILE} - Updating XMP Creation date tag"
+  echo "# File $((INDEX+1)) / ${NBR_FILE} - Updating Creation date tags"
 
   # read the data embedded into the file
   get-dump "${INPUT_FILE}" "${TAG_UTF8}"
