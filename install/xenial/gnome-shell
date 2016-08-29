@@ -3,6 +3,7 @@
 # Script to configure GnomeShell environment
 #
 # 16/08/2016, V1.0 - Creation
+# 24/08/2016, V1.1 - Migrate icon enable command to Gnome 3.18 
 # -------------------------------------------------------
 
 # install gnome shell extensions
@@ -17,7 +18,7 @@ sudo wget -O /usr/local/bin/gnomeshell-extension-install "https://raw.githubuser
 # gnome shell window bar icons
 gsettings set org.gnome.shell.overrides button-layout :close,minimize,maximize
 
-# enable icons for menus and icons
+# enable icons for buttons and for menus
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # nautilus : remove nautilus action root menu
