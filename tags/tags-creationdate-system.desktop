@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Action
-Icon=tags
+Icon=stock_calendar
 Name[C]=Force System dates to Creation date
 Tooltip[C]=Set System dates according to EXIF Creation date 
 MimeType=image/*;
