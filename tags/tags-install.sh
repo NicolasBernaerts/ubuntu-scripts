@@ -26,6 +26,8 @@ sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-common https://
 sudo chmod +x /usr/local/bin/tags-common
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-xmp https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp
 sudo chmod +x /usr/local/bin/tags-xmp
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-timeshift https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-timeshift
+sudo chmod +x /usr/local/bin/tags-timeshift
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-creationdate https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-creationdate
 sudo chmod +x /usr/local/bin/tags-creationdate
 
@@ -41,5 +43,6 @@ wget -O $HOME/.local/share/file-manager/actions/tags-menu.desktop https://raw.gi
 
 # desktop integration : entries
 wget -O $HOME/.local/share/file-manager/actions/tags-xmp-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-xmp-action.desktop
+wget -O $HOME/.local/share/file-manager/actions/tags-timeshift-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-timeshift-action.desktop
 wget -O $HOME/.local/share/file-manager/actions/tags-creationdate-rename.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-creationdate-rename.desktop
 wget -O $HOME/.local/share/file-manager/actions/tags-creationdate-system.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-creationdate-system.desktop
