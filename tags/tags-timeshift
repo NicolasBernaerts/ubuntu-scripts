@@ -1,0 +1,111 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Apply time shift and update XMP tag "Creation date"
+#  of the selected picture files
+#
+#  Depends on :
+#   * yad
+#   * exiftool
+#   * iconv
+#
+# Revision history :
+#   24/08/2016, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# -------------------------------------------------------
+#             Check tools availability
+# -------------------------------------------------------
+
+# check yad, exiftool and iconv
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
+command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool [libimage-exiftool-perl]"; exit 1; }
+command -v iconv >/dev/null 2>&1 || { zenity --error --text="Please install iconv"; exit 1; }
+
+# -------------------------------------------------------
+#             Check number of arguments
+# -------------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+  echo "Tool to shift creation date of picture files"
+  echo "Parameters are :"
+  echo "  <photo1> <photo2> ...   List of picture files"
+  exit
+fi
+
+# calculate number of image files
+NBR_FILE=$#
+
+# -------------------------------------------------------
+#                  Initialisation
+# -------------------------------------------------------
+
+# load common functions
+. tags-common
+
+# temporary files
+TAG_UTF8=$(mktemp --tmpdir "XXXXXXXX.utf8")
+
+# -------------------------------------------------------
+#               Time shift selection
+# -------------------------------------------------------
+
+# display dialog box
+CHOICE=$(yad --title "Picture Creation Date time shift" --text "Select timeshift you want to apply to selected pictures" --center --window-icon "document-open-recent" --image "document-open-recent" --form --item-separator='|' --field="Days:NUM" "0|-30..30|1" --field="Hours:NUM" "0|-23..23|1" --field="Minutes:NUM" "0|-59..59|1" )
+
+# retrieve parameters
+SHIFT_DAY=$(echo ${CHOICE} | cut -d'|' -f1)
+SHIFT_HOUR=$(echo ${CHOICE} | cut -d'|' -f2)
+SHIFT_MINUTE=$(echo ${CHOICE} | cut -d'|' -f3)
+
+# calculate shift in seconds
+SHIFT_SECOND=$((SHIFT_DAY*3600*24+SHIFT_HOUR*3600+SHIFT_MINUTE*60))
+
+# -------------------------------------------------------
+#                Loop thru all images
+# -------------------------------------------------------
+
+# set progress box title
+DIALOG_TITLE="Creation date time shift - Updating ${NBR_FILE} files"
+
+INDEX=0
+for INPUT_FILE in "$@"
+do
+
+  # display progress
+  echo $(((INDEX*100+50)/NBR_FILE))
+  echo "# File $((INDEX+1)) / ${NBR_FILE} - Updating XMP Creation date tag"
+
+  # read the data embedded into the file
+  get-dump "${INPUT_FILE}" "${TAG_UTF8}"
+
+  # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
+  DATE=$(get-date ${TAG_UTF8})
+
+  # convert creation date to a format acceptable by DATE utility
+  DAY=$(echo ${DATE} | cut -d' ' -f1 | sed "s/://g")
+  TIME=$(echo ${DATE} | cut -d' ' -f2)
+
+  # get epoch of the date
+  EPOCH=$(date -d"${DAY} ${TIME}" +%s)
+
+  # time shift epoch
+  EPOCH=$((EPOCH+SHIFT_SECOND))
+
+  # convert back epoch to date
+  DATE=$(date --date=@${EPOCH} "+%Y:%m:%d %H:%M:%S")
+
+  # update XMP tags
+  exiftool -overwrite_original "-xmp:DateTime=${DATE}" "${INPUT_FILE}"
+
+  # index increment
+  INDEX=$((INDEX+1))
+
+  # display progress
+  echo $(((INDEX*100)/NBR_FILE))
+
+done | zenity --width=400 --no-cancel --progress --auto-close --title "${DIALOG_TITLE}"
+
+# cleanup temporary files
+rm -f "${TAG_UTF8}"
