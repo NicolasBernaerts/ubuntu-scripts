@@ -18,8 +18,7 @@ sudo wget -O /usr/local/bin/gnomeshell-extension-install "https://raw.githubuser
 gsettings set org.gnome.shell.overrides button-layout :close,minimize,maximize
 
 # enable icons for menus and icons
-gsettings set org.gnome.desktop.interface menus-have-icons true
-gsettings set org.gnome.desktop.interface buttons-have-icons true
+gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # nautilus : remove nautilus action root menu
 mv $HOME/.config/nautilus-actions/nautilus-actions.conf $HOME/.config/nautilus-actions/nautilus-actions.conf.org
