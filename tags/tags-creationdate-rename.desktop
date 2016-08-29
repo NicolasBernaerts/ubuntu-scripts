@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Action
 Icon=insert-text
-Name[C]=Rename to YYYYMMDD_HHMMSS-Country-City
+Name[C]=Rename to Date-Country-City
 Tooltip[C]=Rename file according to its Creation date, Country & City 
 MimeType=image/all;
 Capabilities=Writable
