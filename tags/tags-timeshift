@@ -97,7 +97,7 @@ do
   DATE=$(date --date=@${EPOCH} "+%Y:%m:%d %H:%M:%S")
 
   # update XMP tags
-  exiftool -overwrite_original "-xmp:DateTime=${DATE}" "${INPUT_FILE}"
+  exiftool -overwrite_original "-EXIF:CreateDate=${DATE}" "-EXIF:DateTimeOriginal=${DATE}" "-xmp:DateTime=${DATE}" "${INPUT_FILE}"
 
   # index increment
   INDEX=$((INDEX+1))
