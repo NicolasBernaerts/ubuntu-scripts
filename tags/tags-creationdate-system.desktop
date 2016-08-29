@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Action
 Icon=tags
-Name[C]=EXIF - Set system dates with creation date
-Tooltip[C]=Set System dates according to EXIF creation date 
+Name[C]=Force System dates to Creation date
+Tooltip[C]=Set System dates according to EXIF Creation date 
 MimeType=image/*;
 Capabilities=Writable
 Profiles=systemdate;
