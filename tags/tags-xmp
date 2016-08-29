@@ -182,7 +182,7 @@ do
     [ "${DATEPIX}" != "" ] && DATE="${DATEPIX}" || DATE=$(get-date ${TAG_UTF8})
 
     # prepare exiftool parameters
-    ARR_PARAM=("-xmp:DateTime=${DATE}")
+    ARR_PARAM=("-EXIF:CreateDate=${DATE}" "-EXIF:DateTimeOriginal=${DATE}" "-xmp:DateTime=${DATE}")
     [ "${TITLE}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=")
     [ "${TITLE}" != "-" -a "${TITLE}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=${TITLE}")
     [ "${CAPTION}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Notes=")
@@ -201,7 +201,7 @@ do
     echo "# File $((INDEX+1)) / ${NBR_FILE} - Tags writing"
 
     # update XMP tags
-    exiftool -overwrite_original "${ARR_PARAM[@]}" "${INPUT_FILE}"
+    exiftool -overwrite_original -m "${ARR_PARAM[@]}" "${INPUT_FILE}"
 
     # if needed, update thumbnail
     if [ "${THUMBNAIL}" = "TRUE" ] 
