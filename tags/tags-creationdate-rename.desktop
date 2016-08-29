@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Action
 Icon=tags
-Name[C]=EXIF - Rename files with creation date
-Tooltip[C]=Rename file according to its EXIF creation date 
+Name[C]=Rename to YYYYMMDD_HHMMSS-Country-City
+Tooltip[C]=Rename file according to its Creation date, Country & City 
 MimeType=image/all;
 Capabilities=Writable
 Profiles=rename;
