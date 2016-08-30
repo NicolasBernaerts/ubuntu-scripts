@@ -56,10 +56,10 @@ FILE_CONF="$HOME/.config/tags-xmp.conf"
 [ -f "$FILE_CONF" ] || { zenity --error --text="Please create and configure ${FILE_CONF}"; exit 1; }
 
 # load default values from configuration file
-CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
-COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
-AUTHOR=$(cat "${FILE_CONF}" | grep "author" | cut -d'=' -f2)
-THUMBNAIL=$(cat "${FILE_CONF}" | grep "thumbnail" | cut -d'=' -f2)
+NEW_CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
+NEW_COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
+NEW_AUTHOR=$(cat "${FILE_CONF}" | grep "author" | cut -d'=' -f2)
+NEW_THUMBNAIL=$(cat "${FILE_CONF}" | grep "thumbnail" | cut -d'=' -f2)
 
 # temporary files
 TAG_UTF8=$(mktemp --tmpdir "XXXXXXXX.utf8")
@@ -76,64 +76,52 @@ then
   INPUT_FILE="$1"
 
   # read EXIF data
-  get-dump "${INPUT_FILE}" "${TAG_UTF8}"
+  tags-extract-all "${TAG_UTF8}" "${INPUT_FILE}"
 
   # extract or generate thumbnail
-  get-thumbnail "${INPUT_FILE}" "${THUMB_ORIGINAL}"
+  tags-get-thumbnail "${INPUT_FILE}" "${THUMB_ORIGINAL}"
 
-  # get photo title (tags are read in this order : XMP, IPTC, PDF and EXIF)
-  TITLE=$(get-title ${TAG_UTF8})
-
-  # get photo caption (tags are read in this order : XMP, IPTC, PDF and EXIF)
-  CAPTION=$(get-caption ${TAG_UTF8})
-
-  # get keywords (tags are read in this order : XMP and IPTC)
-  KEYWORD=$(get-keywords ${TAG_UTF8})
-
-  # get author (tags are read in this order : XMP)
-  AUTHOR=$(get-author ${TAG_UTF8})
-
-  # get photo city (tags are read in this order : XMP, IPTC, PDF and configuration file)
-  CITY=$(get-city ${TAG_UTF8})
+  # get meta-data
+  DATE=$(tags-get-date ${TAG_UTF8})
+  TITLE=$(tags-get-title ${TAG_UTF8})
+  CAPTION=$(tags-get-caption ${TAG_UTF8})
+  KEYWORD=$(tags-get-keywords ${TAG_UTF8})
+  AUTHOR=$(tags-get-author ${TAG_UTF8})
+  CITY=$(tags-get-city ${TAG_UTF8})
   [ "${CITY}" = "" ] && CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
-
-  # get photo country (tags are read in this order : XMP, IPTC, PDF and configuration file)
-  COUNTRY=$(get-country ${TAG_UTF8})
+  COUNTRY=$(tags-get-country ${TAG_UTF8})
   [ "${COUNTRY}" = "" ] && COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
 
-  # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
-  DATEPIX=$(get-date ${TAG_UTF8})
-
   # generate the date digits and time
-  YEAR=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f1)
-  MONTH=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f2)
-  DAY=$(echo ${DATEPIX} | cut -d' ' -f1 | cut -d ':' -f3)
-  TIME=$(echo ${DATEPIX} | cut -d' ' -f2)
+  YEAR=$(echo ${DATE} | cut -d' ' -f1 | cut -d ':' -f1)
+  MONTH=$(echo ${DATE} | cut -d' ' -f1 | cut -d ':' -f2)
+  DAY=$(echo ${DATE} | cut -d' ' -f1 | cut -d ':' -f3)
+  TIME=$(echo ${DATE} | cut -d' ' -f2)
   [ "${TIME}" = "" ] && TIME="12:00:00"
 
   #  Display the tags editing dialog
-  RESULT=$(yad --center --title="XMP Tags - ${INPUT_FILE}" --width=800 --image="${THUMB_ORIGINAL}" --date-format="%d/%m/%Y" --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Date:DT" --field="Time" --field="Keywords" --field="Author" --field="Include thumbnail:CHK" "${TITLE}" "${CAPTION}" "${CITY}" "${COUNTRY}" "${DAY}/${MONTH}/${YEAR}" "${TIME}" "${KEYWORD}" "${AUTHOR}" "${THUMBNAIL}" --button="gtk-cancel:1" --button="gtk-ok:0" )
+  RESULT=$(yad --center --title="XMP Tags - ${INPUT_FILE}" --width=800 --image="${THUMB_ORIGINAL}" --date-format="%d/%m/%Y" --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Date:DT" --field="Time" --field="Keywords" --field="Author" --field="Include thumbnail:CHK" "${TITLE}" "${CAPTION}" "${CITY}" "${COUNTRY}" "${DAY}/${MONTH}/${YEAR}" "${TIME}" "${KEYWORD}" "${AUTHOR}" "${NEW_THUMBNAIL}" --button="gtk-cancel:1" --button="gtk-ok:0" )
   ACTION=$?
 
   # if dialog has been validated, retrieve tags from dialog
   if [ ${ACTION} = "0" ]
   then
     # retreive the values from resulting chain
-    TITLE=$(echo ${RESULT} |cut -d '|' -f1)
-    CAPTION=$(echo ${RESULT} |cut -d '|' -f2)
-    CITY=$(echo ${RESULT} |cut -d '|' -f3)
-    COUNTRY=$(echo ${RESULT} |cut -d '|' -f4)
-    DAY=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f1)
-    MONTH=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f2)
-    YEAR=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f3)
-    TIME=$(echo ${RESULT} | cut -d '|' -f6)
-    KEYWORD=$(echo ${RESULT} | cut -d '|' -f7)
-    AUTHOR=$(echo ${RESULT} | cut -d '|' -f8)
-    THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f9)
+    NEW_TITLE=$(echo ${RESULT} |cut -d '|' -f1)
+    NEW_CAPTION=$(echo ${RESULT} |cut -d '|' -f2)
+    NEW_CITY=$(echo ${RESULT} |cut -d '|' -f3)
+    NEW_COUNTRY=$(echo ${RESULT} |cut -d '|' -f4)
+    NEW_DAY=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f1)
+    NEW_MONTH=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f2)
+    NEW_YEAR=$(echo ${RESULT} | cut -d '|' -f5 | cut -d'/' -f3)
+    NEW_TIME=$(echo ${RESULT} | cut -d '|' -f6)
+    NEW_KEYWORD=$(echo ${RESULT} | cut -d '|' -f7)
+    NEW_AUTHOR=$(echo ${RESULT} | cut -d '|' -f8)
+    NEW_THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f9)
 
     # set time and date
-    [ "${TIME}" = "" ] && TIME="12:00:00"
-    [ "${YEAR}" = "" ] && DATEPIX="" || DATEPIX="${YEAR}:${MONTH}:${DAY} ${TIME}"
+    [ "${NEW_TIME}" = "" ] && NEW_TIME="12:00:00"
+    [ "${NEW_YEAR}" = "" ] && NEW_DATE="" || NEW_DATE="${NEW_YEAR}:${NEW_MONTH}:${NEW_DAY} ${NEW_TIME}"
   fi
 
 # -------------------------------------------------------
@@ -142,20 +130,20 @@ then
 
 else
   # Display the mass tags editing dialog
-  RESULT=$(yad --center --title="XMP tags - Mass Tagging of ${NBR_FILE} files" --width=800 --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Keywords" --field="Author" --field="Include thumbnail:CHK" "${TITLE}" "${CAPTION}" "${CITY}" "${COUNTRY}" "${KEYWORD}" "${AUTHOR}" "${THUMBNAIL}" --button="gtk-cancel:1" --button="gtk-ok:0")
+  RESULT=$(yad --center --title="XMP tags - Mass Tagging of ${NBR_FILE} files" --width=800 --window-icon="gtk-edit" --form --field="Title" --field="Description" --field="City" --field="Country" --field="Keywords" --field="Author" --field="Include thumbnail:CHK" "" "" "${CITY}" "${COUNTRY}" "" "${AUTHOR}" "${THUMBNAIL}" --button="gtk-cancel:1" --button="gtk-ok:0")
   ACTION=$?
 
   # if dialog has been canceled, exit
   [ ${ACTION} = "1" ] && exit
 
   # dialog has not been canceled, retreive values from resulting chain
-  TITLE=$(echo ${RESULT} |cut -d '|' -f1)
-  CAPTION=$(echo ${RESULT} |cut -d '|' -f2)
-  CITY=$(echo ${RESULT} |cut -d '|' -f3)
-  COUNTRY=$(echo ${RESULT} |cut -d '|' -f4)
-  KEYWORD=$(echo ${RESULT} | cut -d '|' -f5)
-  AUTHOR=$(echo ${RESULT} | cut -d '|' -f6)
-  THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f7)
+  NEW_TITLE=$(echo ${RESULT} |cut -d '|' -f1)
+  NEW_CAPTION=$(echo ${RESULT} |cut -d '|' -f2)
+  NEW_CITY=$(echo ${RESULT} |cut -d '|' -f3)
+  NEW_COUNTRY=$(echo ${RESULT} |cut -d '|' -f4)
+  NEW_KEYWORD=$(echo ${RESULT} | cut -d '|' -f5)
+  NEW_AUTHOR=$(echo ${RESULT} | cut -d '|' -f6)
+  NEW_THUMBNAIL=$(echo ${RESULT} | cut -d '|' -f7)
 fi
 
 # -------------------------------------------------------
@@ -171,57 +159,63 @@ do
   # if current photo is not skipped, update it
   if [ "${ACTION}" = "0" ]
   then
-    # display progress
-    echo $(((INDEX*100+25)/NBR_FILE))
-    echo "# File $((INDEX+1)) / ${NBR_FILE} - Tags generation"
-
     # read the data embedded into the file
-    get-dump "${INPUT_FILE}" "${TAG_UTF8}"
+    echo $(((INDEX*100+20)/NBR_FILE))
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Prepare Tags"
+    tags-extract-all "${TAG_UTF8}" "${INPUT_FILE}"
 
-    # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
-    [ "${DATEPIX}" != "" ] && DATE="${DATEPIX}" || DATE=$(get-date ${TAG_UTF8})
+    # if new meta-data set, get it, otherwise read original one
+    [ "${NEW_DATE}"    != "" ] && DATE="${NEW_DATE}"       || DATE=$(tags-get-date ${TAG_UTF8})
+    [ "${NEW_TITLE}"   != "" ] && TITLE="${NEW_TITLE}"     || TITLE=$(tags-get-title ${TAG_UTF8})
+    [ "${NEW_CAPTION}" != "" ] && CAPTION="${NEW_CAPTION}" || CAPTION=$(tags-get-caption ${TAG_UTF8})
+    [ "${NEW_KEYWORD}" != "" ] && KEYWORD="${NEW_KEYWORD}" || KEYWORD=$(tags-get-keywords ${TAG_UTF8})
+    [ "${NEW_AUTHOR}"  != "" ] && AUTHOR="${NEW_AUTHOR}"   || AUTHOR=$(tags-get-author ${TAG_UTF8})
+    [ "${NEW_CITY}"    != "" ] && CITY="${NEW_CITY}"       || CITY=$(tags-get-city ${TAG_UTF8})
+    [ "${NEW_COUNTRY}" != "" ] && COUNTRY="${NEW_COUNTRY}" || COUNTRY=$(tags-get-country ${TAG_UTF8})
 
-    # prepare exiftool parameters
-    ARR_PARAM=("-EXIF:CreateDate=${DATE}" "-EXIF:DateTimeOriginal=${DATE}" "-xmp:DateTime=${DATE}")
-    [ "${TITLE}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=")
-    [ "${TITLE}" != "-" -a "${TITLE}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Caption=${TITLE}")
-    [ "${CAPTION}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Notes=")
-    [ "${CAPTION}" != "-" -a "${CAPTION}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Notes=${CAPTION}")
-    [ "${CITY}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:City=")
-    [ "${CITY}" != "-" -a "${CITY}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:City=${CITY}")
-    [ "${COUNTRY}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Country=")
-    [ "${COUNTRY}" != "-" -a "${COUNTRY}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Country=${COUNTRY}")
-    [ "${KEYWORD}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Keywords=")
-    [ "${KEYWORD}" != "-" -a "${KEYWORD}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Keywords=${KEYWORD}")
-    [ "${AUTHOR}" = "-" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Author=")
-    [ "${AUTHOR}" != "-" -a "${AUTHOR}" != "" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-xmp:Author=${AUTHOR}")
+    # handle meta-data removal
+    [ "${NEW_TITLE}"   = "-" ] && TITLE=""
+    [ "${NEW_CAPTION}" = "-" ] && CAPTION=""
+    [ "${NEW_KEYWORD}" = "-" ] && KEYWORD=""
+    [ "${NEW_AUTHOR}"  = "-" ] && AUTHOR=""
+    [ "${NEW_CITY}"    = "-" ] && CITY=""
+    [ "${NEW_COUNTRY}" = "-" ] && COUNTRY=""
 
-    # display progress
-    echo $(((INDEX*100+50)/NBR_FILE))
-    echo "# File $((INDEX+1)) / ${NBR_FILE} - Tags writing"
+    # update tags
+    tags-set-date "${TAG_UTF8}" "${DATE}"
+    tags-set-title "${TAG_UTF8}" "${TITLE}"
+    tags-set-caption "${TAG_UTF8}" "${CAPTION}"
+    tags-set-city "${TAG_UTF8}" "${CITY}"
+    tags-set-country "${TAG_UTF8}" "${COUNTRY}"
+    tags-set-keywords "${TAG_UTF8}" "${KEYWORD}"
+    tags-set-author "${TAG_UTF8}" "${AUTHOR}"
+
+    # update EXIF tags
+    echo $(((INDEX*100+40)/NBR_FILE))
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Write EXIF Tags"
+    tags-save-family "${TAG_UTF8}" "${INPUT_FILE}" "EXIF"
 
     # update XMP tags
-    exiftool -overwrite_original -m "${ARR_PARAM[@]}" "${INPUT_FILE}"
+    echo $(((INDEX*100+60)/NBR_FILE))
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Write XMP Tags"
+    tags-save-family "${TAG_UTF8}" "${INPUT_FILE}" "XMP"
 
     # if needed, update thumbnail
-    if [ "${THUMBNAIL}" = "TRUE" ] 
+    if [ "${NEW_THUMBNAIL}" = "TRUE" ] 
     then
-      # display progress
-      echo $(((INDEX*100+75)/NBR_FILE))
-      echo "# File $((INDEX+1)) / ${NBR_FILE} - Thumbnail writing"
-
       # write thumbnail
-      rm -f ${THUMB_ORIGINAL}
-      convert -strip -define jpeg:size=240x240 -auto-orient "${INPUT_FILE}[0]" -resize "240x" -quality 80 ${THUMB_ORIGINAL}
-      exiftool -overwrite_original '-ThumbnailImage<='${THUMB_ORIGINAL} "${INPUT_FILE}"
+      echo $(((INDEX*100+80)/NBR_FILE))
+      echo "# File $((INDEX+1)) / ${NBR_FILE} - Write Thumbnail"
+      tags-add-thumbnail "${INPUT_FILE}"
     fi
   fi
 
-  # display progress
-  echo $(((INDEX*100+100)/NBR_FILE))
-
   # index increment
   INDEX=$((INDEX+1))
+
+  # display progress
+  echo $(((INDEX*100)/NBR_FILE))
+
 done | zenity --width=400 --no-cancel --progress --auto-close --title "${DIALOG_TITLE}"
 
 # cleanup temporary files
