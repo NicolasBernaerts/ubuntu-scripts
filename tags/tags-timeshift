@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------
-# Apply time shift and update Creation date tags
+# Apply time shift and update XMP tag "Creation date"
 #  of the selected picture files
 #
 #  Depends on :
@@ -73,15 +73,13 @@ INDEX=0
 for INPUT_FILE in "$@"
 do
 
-  # display progress
-  echo $(((INDEX*100+50)/NBR_FILE))
-  echo "# File $((INDEX+1)) / ${NBR_FILE} - Updating Creation date tags"
-
   # read the data embedded into the file
-  get-dump "${INPUT_FILE}" "${TAG_UTF8}"
+  echo $(((INDEX*100+25)/NBR_FILE))
+  echo "# File $((INDEX+1)) / ${NBR_FILE} - Read Tags"
+  tags-extract-all "${TAG_UTF8}" "${INPUT_FILE}"
 
-  # get photo creation date (tags are read in this order : XMP, IPTC, PDF and EXIF)
-  DATE=$(get-date ${TAG_UTF8})
+  # get photo creation date
+  DATE=$(tags-get-date ${TAG_UTF8})
 
   # convert creation date to a format acceptable by DATE utility
   DAY=$(echo ${DATE} | cut -d' ' -f1 | sed "s/://g")
@@ -96,8 +94,18 @@ do
   # convert back epoch to date
   DATE=$(date --date=@${EPOCH} "+%Y:%m:%d %H:%M:%S")
 
+  # update tags
+  tags-set-date "${TAG_UTF8}" "${DATE}"
+
+  # update EXIF tags
+  echo $(((INDEX*100+50)/NBR_FILE))
+  echo "# File $((INDEX+1)) / ${NBR_FILE} - Write EXIF Tags"
+  tags-save-family "${TAG_UTF8}" "${INPUT_FILE}" "EXIF"
+
   # update XMP tags
-  exiftool -overwrite_original "-EXIF:CreateDate=${DATE}" "-EXIF:DateTimeOriginal=${DATE}" "-xmp:DateTime=${DATE}" "${INPUT_FILE}"
+  echo $(((INDEX*100+75)/NBR_FILE))
+  echo "# File $((INDEX+1)) / ${NBR_FILE} - Write XMP Tags"
+  tags-save-family "${TAG_UTF8}" "${INPUT_FILE}" "XMP"
 
   # index increment
   INDEX=$((INDEX+1))
