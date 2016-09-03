@@ -6,22 +6,10 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "LinuxMint" ] && [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu or Linux Mint"; exit 1; }
 
 # install yad
-IS_PRESENT=$(command -v yad)
-if [ -z "${IS_PRESENT}" ]
-then
-  sudo add-apt-repository -y ppa:webupd8team/y-ppa-manager
-  sudo apt-get update
-  sudo apt-get -y install yad
-fi
+sudo apt-get -y install yad
 
 # install fdkaac encoder
-IS_PRESENT=$(command -v fdkaac)
-if [ -z "${IS_PRESENT}" ]
-then
-  sudo add-apt-repository -y ppa:mc3man/fdkaac-encoder
-  sudo apt-get update
-  sudo apt-get -y install fdkaac-encoder aac-enc
-fi
+sudo apt-get -y install fdkaac aac-enc
 
 # install mediainfo, libav-tools (avconv), sox and mkvtoolnix (mkvmerge)
 sudo apt-get -y install mediainfo libav-tools sox mkvtoolnix
