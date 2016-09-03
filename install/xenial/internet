@@ -22,7 +22,6 @@ sudo apt-get update
 sudo apt-get -y install youtube-dl youtube-dlg
 
 # youtubedl-gui
- Convert video to MKV container and transcode audio to AAC
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui-install.sh
 . ./youtubedl-gui-install.sh
 
