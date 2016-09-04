@@ -58,7 +58,8 @@ class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       return
 
     # if mimetype corresponds to JPG image, read data and populate tab
-    if file.get_mime_type() in ('image/jpeg' 'image/png'):
+    mimetype = file.get_mime_type().split('/')
+    if mimetype[0] in ('image'):
     
       # read data from APK file
       filename = urllib.unquote(file.get_uri()[7:])
