@@ -72,3 +72,9 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 # scan2folder tool
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
 . ./scan2folder-install.sh
+
+# file manager EXIF extensions
+mkdir --parents $HOME/.local/share/nautilus-python/extensions
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-columns.py
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-alltags.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-alltags.py
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-geotag.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-geotag.py
