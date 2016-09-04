@@ -5,7 +5,7 @@
 #   http://bernaerts.dyndns.org/linux/...
 #
 # Depends on :
-#   * aapt
+#   * 
 #
 # Revision history :
 #   30/08/2016, V1.0 - Creation by N. Bernaerts
