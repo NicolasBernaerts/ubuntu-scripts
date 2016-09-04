@@ -5,20 +5,17 @@
 #   http://bernaerts.dyndns.org/linux/...
 #
 # Depends on :
-#   * 
+#   * aapt
 #
 # Revision history :
 #   30/08/2016, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 
 # import libraries
-import subprocess 
 import urllib
 import os
 import os.path
 import re
-import pipes
-import tempfile
 import pygtk
 import gi
 gi.require_version("GExiv2", "0.10")
@@ -78,21 +75,81 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       # read data from APK file
       filename = urllib.unquote(file.get_uri()[7:])
 
-      # get EXIF metadata
-      self.exif = GExiv2.Metadata(filename)
+      # get metadata
+      self.tags = GExiv2.Metadata(filename)
 
       # get GPS position from metadata
-      posGPS = self.exif.get_gps_info()
-      longitude = posGPS[1]
-      latitude = posGPS[0]
-      strPosition = str(longitude) + ',' + str(latitude)
+      posGPS = self.tags.get_gps_info()
+      longitude = posGPS[0]
+      latitude = posGPS[1]
+      altitude = posGPS[2]
+
+      # if latitude unavailable,
+      if latitude == 0:
+
+        # read value from Exif.Exif.GPSInfo.GPSLatitude
+        if 'Exif.GPSInfo.GPSLatitude' in self.tags:  
+          arr_gps = self.tags['Exif.GPSInfo.GPSLatitude'].split()
+          gps_part = arr_gps[0].split('/')
+          gps_deg_val = float(gps_part[0])
+          gps_deg_div = float(gps_part[1])
+          gps_part = arr_gps[1].split('/')
+          gps_min_val = float(gps_part[0])
+          gps_min_div = float(gps_part[1])
+          gps_part = arr_gps[2].split('/')
+          gps_sec_val = float(gps_part[0])
+          gps_sec_div = float(gps_part[1])
+          latitude = (gps_deg_val / gps_deg_div) + (gps_min_val / gps_min_div / 60) + (gps_sec_val / gps_sec_div / 3600)
+
+        # set latitude sign according to Exif.GPSInfo.GPSLatitudeRef
+        if 'Exif.GPSInfo.GPSLatitudeRef' in self.tags:  
+          gps_ref = self.tags['Exif.GPSInfo.GPSLatitudeRef']
+          if gps_ref == 'S': latitude = -latitude
+
+      # if longitude unavailable,
+      if longitude == 0:
+
+        # read value from Exif.GPSInfo.GPSLongitude
+        if 'Exif.GPSInfo.GPSLongitude' in self.tags:  
+          arr_gps = self.tags['Exif.GPSInfo.GPSLongitude'].split()
+          gps_part = arr_gps[0].split('/')
+          gps_deg_val = float(gps_part[0])
+          gps_deg_div = float(gps_part[1])
+          gps_part = arr_gps[1].split('/')
+          gps_min_val = float(gps_part[0])
+          gps_min_div = float(gps_part[1])
+          gps_part = arr_gps[2].split('/')
+          gps_sec_val = float(gps_part[0])
+          gps_sec_div = float(gps_part[1])
+          longitude = (gps_deg_val / gps_deg_div) + (gps_min_val / gps_min_div / 60) + (gps_sec_val / gps_sec_div / 3600)
+
+        # set longitude sign according to Exif.GPSInfo.GPSLongitudeRef
+        if 'Exif.GPSInfo.GPSLongitudeRef' in self.tags:  
+          gps_ref = self.tags['Exif.GPSInfo.GPSLongitudeRef']
+          if gps_ref == 'W': longitude = -longitude
+
+      # if altitude unavailable,
+      if altitude == 0:
+
+        # read value from Exif.GPSInfo.GPSAltitude
+        if 'Exif.GPSInfo.GPSAltitude' in self.tags:  
+          gps_part = self.tags['Exif.GPSInfo.GPSAltitude'].split('/')
+          alt_val = float(gps_part[0])
+          alt_div = float(gps_part[1])
+          altitude = (alt_val / alt_div)
+
+        # set altitude sign according to Exif.GPSInfo.GPSAltitudeRef
+        if 'Exif.GPSInfo.GPSAltitudeRef' in self.tags:  
+          gps_ref = self.tags['Exif.GPSInfo.GPSAltitudeRef']
+          if gps_ref == '1': altitude = -altitude
 
       # generate Google Maps link
+      strPosition = str(latitude) + ',' + str(longitude)
       urlMaps = 'https://www.google.com/maps/place/' + strPosition + '/@' + strPosition + ',' + zoomMap + 'z/'
       urlJpeg = 'https://maps.googleapis.com/maps/api/staticmap?maptype=hybrid&zoom=' + zoomMap + '&size=' + sizeMap + '&center=' + strPosition + '&markers=' + strPosition
 
       # create table
-      self.table = Gtk.Table(4, 2)
+      self.table = Gtk.Table(5, 2)
       self.table.set_col_spacings(20)
       self.table.set_row_spacings(0)
 
@@ -101,8 +158,10 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       self.tableSetLabel(str(longitude), 0, 1, 1, "left")
       self.tableSetLabel("<b>Latitude</b>", 1, 0, 1, "right")
       self.tableSetLabel(str(latitude), 1, 1, 1, "left")
-      self.tableSetLabel("<b>Maps</b>", 2, 0, 1, "right")
-      self.tableSetLabel("<a href='" + urlMaps + "'>Google Maps</a>", 2, 1, 1, "left")
+      self.tableSetLabel("<b>Altitude</b>", 2, 0, 1, "right")
+      self.tableSetLabel(str(altitude), 2, 1, 1, "left")
+      self.tableSetLabel("<b>Maps</b>", 3, 0, 1, "right")
+      self.tableSetLabel("<a href='" + urlMaps + "'>Google Maps</a>", 3, 1, 1, "left")
 
       # generate map filename
       dirHomeCache = os.environ['HOME'] + '/.cache'
@@ -116,7 +175,7 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       if not os.path.exists(fileGeotag): urllib.urlretrieve(urlJpeg, fileGeotag)
 
       # create image from jpeg
-      self.tableSetImage(fileGeotag, 3, 1, 1, "left")
+      self.tableSetImage(fileGeotag, 4, 1, 1, "left")
 
       # set tab content (scrolled window -> table)
       tab_win = Gtk.ScrolledWindow()
