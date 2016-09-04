@@ -11,9 +11,7 @@
 #   30/08/2016, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
 
-#from gi.repository require_version('Nautilus', '3.0')
-#from gi.repository require_version('GExiv2', '0.10')
-
+# import libraries
 import subprocess 
 import urllib
 import os
@@ -22,14 +20,15 @@ import re
 import pipes
 import tempfile
 import pygtk
-require_version('Nautilus', '3.0')
-from gi.repository import Nautilus, GObject, Gtk
-#require_version('GExiv2', '0.10')
+import gi
+gi.require_version("GExiv2", "0.10")
 from gi.repository import GExiv2
+gi.require_version("Nautilus", "3.0")
+from gi.repository import Nautilus, GObject, Gtk
 
-#pygtk.require('2.0')
-
-
+# -------------------
+# Property page
+# -------------------
 class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
   def __init__(self):
     pass
