@@ -57,7 +57,8 @@ class ExifColumnExtension(GObject.GObject, Nautilus.ColumnProvider, Nautilus.Inf
       return
         
     # read data only if image file
-    if file.get_mime_type() in ('image/jpeg' 'image/png'):
+    mimetype = file.get_mime_type().split('/')
+    if mimetype[0] in ('image'):
       filename = urllib.unquote(file.get_uri()[7:])
       result = self.get_data(filename)
     else:
