@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Icon=tags
+Name[C]=Update main tags
+TTooltip[C]=Update main tags (date, title, description, city, country, keyword and author)
+MimeTypes=application/pdf;image/jpeg;image/png;
+Profiles=update;
+
+[X-Action-Profile update]
+TryExec=/usr/local/bin/tags-update
+Exec=/usr/local/bin/tags-update %F
