@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Action
+Icon=stock_calendar
+Name[C]=Set date to creation date
+Tooltip[C]=Set filesystem date according to creation date tag
+MimeType=image/*;
+Capabilities=Writable
+Profiles=systemdate;
+
+[X-Action-Profile systemdate]
+TryExec=/usr/local/bin/tags-date
+Exec=/usr/local/bin/tags-date --system %F
