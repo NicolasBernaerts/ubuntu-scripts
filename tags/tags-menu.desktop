@@ -3,4 +3,4 @@ Type=Menu
 Icon=tags
 Name[C]=Image tags ...
 Tooltip[C]=Tools to manage images tags (XMP, IPTC, EXIF, ...)
-ItemsList=tags-creationdate-system;tags-creationdate-rename;tags-xmp-action;tags-creationdate-shift;
+ItemsList=tags-date-system;tags-date-rename;tags-update-action;tags-date-shift;
