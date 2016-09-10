@@ -50,7 +50,7 @@ NBR_FILE=$#
 #. tags-common
 
 # Configuration file : ~/.config/image-tag-xmp.conf
-FILE_CONF="$HOME/.config/tags-xmp.conf"
+FILE_CONF="$HOME/.config/tags-update.conf"
 
 # check configuration file
 [ -f "$FILE_CONF" ] || { zenity --error --text="Please create and configure ${FILE_CONF}"; exit 1; }
