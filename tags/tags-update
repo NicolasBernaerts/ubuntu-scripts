@@ -14,6 +14,7 @@
 #   16/05/2015, V1.2 - Handle non UTF-8 tags
 #   20/08/2015, V2.0 - Complete rewrite for XMP tags
 #   20/08/2016, V2.1 - Mass tagging capability
+#   09/09/2016, V2.2 - Rename and Exiftool parameters change
 # ---------------------------------------------------
 
 # -------------------------------------------------
@@ -23,7 +24,6 @@
 # check yad, exiftool, iconv and convert
 command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
 command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool [libimage-exiftool-perl]"; exit 1; }
-command -v iconv >/dev/null 2>&1 || { zenity --error --text="Please install iconv"; exit 1; }
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 
 # -------------------------------------------------------
@@ -47,7 +47,7 @@ NBR_FILE=$#
 # -------------------------------------------------------
 
 # load common functions
-. tags-common
+#. tags-common
 
 # Configuration file : ~/.config/image-tag-xmp.conf
 FILE_CONF="$HOME/.config/tags-xmp.conf"
@@ -76,20 +76,25 @@ then
   INPUT_FILE="$1"
 
   # read EXIF data
-  tags-extract-all "${TAG_UTF8}" "${INPUT_FILE}"
+  exiftool -S -DateTimeOriginal -DateTime -GPSDateTime -City -Country -Title -Description -Keywords -Author "${INPUT_FILE}" > "${TAG_UTF8}"
 
-  # extract or generate thumbnail
-  tags-get-thumbnail "${INPUT_FILE}" "${THUMB_ORIGINAL}"
+  # try to extract thumbnail from EXIF tags
+  exiftool -b -ThumbnailImage "${INPUT_FILE}" > "${THUMB_ORIGINAL}"
+
+  # if failed, generate thumbnail from image (without any metadata)
+  [ ! -s "${THUMB_ORIGINAL}" ] && convert -strip -define jpeg:size=128x128 -auto-orient "${INPUT_FILE}[0]" -resize "128x" -quality 85 "${THUMB_ORIGINAL}"
 
   # get meta-data
-  DATE=$(tags-get-date ${TAG_UTF8})
-  TITLE=$(tags-get-title ${TAG_UTF8})
-  CAPTION=$(tags-get-caption ${TAG_UTF8})
-  KEYWORD=$(tags-get-keywords ${TAG_UTF8})
-  AUTHOR=$(tags-get-author ${TAG_UTF8})
-  CITY=$(tags-get-city ${TAG_UTF8})
+  DATE=$(cat "${TAG_UTF8}" | grep "^DateTimeOriginal" | cut -d':' -f2- | tr -cd "0-9: " | xargs)
+  [ "${DATE}" = "" ] && DATE=$(cat "${TAG_UTF8}" | grep "^GPSDateTime" | cut -d':' -f2- | tr -cd "0-9: " | xargs)
+  [ "${DATE}" = "" ] && DATE=$(cat "${TAG_UTF8}" | grep "^DateTime" | cut -d':' -f2- | tr -cd "0-9: " | xargs)
+  TITLE=$(cat "${TAG_UTF8}" | grep "^Title" | cut -d':' -f2- | xargs)
+  CAPTION=$(cat "${TAG_UTF8}" | grep "^Description" | cut -d':' -f2- | xargs)
+  KEYWORD=$(cat "${TAG_UTF8}" | grep "^Keywords" | cut -d':' -f2- | xargs)
+  AUTHOR=$(cat "${TAG_UTF8}" | grep "^Author" | cut -d':' -f2- | xargs)
+  CITY=$(cat "${TAG_UTF8}" | grep "^City" | cut -d':' -f2- | xargs)
   [ "${CITY}" = "" ] && CITY=$(cat "${FILE_CONF}" | grep "city" | cut -d'=' -f2)
-  COUNTRY=$(tags-get-country ${TAG_UTF8})
+  COUNTRY=$(cat "${TAG_UTF8}" | grep "^Country" | cut -d':' -f2- | xargs)
   [ "${COUNTRY}" = "" ] && COUNTRY=$(cat "${FILE_CONF}" | grep "country" | cut -d'=' -f2)
 
   # generate the date digits and time
@@ -160,18 +165,22 @@ do
   if [ "${ACTION}" = "0" ]
   then
     # read the data embedded into the file
-    echo $(((INDEX*100+20)/NBR_FILE))
+    echo $(((INDEX*100+25)/NBR_FILE))
     echo "# File $((INDEX+1)) / ${NBR_FILE} - Prepare Tags"
-    tags-extract-all "${TAG_UTF8}" "${INPUT_FILE}"
+    exiftool -S -DateTimeOriginal -DateTime -GPSDateTime -City -Country -Title -Description -Keywords -Author "${INPUT_FILE}" > "${TAG_UTF8}"
 
     # if new meta-data set, get it, otherwise read original one
-    [ "${NEW_DATE}"    != "" ] && DATE="${NEW_DATE}"       || DATE=$(tags-get-date ${TAG_UTF8})
-    [ "${NEW_TITLE}"   != "" ] && TITLE="${NEW_TITLE}"     || TITLE=$(tags-get-title ${TAG_UTF8})
-    [ "${NEW_CAPTION}" != "" ] && CAPTION="${NEW_CAPTION}" || CAPTION=$(tags-get-caption ${TAG_UTF8})
-    [ "${NEW_KEYWORD}" != "" ] && KEYWORD="${NEW_KEYWORD}" || KEYWORD=$(tags-get-keywords ${TAG_UTF8})
-    [ "${NEW_AUTHOR}"  != "" ] && AUTHOR="${NEW_AUTHOR}"   || AUTHOR=$(tags-get-author ${TAG_UTF8})
-    [ "${NEW_CITY}"    != "" ] && CITY="${NEW_CITY}"       || CITY=$(tags-get-city ${TAG_UTF8})
-    [ "${NEW_COUNTRY}" != "" ] && COUNTRY="${NEW_COUNTRY}" || COUNTRY=$(tags-get-country ${TAG_UTF8})
+    DATE=$(cat "${TAG_UTF8}" | grep "^DateTimeOriginal" | cut -d':' -f2- | xargs)
+    [ "${DATE}" = "" ] && DATE=$(cat "${TAG_UTF8}" | grep "^GPSDateTime" | cut -d':' -f2- | xargs)
+    [ "${DATE}" = "" ] && DATE=$(cat "${TAG_UTF8}" | grep "^DateTime" | cut -d':' -f2- | xargs)
+
+    [ "${NEW_DATE}"    != "" ] && DATE="${NEW_DATE}"
+    [ "${NEW_TITLE}"   != "" ] && TITLE="${NEW_TITLE}"     || TITLE=$(cat "${TAG_UTF8}" | grep "^Title" | cut -d':' -f2- | xargs)
+    [ "${NEW_CAPTION}" != "" ] && CAPTION="${NEW_CAPTION}" || CAPTION=$(cat "${TAG_UTF8}" | grep "^Description" | cut -d':' -f2- | xargs)
+    [ "${NEW_KEYWORD}" != "" ] && KEYWORD="${NEW_KEYWORD}" || KEYWORD=$(cat "${TAG_UTF8}" | grep "^Keywords" | cut -d':' -f2- | xargs)
+    [ "${NEW_AUTHOR}"  != "" ] && AUTHOR="${NEW_AUTHOR}"   || AUTHOR=$(cat "${TAG_UTF8}" | grep "^Author" | cut -d':' -f2- | xargs)
+    [ "${NEW_CITY}"    != "" ] && CITY="${NEW_CITY}"       || CITY=$(cat "${TAG_UTF8}" | grep "^City" | cut -d':' -f2- | xargs)
+    [ "${NEW_COUNTRY}" != "" ] && COUNTRY="${NEW_COUNTRY}" || COUNTRY=$(cat "${TAG_UTF8}" | grep "^Country" | cut -d':' -f2- | xargs)
 
     # handle meta-data removal
     [ "${NEW_TITLE}"   = "-" ] && TITLE=""
@@ -181,32 +190,23 @@ do
     [ "${NEW_CITY}"    = "-" ] && CITY=""
     [ "${NEW_COUNTRY}" = "-" ] && COUNTRY=""
 
-    # update tags
-    tags-set-date "${TAG_UTF8}" "${DATE}"
-    tags-set-title "${TAG_UTF8}" "${TITLE}"
-    tags-set-caption "${TAG_UTF8}" "${CAPTION}"
-    tags-set-city "${TAG_UTF8}" "${CITY}"
-    tags-set-country "${TAG_UTF8}" "${COUNTRY}"
-    tags-set-keywords "${TAG_UTF8}" "${KEYWORD}"
-    tags-set-author "${TAG_UTF8}" "${AUTHOR}"
-
     # update EXIF tags
-    echo $(((INDEX*100+40)/NBR_FILE))
-    echo "# File $((INDEX+1)) / ${NBR_FILE} - Write EXIF Tags"
-    tags-save-family "${TAG_UTF8}" "${INPUT_FILE}" "EXIF"
-
-    # update XMP tags
-    echo $(((INDEX*100+60)/NBR_FILE))
-    echo "# File $((INDEX+1)) / ${NBR_FILE} - Write XMP Tags"
-    tags-save-family "${TAG_UTF8}" "${INPUT_FILE}" "XMP"
+    echo $(((INDEX*100+50)/NBR_FILE))
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Write Tags"
+    exiftool -overwrite_original -P -F "-alldates=${DATE}" "-Title=${TITLE}" "-Description=${CAPTION}" "-IPTC:City=${CITY}" "-XMP:City=${CITY}" "-Country=${COUNTRY}" "-IPTC:Keywords=${KEYWORD}" "-XMP:Keywords=${KEYWORD}" "-Author=${AUTHOR}" "${INPUT_FILE}"
 
     # if needed, update thumbnail
     if [ "${NEW_THUMBNAIL}" = "TRUE" ] 
     then
-      # write thumbnail
-      echo $(((INDEX*100+80)/NBR_FILE))
+      # progress
+      echo $(((INDEX*100+75)/NBR_FILE))
       echo "# File $((INDEX+1)) / ${NBR_FILE} - Write Thumbnail"
-      tags-add-thumbnail "${INPUT_FILE}"
+
+      # generate thumbnail from image
+      convert -strip -define jpeg:size=240x240 -auto-orient "${INPUT_FILE}[0]" -resize "240x" -quality 80 "${THUMB_ORIGINAL}"
+
+      # add thumbnail to the image file
+      exiftool -overwrite_original -P '-ThumbnailImage<='${THUMB_ORIGINAL} "${INPUT_FILE}"
     fi
   fi
 
