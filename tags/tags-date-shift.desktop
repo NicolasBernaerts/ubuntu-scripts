@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Icon=document-open-recent
+Name[C]=Time shift creation date
+TTooltip[C]=Select a time shift and apply it to creation date tag
+MimeTypes=image/jpeg;image/png;
+Profiles=timeshift;
+
+[X-Action-Profile timeshift]
+TryExec=/usr/local/bin/tags-date
+Exec=/usr/local/bin/tags-date --timeshift --system %F
