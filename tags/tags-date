@@ -1,0 +1,177 @@
+#!/bin/bash
+# --------------------------------------------------------------------
+#  Tool to handle date tags
+#
+#  Depends on :
+#   * yad
+#   * exiftool
+#
+#  Revision history :
+#   20/08/2016, V1.0 - Creation by N. Bernaerts
+#   09/09/2016, V1.1 - Rename and handle timeshift
+# --------------------------------------------------------------------
+
+# -------------------------------------------------------
+#   Initialisation
+# -------------------------------------------------------
+
+# check yad and exiftool
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
+command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool [libimage-exiftool-perl]"; exit 1; }
+
+# generate temporary files
+FILE_UTF=$(mktemp --tmpdir "XXXXXXXX.utf8")
+
+# -------------------------------------------------------
+#   Loop to load arguments
+# -------------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+  echo "Tool to tweak system date and filename of picture files according to EXIF creation date"
+  echo "Parameters are :"
+  echo "  --timeshift             Time shift creation date"
+  echo "  --system                Set system dates to creation date tag"
+  echo "  --rename                Rename file as yyyymmdd_hhmmss"
+  echo "  --country               Add country tag to filename"
+  echo "  --city                  Add city tag to filename"
+  echo "  <photo1> <photo2> ...   List of picture files"
+  exit
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+  case "$1" in
+    "--timeshift") SET_SHIFT="ok"; shift; ;;
+    "--system") SET_SYSTEM="ok"; shift; ;;
+    "--rename") SET_RENAME="ok"; shift; ;;
+    "--country") SET_COUNTRY="ok"; shift; ;;
+    "--city") SET_CITY="ok"; shift; ;;
+    *) [ -f "$1" ] && ARR_FILE=("${ARR_FILE[@]}" "$1"); shift; ;;
+   esac
+done
+
+# if time shift, display parameters dialog box
+if [ "${SET_SHIFT}" = "ok" ]
+then
+  # shift selection box
+  CHOICE=$(yad --title "Picture Creation Date time shift" --text "Select timeshift you want to apply to selected pictures" --center --window-icon "document-open-recent" --image "document-open-recent" --form --item-separator='|' --field="Days:NUM" "0|-30..30|1" --field="Hours:NUM" "0|-23..23|1" --field="Minutes:NUM" "0|-59..59|1" )
+
+  # exit if dialog canceled
+  [ $? -eq 1 ] && exit  
+
+  # retrieve parameters
+  SHIFT_DAY=$(echo ${CHOICE} | cut -d'|' -f1)
+  SHIFT_HOUR=$(echo ${CHOICE} | cut -d'|' -f2)
+  SHIFT_MINUTE=$(echo ${CHOICE} | cut -d'|' -f3)
+
+  # calculate shift in seconds
+  SHIFT_SECOND=$((SHIFT_DAY*3600*24+SHIFT_HOUR*3600+SHIFT_MINUTE*60))
+fi
+
+# -------------------------------------------------------
+#   Loop thru image files
+# -------------------------------------------------------
+
+# calculate number of image files
+NBR_FILE=${#ARR_FILE[@]}
+
+# set progress dialog box title
+TITLE="Updating ${NBR_FILE} images from EXIF creation date tag"
+
+# loop thru image files
+INDEX=0
+for FILE_PIX in "${ARR_FILE[@]}"
+do
+  # display progress
+  echo $(((INDEX*100+50)/NBR_FILE))
+  echo "# File $((INDEX+1)) / ${NBR_FILE} - Reading EXIF tags"
+
+  # get file data
+  FILE_DIR=$(dirname "${FILE_PIX}")
+  FILE_NAME=$(basename "${FILE_PIX}")
+  FILE_EXT=$(echo "${FILE_PIX}" | sed 's/^.*\.\(.*\)$/\1/')
+
+  # read EXIF data
+  exiftool -S -DateTimeOriginal -DateTime -GPSDateTime -City -Country "${FILE_PIX}" > "${FILE_UTF}"
+
+  # get photo metadata
+  DATE=$(cat "${FILE_UTF}" | grep "^DateTimeOriginal" | cut -d':' -f2- | tr -cd "0-9: " | xargs)
+  [ "${DATE}" = "" ] && DATE=$(cat "${FILE_UTF}" | grep "^GPSDateTime" | cut -d':' -f2- | tr -cd "0-9: " | xargs)
+  [ "${DATE}" = "" ] && DATE=$(cat "${FILE_UTF}" | grep "^DateTime" | cut -d':' -f2- | tr -cd "0-9: " | xargs)
+  CITY=$(cat "${FILE_UTF}" | grep "^City" | cut -d':' -f2- | xargs)
+  COUNTRY=$(cat "${FILE_UTF}" | grep "^Country" | cut -d':' -f2- | xargs)
+
+  # if time shift defined, apply it
+  if [ "${DATE}" != "" -a "${SHIFT_SECOND}" != "" ]
+  then
+    # display progress
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Shifting creation date"
+
+    # convert creation date to a format acceptable by DATE utility
+    DAY=$(echo ${DATE} | cut -d' ' -f1 | sed "s/://g")
+    TIME=$(echo ${DATE} | cut -d' ' -f2)
+
+    # get epoch of the date
+    EPOCH=$(date -d"${DAY} ${TIME}" +%s)
+
+    # time shift epoch
+    EPOCH=$((EPOCH+SHIFT_SECOND))
+
+    # convert back epoch to date
+    DATE=$(date --date=@${EPOCH} "+%Y:%m:%d %H:%M:%S")
+  fi
+
+  # if date update is needed
+  if [ "${SET_SYSTEM}" = "ok" -o "${SET_SHIFT}" = "ok" ]
+  then
+    # create exiftool parameters array
+    [ "${DATE}" != "" ] && ARR_PARAM=("-alldates=${DATE}")
+    [ "${SET_SYSTEM}" = "ok" ] && ARR_PARAM=("${ARR_PARAM[@]}" "-FileModifyDate=${DATE}")
+
+    # update file
+    exiftool -overwrite_original "${ARR_PARAM[@]}" "${FILE_PIX}"
+  fi
+
+  # if asked, rename file
+  if [ "${SET_RENAME}" = "ok" -a "${DATE}" != "" ]
+  then
+    # display progress
+    echo "# File $((INDEX+1)) / ${NBR_FILE} - Renaming file"
+
+    # retrieve date digits
+    YEAR=$(echo ${DATE} | cut -d' ' -f1 | cut -d ':' -f1)
+    MONTH=$(echo ${DATE} | cut -d' ' -f1 | cut -d ':' -f2)
+    DAY=$(echo ${DATE} | cut -d' ' -f1 | cut -d ':' -f3)
+    HOUR=$(echo ${DATE} | cut -d' ' -f2 | cut -d ':' -f1)
+    MINUTE=$(echo ${DATE} | cut -d' ' -f2 | cut -d ':' -f2)
+    SECOND=$(echo ${DATE} | cut -d' ' -f2 | cut -d ':' -f3)
+
+    # generate new file base name
+    FILE_NAME="${YEAR}${MONTH}${DAY}_${HOUR}${MINUTE}${SECOND}"
+
+    # if needed, append country
+    [ "${SET_COUNTRY}" = "ok" -a "${COUNTRY}" != "" ] && FILE_NAME="${FILE_NAME}-${COUNTRY}"
+ 
+    # if needed, append city
+    [ "${SET_CITY}" = "ok" -a "${CITY}" != "" ] && FILE_NAME="${FILE_NAME}-${CITY}"
+
+    # append path and extension
+    FILE_NAME="${FILE_DIR}/${FILE_NAME}.${FILE_EXT}"
+
+    # change filename
+    [ ! -f "${FILE_NAME}" -a "${FILE_NAME}" != "${FILE_PIX}" ] && mv "${FILE_PIX}" "${FILE_NAME}"
+  fi
+
+  # display progress
+  echo $(((INDEX*100+100)/NBR_FILE))
+
+  # index increment
+  INDEX=$((INDEX+1))
+
+done | zenity --width=400 --no-cancel --progress --auto-close --title "${TITLE}"
+
+# cleanup temporary files
+rm -f ${FILE_UTF} ${FILE_REF}
