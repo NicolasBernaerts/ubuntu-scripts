@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Action
+Icon=insert-text
+Name[C]=Rename as Date_Time-Country-City
+Tooltip[C]=Rename file according to its creation date, country and city tags 
+MimeType=image/all;
+Capabilities=Writable
+Profiles=rename;
+
+[X-Action-Profile rename]
+TryExec=/usr/local/bin/tags-date
+Exec=/usr/local/bin/tags-date --rename --country --city %F
