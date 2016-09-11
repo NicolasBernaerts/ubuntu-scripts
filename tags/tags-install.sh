@@ -34,7 +34,7 @@ rm $HOME/.local/share/file-manager/actions/tags-*.desktop
 # desktop integration : root menu
 wget -O $HOME/.local/share/file-manager/actions/tags-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-menu.desktop
 
-# start nautilus to include the menu
+# start nautilus and wait for 5 seconds for the menu to be declared
 nautilus &
 sleep 5
 
