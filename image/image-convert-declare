@@ -83,6 +83,9 @@ then
   #  Generate Menu file
   # ----------------------
 
+  # close all nautilus instances
+  nautilus -q
+  
   # set menu desktop file name
   FILE_DESKTOP="${ACTION_DIR}/image-convert-menu.desktop"
 
@@ -97,6 +100,10 @@ then
   # ------------------------
   #  Generate Action files
   # ------------------------
+
+  # restart nautilus to detect root menu
+  nautilus &
+  sleep 5
 
   # loop thru formats
   while read LINE; do
