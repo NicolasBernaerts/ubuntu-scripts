@@ -35,7 +35,8 @@ rm $HOME/.local/share/file-manager/actions/tags-*.desktop
 wget -O $HOME/.local/share/file-manager/actions/tags-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-menu.desktop
 
 # start nautilus to include the menu
-nautilus
+nautilus &
+sleep 5
 
 # desktop integration : entries
 wget -O $HOME/.local/share/file-manager/actions/tags-update-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/tags-update-action.desktop
