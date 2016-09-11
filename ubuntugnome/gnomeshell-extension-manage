@@ -26,7 +26,7 @@ SYSTEM_PATH="/usr/local/share/gnome-shell/extensions"
 GNOME_SITE="https://extensions.gnome.org"
 
 # get current gnome version
-GNOME_VERSION="$(gnome-shell --version | tr -cd "0-9.")"
+GNOME_VERSION="$(DISPLAY=":0" gnome-shell --version | tr -cd "0-9.")"
 
 # default installation path for default mode (user mode, no need of sudo)
 INSTALL_MODE="user"
