@@ -4,9 +4,6 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/...
 #
-# Depends on :
-#   * 
-#
 # Revision history :
 #   02/09/2016, V1.0 - Creation by N. Bernaerts
 # ---------------------------------------------------
@@ -31,12 +28,15 @@ class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
     pass
 
   # method to set one label in the table
-  def tableSetLabel(self, value, row, column, width, align):
+  def SetLabel(self, value, row, column, width, align):
     # create label
     labelValue = Gtk.Label()
     labelValue.set_markup(value)
-    if align == "left": labelValue.set_alignment(xalign=0.0, yalign=0.5)
-    if align == "right": labelValue.set_alignment(xalign=1.0, yalign=0.5)
+
+    # set alignment
+    if align == "left": labelValue.set_alignment(xalign=0.0, yalign=0.0)
+    if align == "center": labelValue.set_alignment(xalign=0.5, yalign=0.0)
+    if align == "right": labelValue.set_alignment(xalign=1.0, yalign=0.0)
 
     # place label
     self.table.attach(labelValue, column, column + width, row, row + 1)
@@ -58,8 +58,7 @@ class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       return
 
     # if mimetype corresponds to JPG image, read data and populate tab
-    mimetype = file.get_mime_type().split('/')
-    if mimetype[0] in ('image'):
+    if file.get_mime_type() in ('image/jpeg' 'image/png'):
     
       # read data from APK file
       filename = urllib.unquote(file.get_uri()[7:])
@@ -69,13 +68,21 @@ class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
 
       # create table
       self.table = Gtk.Table(len(self.tags), 2)
-      self.table.set_col_spacings(20)
-      self.table.set_row_spacings(0)
+
+      # set spacing
+      self.table.set_col_spacings(10)
+      self.table.set_row_spacings(5)
+
+      # set margins
+      self.table.set_margin_start(10)
+      self.table.set_margin_end(10)
+      self.table.set_margin_top(10)
+      self.table.set_margin_bottom(10)
 
       index = 0
       for (val) in self.tags:
-        self.tableSetLabel("<b>" + val + "</b>", index, 0, 1, "right")
-        self.tableSetLabel(self.tags[val], index, 1, 1, "left")
+        self.SetLabel("<b>" + val + "</b>", index, 0, 1, "right")
+        self.SetLabel(self.tags[val], index, 1, 1, "left")
         index = index + 1
 
       # set tab content (scrolled window -> table)
