@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # ---------------------------------------------------
 # Nautilus extension to add EXIF specific columns
 # Procedure :
