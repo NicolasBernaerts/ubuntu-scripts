@@ -11,6 +11,7 @@
 #   02/10/2015 - V1.2 : Disable wget gzip compression
 #   05/07/2016 - V2.0 : Complete rewrite (system path updated thanks to Morgan Read)
 #   09/08/2016 - V2.1 : Handle exact or next available version installation (idea from eddy-geek)
+#   09/09/2016 - V2.2 : Switch to gnome-shell to get version [UbuntuGnome 16.04] (thanks to edgard)
 # -------------------------------------------
 
 # check tools availability
