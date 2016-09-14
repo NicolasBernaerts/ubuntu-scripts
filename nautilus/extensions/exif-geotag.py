@@ -15,10 +15,12 @@ import os.path
 import re
 import pygtk
 import gi
-gi.require_version("GExiv2", "0.10")
-from gi.repository import GExiv2
+import codecs
 gi.require_version("Nautilus", "3.0")
 from gi.repository import Nautilus, GObject, Gtk
+gi.require_version("GExiv2", "0.10")
+from gi.repository import GExiv2
+from geopy.geocoders import Nominatim
 
 # -------------------
 # Property page
@@ -93,21 +95,41 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       # if no GPS data, return 
       if latitude == 0 and longitude == 0: return
 
-      # generate Google Maps link
+      # generate GPS position
       strPosition = str(latitude) + ',' + str(longitude)
+
+      # generate Google Maps links
       urlMaps = 'https://www.google.com/maps/place/' + strPosition + '/@' + strPosition + ',' + zoomMap + 'z/'
       urlJpeg = 'https://maps.googleapis.com/maps/api/staticmap?maptype=hybrid&zoom=' + zoomMap + '&size=' + sizeMap + '&center=' + strPosition + '&markers=' + strPosition
 
-      # generate map filename
+      # generate cache filenames
       dirHomeCache = os.environ['HOME'] + '/.cache'
       dirGeotagCache = os.getenv('XDG_CACHE_HOME', dirHomeCache) + '/geotag'
-      fileGeotag = dirGeotagCache + '/map_' + sizeMap + '_' + str(longitude) + '_' + str(latitude) + '.png'
+      fileMap = dirGeotagCache + '/map_' + str(longitude) + '_' + str(latitude) + '_' + sizeMap + '.png'
+      fileDesc = dirGeotagCache + '/map_' + str(longitude) + '_' + str(latitude) + '.txt'
 
       # if cache directory doesn't exist, create it
       if not os.path.exists(dirGeotagCache): os.makedirs(dirGeotagCache)
 
+      # if description is not in the cache, retrieve it from Nominatim
+      if not os.path.exists(fileDesc):
+        # retrieve place description
+        geolocator = Nominatim()
+        location = geolocator.reverse(strPosition)
+        strDescription = location.address
+
+        # write description to cache
+        file = codecs.open(fileDesc, "w", "utf-8")
+        file.write(strDescription)
+        file.close()
+      else:
+        # read description from cache
+        file = codecs.open(fileDesc, "r", "utf-8")
+        strDescription = file.read()
+        file.close()
+
       # if map is not in the cache, retrieve it from Google Maps
-      if not os.path.exists(fileGeotag): urllib.urlretrieve(urlJpeg, fileGeotag)
+      if not os.path.exists(fileMap): urllib.urlretrieve(urlJpeg, fileMap)
 
       # create table
       self.table = Gtk.Table(4, 3)
@@ -129,8 +151,8 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       self.SetLabel(str(longitude), 1, 0, 1, "center")
       self.SetLabel(str(latitude), 1, 1, 1, "center")
       self.SetLabel(str(altitude), 1, 2, 1, "center")
-      self.SetImage(fileGeotag, 2, 0, 3, "center")
-      self.SetLabel("<a href='" + urlMaps + "'>Google Maps</a>", 3, 1, 1, "center")
+      self.SetImage(fileMap, 2, 0, 3, "center")
+      self.SetLabel("<a href='" + urlMaps + "'>" + strDescription + "</a>", 3, 0, 3, "center")
  
       # set tab content (scrolled window -> table)
       tab_win = Gtk.ScrolledWindow()
