@@ -1,0 +1,33 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to install Sweet Home 3D
+# -------------------------------------------------------
+
+# sweethome3d
+sudo apt-get -y install sweethome3d sweethome3d-furniture sweethome3d-furniture-nonfree
+# backup current version
+sudo mv /usr/share/sweethome3d/sweethome3d.jar /usr/share/sweethome3d/org-sweethome3d.jar
+sudo mv /usr/share/sweethome3d/furniture /usr/share/sweethome3d/org-furniture
+sudo mkdir /usr/share/sweethome3d/furniture
+# get latest version
+wget -O /usr/share/sweethome3d/sweethome3d.jar https://sourceforge.net/projects/sweethome3d/files/SweetHome3D/SweetHome3D-5.2/SweetHome3D-5.2.jar/download
+# get latest furniture
+wget -O contributions.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-Contributions-1.6.2.zip/download
+wget -O luca.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-LucaPresidente-1.6.2.zip/download
+wget -O trees.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-Trees-1.6.2.zip/download
+wget -O scopia.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-Scopia-1.6.2.zip/download
+wget -O kator.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-KatorLegaz-1.6.2.zip/download
+wget -O blendcco.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-BlendSwap-CC-0-1.6.2.zip/download
+wget -O blendccby.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-BlendSwap-CC-BY-1.6.2.zip/download
+wget -O reallusion.zip https://sourceforge.net/projects/sweethome3d/files/SweetHome3D-models/3DModels-1.6.2/3DModels-Reallusion-1.6.2.zip/download
+# extract furniture
+unzip contributions.zip Contributions.sh3f
+unzip luca.zip LucaPresidente.sh3f
+unzip trees.zip Trees.sh3f
+unzip scopia.zip Scopia.sh3f
+unzip kator.zip KatorLegaz.sh3f
+unzip blendcco.zip BlendSwap-CC-0.sh3f
+unzip blendccby.zip BlendSwap-CC-BY.sh3f
+unzip reallusion.zip Reallusion.sh3f
+sudo mv *.sh3f /usr/share/sweethome3d/furniture
+rm *.zip
