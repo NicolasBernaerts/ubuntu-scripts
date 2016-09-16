@@ -6,6 +6,7 @@
 # 16/05/2016, V1.1 - Add SweetHome3D and update to latest version
 # 12/08/2016, V1.2 - Replace image-resize by image-convert
 # 13/08/2016, V1.3 - Add raw-thumbnailer
+# 15/09/2016, V1.4 - Add EXIF nautilus extensions
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -74,6 +75,7 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 . ./scan2folder-install.sh
 
 # file manager EXIF extensions
+sudo apt-get install python-nautilus python3-gi gir1.2-gexiv2-0.10 python-geopy
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-columns.py
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-alltags.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-alltags.py
