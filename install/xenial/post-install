@@ -38,6 +38,7 @@ then
     echo "Extra parameters are :"
     echo "  --wifi            Add some tweaks for problematic wifi cards"
     echo "  --ssd             Add some tweaks for SSD disk"
+    echo "  --touchpad        Add some tweaks for trackpad"
     echo "  --assistance      Add remote assistance tools"
     exit 1
 fi
@@ -50,6 +51,7 @@ do
     --ubuntugnome) DISTRI_TYPE="UBUNTUGNOME"; shift; ;;
     --wifi) WIFI="ok"; shift; ;;
     --ssd) SSD="ok"; shift; ;;
+    --touchpad) TOUCHPAD="ok"; shift; ;;
     --assistance) ASSIST="ok"; shift; ;;
     *) shift; ;;
   esac
@@ -144,9 +146,12 @@ esac
 # ------------------- Common tweaks -----------------
 # ---------------------------------------------------
 
-# touchpad : add palm detection
-sudo mkdir --parent /etc/X11/xorg.conf.d
-sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
+  # touchpad : add palm detection
+if [ "${TOUCHPAD}" = "ok" ]
+then
+  sudo mkdir --parent /etc/X11/xorg.conf.d
+  sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
+fi
 
 # update libgphoto2 to correct broken GoPro USB access
 wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-port12_2.5.10-3_${ARCHI}.deb
