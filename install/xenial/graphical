@@ -46,7 +46,7 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 . ./scan2folder-install.sh
 
 # file manager EXIF extensions
-sudo apt-get install python-nautilus python3-gi gir1.2-gexiv2-0.10 python-geopy
+sudo apt-get -y install python-nautilus python3-gi gir1.2-gexiv2-0.10 python-geopy
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-columns.py
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-alltags.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-alltags.py
