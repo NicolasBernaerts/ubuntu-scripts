@@ -20,6 +20,7 @@ gi.require_version("Nautilus", "3.0")
 from gi.repository import Nautilus, GObject, Gtk
 gi.require_version("GExiv2", "0.10")
 from gi.repository import GExiv2
+from gi.repository import Gio
 from geopy.geocoders import Nominatim
 
 # -------------------
@@ -81,7 +82,10 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
     if mimetype[0] in ('image'):
     
       # read data from APK file
-      filename = urllib.unquote(file.get_uri()[7:])
+      #filename = urllib.unquote(file.get_uri()[7:])
+      uri = file.get_uri()
+      gvfs = Gio.Vfs.get_default()
+      filename = gvfs.get_file_for_uri(uri).get_path()
 
       # get metadata
       self.tags = GExiv2.Metadata(filename)
