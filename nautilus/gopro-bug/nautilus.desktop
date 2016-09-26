@@ -1,0 +1,15 @@
+[Desktop Entry]
+NotShowIn=Unity;
+Name=Files (for GoPro)
+Comment=Access and organize files
+Keywords=folder;manager;explore;disk;filesystem;
+Exec=/opt/nautilus-gopro/nautilus --new-window %U
+Icon=system-file-manager
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Utility;Core;FileManager;
+
+[Desktop Action Window]
+Name=Open a New Window
+Exec=nautilus --new-window
