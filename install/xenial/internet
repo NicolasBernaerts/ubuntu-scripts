@@ -42,6 +42,7 @@ wget -O tsetup.tar.xz "${TELEGRAM_URL}"
 mkdir $HOME/.TelegramDesktop
 tar xf tsetup.tar.xz -C "$HOME/.TelegramDesktop"
 $HOME/.TelegramDesktop/Telegram/Telegram &
+chmod +x $HOME/.local/share/applications/telegramdesktop.desktop
 
 # Syncthing (release channel)
 curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
