@@ -21,8 +21,12 @@ sudo ln -s /opt/nautilus-gopro/lib/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/l
 rm -r ./usr ./lib
 
 # download nautilus launcher
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/nautilus-newfile-declare https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-declare
+sudo wget --header='Accept-Encoding:none' -O /opt/nautilus-gopro/nautilus https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/gopro-bug/nautilus
 sudo chmod +x /opt/nautilus-gopro/nautilus
+
+# desktop integration
+wget --header='Accept-Encoding:none' -O $HOME/.local/share/applications/nautilus.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/gopro-bug/nautilus.desktop
+chmod +x $HOME/.local/share/applications/nautilus.desktop
 
 
 
