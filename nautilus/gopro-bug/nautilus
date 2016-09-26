@@ -1,0 +1,11 @@
+#!/bin/bash
+# -------------------------------------------------------------
+# Run nautilus with updated gphoto 2.5.10 library
+# This correct the corrupted DCIM problem with latest GoPro
+#
+# Revision history :
+#   20/09/2016, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------------
+
+# wrap melt call to force use of libraries in /opt/nautilus-gopro/lib
+/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 --library-path /opt/nautilus-gopro/lib /usr/bin/nautilus "$@"
