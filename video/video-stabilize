@@ -2,15 +2,14 @@
 # -------------------------------------------------------
 #  Video Stabilizer based on MLT and vid.stab
 #  For installation instructions, please check
-#  http://bernaerts.dyndns.org/linux/74-ubuntu/329-ubuntu-trusty-rotate-stabilize-video-melt-vidstab
+#  http://bernaerts.dyndns.org/linux/350-ubuntu-xenial-rotate-stabilize-video-melt-vidstab
 #  
 #  Depends on :
 #    * melt (from ppa:sunab/kdenlive-release)
-#    * vidstab (libvidstab1.0 package from ppa:sunab/kdenlive-release)
-#    * yad (from ppa:webupd8team/y-ppa-manager)
-#    * exiftool (from libimage-exiftool-perl package)
-#    * avconv
-#    * x264
+#    * vidstab (from ppa:sunab/kdenlive-release)
+#    * yad
+#    * exiftool
+#    * avconv and x264
 #
 #  Revision history :
 #    04/03/2012, V1.0 - Creation by N. Bernaerts
