@@ -13,10 +13,6 @@ sudo apt-get -y install melt
 # install yad, x264 and exiftool
 sudo apt-get -y install yad x264 libimage-exiftool-perl
 
-# install opencv-data, to avoid error
-#   Could not load classifier cascade /usr/share/opencv/haarcascades/haarcascade_frontalface_alt2.xml
-sudo apt-get -y install opencv-data
-
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 
