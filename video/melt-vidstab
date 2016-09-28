@@ -10,4 +10,4 @@
 # -------------------------------------------------------
 
 # wrap melt call to force use of libraries in /opt/mlt-vidstab/lib
-/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 --library-path /opt/mlt-vidstab/lib /opt/mlt-vidstab/bin/melt "$@"
+/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 --library-path /opt/vidstab/usr/lib /opt/vidstab/usr/bin/melt "$@"
