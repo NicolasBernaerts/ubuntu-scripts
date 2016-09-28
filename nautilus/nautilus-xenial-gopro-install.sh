@@ -79,7 +79,7 @@ then
   sudo rm -R /opt/libgphoto2
 
   # reinstall original packages
-  sudo apt-get install --reinstall libgphoto2-6 libgphoto2-port12
+  sudo apt-get install --yes --reinstall libgphoto2-6 libgphoto2-port12
 fi
 
 # ---------------------------------------------------
