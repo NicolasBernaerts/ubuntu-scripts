@@ -34,7 +34,7 @@ done
 [ "${MODE}" != "install" -a "${MODE}" != "remove" ] && { echo "Please use --install or --remove"; exit 1; }
 
 # ---------------------------------------------------
-#  Removal
+#  Cleaning
 # ---------------------------------------------------
 
 # remove targeted files and directories 
