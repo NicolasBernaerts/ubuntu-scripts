@@ -40,7 +40,7 @@
 # -------------------------------------------------
 
 # check /opt/mlt-vidstab/melt (specific build with vid.stab filter) or melt (ubuntu) or mlt-melt (fedora)
-[ -f /opt/mlt-vidstab/melt ] && CMD_MELT="/opt/mlt-vidstab/melt" || CMD_MELT="melt"
+[ -f /opt/vidstab/melt ] && CMD_MELT="/opt/vidstab/melt" || CMD_MELT="melt"
 command -v $CMD_MELT >/dev/null 2>&1 || { CMD_MELT="mlt-melt"; }
 command -v $CMD_MELT >/dev/null 2>&1 || { zenity --error --text="Please install Melt from MLT framework"; exit 1; }
 
