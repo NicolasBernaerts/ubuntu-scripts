@@ -18,9 +18,10 @@ cat $HOME/.config/nautilus-actions/nautilus-actions.conf.org | sed 's/items-crea
 # nautilus : add new empty files right click menu
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
 . ./nautilus-newfile-install.sh
+rm nautilus-newfile-install.sh
 
 # tweak to allow nautilus windows resize under compiz
 wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/config/gtk.css
 
 # console management of gnomeshell extensions
-sudo wget -O /usr/local/bin/gnomeshell-extension-install "https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-install"
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/gnomeshell-extension-install https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-install
