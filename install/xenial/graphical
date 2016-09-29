@@ -24,26 +24,32 @@ sudo apt-get -y install gimp gimp-plugin-registry
 # GIMP XCF thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
 . ./gimp-tumbnailer-install.sh
+rm gimp-tumbnailer-install.sh
 
 # Graphviz DOT thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
 . ./graphviz-thumbnailer-install.sh
+rm graphviz-thumbnailer-install.sh
 
 # RAW pictures thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer-install.sh
 . ./raw-thumbnailer-install.sh
+rm raw-thumbnailer-install.sh
 
 # Image convert extension
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
 . ./image-convert-install.sh
+rm image-convert-install.sh
 
 # Image XMP tagger extension
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tags/xmp-tagger-install.sh
 . ./xmp-tagger-install.sh
+rm xmp-tagger-install.sh
 
 # scan2folder tool
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
 . ./scan2folder-install.sh
+rm scan2folder-install.sh
 
 # file manager EXIF extensions
 sudo apt-get -y install python-nautilus python3-gi gir1.2-gexiv2-0.10 python-geopy
