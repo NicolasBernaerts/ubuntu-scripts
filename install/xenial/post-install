@@ -164,6 +164,11 @@ then
   sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
 fi
 
+# correct GoPro USB mount under Xenial 
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro-install.sh
+. ./nautilus-xenial-gopro-install.sh
+rm nautilus-xenial-gopro-install.sh
+
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
 # ---------------------------------------------------
