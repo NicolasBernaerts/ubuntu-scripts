@@ -20,12 +20,15 @@ sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
 
 # PDF editor
 wget --header='Accept-Encoding:none' http://get.code-industry.net/public/master-pdf-editor-3.7.02_${ARCHI}.deb
-sudo gdebi --n master-pdf-editor*.deb
+sudo gdebi --n master-pdf-editor-3.7.02_${ARCHI}.deb
+rm master-pdf-editor-3.7.02_${ARCHI}.deb
+
 
 # Simple Note
 URL_DEB=$(wget -O - https://simplenote.com/ | grep "download" | grep ".deb" | sed 's/.*\(https.*.deb\).*/\1/')
 wget -O simplenote.deb ${URL_DEB}
 sudo dpkg -i simplenote.deb
+rm simplenote.deb
 
 # declare file association 
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
@@ -34,15 +37,19 @@ xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spr
 # LibreOffice thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
 . ./lo-thumbnailer-install.sh
+rm lo-thumbnailer-install.sh
 
 # Ms Office thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
 . ./msoffice-thumbnailer-install.sh
+rm msoffice-thumbnailer-install.sh
 
 # PDF booklet generation extension
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
 . ./generate-booklet-install.sh
+rm generate-booklet-install.sh
 
 # PDF document generation from multiple files
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
 . ./pdf-generate-install.sh
+rm pdf-generate-install.sh
