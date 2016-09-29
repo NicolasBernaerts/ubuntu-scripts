@@ -17,7 +17,7 @@ sudo apt-get -y install yad x264 libimage-exiftool-perl
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 
 # If not present, install specific version of melt with vid.stab filter
-if [ ! -f /opt/mlt-vidstab/melt ]
+if [ ! -f /opt/vidstab/melt ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/melt-vidstab-install.sh
   . ./melt-vidstab-install.sh
