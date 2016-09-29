@@ -24,6 +24,7 @@ sudo apt-get -y install youtube-dl youtube-dlg
 # youtubedl-gui
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui-install.sh
 . ./youtubedl-gui-install.sh
+rm youtubedl-gui-install.sh
 
 # skype 4.3
 sudo add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
@@ -41,6 +42,7 @@ sudo apt-get -y install whatsie
 wget -O tsetup.tar.xz "${TELEGRAM_URL}"
 mkdir $HOME/.TelegramDesktop
 tar xf tsetup.tar.xz -C "$HOME/.TelegramDesktop"
+rm tsetup.tar.xz
 $HOME/.TelegramDesktop/Telegram/Telegram &
 chmod +x $HOME/.local/share/applications/telegramdesktop.desktop
 
