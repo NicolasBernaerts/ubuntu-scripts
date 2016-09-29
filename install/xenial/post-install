@@ -77,26 +77,32 @@ sudo apt-get -y dist-upgrade
 # office tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
 . ./office
+rm office
 
 # graphical tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
 . ./graphical
+rm graphical
 
 # multimedia tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
 . ./multimedia
+rm multimedia
 
 # internet tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
 . ./internet
+rm internet
 
 # android tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
 . ./android
+rm android
 
 # misc utilities and tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
 . ./utilities
+rm utilities
 
 # ---------------------------------------------------
 # -----------------  Common options  ----------------
@@ -107,6 +113,7 @@ if [ "${WIFI}" = "ok" ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
   . ./wifi
+  rm wifi
 fi
 
 # SSD tweaks
@@ -114,6 +121,7 @@ if [ "${SSD}" = "ok" ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
   . ./ssd
+  rm ssd
 fi
 
 # remote assistance
@@ -121,6 +129,7 @@ if [ "${ASSIST}" = "ok" ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
   . ./assistance
+  rm assistance
 fi
 
 # ---------------------------------------------------
@@ -132,11 +141,13 @@ case ${DISTRI_TYPE} in
       # gnome session fallback
       wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-fallback
       . ./gnome-fallback
+      rm gnome-fallback
       ;;
     "UBUNTUGNOME") 
       # gnomeshell
       wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
       . ./gnome-shell
+      rm gnome-shell
       ;;
     *) 
       ;;
@@ -152,14 +163,6 @@ then
   sudo mkdir --parent /etc/X11/xorg.conf.d
   sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
 fi
-
-# update libgphoto2 to correct broken GoPro USB access
-wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-port12_2.5.10-3_${ARCHI}.deb
-sudo dpkg -i libgphoto2-port12_2.5.10-3_${ARCHI}.deb
-wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-6_2.5.10-3_${ARCHI}.deb
-sudo dpkg -i libgphoto2-6_2.5.10-3_${ARCHI}.deb
-wget http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-l10n_2.5.10-3_all.deb
-sudo dpkg -i libgphoto2-l10n_2.5.10-3_all.deb
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
