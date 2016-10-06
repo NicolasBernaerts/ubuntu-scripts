@@ -41,6 +41,7 @@ then
     echo "  --ssd             Add some tweaks for SSD disk"
     echo "  --touchpad        Add some tweaks for trackpad"
     echo "  --assistance      Add remote assistance tools"
+    echo "  --gopro           Add GoPro bug correction"
     exit 1
 fi
 
@@ -54,6 +55,7 @@ do
     --ssd) SSD="ok"; shift; ;;
     --touchpad) TOUCHPAD="ok"; shift; ;;
     --assistance) ASSIST="ok"; shift; ;;
+    --gopro) GOPRO="ok"; shift; ;;
     *) shift; ;;
   esac
 done
@@ -158,7 +160,7 @@ esac
 # ------------------- Common tweaks -----------------
 # ---------------------------------------------------
 
-  # touchpad : add palm detection
+# touchpad : add palm detection
 if [ "${TOUCHPAD}" = "ok" ]
 then
   sudo mkdir --parent /etc/X11/xorg.conf.d
@@ -166,9 +168,12 @@ then
 fi
 
 # correct GoPro USB mount under Xenial 
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro-install.sh
-. ./nautilus-xenial-gopro-install.sh --install
-rm nautilus-xenial-gopro-install.sh
+if [ "${GOPRO}" = "ok" ]
+then
+  wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro-install.sh
+  . ./nautilus-xenial-gopro-install.sh --install
+  rm nautilus-xenial-gopro-install.sh
+fi
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
