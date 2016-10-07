@@ -24,7 +24,12 @@ sudo apt-get -y install p7zip-full rar unrar unzip
 sudo apt-get -y install meld
 
 # disk tools
-sudo apt-get -y install smartmontools disktype unetbootin gparted
+sudo apt-get -y install smartmontools disktype gparted
+
+# unetbootin
+sudo add-apt-repository -y ppa:gezakovacs/ppa
+sudo apt-get update
+sudo apt-get -y install unetbootin
 
 # keepassx : electronic wallet
 sudo apt-get -y install keepassx
