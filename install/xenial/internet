@@ -5,6 +5,7 @@
 # 20/12/2015, V1.0 - Migrated from Trusty
 # 20/05/2016, V1.1 - Add Whatsie
 # 20/08/2016, V1.2 - Change Telegram from PPA to direct download
+# 05/10/2016, V1.3 - Add SyncThing
 # ----------------------------------------------------------------
 
 # network tools
@@ -51,3 +52,6 @@ curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
 echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
 sudo apt-get update
 sudo apt-get install syncthing
+sudo systemctl enable syncthing@${USER}.service
+sudo systemctl start syncthing@${USER}.service
+
