@@ -12,6 +12,7 @@
 #   05/07/2016 - V2.0 : Complete rewrite (system path updated thanks to Morgan Read)
 #   09/08/2016 - V2.1 : Handle exact or previously available version installation (idea from eddy-geek)
 #   09/09/2016 - V2.2 : Switch to gnome-shell to get version [UbuntuGnome 16.04] (thanks to edgard)
+#   05/11/2016 - V2.3 : Trim Gnome version and add Fedora compatibility (thanks to Cedric Brandenbourger)
 # -------------------------------------------
 
 # check tools availability
@@ -20,13 +21,13 @@ command -v wget >/dev/null 2>&1 || { zenity --error --text="Please install wget"
 
 # install path (user and system mode)
 USER_PATH="$HOME/.local/share/gnome-shell/extensions"
-SYSTEM_PATH="/usr/local/share/gnome-shell/extensions"
+[ -f /etc/debian_version ] && SYSTEM_PATH="/usr/local/share/gnome-shell/extensions" || SYSTEM_PATH="/usr/share/gnome-shell/extensions"
 
 # set gnome shell extension site URL
 GNOME_SITE="https://extensions.gnome.org"
 
-# get current gnome version
-GNOME_VERSION="$(DISPLAY=":0" gnome-shell --version | tr -cd "0-9.")"
+# get current gnome version (major and minor only)
+GNOME_VERSION="$(DISPLAY=":0" gnome-shell --version | tr -cd "0-9." | cut -d'.' -f1,2)"
 
 # default installation path for default mode (user mode, no need of sudo)
 INSTALL_MODE="user"
