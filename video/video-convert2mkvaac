@@ -1,9 +1,10 @@
 #!/bin/bash
 # -------------------------------------------------------
-#  Convert video to MKV,
-#   transcode audio to AAC
-#   and convert tracks to midnight mode
+#  Convert video to MKV container and
+#   transcode audio to AAC with optionnal midnight mode audio track
 #  
+#  Usage is explained at http://bernaerts.dyndns.org/linux/74-ubuntu/336-ubuntu-transcode-video-mkv-aac-nautilus
+#
 #  Depends on :
 #    * yad (from ppa:webupd8team/y-ppa-manager)
 #    * mediainfo
