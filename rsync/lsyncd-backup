@@ -1,0 +1,241 @@
+#!/bin/bash
+# -------------------------------------------------------
+#  Setup realtime backup environment 
+#  for local directories on a remote SSH server
+#  with the help of lsyncd
+#
+#  Usage is explained at http://bernaerts.dyndns.org/linux/...
+#
+#  Depends on :
+#    * yad
+#    * lsyncd
+#  
+#  Revision history :
+#    23/11/2016, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# -------------------------------------------------------
+#  Initialisation
+# -------------------------------------------------------
+
+# set choice possibilities
+CHOICE_LIST=0
+CHOICE_EXIT=1
+CHOICE_SERVER=2
+CHOICE_ADD=3
+CHOICE_UPDATE=4
+
+# by default, display selection list
+CHOICE=${CHOICE_LIST}
+
+# dialog parameters
+DLG_TITLE="Automatic backup"
+DLG_ICON="media-floppy"
+DLG_WIDTH=600
+DLG_HEIGHT=400
+
+# hostname
+PC_NAME="$(hostname)"
+
+# default SSH port
+SRV_PORT=22
+
+# -------------------------------------------------------
+#  Check tools availability
+# -------------------------------------------------------
+
+# check mediainfo, mkvmerge, avconv and fdkaac
+command -v ssh >/dev/null 2>&1 || { zenity --error --text="Please install ssh client"; exit 1; }
+command -v lsyncd >/dev/null 2>&1 || { zenity --error --text="Please install lsyncd"; exit 1; }
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
+
+# -------------------------------------------------------
+#  Configuration
+# -------------------------------------------------------
+
+# temporary files
+TMP_RESULT=$(mktemp --tmpdir "XXXXXXXXX.tmp")
+
+# Configuration and startup file
+FILE_CONF="$HOME/.config/lsyncd-backup.lua"
+FILE_STARTUP="$HOME/.config/autostart/lsyncd-backup.desktop"
+
+# Load configuration file
+if [ -f "$FILE_CONF" ]
+then
+  SRV_NAME=$(grep "host =" "${FILE_CONF}" | head -n 1 | sed "s/^.*@\([^\"]*\).*$/\1/")
+  SRV_USER=$(grep "host =" "${FILE_CONF}" | head -n 1 | sed "s/^.*\"\([^@]*\)@.*$/\1/")
+  SRV_PORT=$(grep "ssh =" "${FILE_CONF}" | head -n 1 | sed "s/^.*port = \([^ ]*\).*$/\1/")
+  ARR_DIRECTORY=( $(grep "source =" "${FILE_CONF}" | sed "s/^.*\"\([^\"]*\)\".*$/\1/") )
+fi
+
+# if no server defined, force server definition
+[ "${SRV_NAME}" = "" -o "${SRV_USER}" = "" ] && CHOICE=${CHOICE_SERVER}
+
+# Main loop
+while [ "$CHOICE" != "$CHOICE_EXIT" ]
+do case $CHOICE in
+
+  # --------------------------------------
+  #  Display directory selection 
+  # --------------------------------------
+  ${CHOICE_LIST})
+
+    # preparation of dialog parameters with all directories selected
+    ARR_PARAM=( )
+    for DIRECTORY in "${ARR_DIRECTORY[@]}"
+    do
+      ARR_PARAM=("${ARR_PARAM[@]}" "TRUE" "${DIRECTORY}")
+    done
+
+    # directory list selection dialog 
+    TEXT="Backup server is <b>${SRV_USER}@${SRV_NAME}</b> on port <b>${SRV_PORT}</b>\n\nSelect ressources to backup."
+    ARR_SELECTION=( $(yad --list --center --height ${DLG_HEIGHT} --width ${DLG_WIDTH} --window-icon="${DLG_ICON}" --image="${DLG_ICON}" --title "${DLG_TITLE}" --text "${TEXT}" --checklist  --column "Select" --column "Directory" "${ARR_PARAM[@]}" --separator="|" --button="Cancel!window-close:$CHOICE_EXIT" --button="Server!network-server:$CHOICE_SERVER" --button="Add!add:$CHOICE_ADD" --button="Update!media-floppy:$CHOICE_UPDATE") )
+    CHOICE=$?
+
+    # if update needed, rebuild directory list according to selection
+    if [ ${CHOICE} -eq ${CHOICE_UPDATE} ]
+    then
+      # empty directory list
+      ARR_DIRECTORY=( )
+
+      # loop thru selections
+      for SELECTION in "${ARR_SELECTION[@]}"
+      do
+        # extract data
+        SELECTED=$(echo "${SELECTION}" | cut -d'|' -f1)
+        DIRECTORY=$(echo "${SELECTION}" | cut -d'|' -f2)
+
+        # if selected, add to directory list
+        [ "${SELECTED}" = "TRUE" ] && ARR_DIRECTORY=("${ARR_DIRECTORY[@]}" "${DIRECTORY}")
+      done
+    fi
+    ;;
+
+  # --------------------------------------
+  #  Selection of a new directory 
+  # --------------------------------------
+  ${CHOICE_ADD})
+
+    # directory list selection dialog 
+    TEXT="Select directory to add to backup list\n"
+    DIRECTORY=$(yad --file --center -title "${DLG_TITLE}" --text "${TEXT}" --window-icon="${DLG_ICON}" --image="${DLG_ICON}" --directory --filename "${HOME}")
+
+    # add selected directory
+    [ "${DIRECTORY}" != "" ] && ARR_DIRECTORY=("${ARR_DIRECTORY[@]}" "${DIRECTORY}")
+
+    # back to directory list
+    CHOICE=${CHOICE_LIST}
+  ;;
+
+  # --------------------------------------
+  #  Server definition 
+  # --------------------------------------
+  ${CHOICE_SERVER})
+
+    # server parameters dialog 
+    TEXT="Set backup server parameters\n"
+    SELECTION=$(yad --form --center --width ${DLG_HEIGHT} --window-icon="${DLG_ICON}" --image="${DLG_ICON}" --title "${DLG_TITLE}" --text "${TEXT}" --item-separator="," --field="Server" "${SRV_NAME}" --field="User" "${SRV_USER}" --field="Port:NUM" "${SRV_PORT}")
+
+    # by default, exit
+    CHOICE=${CHOICE_EXIT}
+
+    # extract data
+    SRV_NAME=$(echo "${SELECTION}" | cut -d'|' -f1)
+    SRV_USER=$(echo "${SELECTION}" | cut -d'|' -f2)
+    SRV_PORT=$(echo "${SELECTION}" | cut -d'|' -f3)
+
+    # update server settings
+    if [ "${SRV_NAME}" != "" -a "${SRV_USER}" != "" ] 
+    then
+      # test connexion
+     TEXT="Checking connexion on port <b>${SRV_PORT}</b>\nto <b>${SRV_USER}@${SRV_NAME}</b> \n"
+      (
+      echo 50
+      ssh -o ConnectTimeout=10 -p ${SRV_PORT} "${SRV_USER}@${SRV_NAME}" ls -l > "${TMP_RESULT}"
+      echo 100
+      ) | yad --progress --center --width ${DLG_HEIGHT} --window-icon="${DLG_ICON}" --image="${DLG_ICON}" --title "${DLG_TITLE}" --text "${TEXT}" --no-buttons --auto-close --pulsate
+
+      # if connexion failed, 
+      [ -s ${TMP_RESULT} ] && CHOICE=${CHOICE_LIST} || zenity --warning --title "${DLG_TITLE}" --text "Connexion to server failed.\nBackup may not be operational\n"
+    fi
+    ;;
+
+  # --------------------------------------
+  #  Update configuration 
+  # --------------------------------------
+  ${CHOICE_UPDATE})
+
+    (
+    # display progress
+    echo "0"
+
+    # get number of directories to backup
+    NUMDIR=${#ARR_DIRECTORY[@]} 
+
+    # kill running lsyncd process
+    LSYNC_PID=$(ps -ef | grep ${FILE_CONF} | grep -v " grep " | xargs | cut -d' ' -f2)
+    [ "${LSYNC_PID}" != "" ] && kill -9 ${LSYNC_PID}
+
+    # removal of LUA configuration file
+    rm -f "${FILE_CONF}"
+
+    # add directories to lsyncd configuration file
+    INDEX=0
+    for DIRECTORY in "${ARR_DIRECTORY[@]}"
+    do
+      # calculate progress
+      PROGRESS=$((((100 * ${INDEX}) + 50) / ${NUMDIR}))
+      INDEX=$((${INDEX} + 1))
+      echo "${PROGRESS}"
+
+      # creation of remote directory
+      echo "#Creation of remote directory (${INDEX}/${NUMDIR})"
+      ssh -p 443 "${SRV_USER}@${SRV_NAME}" mkdir --parent "./${PC_NAME}${DIRECTORY}"
+
+      # append directory to LUA configuration file
+      echo "sync {" >> "${FILE_CONF}"
+      echo " default.rsyncssh," >> "${FILE_CONF}"
+      echo " source = \"${DIRECTORY}\"," >> "${FILE_CONF}"
+      echo " host = \"${SRV_USER}@${SRV_NAME}\"," >> "${FILE_CONF}"
+      echo " targetdir = \"${PC_NAME}${DIRECTORY}\"," >> "${FILE_CONF}"
+      echo " ssh = { port = ${SRV_PORT} }" >> "${FILE_CONF}"
+      echo "}" >> "${FILE_CONF}"
+      echo "" >> "${FILE_CONF}"
+    done 
+
+    # if at least one directory to backup, 
+    if [ ${NUMDIR} -gt 0 ]
+    then
+      # create lsyncd startup script
+      echo "[Desktop Entry]" > "${FILE_STARTUP}"
+      echo "Type=Application" >> "${FILE_STARTUP}"
+      echo "Exec=lsyncd ${FILE_CONF}" >> "${FILE_STARTUP}"
+      echo "X-GNOME-Autostart-enabled=true" >> "${FILE_STARTUP}"
+      echo "Name=Syncthing" >> "${FILE_STARTUP}"
+      echo "Comment=Syncthing" >> "${FILE_STARTUP}"
+
+      # start lsyncd
+      lsyncd ${FILE_CONF}
+    fi
+
+    # end of progress
+    echo "100"
+    ) | yad --progress --center --width ${DLG_HEIGHT} --window-icon="${DLG_ICON}" --image="${DLG_ICON}" --title "${DLG_TITLE}" --no-buttons --auto-close
+
+    # exit
+    CHOICE=${CHOICE_EXIT}
+    ;;
+  # --------------------------------------
+  # Other choice ... should not come
+  # --------------------------------------
+  *)
+
+    # by default, exit
+    CHOICE=$CHOICE_EXIT
+    ;;
+  esac
+done
+
+# cleanup temporary files
+rm -f ${TMP_RESULT}
