@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+TryExec=
+Exec=/usr/local/bin/lsyncd-backup
+Categories=Utility
+Icon=gtk-save
+Name[en_US]=Realtime desktop data backup
+Name[en]=Realtime desktop data backup
+Name[C]=Realtime desktop data backup
+Name[fr_FR]=Sauvegarde temps réel des données locales
+Tooltip[en_US]=Realtime backup local data on a remote SSH/Rsync server
+Tooltip[en]=Realtime backup local data on a remote SSH/Rsync server
+Tooltip[C]=Realtime backup local data on a remote SSH/Rsync server
+Tooltip[fr_FR]=Sauvegarde temps réel les données locales du PC sur un serveur SSH/Rsync
