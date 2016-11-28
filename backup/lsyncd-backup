@@ -152,7 +152,7 @@ do case $CHOICE in
      TEXT="Checking connexion on port <b>${SRV_PORT}</b>\nto <b>${SRV_USER}@${SRV_NAME}</b> \n"
       (
       echo 50
-      ssh -o ConnectTimeout=10 -p ${SRV_PORT} "${SRV_USER}@${SRV_NAME}" ls -l > "${TMP_RESULT}"
+      ssh -o ConnectTimeout=30 -p ${SRV_PORT} "${SRV_USER}@${SRV_NAME}" ls -l > "${TMP_RESULT}"
       echo 100
       ) | yad --progress --center --width ${DLG_HEIGHT} --window-icon="${DLG_ICON}" --image="${DLG_ICON}" --title "${DLG_TITLE}" --text "${TEXT}" --no-buttons --auto-close --pulsate
 
