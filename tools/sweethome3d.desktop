@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=Sweet Home 3D
+Comment=Sweet Home 3D designer
+Exec=/home/##USER##/.apps/SweetHome3D/SweetHome3D
+Icon=go-home
+Terminal=false
+StartupWMClass=SweetHome3D
+Type=Application
+Categories=Graphics;
+Keywords=architect;sweethome3d;home;plan;map;
