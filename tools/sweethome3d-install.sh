@@ -14,5 +14,5 @@ mv SweetHome3D-* $HOME/.local/apps/SweetHome3D
 
 # declare desktop file
 wget -O $HOME/.local/share/applications/sweethome3d.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d.desktop
-sed -i "s/##HOME##/$HOME/g" $HOME/.local/share/applications/sweethome3d.desktop
+sed -i "s/##USER##/$USER/g" $HOME/.local/share/applications/sweethome3d.desktop
 chmod +x $HOME/.local/share/applications/sweethome3d.desktop
