@@ -21,6 +21,11 @@ sudo apt-get -y install hugin
 # gimp
 sudo apt-get -y install gimp gimp-plugin-registry
 
+# Sweet Home 3D
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d-install.sh
+. ./sweethome3d-install.sh
+rm sweethome3d-install.sh
+
 # GIMP XCF thumbnailer
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
 . ./gimp-tumbnailer-install.sh
