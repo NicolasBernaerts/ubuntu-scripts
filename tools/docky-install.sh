@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------
-# Script to install Sweet Home 3D
+# Script to install Docky desktop launcher
 # -------------------------------------------------------
 
 # sweethome3d
