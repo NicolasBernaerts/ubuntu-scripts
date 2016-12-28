@@ -6,6 +6,11 @@
 # 04/05/2016, V1.1 - Add Simple Note client
 # -------------------------------------------------------
 
+# libreoffice PPA
+sudo add-apt-repository -y ppa:libreoffice/ppa
+sudo apt-get update
+sudo apt-get -y dist-upgrade
+
 # grisbi
 sudo apt-get -y install grisbi
 
@@ -22,7 +27,6 @@ sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
 wget --header='Accept-Encoding:none' http://get.code-industry.net/public/master-pdf-editor-3.7.02_${ARCHI}.deb
 sudo gdebi --n master-pdf-editor-3.7.02_${ARCHI}.deb
 rm master-pdf-editor-3.7.02_${ARCHI}.deb
-
 
 # Simple Note
 URL_DEB=$(wget -O - https://simplenote.com/ | grep "download" | grep ".deb" | sed 's/.*\(https.*.deb\).*/\1/')
