@@ -19,6 +19,7 @@
 #  08/11/2015, V2.0 - Complete rewrite
 #                     Add install/remove
 #                     Add global/per-user
+#  28/12/2016, V2.1 - Add Fedora compatibility thanks to Cedric Brandenbourger
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -36,13 +37,34 @@ command -v wget >/dev/null 2>&1 || { zenity --error --text="Please install wget"
 URL_FIREFOX="https://addons.mozilla.org/firefox/"
 URL_THUNDER="https://addons.mozilla.org/thunderbird/"
 
-# installation path for global extensions
-PATH_GLOBAL_FIREFOX="/usr/lib/firefox-addons/extensions"
-PATH_GLOBAL_THUNDER="/usr/lib/thunderbird-addons/extensions"
-
 # installation path for user extensions
 PATH_USER_FIREFOX="$HOME/.mozilla/firefox"
 PATH_USER_THUNDER="$HOME/.thunderbird"
+
+# ------------------------------------------------------
+#   Set installation path according to distribution
+# ------------------------------------------------------
+
+# detect architecture
+ARCHITECTURE=$(arch)
+
+# set installation path for debian based distribution (Debian, Ubuntu, ...)
+if [ -f /etc/debian_version ]
+then
+  PATH_GLOBAL_FIREFOX="/usr/lib/firefox-addons/extensions"
+  PATH_GLOBAL_THUNDER="/usr/lib/thunderbird-addons/extensions"
+
+# else, set for Fedora 64
+elif [ "${ARCHITECTURE}" = "x86_64" ]
+then
+  PATH_GLOBAL_FIREFOX="/usr/lib64/firefox/extensions"
+  PATH_GLOBAL_THUNDER="/usr/lib64/thunderbird/extensions"
+  
+# else set for Fedora 32 
+else
+  PATH_GLOBAL_FIREFOX="/usr/lib/firefox/extensions"
+  PATH_GLOBAL_THUNDER="/usr/lib/thunderbird/extensions"
+fi
 
 # -------------------------------------------------------
 #   Default values
