@@ -1,10 +1,6 @@
 #!/bin/sh
 # Mozilla Firefox & Thunderbird commandline extension
 
-# test Ubuntu distribution
-DISTRO=$(lsb_release -is 2>/dev/null)
-[ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
-
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/mozilla-extension-manager https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/mozilla-extension-manager
 sudo chmod +x /usr/local/bin/mozilla-extension-manager
