@@ -2,9 +2,9 @@
 # Video rotation and stabilization
 # This version is meant for Xenial 16.04, it is not compatible anymore with 14.04
 
-# test Ubuntu distribution
+# test Ubuntu or Linux Minty distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
-[ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
+[ "${DISTRO}" != "LinuxMint" ] && [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu or Linux Mint"; exit 1; }
 
 # install melt from official repository (without vid.stab filter)
 sudo apt-get update
