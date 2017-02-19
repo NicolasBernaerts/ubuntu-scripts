@@ -121,6 +121,7 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
         geolocator = Nominatim()
         location = geolocator.reverse(strPosition)
         strDescription = location.address
+        strDescription = strDescription[:90]
 
         # write description to cache
         file = codecs.open(fileDesc, "w", "utf-8")
