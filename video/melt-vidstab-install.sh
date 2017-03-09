@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Install specific version of melt embedding vid.stab filter
 
-# test Ubuntu distribution
+# test Ubuntu or Linux Minty distribution
 DISTRO=$(lsb_release -sc 2>/dev/null)
-[ "${DISTRO}" != "xenial" ] && { zenity --error --text="This automatic installation script is for Ubuntu Xenial only"; exit 1; }
+[ "${DISTRO}" != "sarah" ] && [ "${DISTRO}" != "xenial" ] && { zenity --error --text="This automatic installation script is for Ubuntu Xenial or Linux Mint Sarah only"; exit 1; }
 
 # create /opt/mlt-vidstab directory structure
 sudo mkdir --parent /opt/vidstab
