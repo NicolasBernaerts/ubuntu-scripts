@@ -3,6 +3,7 @@
 # Script to install multimedia tools
 #
 # 20/12/2015, V1.0 - Migrated from Trusty
+# 06/03/2017, v1.1 - Add MKVToolnix repository
 # -------------------------------------------------------
 
 # auto-accept mscorefonts eula
@@ -27,7 +28,11 @@ sudo apt-get -y install audacity
 sudo apt-get -y install avidemux
 
 # MKV toolnix
-sudo apt-get -y install mkvtoolnix-gui
+wget -q -O - https://mkvtoolnix.download/gpg-pub-moritzbunkus.txt | sudo apt-key add -
+echo "deb http://mkvtoolnix.download/ubuntu/yakkety/ ./" | sudo tee "/etc/apt/sources.list.d/bunkus.org.list"
+echo "deb-src http://mkvtoolnix.download/ubuntu/yakkety/ ./" | sudo tee -a "/etc/apt/sources.list.d/bunkus.org.list"
+sudo apt-get update
+sudo apt-get -y install mkvtoolnix mkvtoolnix-gui
 
 # handbrake video transcoder
 sudo apt-get -y install handbrake
