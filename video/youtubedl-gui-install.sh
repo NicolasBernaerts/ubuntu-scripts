@@ -9,6 +9,9 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 sudo apt-get update
 sudo apt-get -y install youtube-dl mkvtoolnix yad
 
+# install configuration file
+sudo wget --header='Accept-Encoding:none' -O $HOME/.config/youtubedl-gui.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui.conf
+
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/youtubedl-gui https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui
 sudo chmod +x /usr/local/bin/youtubedl-gui
