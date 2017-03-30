@@ -6,6 +6,7 @@
 # 20/05/2016, V1.1 - Add Whatsie
 # 20/08/2016, V1.2 - Change Telegram from PPA to direct download
 # 05/10/2016, V1.3 - Add SyncThing
+# 29/03/2017, V1.4 - Add TeamViewer
 # ----------------------------------------------------------------
 
 # network tools
@@ -51,7 +52,12 @@ chmod +x $HOME/.local/share/applications/telegramdesktop.desktop
 curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
 echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
 sudo apt-get update
-sudo apt-get install syncthing
+sudo apt-get -y install syncthing
 sudo systemctl enable syncthing@${USER}.service
 sudo systemctl start syncthing@${USER}.service
+
+# TeamViewer
+wget https://download.teamviewer.com/download/teamviewer_i386.deb
+dpkg -i teamviewer_i386.deb
+sudo apt-get -y -f install
 
