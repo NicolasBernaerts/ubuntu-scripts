@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# flashair environment
+FLASHAIR_NAME="flashair"
+FLASHAIR_DAEMON="${FLASHAIR_NAME}-daemon"
+FLASHAIR_PROCESS="${FLASHAIR_DAEMON}"
+FLASHAIR_DIRECTORY="/media/${FLASHAIR_NAME}"
+
+# check if flashair card is connected
+FLASHAIR_NETWORK=$(iwconfig | grep "ESSID" | grep "${FLASHAIR_NAME}_")
+
+# check if flashair daemon is running
+start-stop-daemon --status --name "${FLASHAIR_DAEMON}"
+RESULT=$?
+
+# if flashair connected and daemon not running
+if [ "${FLASHAIR_NETWORK}" != "" ]
+then
+    # if neeeded, create media directory
+    if [ ! -d "${FLASHAIR_DIRECTORY}" ]
+    then
+        # create media directory
+        mkdir "${FLASHAIR_DIRECTORY}"
+        chmod 777 "${FLASHAIR_DIRECTORY}"
+    fi
+
+    if [ "${RESULT}" != "0" ]
+    then
+        # start flashair daemon
+        start-stop-daemon --start --background --exec "${FLASHAIR_PROCESS}"
+    fi
+
+# else, flashair network not connected
+else
+    # if flashair daemon running, stop it
+    if [ "${RESULT}" = "0" ]
+    then
+        # start flashair daemon
+        start-stop-daemon --stop --name "${FLASHAIR_DAEMON}"
+    fi
+fi
