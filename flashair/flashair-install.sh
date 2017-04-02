@@ -19,10 +19,10 @@ sudo wget -O /etc/flashair.conf https://raw.githubusercontent.com/NicolasBernaer
 sudo sed -i "s/#USER#/$USER/g" /etc/flashair.conf
 
 # download icons
-sudo wget -O /usr/share/icons/flashair-icon.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/flashair-icon.png
-sudo wget -O /usr/share/icons/flashair-generic.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/flashair-generic.jpg
-sudo wget -O /usr/share/icons/flashair-available.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/flashair-available.png
-sudo wget -O /usr/share/icons/flashair-download.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/flashair-download.png
+sudo wget -O /usr/share/icons/flashair-icon.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-icon.png
+sudo wget -O /usr/share/icons/flashair-generic.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-generic.jpg
+sudo wget -O /usr/share/icons/flashair-available.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-available.png
+sudo wget -O /usr/share/icons/flashair-download.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-download.png
 
 # download main scripts
 sudo wget -O /usr/local/sbin/flashair-daemon https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-daemon
