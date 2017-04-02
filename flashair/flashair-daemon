@@ -1,30 +1,35 @@
 #!/bin/bash
+# ---------------------------------------------------
+# Daemon to handle communication 
+#  with Toshiba Flashair SD Card
+# 
+# Revision history :
+#   30/03/2017, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
 
-# check flashair configuration
-FLASHAIR_CONF="/etc/default/flashair.conf"
-[ ! -f ${FLASHAIR_CONF} ] && { echo "Configuration file ${FLASHAIR_CONF} is mandatory to define FlashAir mount root"; exit 1; }
+# get flashair mount directory
+FLASHAIR_CONF="/etc/flashair.conf"
+[ ! -f ${FLASHAIR_CONF} ] && { echo "Configuration file ${FLASHAIR_CONF} missing"; exit 1; }
+FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
 
-# get flashair card mount root
-SDCARD_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
-
-# infitite loop
+# infinite loop to detect filesystem events
 while true
 do
-    # wait for event on directory
-    FLASHAIR_EVENT=$(inotifywait -r "${SDCARD_ROOT}")
+    # wait for event on flashair card mount directory
+    FLASHAIR_EVENT=$(inotifywait -r "${FLASHAIR_ROOT}")
 
-    # analyse event
+    # analyse event data
     EVENT_PATH=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f1)
     EVENT_ACTION=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f2)
     EVENT_ELEMENT=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f3-)
 
-    # if directory is opened, update from flashair card
+    # if directory display, update content from flashair card
     if [ "${EVENT_ACTION}" = "OPEN,ISDIR" ]
     then
         # local directory
-        LOCAL_PATH="${EVENT_PATH}${EVENT_ELEMENT}"
+        UPDATE_PATH="${EVENT_PATH}${EVENT_ELEMENT}"
 
         # call flashair command
-        flashair-command --root "${SDCARD_ROOT}" "${LOCAL_PATH}"
+        flashair-command "${UPDATE_PATH}"
     fi
 done
