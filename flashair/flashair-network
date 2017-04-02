@@ -1,41 +1,78 @@
 #!/bin/bash
+# ---------------------------------------------------
+#  Flashair SD Card wifi network detection
+# 
+# Revision history :
+#   30/03/2017, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
 
 # flashair environment
 FLASHAIR_NAME="flashair"
-FLASHAIR_DAEMON="${FLASHAIR_NAME}-daemon"
-FLASHAIR_PROCESS="${FLASHAIR_DAEMON}"
-FLASHAIR_DIRECTORY="/media/${FLASHAIR_NAME}"
+FLASHAIR_DAEMON_NAME="${FLASHAIR_NAME}-daemon"
+FLASHAIR_DAEMON_PATH="/usr/local/sbin/${FLASHAIR_DAEMON_NAME}"
 
-# check if flashair card is connected
+# bookmark file
+NAUTILUS_BOOKMARK=".config/gtk-3.0/bookmarks"
+
+# check if connected to flashair wifi network
 FLASHAIR_NETWORK=$(iwconfig | grep "ESSID" | grep "${FLASHAIR_NAME}_")
 
+# get default mount directory
+FLASHAIR_CONF="/etc/flashair.conf"
+FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+FLASHAIR_USER=$(grep "^flashair-user=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+
+# if configuration not set, exit
+[ "${FLASHAIR_ROOT}" = "" -o "${FLASHAIR_USER}" = "" ] && { logger "Flashair configuration not set. Aborting."; exit; }
+
+# if neeeded, create media directory
+if [ ! -d ${FLASHAIR_ROOT} ]
+then
+	# create media directory
+	mkdir "${FLASHAIR_ROOT}"
+	chmod 777 "${FLASHAIR_ROOT}"
+fi
+
+# if neeeded, add flashair bookmark to user nautilus configuration
+FLASHAIR_BOOKMARK=$(cat /home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}  | grep "${FLASHAIR_ROOT}")
+if [ "${FLASHAIR_BOOKMARK}" = "" ]
+then
+	# append bookmark at the end of current list
+	echo "file://${FLASHAIR_ROOT} Flashair (disconnected)" >> "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}" 
+fi
+
 # check if flashair daemon is running
-start-stop-daemon --status --name "${FLASHAIR_DAEMON}"
+start-stop-daemon --status --name "${FLASHAIR_DAEMON_NAME}"
 RESULT=$?
 
-# if flashair connected and daemon not running
+# if connected to flashair wifi network
 if [ "${FLASHAIR_NETWORK}" != "" ]
 then
-    # if neeeded, create media directory
-    if [ ! -d "${FLASHAIR_DIRECTORY}" ]
-    then
-        # create media directory
-        mkdir "${FLASHAIR_DIRECTORY}"
-        chmod 777 "${FLASHAIR_DIRECTORY}"
-    fi
+	# if daemon is not running,
+	if [ "${RESULT}" != "0" ]
+	then
+		# log connexion
+		logger "start flashair daemon (user ${FLASHAIR_USER})"
 
-    if [ "${RESULT}" != "0" ]
-    then
-        # start flashair daemon
-        start-stop-daemon --start --background --exec "${FLASHAIR_PROCESS}"
-    fi
+		# start flashair daemon
+		start-stop-daemon --start --background --exec "${FLASHAIR_DAEMON_PATH}"
 
-# else, flashair network not connected
+		# update nautilus bookmark for user
+		sed -i "s/Flashair.*$/Flashair (connected)/g" /home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK} 
+	fi
+
+# else, if not connected to flashair wifi network
 else
-    # if flashair daemon running, stop it
-    if [ "${RESULT}" = "0" ]
-    then
-        # start flashair daemon
-        start-stop-daemon --stop --name "${FLASHAIR_DAEMON}"
-    fi
+	# log connexion
+	logger "stop flashair daemon (user ${FLASHAIR_USER})"
+
+	# stop flashair daemon
+	start-stop-daemon --stop --name "${FLASHAIR_DAEMON_NAME}"
+
+	# kill running inotifywait
+	PID_INOTIFY=$(ps -ef | grep /media/flashair | grep inotifywait | xargs | cut -d ' ' -f2)
+	[ "${PID_INOTIFY}" != "" ] && kill -9 ${PID_INOTIFY}
+
+	# update nautilus bookmark for user
+	sed -i "s/Flashair.*$/Flashair (disconnected)/g" /home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK} 
 fi
