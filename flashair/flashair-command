@@ -1,17 +1,29 @@
 #!/bin/bash
+# ---------------------------------------------------
+# Tool to synchronise Toshiba Flashair SD Card
+# It synchronise either :
+#   - directory content
+#   - media files
+#
+# Revision history :
+#   30/03/2017, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
 
-# list of items
+# set configuration file
+FLASHAIR_CONF="/etc/flashair.conf"
+
+# empty arrays
 ARR_ITEM=()
+ARR_DOWNLOAD=()
+ARR_DIRECTORY=()
 
 # if no argument, display help
 if [ $# -eq 0 ] 
 then
-  echo "Tool to update directory content or download file from flashair card"
-  echo "Only work if laptop is connected to a Toshiba FlashAir card thru wifi"
-  echo "FlashAir wifi network should be named flashair_..."
+  echo "Tool to synchronise Toshiba Flashair SD Card content"
+  echo "Only usable if laptop is connected to a Toshiba FlashAir wifi network"
   echo "Parameters are :"
-  echo "  <item1> <item2> ...     File/directory local path"
-  exit
+  echo "  <item1> <item2> ...     File/directory to update with flashair content"
 fi
 
 # loop to retrieve arguments
@@ -23,115 +35,152 @@ do
 done
 
 # check tools
-command -v wget >/dev/null 2>&1 || { zenity --error --text="Please install wget"; exit 1; }
-command -v composite >/dev/null 2>&1 || { zenity --error --text="Please install composite"; exit 1; }
+command -v wget >/dev/null 2>&1 || { echo "Please install wget"; exit 1; }
+command -v composite >/dev/null 2>&1 || { echo "Please install composite [imagemagick package]"; exit 1; }
+command -v convert >/dev/null 2>&1 || { echo "Please install convert [imagemagick package]"; exit 1; }
+command -v inotifywait >/dev/null 2>&1 || { echo "Please install inotifywait [inotify-tools package]"; exit 1; }
 
-# check flashair configuration
-FLASHAIR_CONF="/etc/default/flashair.conf"
-[ ! -f ${FLASHAIR_CONF} ] && { echo "Configuration file ${FLASHAIR_CONF} is mandatory to define FlashAir mount root"; exit 1; }
+# check configuration file
+[ ! -f ${FLASHAIR_CONF} ] && { echo "Configuration file ${FLASHAIR_CONF} is missing"; exit 1; }
 
-# get flashair card mount root
-SDCARD_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+# Thumbnailing function
+#  $1 - input thumbnail
+#  $2 - target thumbnail
+#  $3 - file size
+#  $4 - state (available or download)
+function create_thumbnail {
+	TMP_INPUT=$(mktemp --tmpdir icon-XXXXXXXXX.png)
+	TMP_BULLET=$(mktemp --tmpdir bullet-XXXXXXXXX.png)
 
-# download icon
-ICON_DOWNLOAD="/home/fto/Téléchargements/download.png"
-ICON_GENERIC="/home/fto/Téléchargements/generic.jpg"
+	# generate icon with 192 pixel width
+	convert -resize 192x "$1" "${TMP_INPUT}"
 
-# temporary files
+	# get file size and state
+	FILE_SIZE=$(numfmt --to=iec $3)
+	FILE_STATE=$4
+
+	# generate bullet
+	convert -fill white -pointsize 28 -draw 'text 50,34 "'${FILE_SIZE}'"' "/usr/share/icons/flashair-${FILE_STATE}.png" "${TMP_BULLET}"
+
+	# create thumbnail with bullet
+	composite -gravity SouthEast "${TMP_BULLET}" "${TMP_INPUT}" "$2"
+
+	# remove temporary file
+	rm -f "${TMP_INPUT}" "${TMP_BULLET}"
+}
+
+# get flashair mount directory
+FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+
+# create temporary files
 TMP_LIST=$(mktemp --tmpdir list-XXXXXXXXX.txt)
 TMP_FILE=$(mktemp --tmpdir file-XXXXXXXXX.jpg)
 TMP_THUMB=$(mktemp --tmpdir thumb-XXXXXXXXX.jpg)
-rm -f "${TMP_LIST}" "${TMP_FILE}" "${TMP_THUMB}"
 
-# loop thru items
+# loop to analyse items
 for ITEM in "${ARR_ITEM[@]}"
 do
-    # path of item on flashair card
-    SDCARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${SDCARD_ROOT}||")
+	# if item is a directory
+	if [ -d "${ITEM}" ]
+	then
+		# add it to directories array
+		ARR_DIRECTORY=("${ARR_DIRECTORY[@]}" "${ITEM}")
 
-    # if path is a drirectory, update content
-    if [ -d "${ITEM}" ] 
-    then
-            # create local sub-directory
-            mkdir --parent "${ITEM}"
-            chmod 777 "${ITEM}"
+	# if item is a file
+	elif [ -f "${ITEM}" ]
+	then
+		# path of item on flashair card
+		CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
 
-            # get directory content
-            wget --quiet -O - "http://flashair/command.cgi?op=100&DIR=${SDCARD_ITEM_PATH}" | tail -n +2 > "${TMP_LIST}"
+		# get item father directory content on flashair card
+		CARD_ITEM_FATHER=$(dirname "${CARD_ITEM_PATH}")
+		wget --quiet -O - "http://flashair/command.cgi?op=100&DIR=${CARD_ITEM_FATHER}" | tail -n +2 > "${TMP_LIST}"
 
-               # loop thru file content
-            while read LINE;
-            do
-                # read file data
-                SDCARD_FILE=$(echo "${LINE}" | cut -d',' -f2)
-                SDCARD_SIZE=$(echo "${LINE}" | cut -d',' -f3)
-                SDCARD_TYPE=$(echo "${LINE}" | cut -d',' -f4)
-                SDCARD_DATE=$(echo "${LINE}" | cut -d',' -f5)
-                SDCARD_TIME=$(echo "${LINE}" | cut -d',' -f6)
+		# get filename
+		ITEM_NAME=$(basename "${ITEM}")
 
-                # local item path
-                SUB_ITEM="${ITEM}/${SDCARD_FILE}"
+		# get file size on flashair card
+		CARD_ITEM_SIZE=$(grep ",${ITEM_NAME}," "${TMP_LIST}" | cut -d',' -f3)
 
-                # if current item is a file
-                if [ ${SDCARD_TYPE} -ge 32 ]
-                then
-                    # if file does not exist locally, get thumbnail
-                    if [ ! -f "${SUB_ITEM}" ]
-                    then
-                        # set default generic thumbnail
-                        cp "${ICON_GENERIC}" "${TMP_FILE}"
+		# get local file size
+		ITEM_SIZE=$(stat -c %s "${ITEM}")
 
-                        # if file is a JPEG image, download thumbnail
-                        IS_JPEG=$(echo "${SDCARD_FILE}" | grep -i ".jpg$")
-                        [ "${IS_JPEG}" != "" ] && wget --quiet -O "${TMP_FILE}" "http://flashair/thumbnail.cgi?${SDCARD_ITEM_PATH}/${SDCARD_FILE}"
+		# if size differs, add file to the download array
+		if [ "${CARD_ITEM_SIZE}" != "${ITEM_SIZE}" ]
+		then
+			# create thumbnail with download pending bullet
+			create_thumbnail "${ITEM}" "${ITEM}" "${CARD_ITEM_SIZE}" "download"
 
-                        # create thumbnail with download sign
-                        composite -gravity SouthEast "${ICON_DOWNLOAD}" "${TMP_FILE}" "${TMP_THUMB}"
+			# add file to download array
+			ARR_DOWNLOAD=("${ARR_DOWNLOAD[@]}" "${ITEM}")
+		fi
+	fi
+done
 
-                        # write thumbnail as rwxrwxrwx
-                        mv "${TMP_THUMB}" "${SUB_ITEM}"
-                        chmod 777 "${SUB_ITEM}"
-                    fi
+# loop thru directories to update them
+for ITEM in "${ARR_DIRECTORY[@]}"
+do
+	# path of item on flashair card
+	CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
 
-                # else, if current item is a directory 
-                elif [ ${SDCARD_TYPE} -ge 16 ]
-                then
-                    # if local directory does not exist
-                    if [ ! -d "${SUB_ITEM}" ]
-                    then
-                        # create local sub directory as rwxrwxrwx
-                        mkdir --parent "${SUB_ITEM}"
-                        chmod 777 "${SUB_ITEM}"
-                    fi
-                fi
-            done < "${TMP_LIST}"
+	# retrieve directory content from flashair card
+	wget --quiet -O - "http://flashair/command.cgi?op=100&DIR=${CARD_ITEM_PATH}" | tail -n +2 > "${TMP_LIST}"
 
-    # else, if item is a file, download if size difference
-    elif [ -f "${ITEM}" ]
-    then
-        # get filename
-        ITEM_NAME=$(basename "${ITEM}")
+	# loop thru directory content
+	while read LINE;
+	do
+		# read current subitem data
+		CARD_SUBITEM_NAME=$(echo "${LINE}" | cut -d',' -f2)
+		CARD_SUBITEM_SIZE=$(echo "${LINE}" | cut -d',' -f3)
+		CARD_SUBITEM_TYPE=$(echo "${LINE}" | cut -d',' -f4)
 
-        # path of father directory on flashair card
-        SDCARD_ITEM_DIR=$(dirname "${SDCARD_ITEM_PATH}")
+		# generate local subitem path
+		SUBITEM="${ITEM}/${CARD_SUBITEM_NAME}"
 
-        # get directory content on flashair card
-        wget --quiet -O - "http://flashair/command.cgi?op=100&DIR=${SDCARD_ITEM_DIR}" | tail -n +2 > "${TMP_LIST}"
+		# if current subitem is a file
+		if [ ${CARD_SUBITEM_TYPE} -ge 32 ]
+		then
+			# if file does not exist locally, get thumbnail
+			if [ ! -f "${SUBITEM}" ]
+			then
+				# set default generic thumbnail
+				cp "/usr/share/icons/flashair-generic.jpg" "${TMP_FILE}"
 
-        # get file size on flashair card
-        SDCARD_ITEM_SIZE=$(grep ",${ITEM_NAME}," "${TMP_LIST}" | cut -d',' -f3)
+				# if file is a JPEG image, download embedded thumbnail
+				IS_JPEG=$(echo "${CARD_SUBITEM_NAME}" | grep -i ".jpg$")
+				[ "${IS_JPEG}" != "" ] && wget --quiet -O "${TMP_FILE}" "http://flashair/thumbnail.cgi?${CARD_ITEM_PATH}/${CARD_SUBITEM_NAME}"
 
-        # get local file size
-        ITEM_SIZE=$(stat -c %s "${ITEM}")
+				# create thumbnail with bullet and file size
+				create_thumbnail "${TMP_FILE}" "${TMP_THUMB}" "${CARD_SUBITEM_SIZE}" "available"
 
-        # if size is different, download file
-        if [ "${SDCARD_ITEM_SIZE}" != "${ITEM_SIZE}" ]
-        then
-            # download file and set rw.rw.rw. rights
-            wget --quiet -O "${ITEM}" "http://flashair/${SDCARD_ITEM_PATH}"
-            chmod 666 "${ITEM}"
-        fi
-    fi
+				# write thumbnail in local path (as rwxrwxrwx)
+				mv "${TMP_THUMB}" "${SUBITEM}"
+				chmod 666 "${SUBITEM}"
+			fi
+
+		# else, if current item is a directory 
+		elif [ ${CARD_SUBITEM_TYPE} -ge 16 ]
+		then
+			# if local directory does not exist
+			if [ ! -d "${SUBITEM}" ]
+			then
+				# create local subdirectory (as rwxrwxrwx)
+				mkdir --parent "${SUBITEM}"
+				chmod 777 "${SUBITEM}"
+			fi
+		fi
+	done < "${TMP_LIST}"
+done
+
+# loop thru files to download them
+for ITEM in "${ARR_DOWNLOAD[@]}"
+do
+	# path of item on flashair card
+	CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
+
+	# download file and set rw.rw.rw. rights
+	wget --quiet -O "${ITEM}" "http://flashair/${CARD_ITEM_PATH}"
+	chmod 666 "${ITEM}"
 done
 
 # remove temporary files
