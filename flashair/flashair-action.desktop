@@ -1,0 +1,22 @@
+[Desktop Entry]
+Type=Action
+Icon=flashair-icon
+Name[C]=Download from Flashair
+Name[en]=Download from Flashair
+Name[en_US]=Download from Flashair
+Name[fr_FR]=Recuperer depuis carte Flashair 
+Tooltip[C]=Tool to recover media files from Flashair cards
+Tooltip[en]=Tool to recover media files from Flashair cards
+Tooltip[en_US]=Tool to recover media files from Flashair cards
+Tooltip[fr_FR]=Outil de recuperation des fichiers depuis une carte Flashair
+Profiles=download_file;
+
+[X-Action-Profile download_file]
+Exec=flashair-command %F
+MimeTypes=all/allfiles;
+ShowIfRunning=flashair-daemon
+Folders=/media/flashair;
+Name[C]=Download file
+Name[en]=Download file
+Name[en_US]=Download file
+Name[fr_FR]=Telechargement de fichier
