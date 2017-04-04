@@ -59,7 +59,7 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 . ./video-stabilize-install.sh
 rm video-stabilize-install.sh
 
-# kodi (xbmc)
-#sudo add-apt-repository -y ppa:team-xbmc/ppa
-#sudo apt-get update
-#sudo apt-get -y install kodi kodi-pvr-tvheadend-hts 
+# openshot
+sudo add-apt-repository -y ppa:openshot.developers/ppa
+sudo apt-get update
+sudo apt-get -y install openshot-qt
