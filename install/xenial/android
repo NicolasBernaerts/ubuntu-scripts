@@ -5,8 +5,8 @@
 # 10/05/2016, V1.0 - Migrated from Trusty
 # -------------------------------------------------------
 
-# install adb and fastboot
-sudo apt-get -y install android-tools-adb android-tools-fastboot
+# install mtpfs, adb and fastboot
+sudo apt-get -y install mtpfs android-tools-adb android-tools-fastboot
 
 # declare complementary devices
 sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/51-android.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/51-android.rules
