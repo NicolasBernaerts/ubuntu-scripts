@@ -24,9 +24,6 @@ sudo apt-get -y install easymp3gain-gtk easytag id3v2 lame
 # audacity
 sudo apt-get -y install audacity
 
-# misc video tools
-sudo apt-get -y install avidemux
-
 # MKV toolnix
 wget -q -O - https://mkvtoolnix.download/gpg-pub-moritzbunkus.txt | sudo apt-key add -
 echo "deb http://mkvtoolnix.download/ubuntu/xenial/ ./" | sudo tee "/etc/apt/sources.list.d/bunkus.org.list"
