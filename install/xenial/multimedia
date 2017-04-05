@@ -9,8 +9,9 @@
 # correct apt bug for ttf-mscorefonts-installer
 sudo chown _apt /var/lib/update-notifier/package-data-downloads/partial/
 
-# auto-accept mscorefonts eula
+# auto-accept mscorefonts eula and install it
 sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
+sudo apt-get -y install ttf-mscorefonts-installer
 
 # restricted codecs & flash
 sudo apt-get --yes --force-yes install ubuntu-restricted-extras libav-tools libavcodec-extra x264
