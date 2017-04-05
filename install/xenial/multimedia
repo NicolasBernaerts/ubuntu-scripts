@@ -6,6 +6,9 @@
 # 06/03/2017, v1.1 - Add MKVToolnix repository
 # -------------------------------------------------------
 
+# correct apt bug for ttf-mscorefonts-installer
+sudo chown _apt /var/lib/update-notifier/package-data-downloads/partial/
+
 # auto-accept mscorefonts eula
 sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
 
