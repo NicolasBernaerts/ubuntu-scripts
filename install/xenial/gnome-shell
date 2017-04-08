@@ -28,3 +28,6 @@ echo "items-create-root-menu=false" >> $HOME/.config/nautilus-actions/nautilus-a
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
 . ./nautilus-newfile-install.sh
 rm nautilus-newfile-install.sh
+
+# install docky
+sudo apt-get -y install docky
