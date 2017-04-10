@@ -9,6 +9,9 @@
 # 29/03/2017, V1.4 - Add TeamViewer
 # ----------------------------------------------------------------
 
+# curl
+sudo apt-get -y install curl
+
 # network tools
 sudo apt-get -y install nmap snmp snmp-mibs-downloader
 
