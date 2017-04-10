@@ -3,14 +3,15 @@
 #  Script to backup/restore current user folders and application data
 #  on any removable media during computer complete reinstallation
 #
-#  Backup  :  ./data-transfer --backup /full/path/to/media ...
-#  Restore :  ./data-transfer --restore /full/path/to/media ...
+#  Backup  :  ./data-transfer --backup ...
+#  Restore :  ./data-transfer --restore  ...
 #
-#  All backup files will be stored under /full/path/to/media
+#  All backup files will be stored under current folder
 #
 #  Revision history :
 #   10/06/2016, V1.0 - Creation by N. Bernaerts
 #   15/08/2016, V1.1 - Add target directory
+#   10/04/2017, V1.2 - Add docky
 # ---------------------------------------------------------------------
 
 # check xdg-user-dir
@@ -29,6 +30,7 @@ CFG_THUNDERBIRD="thunderbird|tar|$HOME/.thunderbird"
 CFG_TELEGRAM="telegram|tar|$HOME/.TelegramDesktop"
 CFG_WHATSIE="whatsie|tar|$HOME/.config/Whatsie"
 CFG_SKYPE="skype|tar|$HOME/.Skype"
+CFG_DOCKY="docky|gconf|/apps/docky-2/Docky"
 
 # by default, backup mode
 RUN_MODE="backup"
@@ -38,8 +40,8 @@ if [ ${#} -eq 0 ];
 then
     echo "Script to backup/restore user data."
     echo "General parameters :"
-    echo "  --backup <path>     Backup files to specified path"
-    echo "  --restore <path>    Restore files to specified path"
+    echo "  --backup            Backup files to current folder"
+    echo "  --restore           Restore files from current folder"
     echo "Folders content :"
     echo "  --desktop           Desktop folder"
     echo "  --documents         Documents folder"
@@ -54,6 +56,7 @@ then
     echo "  --telegram          Telegram data"
     echo "  --whatsie           WhatsIe data"
     echo "  --skype             Skype data"
+    echo "  --docky             Docky configuration"
     echo "  --all-apps          All previous applications data"
     exit 1
 fi
@@ -62,8 +65,8 @@ fi
 while test ${#} -gt 0
 do
   case $1 in
-    --backup) shift; BACKUP_DIR="$1"; RUN_MODE="backup"; shift; ;;
-    --restore) shift; BACKUP_DIR="$1"; RUN_MODE="restore"; shift; ;;
+    --backup) RUN_MODE="backup"; shift; ;;
+    --restore) RUN_MODE="restore"; shift; ;;
     --desktop) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DESKTOP}" ); shift; ;;
     --documents) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DOCUMENTS}" ); shift; ;;
     --music) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_MUSIC}" ); shift; ;;
@@ -76,13 +79,14 @@ do
     --telegram) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_TELEGRAM}" ); shift; ;;
     --whatsie) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_WHATSIE}" ); shift; ;;
     --skype) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SKYPE}" ); shift; ;;
-    --all-apps) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SSH}" "${CFG_FIREFOX}" "${CFG_THUNDERBIRD}" "${CFG_TELEGRAM}" "${CFG_WHATSIE}" "${CFG_SKYPE}" ); shift; ;;
+    --docky) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DOCKY}" ); shift; ;;
+    --all-apps) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SSH}" "${CFG_FIREFOX}" "${CFG_THUNDERBIRD}" "${CFG_TELEGRAM}" "${CFG_WHATSIE}" "${CFG_SKYPE}" "${CFG_DOCKY}" ); shift; ;;
     *) shift; ;;
   esac
 done
 
-# test existence of backup directory
-[ ! -d ${BACKUP_DIR} ] && { echo "Directory ${BACKUP_DIR} doesn't exist."; exit; }
+# set working directory to current directory
+BACKUP_DIR=$(pwd)
 
 # loop thru applications
 for APP_TODO in "${ARR_TODO[@]}"
@@ -92,44 +96,55 @@ do
   APP_MODE=$(echo ${APP_TODO} | cut -d'|' -f2)
   APP_PATH=$(echo ${APP_TODO} | cut -d'|' -f3)
 
-  # backup mode
-  if [ "${RUN_MODE}" = "backup" ];
-  then
-    # tar.gz mode
-    if [ -d "${APP_PATH}" -a "${APP_MODE}" = "tar" ];
-    then
-      rm --force "${BACKUP_DIR}/${APP_NAME}.tar.gz"
-      cd "${APP_PATH}"
-      tar -zcvf "${BACKUP_DIR}/${APP_NAME}.tar.gz" *
-    fi
+  case "${RUN_MODE}" in
 
-    # directory mode
-    if [ -d "${APP_PATH}" -a "${APP_MODE}" = "dir" ];
-    then
-      rmdir --parents "${BACKUP_DIR}/${APP_NAME}"
-      mkdir "${BACKUP_DIR}/${APP_NAME}"
-      cp --recursive --verbose ${APP_PATH}/* "${BACKUP_DIR}/${APP_NAME}"
-    fi
-  fi
+    "backup") 
+      # tar.gz mode
+      if [ "${APP_MODE}" = "tar" -a -d "${APP_PATH}" ]
+      then
+        rm --force "${BACKUP_DIR}/${APP_NAME}.tar.gz"
+        cd "${APP_PATH}"
+        tar -zcvf "${BACKUP_DIR}/${APP_NAME}.tar.gz" *
 
-  # restore mode
-  if [ "${RUN_MODE}" = "restore" ];
-  then
-    # tar.gz mode
-    if [ -f "${BACKUP_DIR}/${APP_NAME}.tar.gz" -a "${APP_MODE}" = "tar" ];
-    then
-      [ -d "${APP_PATH}" ] || mkdir --parents "${APP_PATH}"
-      rm --force --recursive ${APP_PATH}/*
-      cd "${APP_PATH}"
-      tar -zxvf "${BACKUP_DIR}/${APP_NAME}.tar.gz"
-    fi
+      # directory mode
+      elif [ "${APP_MODE}" = "dir" -a -d "${APP_PATH}" ]
+      then
+        rmdir --parents "${BACKUP_DIR}/${APP_NAME}"
+        mkdir "${BACKUP_DIR}/${APP_NAME}"
+        cp --recursive --verbose ${APP_PATH}/* "${BACKUP_DIR}/${APP_NAME}"
 
-    # directory mode
-    if [ -d "${BACKUP_DIR}/${APP_NAME}" -a "${APP_MODE}" = "dir" ];
-    then
-      [ -d "${APP_PATH}" ] || mkdir --parents "${APP_PATH}"
-      rm --recursive --force ${APP_PATH}/*
-      cp --recursive --verbose ${BACKUP_DIR}/${APP_NAME}/* "${APP_PATH}"
-    fi
-  fi
+      # gconf mode
+      elif [ "${APP_MODE}" = "gconf" ]
+      then
+        gconftool-2 --dump "${APP_PATH}" > "${BACKUP_DIR}/${APP_NAME}.xml"
+      fi
+      ;;
+
+    "restore") 
+      # tar.gz mode
+      if [ "${APP_MODE}" = "tar" -a -f "${BACKUP_DIR}/${APP_NAME}.tar.gz" ]
+      then
+        mkdir --parents "${APP_PATH}"
+        rm --force --recursive ${APP_PATH}/*
+        cd "${APP_PATH}"
+        tar -zxvf "${BACKUP_DIR}/${APP_NAME}.tar.gz"
+
+      # directory mode
+      elif [ "${APP_MODE}" = "dir" -a -d "${BACKUP_DIR}/${APP_NAME}" ]
+      then
+        mkdir --parents "${APP_PATH}"
+        rm --recursive --force ${APP_PATH}/*
+        cp --recursive --verbose ${BACKUP_DIR}/${APP_NAME}/* "${APP_PATH}"
+
+      # gconf mode
+      elif [ "${APP_MODE}" = "gconf" ]
+      then
+        gconftool-2 --load "${BACKUP_DIR}/${APP_NAME}.xml"
+      fi
+      ;;
+
+    *) 
+      echo "Please use --backup or --restore"
+      ;;
+   esac
 done
