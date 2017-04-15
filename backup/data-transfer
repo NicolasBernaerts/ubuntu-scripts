@@ -12,139 +12,228 @@
 #   10/06/2016, V1.0 - Creation by N. Bernaerts
 #   15/08/2016, V1.1 - Add target directory
 #   10/04/2017, V1.2 - Add docky
+#   17/04/2017, V2.0 - Complete rewrite, based on .ini configuration
 # ---------------------------------------------------------------------
 
-# check xdg-user-dir
-command -v xdg-user-dir >/dev/null 2>&1 || { zenity --error --text="Please install xdg-user-dir utility"; exit 1; }
+# default to normal mode
+MODE="normal"
 
-# set environments to backup/restore
-#   ApplicationOrFolderName|BackupMode (tar:compress to tar.gz / dir:copy to directory)|DataPath
-CFG_DESKTOP="desktop|dir|$(xdg-user-dir DESKTOP)"
-CFG_DOCUMENTS="documents|tar|$(xdg-user-dir DOCUMENTS)"
-CFG_MUSIC="music|dir|$(xdg-user-dir MUSIC)"
-CFG_PICTURES="pictures|dir|$(xdg-user-dir PICTURES)"
-CFG_VIDEOS="videos|dir|$(xdg-user-dir VIDEOS)"
-CFG_SSH="ssh|tar|$HOME/.ssh"
-CFG_FIREFOX="firefox|tar|$HOME/.mozilla/firefox"
-CFG_THUNDERBIRD="thunderbird|tar|$HOME/.thunderbird"
-CFG_TELEGRAM="telegram|tar|$HOME/.TelegramDesktop"
-CFG_WHATSIE="whatsie|tar|$HOME/.config/Whatsie"
-CFG_SKYPE="skype|tar|$HOME/.Skype"
-CFG_DOCKY="docky|gconf|/apps/docky-2/Docky"
+# set working directory to current directory
+BACKUP_DIR=$(pwd)
 
-# by default, backup mode
-RUN_MODE="backup"
+# set configuration file
+CONF_INI="${BACKUP_DIR}/data-transfer.ini"
+
+# check commands
+command -v xdg-user-dir >/dev/null 2>&1 || { echo "Please install xdg-user-dir utility"; exit 1; }
+command -v gconftool-2 >/dev/null 2>&1 || { echo "Please install gconftool-2 utility"; exit 1; }
+command -v tar >/dev/null 2>&1 || { echo "Please install tar utility"; exit 1; }
+
+# check configuration file
+[ -f "${CONF_INI}" ] || { echo "Configuration file ${CONF_INI} is missing"; exit 1; }
+
+# load sections
+ARR_SECTION=( $(grep "^\[" "${CONF_INI}" | tr -d "[]") )
 
 # help message if no parameter
 if [ ${#} -eq 0 ];
 then
-    echo "Script to backup/restore user data."
-    echo "General parameters :"
-    echo "  --backup            Backup files to current folder"
-    echo "  --restore           Restore files from current folder"
-    echo "Folders content :"
-    echo "  --desktop           Desktop folder"
-    echo "  --documents         Documents folder"
-    echo "  --music             Music folder"
-    echo "  --pictures          Pictures folder"
-    echo "  --videos            Videos folder"
-    echo "  --all-folders       All previous folders"
-    echo "Application data :"
-    echo "  --ssh               OpenSSH data"
-    echo "  --firefox           Firefox data"
-    echo "  --thunderbird       Thunderbird data"
-    echo "  --telegram          Telegram data"
-    echo "  --whatsie           WhatsIe data"
-    echo "  --skype             Skype data"
-    echo "  --docky             Docky configuration"
-    echo "  --all-apps          All previous applications data"
+	echo "Script to backup/restore user data between computers."
+	echo "General parameters :"
+	echo "  --backup     Backup user data to current folder"
+	echo "  --restore    Restore user data from current folder"
+	echo "  --name       Include application environment"      
+	echo "  --all        Include all found appplication environments"
+	echo "  --test       Test mode without real backup or restore"
+	echo "Recognised application environments are :"
+	echo "${ARR_SECTION[@]}"
     exit 1
 fi
 
 # iterate thru parameters
 while test ${#} -gt 0
 do
-  case $1 in
-    --backup) RUN_MODE="backup"; shift; ;;
-    --restore) RUN_MODE="restore"; shift; ;;
-    --desktop) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DESKTOP}" ); shift; ;;
-    --documents) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DOCUMENTS}" ); shift; ;;
-    --music) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_MUSIC}" ); shift; ;;
-    --pictures) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_PICTURES}" ); shift; ;;
-    --videos) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_VIDEOS}" ); shift; ;;
-    --all-folders) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DESKTOP}" "${CFG_DOCUMENTS}" "${CFG_MUSIC}" "${CFG_PICTURES}" "${CFG_VIDEOS}" ); shift; ;;
-    --ssh) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SSH}" ); shift; ;;
-    --firefox) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_FIREFOX}" ); shift; ;;
-    --thunderbird) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_THUNDERBIRD}" ); shift; ;;
-    --telegram) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_TELEGRAM}" ); shift; ;;
-    --whatsie) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_WHATSIE}" ); shift; ;;
-    --skype) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SKYPE}" ); shift; ;;
-    --docky) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_DOCKY}" ); shift; ;;
-    --all-apps) ARR_TODO=( "${ARR_TODO[@]}" "${CFG_SSH}" "${CFG_FIREFOX}" "${CFG_THUNDERBIRD}" "${CFG_TELEGRAM}" "${CFG_WHATSIE}" "${CFG_SKYPE}" "${CFG_DOCKY}" ); shift; ;;
-    *) shift; ;;
-  esac
+	case $1 in
+		--backup) OPERATION="backup"; shift; ;;
+		--restore) OPERATION="restore"; shift; ;;
+		--test) MODE="test"; shift; ;;
+		--all) ARR_TODO=( "${ARR_SECTION[@]}" ); shift; ;;
+		*) ARR_TODO=( "${ARR_TODO[@]}" "${1:2}" ); shift; ;;
+	esac
 done
 
-# set working directory to current directory
-BACKUP_DIR=$(pwd)
+# check compulsory parameters
+[ "${OPERATION}" = "" ] && { echo "Please select --backup or --restore"; exit 1; }
+[ ${#ARR_TODO[*]} -eq 0 ] && { echo "Please select at least one application environment"; exit 1; }
 
-# loop thru applications
-for APP_TODO in "${ARR_TODO[@]}"
+# loop thru sections
+for ENV_NAME in "${ARR_TODO[@]}"
 do
-  # get data
-  APP_NAME=$(echo ${APP_TODO} | cut -d'|' -f1)
-  APP_MODE=$(echo ${APP_TODO} | cut -d'|' -f2)
-  APP_PATH=$(echo ${APP_TODO} | cut -d'|' -f3)
+	# load lines of current section
+	ARR_LINE=( $(sed -e "1,/\[${ENV_NAME}\]/d" "${BACKUP_DIR}/data-transfer.ini" | sed -e "/^\[/,\$d") )
 
-  case "${RUN_MODE}" in
+	# loop thru lines
+	for LINE in "${ARR_LINE[@]}"
+	do
+		# get parameters
+		ENV_ITEM=$(echo $LINE | cut -d"=" -f1)
+		ENV_PATH=$(echo $LINE | cut -d"=" -f2 | cut -d";" -f1)
+		ENV_PARAM=$(echo $LINE | cut -d"=" -f2 | cut -d";" -f2)
 
-    "backup") 
-      # tar.gz mode
-      if [ "${APP_MODE}" = "tar" -a -d "${APP_PATH}" ]
-      then
-        rm --force "${BACKUP_DIR}/${APP_NAME}.tar.gz"
-        cd "${APP_PATH}"
-        tar -zcvf "${BACKUP_DIR}/${APP_NAME}.tar.gz" *
+		# deal with XDG path
+		[ "${ENV_PARAM}" = "xdg" ] && ENV_PATH=$(xdg-user-dir "${ENV_PATH}")
 
-      # directory mode
-      elif [ "${APP_MODE}" = "dir" -a -d "${APP_PATH}" ]
-      then
-        rmdir --parents "${BACKUP_DIR}/${APP_NAME}"
-        mkdir "${BACKUP_DIR}/${APP_NAME}"
-        cp --recursive --verbose ${APP_PATH}/* "${BACKUP_DIR}/${APP_NAME}"
+		# set type according to path type (file of folder)
+		ENV_TYPE="unknown"
+		[ -f ${ENV_PATH} ] && ENV_TYPE="file"
+		[ -d ${ENV_PATH} ] && ENV_TYPE="folder"
 
-      # gconf mode
-      elif [ "${APP_MODE}" = "gconf" ]
-      then
-        gconftool-2 --dump "${APP_PATH}" > "${BACKUP_DIR}/${APP_NAME}.xml"
-      fi
-      ;;
+		# set type to tar if parameter is set and path is a folder
+		[ "${ENV_PARAM}" = "tar" -a "${ENV_TYPE}" = "folder" ] && ENV_TYPE="tar"
 
-    "restore") 
-      # tar.gz mode
-      if [ "${APP_MODE}" = "tar" -a -f "${BACKUP_DIR}/${APP_NAME}.tar.gz" ]
-      then
-        mkdir --parents "${APP_PATH}"
-        rm --force --recursive ${APP_PATH}/*
-        cd "${APP_PATH}"
-        tar -zxvf "${BACKUP_DIR}/${APP_NAME}.tar.gz"
+		# set type to gconf if parameter is set
+		[ "${ENV_PARAM}" = "gconf" ] && ENV_TYPE="gconf"
 
-      # directory mode
-      elif [ "${APP_MODE}" = "dir" -a -d "${BACKUP_DIR}/${APP_NAME}" ]
-      then
-        mkdir --parents "${APP_PATH}"
-        rm --recursive --force ${APP_PATH}/*
-        cp --recursive --verbose ${BACKUP_DIR}/${APP_NAME}/* "${APP_PATH}"
+		# add $HOME root to a relative path
+		[ "${ENV_PATH:0:1}" != "/" ] && ENV_PATH="${HOME}/${ENV_PATH}"
 
-      # gconf mode
-      elif [ "${APP_MODE}" = "gconf" ]
-      then
-        gconftool-2 --load "${BACKUP_DIR}/${APP_NAME}.xml"
-      fi
-      ;;
+		# display
+		echo "-- ${OPERATION} of ${ENV_PATH} in ${ENV_TYPE} mode"
+			
+		# action according to environment type
+		case ${ENV_TYPE} in
 
-    *) 
-      echo "Please use --backup or --restore"
-      ;;
-   esac
+		"tar")
+			# backup mode
+			if [ "${OPERATION}" = "backup" ]
+			then
+				# if environment is present, backup
+				if [ -d "${ENV_PATH}" ]
+				then
+					[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}"
+					[ "${MODE}" = "normal" ] && rm --force "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
+					[ "${MODE}" = "normal" ] && cd "${ENV_PATH}"
+					[ "${MODE}" = "normal" ] && tar -zcvf "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz" *
+					echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${ENV_PATH} is absent"
+				fi
+
+			# restore mode
+			else
+				# if backup file is present, restore
+				if [ -f "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz" ]
+				then
+					[ "${MODE}" = "normal" ] && mkdir --parents "${ENV_PATH}"
+					[ "${MODE}" = "normal" ] && rm --force --recursive ${ENV_PATH}/*
+					[ "${MODE}" = "normal" ] && cd "${ENV_PATH}"
+					[ "${MODE}" = "normal" ] && tar -zxvf "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
+					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz is absent"
+				fi
+			fi
+			;;
+
+		"folder")
+			# backup mode
+			if [ "${OPERATION}" = "backup" ]
+			then
+				# if environment is present, backup
+				if [ -d "${ENV_PATH}" ]
+				then
+					[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+					[ "${MODE}" = "normal" ] && rm --recursive --force ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/*
+					[ "${MODE}" = "normal" ] && cp --recursive --verbose ${ENV_PATH}/* "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+					echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${ENV_PATH} is absent"
+				fi
+
+			# restore mode
+			else
+				# if backup file is present, restore
+				if [ -d "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}" ]
+				then
+					[ "${MODE}" = "normal" ] && mkdir --parents "${ENV_PATH}"
+					[ "${MODE}" = "normal" ] && rm --recursive --force ${ENV_PATH}/*
+					[ "${MODE}" = "normal" ] && cp --recursive --verbose ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/* "${ENV_PATH}"
+					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM} is absent"
+				fi
+			fi
+			;;
+
+		"file")
+			# get filename
+			ENV_FILE=$(basename "${ENV_PATH}")
+
+			# backup mode
+			if [ "${OPERATION}" = "backup" ]
+			then
+				# if environment is present, backup
+				if [ -f "${ENV_PATH}" ]
+				then
+					[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+					[ "${MODE}" = "normal" ] && rm --recursive --force ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/*
+					[ "${MODE}" = "normal" ] && cp ${ENV_PATH} "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+					echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${ENV_PATH} is absent"
+				fi
+
+			# restore mode
+			else
+				# if backup file is present, restore
+				if [ -f "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}" ]
+				then
+					[ "${MODE}" = "normal" ] && cp "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}" "${ENV_PATH}"
+					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE} is absent"
+				fi
+			fi
+			;;
+
+		"gconf")
+			# backup mode
+			if [ "${OPERATION}" = "backup" ]
+			then
+				[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}"
+				[ "${MODE}" = "normal" ] && gconftool-2 --dump "${ENV_PATH}" > "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
+				echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
+
+			# restore mode
+			else
+				# if backup file is present, restore
+				if [ -f "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml" ]
+				then
+					[ "${MODE}" = "normal" ] && gconftool-2 --load "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
+					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml is absent"
+				fi
+			fi
+			;;
+
+		*)
+			echo " -> Impossible as file is absent or mode is unsupported"
+			;;
+		esac
+	done
 done
