@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Action
+Icon=flashair-delete
+Name=Flashair SD - Suppress from card
+Name[fr]=SDCard Flashair - Supprimer de la carte SD
+Tooltip=Tool to delete media files from wifi Flashair SD cards
+Tooltip[fr]=Outil de suppression de fichiers sur une carte SD wifi Flashair
+Profiles=delete_file;
+
+[X-Action-Profile delete_file]
+Exec=flashair-command --delete %F
+MimeTypes=all/allfiles;
+Enabled=true
+Folders=/media/flashair;
+Name=Delete
+Name[fr]=Supprimer
