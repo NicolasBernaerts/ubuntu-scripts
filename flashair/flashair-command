@@ -7,48 +7,76 @@
 #
 # Revision history :
 #   30/03/2017, V1.0 - Creation by N. Bernaerts
+#   15/04/2017, V1.1 - Complete rewrite with parameters
 # ---------------------------------------------------
+
+# check tools
+command -v curl >/dev/null 2>&1 || { echo "Please install curl"; exit 1; }
+command -v composite >/dev/null 2>&1 || { echo "Please install composite [imagemagick package]"; exit 1; }
+command -v convert >/dev/null 2>&1 || { echo "Please install convert [imagemagick package]"; exit 1; }
+command -v inotifywait >/dev/null 2>&1 || { echo "Please install inotifywait [inotify-tools package]"; exit 1; }
+command -v zenity >/dev/null 2>&1 || { echo "Please install zenity package"; exit 1; }
 
 # set configuration file
 FLASHAIR_CONF="/etc/flashair.conf"
+FLASHAIR_FILELIST=".flashair.filelist"
+FLASHAIR_CONFIG=".flashair.config"
+NAUTILUS_BOOKMARK=".config/gtk-3.0/bookmarks"
 
 # empty arrays
 ARR_ITEM=()
-ARR_DOWNLOAD=()
-ARR_DIRECTORY=()
 
 # if no argument, display help
 if [ $# -eq 0 ] 
 then
-  echo "Tool to synchronise Toshiba Flashair SD Card content"
-  echo "Only usable if laptop is connected to a Toshiba FlashAir wifi network"
-  echo "Parameters are :"
-  echo "  <item1> <item2> ...     File/directory to update with flashair content"
+	echo "Tool to synchronise Toshiba Flashair SD Card content"
+	echo "Only usable if laptop is connected to a Toshiba FlashAir wifi network"
+	echo "Parameters are :"
+	echo "  --connect              Actions to setup new connexion"
+	echo "  --disconnect           Actions to deal with a disconnexion"
+	echo "  --is-connected         Answer true if flashair card is connected"
+	echo "  --is-writable          Answer true if upload is allowed"
+	echo "  --update               Update directory content from Flashair card"
+	echo "  --download             Download files from Flashair card"
+	echo "  --upload               Write files to Flashair card"
+	echo "  --delete               Delete file from Flashair card (file only)"
+	echo "  <item1> <item2> ...    Files/directories to handle"
 fi
 
 # loop to retrieve arguments
 while test $# -gt 0
 do
-  case "$1" in
-    *) ARR_ITEM=("${ARR_ITEM[@]}" "$1"); shift; ;;
-   esac
+case "$1" in
+	"--connect") MODE="connect"; shift; ;;
+	"--disconnect") MODE="disconnect"; shift; ;;
+	"--is-writable") MODE="is-writable"; shift; ;;
+	"--is-connected") MODE="is-connected"; shift; ;;
+	"--update") MODE="update"; shift; ;;
+	"--download") MODE="download"; shift; ;;
+	"--upload") MODE="upload"; shift; ;;
+	"--delete") MODE="delete"; shift; ;;
+	*) ARR_ITEM=( "${ARR_ITEM[@]}" "$1" ); shift; ;;
+esac
 done
-
-# check tools
-command -v wget >/dev/null 2>&1 || { echo "Please install wget"; exit 1; }
-command -v composite >/dev/null 2>&1 || { echo "Please install composite [imagemagick package]"; exit 1; }
-command -v convert >/dev/null 2>&1 || { echo "Please install convert [imagemagick package]"; exit 1; }
-command -v inotifywait >/dev/null 2>&1 || { echo "Please install inotifywait [inotify-tools package]"; exit 1; }
 
 # check configuration file
 [ ! -f ${FLASHAIR_CONF} ] && { echo "Configuration file ${FLASHAIR_CONF} is missing"; exit 1; }
+
+# get default configuration
+FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+FLASHAIR_USER=$(grep "^flashair-user=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+
+# create temporary files
+TMP_HEADER=$(mktemp --tmpdir header-XXXXXXXXX.html)
+TMP_FILE=$(mktemp --tmpdir file-XXXXXXXXX.jpg)
+TMP_THUMB=$(mktemp --tmpdir thumb-XXXXXXXXX.jpg)
 
 # Thumbnailing function
 #  $1 - input thumbnail
 #  $2 - target thumbnail
 #  $3 - file size
 #  $4 - state (available or download)
-function create_thumbnail {
+function create_thumbnail() {
 	TMP_INPUT=$(mktemp --tmpdir icon-XXXXXXXXX.png)
 	TMP_BULLET=$(mktemp --tmpdir bullet-XXXXXXXXX.png)
 
@@ -60,7 +88,7 @@ function create_thumbnail {
 	FILE_STATE=$4
 
 	# generate bullet
-	convert -fill white -pointsize 28 -draw 'text 50,34 "'${FILE_SIZE}'"' "/usr/share/icons/flashair-${FILE_STATE}.png" "${TMP_BULLET}"
+	convert -fill white -pointsize 28 -draw 'text 50,34 "'${FILE_SIZE}'"' "/usr/share/icons/flashair-status-${FILE_STATE}.png" "${TMP_BULLET}"
 
 	# create thumbnail with bullet
 	composite -gravity SouthEast "${TMP_BULLET}" "${TMP_INPUT}" "$2"
@@ -69,62 +97,109 @@ function create_thumbnail {
 	rm -f "${TMP_INPUT}" "${TMP_BULLET}"
 }
 
-# get flashair mount directory
-FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+# ------------------------------------------
+#  handle main parameters
+# ------------------------------------------
 
-# create temporary files
-TMP_LIST=$(mktemp --tmpdir list-XXXXXXXXX.txt)
-TMP_FILE=$(mktemp --tmpdir file-XXXXXXXXX.jpg)
-TMP_THUMB=$(mktemp --tmpdir thumb-XXXXXXXXX.jpg)
+case "${MODE}" in
 
-# loop to analyse items
+	"connect")
+	# if neeeded, create media directory
+	[ ! -d "${FLASHAIR_ROOT}" ] && { mkdir "${FLASHAIR_ROOT}"; chmod 777 "${FLASHAIR_ROOT}"; }
+
+	# if neeeded, create flashair bookmark to user nautilus configuration
+	FLASHAIR_BOOKMARK=$(grep "${FLASHAIR_ROOT}" "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}")
+	[ "${FLASHAIR_BOOKMARK}" = "" ] && echo "file://${FLASHAIR_ROOT} Flashair (disconnected)" >> "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}" 
+
+	# get wan config file at flashair root
+	curl -o "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" "http://flashair/CONFIG"
+
+	# if config file downloaded, update nautilus bookmark as connected
+	[ -s "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" ] && sed -i "s/Flashair.*$/Flashair (connected)/g" "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}"
+	;;
+
+	"disconnect")
+	# remove wan config file at flashair root
+	rm -f "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}"
+
+	# update nautilus bookmark as disconnected
+	sed -i "s/Flashair.*$/Flashair (disconnected)/g" "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}" 
+	;;
+
+	"is-connected")
+	# check if config file is present
+	[ -s "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" ] && echo "true" || echo "True"
+	;;
+
+	"is-writable")
+	# check if upload is set in config file
+	[ -s "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" ] && WRITABLE=$(grep "UPLOAD=1" "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}") || WRITABLE=""
+	[ "${WRITABLE}" != "" ] && echo "true" || echo "false"
+	;;
+
+	"download")
+	# loop to analyse items
+	for ITEM in "${ARR_ITEM[@]}"
+	do
+		# if item is a file
+		if [ -f "${ITEM}" ]
+		then
+			# get basename, dirname and file size
+			ITEM_NAME=$(basename "${ITEM}")
+			ITEM_DIR=$(dirname "${ITEM}")
+			ITEM_SIZE=$(stat -c %s "${ITEM}")
+
+			# path of item on flashair card
+			CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
+
+			# generate .flashair filelist path
+			ITEM_FILELIST="${ITEM_DIR}/${FLASHAIR_FILELIST}"
+
+			# get file size on flashair card
+			CARD_ITEM_SIZE=$(grep ",${ITEM_NAME}," "${ITEM_FILELIST}" | cut -d',' -f3)
+
+			# if file exists on flashair and size differs, add file to the download array
+			if [ "${CARD_ITEM_SIZE}" != "" -a "${CARD_ITEM_SIZE}" != "${ITEM_SIZE}" ]
+			then
+				# download embedded thumbnail
+				curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/thumbnail.cgi?${CARD_ITEM_PATH}"
+
+				# create thumbnail with bullet and file size
+				THUMB_OK=$(grep "image/jpeg" "${TMP_HEADER}")
+				[ "${THUMB_OK}" != "" ] && create_thumbnail "${TMP_FILE}" "${TMP_THUMB}" "${CARD_ITEM_SIZE}" "download" \
+							|| create_thumbnail "/usr/share/icons/flashair-generic.jpg" "${TMP_THUMB}" "${CARD_ITEM_SIZE}" "download"
+			fi
+		fi
+	done
+	;;
+
+	*)
+	;;
+esac
+
+# ------------------------------------------
+#  loop thru files/directories
+# ------------------------------------------
+
 for ITEM in "${ARR_ITEM[@]}"
 do
-	# if item is a directory
-	if [ -d "${ITEM}" ]
-	then
-		# add it to directories array
-		ARR_DIRECTORY=("${ARR_DIRECTORY[@]}" "${ITEM}")
 
-	# if item is a file
-	elif [ -f "${ITEM}" ]
-	then
-		# path of item on flashair card
-		CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
-
-		# get item father directory content on flashair card
-		CARD_ITEM_FATHER=$(dirname "${CARD_ITEM_PATH}")
-		wget --quiet -O - "http://flashair/command.cgi?op=100&DIR=${CARD_ITEM_FATHER}" | tail -n +2 > "${TMP_LIST}"
-
-		# get filename
-		ITEM_NAME=$(basename "${ITEM}")
-
-		# get file size on flashair card
-		CARD_ITEM_SIZE=$(grep ",${ITEM_NAME}," "${TMP_LIST}" | cut -d',' -f3)
-
-		# get local file size
-		ITEM_SIZE=$(stat -c %s "${ITEM}")
-
-		# if size differs, add file to the download array
-		if [ "${CARD_ITEM_SIZE}" != "${ITEM_SIZE}" ]
-		then
-			# create thumbnail with download pending bullet
-			create_thumbnail "${ITEM}" "${ITEM}" "${CARD_ITEM_SIZE}" "download"
-
-			# add file to download array
-			ARR_DOWNLOAD=("${ARR_DOWNLOAD[@]}" "${ITEM}")
-		fi
-	fi
-done
-
-# loop thru directories to update them
-for ITEM in "${ARR_DIRECTORY[@]}"
-do
 	# path of item on flashair card
 	CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
 
+	# action according to mode
+	case "${MODE}" in
+
+	# -----------------------------
+	#  directory content update
+	# -----------------------------
+	"update")
+
+	# generate local subitem path
+	ITEM_FILELIST="${ITEM}/${FLASHAIR_FILELIST}"
+
 	# retrieve directory content from flashair card
-	wget --quiet -O - "http://flashair/command.cgi?op=100&DIR=${CARD_ITEM_PATH}" | tail -n +2 > "${TMP_LIST}"
+	curl "http://flashair/command.cgi?op=100&DIR=${CARD_ITEM_PATH}" | tail -n +2 > "${ITEM_FILELIST}"
 
 	# loop thru directory content
 	while read LINE;
@@ -143,17 +218,15 @@ do
 			# if file does not exist locally, get thumbnail
 			if [ ! -f "${SUBITEM}" ]
 			then
-				# set default generic thumbnail
-				cp "/usr/share/icons/flashair-generic.jpg" "${TMP_FILE}"
-
-				# if file is a JPEG image, download embedded thumbnail
-				IS_JPEG=$(echo "${CARD_SUBITEM_NAME}" | grep -i ".jpg$")
-				[ "${IS_JPEG}" != "" ] && wget --quiet -O "${TMP_FILE}" "http://flashair/thumbnail.cgi?${CARD_ITEM_PATH}/${CARD_SUBITEM_NAME}"
+				# download embedded thumbnail
+				curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/thumbnail.cgi?${CARD_ITEM_PATH}/${CARD_SUBITEM_NAME}"
 
 				# create thumbnail with bullet and file size
-				create_thumbnail "${TMP_FILE}" "${TMP_THUMB}" "${CARD_SUBITEM_SIZE}" "available"
+				THUMB_OK=$(grep "image/jpeg" "${TMP_HEADER}")
+				[ "${THUMB_OK}" != "" ] && create_thumbnail "${TMP_FILE}" "${TMP_THUMB}" "${CARD_SUBITEM_SIZE}" "available" \
+							|| create_thumbnail "/usr/share/icons/flashair-generic.jpg" "${TMP_THUMB}" "${CARD_SUBITEM_SIZE}" "available"
 
-				# write thumbnail in local path (as rwxrwxrwx)
+				# move thumbnail to final directory (as rw.rw.rw.)
 				mv "${TMP_THUMB}" "${SUBITEM}"
 				chmod 666 "${SUBITEM}"
 			fi
@@ -169,19 +242,61 @@ do
 				chmod 777 "${SUBITEM}"
 			fi
 		fi
-	done < "${TMP_LIST}"
-done
+	done < "${ITEM_FILELIST}"
+	;;
 
-# loop thru files to download them
-for ITEM in "${ARR_DOWNLOAD[@]}"
-do
-	# path of item on flashair card
-	CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
+	# -----------------------------
+	#  image download
+	# -----------------------------
+	"download")
 
-	# download file and set rw.rw.rw. rights
-	wget --quiet -O "${ITEM}" "http://flashair/${CARD_ITEM_PATH}"
-	chmod 666 "${ITEM}"
+	# download file
+	curl -o "${TMP_FILE}" "http://flashair/${CARD_ITEM_PATH}"
+
+	# move file to final directory (as rw.rw.rw.)
+	chmod 666 "${TMP_FILE}"
+	mv "${TMP_FILE}" "${ITEM}"
+	;;
+
+	# -----------------------------
+	#  image upload
+	# -----------------------------
+	"upload")
+
+	# get upload directory
+	CARD_ITEM_DIR=$(dirname "${CARD_ITEM_PATH}")
+
+	# set upload directory
+	curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/upload.cgi?UPDIR=${CARD_ITEM_DIR}"
+
+	# if upload directory set, start upload
+	OPERATION_OK=$(grep "SUCCESS" "${TMP_FILE}")
+	if [ "${OPERATION_OK}" != "" ]
+	then
+		# upload item
+		curl --dump-header "${TMP_HEADER}" -i -X POST -H "Content-Type: multipart/form-data" -F "data=@${ITEM}" "http://flashair/upload.cgi"
+	fi
+	;;
+
+	# -----------------------------
+	#  image suppression
+	# -----------------------------
+	"delete")
+
+	# send deletion command
+	curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/upload.cgi?DEL=${CARD_ITEM_PATH}"
+
+	# if deletion succesful, delete local file
+	OPERATION_OK=$(grep "SUCCESS" "${TMP_FILE}")
+	[ "${OPERATION_OK}" != "" ] && rm -f "${ITEM}"
+	;;
+
+	*)
+	echo "Mode ${MODE} not supported"
+	;;
+
+	esac
 done
 
 # remove temporary files
-rm -f "${TMP_LIST}" "${TMP_FILE}" "${TMP_THUMB}"
+rm -f "${TMP_FILE}" "${TMP_HEADER}" "${TMP_THUMB}"
