@@ -20,8 +20,6 @@ command -v zenity >/dev/null 2>&1 || { echo "Please install zenity package"; exi
 # set configuration file
 FLASHAIR_CONF="/etc/flashair.conf"
 FLASHAIR_FILELIST=".flashair.filelist"
-FLASHAIR_CONFIG=".flashair.config"
-NAUTILUS_BOOKMARK=".config/gtk-3.0/bookmarks"
 
 # empty arrays
 ARR_ITEM=()
@@ -34,8 +32,6 @@ then
 	echo "Parameters are :"
 	echo "  --connect              Actions to setup new connexion"
 	echo "  --disconnect           Actions to deal with a disconnexion"
-	echo "  --is-connected         Answer true if flashair card is connected"
-	echo "  --is-writable          Answer true if upload is allowed"
 	echo "  --update               Update directory content from Flashair card"
 	echo "  --download             Download files from Flashair card"
 	echo "  --upload               Write files to Flashair card"
@@ -46,30 +42,26 @@ fi
 # loop to retrieve arguments
 while test $# -gt 0
 do
-case "$1" in
+	case "$1" in
 	"--connect") MODE="connect"; shift; ;;
 	"--disconnect") MODE="disconnect"; shift; ;;
-	"--is-writable") MODE="is-writable"; shift; ;;
-	"--is-connected") MODE="is-connected"; shift; ;;
 	"--update") MODE="update"; shift; ;;
 	"--download") MODE="download"; shift; ;;
 	"--upload") MODE="upload"; shift; ;;
 	"--delete") MODE="delete"; shift; ;;
 	*) ARR_ITEM=( "${ARR_ITEM[@]}" "$1" ); shift; ;;
-esac
+	esac
 done
-
-# check configuration file
-[ ! -f ${FLASHAIR_CONF} ] && { echo "Configuration file ${FLASHAIR_CONF} is missing"; exit 1; }
-
-# get default configuration
-FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
-FLASHAIR_USER=$(grep "^flashair-user=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
 
 # create temporary files
 TMP_HEADER=$(mktemp --tmpdir header-XXXXXXXXX.html)
 TMP_FILE=$(mktemp --tmpdir file-XXXXXXXXX.jpg)
 TMP_THUMB=$(mktemp --tmpdir thumb-XXXXXXXXX.jpg)
+
+# get default mount directory and connected user
+[ -f "${FLASHAIR_CONF}" ] && FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-) || FLASHAIR_ROOT="/media/flashair"
+[ -f "${FLASHAIR_CONF}" ] && FLASHAIR_USER=$(grep "^flashair-user=" "${FLASHAIR_CONF}" | cut -d'=' -f2-) || FLASHAIR_USER=""
+[ "${FLASHAIR_USER}" = "" ] && FLASHAIR_USER=$(ps hau | grep -v "^root" | head -n 1 | cut -d' ' -f1)
 
 # Thumbnailing function
 #  $1 - input thumbnail
@@ -107,34 +99,32 @@ case "${MODE}" in
 	# if neeeded, create media directory
 	[ ! -d "${FLASHAIR_ROOT}" ] && { mkdir "${FLASHAIR_ROOT}"; chmod 777 "${FLASHAIR_ROOT}"; }
 
-	# if neeeded, create flashair bookmark to user nautilus configuration
-	FLASHAIR_BOOKMARK=$(grep "${FLASHAIR_ROOT}" "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}")
-	[ "${FLASHAIR_BOOKMARK}" = "" ] && echo "file://${FLASHAIR_ROOT} Flashair (disconnected)" >> "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}" 
+	# if first time, create flashair bookmark to user nautilus configuration
+	FLASHAIR_BOOKMARK=$(grep "${FLASHAIR_ROOT}" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks")
+	[ "${FLASHAIR_BOOKMARK}" = "" ] && echo "file://${FLASHAIR_ROOT} Flashair (disconnected)" >> "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks" 
 
-	# get wan config file at flashair root
-	curl -o "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" "http://flashair/CONFIG"
+	# get the upload status of the card
+	UPLOAD_ENABLED=$(curl "http://flashair/CONFIG" | grep "UPLOAD=1")
 
-	# if config file downloaded, update nautilus bookmark as connected
-	[ -s "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" ] && sed -i "s/Flashair.*$/Flashair (connected)/g" "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}"
+	# update nautilus bookmark with (connected)
+	sed -i "s/Flashair.*$/Flashair (connected)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks"
+
+	# enable right click download menu
+	sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-download.desktop"
+
+	# if upload is allowed, enable right click upload and delete menus
+	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
+	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
 	;;
 
 	"disconnect")
-	# remove wan config file at flashair root
-	rm -f "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}"
+	# disable right click menus
+	sed -i "s/^Enabled=.*$/Enabled=false/g" "/usr/local/share/file-manager/actions/flashair-action-download.desktop"
+	sed -i "s/^Enabled=.*$/Enabled=false/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
+	sed -i "s/^Enabled=.*$/Enabled=false/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
 
-	# update nautilus bookmark as disconnected
-	sed -i "s/Flashair.*$/Flashair (disconnected)/g" "/home/${FLASHAIR_USER}/${NAUTILUS_BOOKMARK}" 
-	;;
-
-	"is-connected")
-	# check if config file is present
-	[ -s "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" ] && echo "true" || echo "True"
-	;;
-
-	"is-writable")
-	# check if upload is set in config file
-	[ -s "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}" ] && WRITABLE=$(grep "UPLOAD=1" "${FLASHAIR_ROOT}/${FLASHAIR_CONFIG}") || WRITABLE=""
-	[ "${WRITABLE}" != "" ] && echo "true" || echo "false"
+	# update nautilus bookmark with (disconnected)
+	sed -i "s/Flashair.*$/Flashair (disconnected)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks" 
 	;;
 
 	"download")
