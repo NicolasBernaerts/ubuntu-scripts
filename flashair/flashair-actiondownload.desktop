@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Action
+Icon=flashair-download
+Name=Flashair SD - Download to computer
+Name[fr]=SDCard Flashair - Télécharger sur l'ordinateur
+Tooltip=Tool to download media files from wifi Flashair SD cards
+Tooltip[fr]=Outil de téléchargement de fichiers depuis une carte SD wifi Flashair
+Profiles=download_file;
+
+[X-Action-Profile download_file]
+Exec=flashair-command --download %F
+MimeTypes=all/allfiles;
+Enabled=true
+Capabilities=!Owner
+Folders=/media/flashair;
+Name=Download
+Name[fr]=Telecharger
