@@ -16,7 +16,6 @@ sudo apt install inotify-tools imagemagick
 
 # install configuration file and set current user
 sudo wget -O /etc/flashair.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair.conf
-sudo sed -i "s/#USER#/$USER/g" /etc/flashair.conf
 
 # download icons
 sudo wget -O /usr/share/icons/flashair-generic.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-generic.jpg
