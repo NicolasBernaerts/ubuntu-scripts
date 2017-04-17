@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Action
+Icon=flashair-upload
+Name=Flashair SD - Upload to card
+Name[fr]=SDCard Flashair - Envoyer sur la carte SD
+Tooltip=Tool to upload media files to wifi Flashair SD cards
+Tooltip[fr]=Outil de mise a jour de fichiers sur une carte SD wifi Flashair
+Profiles=upload_file;
+
+[X-Action-Profile upload_file]
+Exec=flashair-command --upload %F
+MimeTypes=all/allfiles;
+Enabled=true
+#ShowIfRunning=flashair-daemon
+Capabilities=Owner
+Basenames=????????.???;???????.???;??????.???;?????.???;????.???;???.???;??.???;?.???
+Folders=/media/flashair;
+Name=Upload
+Name[fr]=Envoyer
