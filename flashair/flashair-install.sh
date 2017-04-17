@@ -19,10 +19,12 @@ sudo wget -O /etc/flashair.conf https://raw.githubusercontent.com/NicolasBernaer
 sudo sed -i "s/#USER#/$USER/g" /etc/flashair.conf
 
 # download icons
-sudo wget -O /usr/share/icons/flashair-icon.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-icon.png
 sudo wget -O /usr/share/icons/flashair-generic.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-generic.jpg
-sudo wget -O /usr/share/icons/flashair-available.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-available.png
 sudo wget -O /usr/share/icons/flashair-download.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-download.png
+sudo wget -O /usr/share/icons/flashair-upload.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-upload.png
+sudo wget -O /usr/share/icons/flashair-delete.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-delete.png
+sudo wget -O /usr/share/icons/flashair-status-available.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-status-available.png
+sudo wget -O /usr/share/icons/flashair-status-download.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-status-download.png
 
 # download main scripts
 sudo wget -O /usr/local/sbin/flashair-daemon https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-daemon
@@ -35,7 +37,10 @@ sudo ln -s /usr/local/sbin/flashair-network /etc/network/if-up.d/flashair-networ
 sudo ln -s /usr/local/sbin/flashair-network /etc/network/if-post-down.d/flashair-network
 
 # declare nautilus action
-wget -O $HOME/.local/share/file-manager/actions/flashair-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-action.desktop
+sudo mkdir --parents /usr/local/share/file-manager/actions
+sudo wget -O /usr/local/share/file-manager/actions/flashair-action-download.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-action-download.desktop
+sudo wget -O /usr/local/share/file-manager/actions/flashair-action-upload.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-action-upload.desktop
+sudo wget -O /usr/local/share/file-manager/actions/flashair-action-delete.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-action-delete.desktop
 
 # restart networking services
 sudo service networking restart
