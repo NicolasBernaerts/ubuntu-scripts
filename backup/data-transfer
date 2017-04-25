@@ -19,7 +19,7 @@
 MODE="normal"
 
 # set working directory to current directory
-BACKUP_DIR=$(pwd)
+BACKUP_DIR=$(dirname $(readlink -f $0))
 
 # set configuration file
 CONF_INI="${BACKUP_DIR}/data-transfer.ini"
@@ -82,6 +82,9 @@ do
 
 		# deal with XDG path
 		[ "${ENV_PARAM}" = "xdg" ] && ENV_PATH=$(xdg-user-dir "${ENV_PATH}")
+
+		# set relative path based on home directory
+		[ "${ENV_PATH:0:1}" != "/" ] && ENV_PATH="$HOME/${ENV_PATH}"
 
 		# set type according to path type (file of folder)
 		ENV_TYPE="unknown"
