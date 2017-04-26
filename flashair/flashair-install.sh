@@ -12,7 +12,7 @@
 # ---------------------------------------------------
 
 # install inotifywait tool and imagemagick
-sudo apt install inotify-tools imagemagick
+sudo apt install inotify-tools imagemagick curl
 
 # install configuration file and set current user
 sudo wget -O /etc/flashair.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair.conf
