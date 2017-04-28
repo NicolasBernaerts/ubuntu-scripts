@@ -76,9 +76,9 @@ do
 	for LINE in "${ARR_LINE[@]}"
 	do
 		# get parameters
-		ENV_ITEM=$(echo $LINE | cut -d"=" -f1)
-		ENV_PATH=$(echo $LINE | cut -d"=" -f2 | cut -d";" -f1)
-		ENV_PARAM=$(echo $LINE | cut -d"=" -f2 | cut -d";" -f2)
+		ENV_ITEM=$(echo "${LINE}" | cut -d"=" -f1)
+		ENV_PATH=$(echo "${LINE}" | cut -d"=" -f2 | cut -d";" -f1)
+		ENV_PARAM=$(echo "${LINE}" | cut -d"=" -f2 | cut -d";" -f2)
 
 		# deal with XDG path
 		[ "${ENV_PARAM}" = "xdg" ] && ENV_PATH=$(xdg-user-dir "${ENV_PATH}")
@@ -88,8 +88,8 @@ do
 
 		# set type according to path type (file of folder)
 		ENV_TYPE="unknown"
-		[ -f ${ENV_PATH} ] && ENV_TYPE="file"
-		[ -d ${ENV_PATH} ] && ENV_TYPE="folder"
+		[ -f "${ENV_PATH}" ] && ENV_TYPE="file"
+		[ -d "${ENV_PATH}" ] && ENV_TYPE="folder"
 
 		# set type to tar if parameter is set and path is a folder
 		[ "${ENV_PARAM}" = "tar" -a "${ENV_TYPE}" = "folder" ] && ENV_TYPE="tar"
