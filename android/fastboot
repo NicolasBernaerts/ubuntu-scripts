@@ -1,0 +1,9 @@
+#!/bin/bash
+# ------------------------------------------
+# Launcher for latest Google platform tools
+#
+# Tool : fastboot
+#
+# ------------------------------------------
+
+/usr/local/sbin/platform-tools/fastboot "$@"
