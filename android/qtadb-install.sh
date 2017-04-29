@@ -5,7 +5,7 @@
 sudo apt-get -y install libqtgui4 libqt4-network libqt4-declarative
 
 # download of main program
-wget --header='Accept-Encoding:none' /home/nicolas/Downloads/QtADB_0.8.1_linux64.tar.gz
+wget --header='Accept-Encoding:none' http://motyczko.pl/qtadb/QtADB_0.8.1_linux64.tar.gz
 tar -xvf QtADB_0.8.1_linux64.tar.gz
 sudo mv ./QtADB*/QtADB /usr/local/sbin/qtadb
 sudo chmod +x /usr/local/sbin/qtadb
