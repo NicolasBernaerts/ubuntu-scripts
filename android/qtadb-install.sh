@@ -5,8 +5,8 @@
 sudo apt-get -y install libqtgui4 libqt4-network libqt4-declarative
 
 # download of main program
-wget --header='Accept-Encoding:none' /home/nicolas/Downloads/QtADB_0.8.1_linux${X86ARCHI}.tar.gz
-tar -xvf QtADB_0.8.1_linux${X86ARCHI}.tar.gz
+wget --header='Accept-Encoding:none' /home/nicolas/Downloads/QtADB_0.8.1_linux64.tar.gz
+tar -xvf QtADB_0.8.1_linux64.tar.gz
 sudo mv ./QtADB*/QtADB /usr/local/sbin/qtadb
 sudo chmod +x /usr/local/sbin/qtadb
 
@@ -19,5 +19,5 @@ mkdir -p $HOME/.config/Bracia
 wget --header='Accept-Encoding:none' -O $HOME/.config/Bracia/QtADB.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/QtADB.conf
 
 # cleanup
-rm QtADB_0.8.1_linux${X86ARCHI}.tar.gz
+rm QtADB_0.8.1_linux64.tar.gz
 rm -R QtADB*
