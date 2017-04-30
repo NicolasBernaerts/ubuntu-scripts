@@ -4,6 +4,7 @@
 # 
 # Revision history :
 #   30/03/2017, V1.0 - Creation by N. Bernaerts
+#   28/04/2017, V1.1 - Add network interface detection
 # ---------------------------------------------------
 
 # flashair environment
@@ -12,20 +13,20 @@ FLASHAIR_DAEMON_NAME="${FLASHAIR_NAME}-daemon"
 FLASHAIR_DAEMON_PATH="/usr/local/sbin/${FLASHAIR_DAEMON_NAME}"
 
 # check if connected to flashair wifi network
-FLASHAIR_NETWORK=$(iwconfig | grep "ESSID" | grep "${FLASHAIR_NAME}_")
+FLASHAIR_INTERFACE=$(iwconfig | grep "ESSID" | grep "${FLASHAIR_NAME}_" | cut -d' ' -f1)
 
 # check if flashair daemon is running
 start-stop-daemon --status --name "${FLASHAIR_DAEMON_NAME}"
 RESULT=$?
 
 # if connected to flashair wifi network
-if [ "${FLASHAIR_NETWORK}" != "" ]
+if [ "${FLASHAIR_INTERFACE}" != "" ]
 then
 	# if daemon is not running,
 	if [ "${RESULT}" != "0" ]
 	then
 		# call flashair connect command
-		flashair-command --connect
+		flashair-command --connect "${FLASHAIR_INTERFACE}"
 
 		# start flashair daemon
 		start-stop-daemon --start --background --exec "${FLASHAIR_DAEMON_PATH}"
@@ -33,13 +34,14 @@ then
 
 # else, if not connected to flashair wifi network
 else
-	# stop flashair daemon
-	start-stop-daemon --stop --name "${FLASHAIR_DAEMON_NAME}"
-
-	# kill running inotifywait child process
-	PID_INOTIFY=$(ps -ef | grep /media/flashair | grep inotifywait | xargs | cut -d ' ' -f2)
-	[ "${PID_INOTIFY}" != "" ] && kill -9 ${PID_INOTIFY}
-
 	# call flashair disconnect command
 	flashair-command --disconnect
+
+	# get processes PID
+	PID_DAEMON=$(pgrep "${FLASHAIR_DAEMON_NAME}")
+	PID_INOTIFY=$(pgrep --parent ${PID_DAEMON} "inotifywait")
+
+	# stop flashair daemon and inotifywait child process
+	start-stop-daemon --stop --name "${FLASHAIR_DAEMON_NAME}"
+	[ "${PID_INOTIFY}" != "" ] && kill -9 ${PID_INOTIFY}
 fi
