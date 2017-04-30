@@ -58,10 +58,19 @@ TMP_HEADER=$(mktemp --tmpdir header-XXXXXXXXX.html)
 TMP_FILE=$(mktemp --tmpdir file-XXXXXXXXX.jpg)
 TMP_THUMB=$(mktemp --tmpdir thumb-XXXXXXXXX.jpg)
 
-# get default mount directory and connected user
-[ -f "${FLASHAIR_CONF}" ] && FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-) || FLASHAIR_ROOT="/media/flashair"
-[ -f "${FLASHAIR_CONF}" ] && FLASHAIR_USER=$(grep "^flashair-user=" "${FLASHAIR_CONF}" | cut -d'=' -f2-) || FLASHAIR_USER=""
+# get default parameters from flashair.conf
+FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+FLASHAIR_USER=$(grep "^flashair-user=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+FLASHAIR_CONFIRM=$(grep "^confirm-${MODE}=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+
+# if default user not defined, get currently connected user
 [ "${FLASHAIR_USER}" = "" ] && FLASHAIR_USER=$(ps hau | grep -v "^root" | head -n 1 | cut -d' ' -f1)
+
+# get number of files
+NBR_ITEM=${#ARR_ITEM[@]}
+
+# by default, action is confirmed
+CONFIRMED=0
 
 # Thumbnailing function
 #  $1 - input thumbnail
@@ -90,12 +99,35 @@ function create_thumbnail() {
 }
 
 # ------------------------------------------
-#  handle main parameters
+#  Step 1
+#
+#   Main parameters and confirmation
+#
 # ------------------------------------------
 
 case "${MODE}" in
 
+	# -----------------------------
+	#  flashair network connexion
+	# -----------------------------
 	"connect")
+
+	# get flashair network address
+	FLASHAIR_INTERFACE="${ARR_ITEM[0]}"
+	FLASHAIR_NETWORK=$(ifconfig | sed -n -e '/'${FLASHAIR_INTERFACE}'/,$p' | grep "inet addr" | sed "s/^.*inet addr:\([0-9.]*\).*$/\1/" | cut -d'.' -f1-3)
+
+	# look for entry in /etc/hosts
+	FLASHAIR_ENTRY=$(grep " flashair$" "/etc/hosts")
+	if [ "${FLASHAIR_ENTRY}" = "" ]
+	then
+		# create flashair entry in /etc/hosts
+		echo "# flashair card" >> "/etc/hosts"
+		echo "${FLASHAIR_NETWORK}.1 flashair" >> "/etc/hosts"
+	else
+		# update flashair address in /etc/hosts
+		sed -i "s/^.* flashair$/${FLASHAIR_NETWORK}.1 flashair/g" "/etc/hosts"
+	fi
+
 	# if neeeded, create media directory
 	[ ! -d "${FLASHAIR_ROOT}" ] && { mkdir "${FLASHAIR_ROOT}"; chmod 777 "${FLASHAIR_ROOT}"; }
 
@@ -113,11 +145,15 @@ case "${MODE}" in
 	sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-download.desktop"
 
 	# if upload is allowed, enable right click upload and delete menus
-	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
-	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
+	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
+	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
 	;;
 
+	# -----------------------------
+	#  flashair network disconnexion
+	# -----------------------------
 	"disconnect")
+
 	# disable right click menus
 	sed -i "s/^Enabled=.*$/Enabled=false/g" "/usr/local/share/file-manager/actions/flashair-action-download.desktop"
 	sed -i "s/^Enabled=.*$/Enabled=false/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
@@ -127,7 +163,18 @@ case "${MODE}" in
 	sed -i "s/Flashair.*$/Flashair (disconnected)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks" 
 	;;
 
+	# -----------------------------
+	#  media files download
+	# -----------------------------
 	"download")
+
+	# if needed, ask confirmation
+	TEXT="${NBR_ITEM} files will be downloaded from your Flashair card\n\nDo you want to continue ?"
+	[ "${FLASHAIR_CONFIRM}" = "true" ] && { zenity --question --title "Download" --text "${TEXT}"; CONFIRMED=$?; }
+
+	# if download canceled, empty array of items
+	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
+
 	# loop to analyse items
 	for ITEM in "${ARR_ITEM[@]}"
 	do
@@ -163,12 +210,41 @@ case "${MODE}" in
 	done
 	;;
 
+	# -----------------------------
+	#  media files upload
+	# -----------------------------
+	"upload")
+
+	# if needed, ask confirmation
+	TEXT="${NBR_ITEM} files will be uploaded to your Flashair card\n\nDo you want to continue ?"
+	[ "${FLASHAIR_CONFIRM}" = "true" ] && { zenity --question --title "Upload" --text "${TEXT}"; CONFIRMED=$?; }
+
+	# if upload canceled, empty array of items
+	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
+	;;
+
+	# -----------------------------
+	#  media files delete
+	# -----------------------------
+	"delete")
+
+	# if needed, ask confirmation
+	TEXT="${NBR_ITEM} files will be deleted from your Flashair card\n\nDo you want to continue ?"
+	[ "${FLASHAIR_CONFIRM}" = "true" ] && { zenity --question --title "Delete" --text "${TEXT}"; CONFIRMED=$?; }
+
+	# if deleted canceled, empty array of items
+	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
+	;;
+
 	*)
 	;;
 esac
 
 # ------------------------------------------
-#  loop thru files/directories
+#  Step 2
+#
+#  Action on files / directories
+#
 # ------------------------------------------
 
 for ITEM in "${ARR_ITEM[@]}"
@@ -190,6 +266,7 @@ do
 
 	# retrieve directory content from flashair card
 	curl "http://flashair/command.cgi?op=100&DIR=${CARD_ITEM_PATH}" | tail -n +2 > "${ITEM_FILELIST}"
+	chmod 666 "${ITEM_FILELIST}"
 
 	# loop thru directory content
 	while read LINE;
