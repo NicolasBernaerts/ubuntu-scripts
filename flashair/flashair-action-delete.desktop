@@ -11,7 +11,7 @@ Profiles=delete_file;
 [X-Action-Profile delete_file]
 Exec=flashair-command --delete %F
 MimeTypes=all/allfiles;
-Enabled=true
+Enabled=false
 Folders=/media/flashair;
 Name=Delete
 Name[fr]=Supprimer
