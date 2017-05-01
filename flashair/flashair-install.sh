@@ -18,12 +18,14 @@ sudo apt install inotify-tools imagemagick curl
 sudo wget -O /etc/flashair.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair.conf
 
 # download icons
-sudo wget -O /usr/share/icons/flashair-generic.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-generic.jpg
+sudo wget -O /usr/share/icons/flashair-icon.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-icon.png
 sudo wget -O /usr/share/icons/flashair-download.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-download.png
 sudo wget -O /usr/share/icons/flashair-upload.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-upload.png
 sudo wget -O /usr/share/icons/flashair-delete.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-delete.png
-sudo wget -O /usr/share/icons/flashair-status-available.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-status-available.png
-sudo wget -O /usr/share/icons/flashair-status-download.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-status-download.png
+sudo wget -O /usr/share/icons/flashair-size.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-size.png
+sudo wget -O /usr/share/icons/flashair-type-generic.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-type-generic.jpg
+sudo wget -O /usr/share/icons/flashair-type-photo.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-type-photo.jpg
+sudo wget -O /usr/share/icons/flashair-type-video.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-type-video.jpg
 
 # download main scripts
 sudo wget -O /usr/local/sbin/flashair-daemon https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-daemon
