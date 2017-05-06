@@ -23,9 +23,10 @@ sudo apt-get -y install tesseract-ocr-fra aspell-fr
 sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
 
 # PDF editor
-wget --header='Accept-Encoding:none' http://get.code-industry.net/public/master-pdf-editor-3.7.02_${ARCHI}.deb
-sudo gdebi --n master-pdf-editor-3.7.02_${ARCHI}.deb
-rm master-pdf-editor-3.7.02_${ARCHI}.deb
+PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.deb" | cut -d'"' -f2)
+wget -O master-pdf-editor.deb --header='Accept-Encoding:none' "${PACKAGE}"
+sudo gdebi --n master-pdf-editor.deb
+rm master-pdf-editor.deb
 
 # declare file association 
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
