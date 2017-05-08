@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Icon=pdf-rotate-left
+Name[C]=Rotate 90° left
+Tooltip[C]=Rotate 90° left
+MimeType=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
+Capabilities=Writable
+Profiles=rotate;
+  
+[X-Action-Profile rotate]
+Exec=pdf-rotate --left %F
