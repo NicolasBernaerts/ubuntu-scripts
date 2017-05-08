@@ -47,6 +47,11 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 . ./generate-booklet-install.sh
 rm generate-booklet-install.sh
 
+# PDF rotation extension
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-install.sh
+. ./pdf-rotate-install.sh
+rm pdf-rotate-install.sh
+
 # PDF document generation from multiple files
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
 . ./pdf-generate-install.sh
