@@ -27,7 +27,7 @@ then
 	echo "Parameters are :"
 	echo "  --right                Rotate 90 right"
 	echo "  --left                 Rotate 90 left"
-	echo "  --reverse              Rotate 180 (upside down)"
+	echo "  --up-down              Rotate 180 (upside down)"
 	echo "  <file1> <file2> ...    Files to handle"
 	exit 1
 fi
@@ -38,7 +38,7 @@ do
 	case "$1" in
 	"--right") COMMAND_TOOL="pdf270"; shift; ;;
 	"--left") COMMAND_TOOL="pdf90"; shift; ;;
-	"--reverse") COMMAND_TOOL="pdf180"; shift; ;;
+	"--up-down") COMMAND_TOOL="pdf180"; shift; ;;
 	*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
 	esac
 done
