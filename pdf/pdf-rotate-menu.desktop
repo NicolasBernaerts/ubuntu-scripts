@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Menu
+Icon=pdf-menu
+Name[C]=Change PDF ...
+Tooltip[C]=Tools to modify PDF files
+ItemsList=pdf-rotate-left-action;pdf-rotate-right-action;pdf-rotate-updown-action;
