@@ -1,0 +1,69 @@
+#!/bin/bash
+# --------------------------------------------
+#  Rotate a list of PDF documents
+#
+#  Depends on texlive-extra-utils package
+#
+#  Revision history :
+#   05/05/2017, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# -------------------------------------------------------
+# check tools availability
+# -------------------------------------------------------
+
+command -v pdf90 >/dev/null 2>&1 || { zenity --error --text="Please install pdf90 [texlive-extra-utils]"; exit 1; }
+command -v pdf180 >/dev/null 2>&1 || { zenity --error --text="Please install pdf180 [texlive-extra-utils]"; exit 1; }
+command -v pdf270 >/dev/null 2>&1 || { zenity --error --text="Please install pdf270 [texlive-extra-utils]"; exit 1; }
+
+# -------------------------------------------------------
+# handle arguments
+# -------------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+	echo "Tool to rotate PDF files"
+	echo "Parameters are :"
+	echo "  --right                Rotate 90 right"
+	echo "  --left                 Rotate 90 left"
+	echo "  --reverse              Rotate 180 (upside down)"
+	echo "  <file1> <file2> ...    Files to handle"
+	exit 1
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+	case "$1" in
+	"--right") COMMAND_TOOL="pdf270"; shift; ;;
+	"--left") COMMAND_TOOL="pdf90"; shift; ;;
+	"--reverse") COMMAND_TOOL="pdf180"; shift; ;;
+	*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
+	esac
+done
+
+# check rotation is selected
+[ "${COMMAND_TOOL}" = "" ] && { zenity --error --text="Please select rotation parameter"; exit 1; }
+
+# -------------------------------------
+# loop thru PDF files to convert them
+# -------------------------------------
+
+# create temporary directory
+TMP_DIR=$(mktemp --directory --tmpdir)
+
+echo "${TMP_DIR}"
+
+# loop thru files 
+for FILE in "${ARR_FILE[@]}"
+do
+	# convert file to temporary directory
+	${COMMAND_TOOL} "${FILE}" --outfile "${TMP_DIR}"
+
+	# replace original file
+	mv --force ${TMP_DIR}/*-rotated* "${FILE}"
+done
+
+# remove temporary directory
+rm --recursive "${TMP_DIR}"
