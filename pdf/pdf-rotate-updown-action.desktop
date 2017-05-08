@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Icon=pdf-rotate-updown
+Name[C]=Rotate 180°
+Tooltip[C]=Rotate 180°
+MimeType=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
+Capabilities=Writable
+Profiles=rotate;
+  
+[X-Action-Profile rotate]
+Exec=pdf-rotate --up-down %F
