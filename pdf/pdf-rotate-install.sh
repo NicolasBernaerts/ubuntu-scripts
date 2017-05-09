@@ -12,9 +12,9 @@ gsettings set org.gnome.desktop.interface menus-have-icons true
 
 # install icons
 sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/pdf-menu.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-menu.png
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/pdf-rotate-left.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-rotate-left.png
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/pdf-rotate-right.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-rotate-right.png
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/pdf-rotate-updown.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-rotate-updown.png
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/rotate-left.png https://github.com/NicolasBernaerts/icon/raw/master/rotate-left.png
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/rotate-right.png https://github.com/NicolasBernaerts/icon/raw/master/rotate-right.png
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/revert-updown.png https://github.com/NicolasBernaerts/icon/raw/master/revert-updown.png
 
 # main script installation
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/pdf-rotate https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate
