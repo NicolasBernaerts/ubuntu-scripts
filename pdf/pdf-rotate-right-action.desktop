@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Action
-Icon=pdf-rotate-right
+Icon=rotate-right
 Name[C]=Rotate 90° right
 Tooltip[C]=Rotate 90° right
 MimeType=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
