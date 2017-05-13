@@ -44,8 +44,7 @@ done
 ACTION_SCRIPT="/usr/local/bin/nautilus-newfile-action"
 
 # configuration directory and file
-CONF_DIR="$HOME/.config/nautilus-actions"
-CONF_FILE="${CONF_DIR}/newfile.ini"
+CONF_FILE="$HOME/.config/nautilus-actions/nautilus-newfile.ini"
 
 # desktop action files directory
 ACTION_DIR="$HOME/.local/share/file-manager/actions"
