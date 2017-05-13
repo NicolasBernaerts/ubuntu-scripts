@@ -59,7 +59,7 @@ ARR_SECTION=( $(INI_List_Sections "${CONF_INI}") )
 # ---------------------------------------------------
 
 # remove all previous action desktop files
-rm -f ${ACTION_DIR}/new-file-*.desktop
+rm -f ${ACTION_DIR}/newfile-*.desktop
 
 # ---------------------------------------------------
 #  Installation
@@ -75,11 +75,11 @@ then
 	# ------------------------------
 
 	# set action desktop file name
-	FILE_DESKTOP="${ACTION_DIR}/new-file-menu.desktop"
+	FILE_DESKTOP="${ACTION_DIR}/newfile-menu.desktop"
 
 	# generate items list
-	ITEM_LIST=$(echo "${ARR_SECTION[@]}" | sed "s/ /;new-file-/g")
-	ITEM_LIST="new-file-${ITEM_LIST};"
+	ITEM_LIST=$(echo "${ARR_SECTION[@]}" | sed "s/ /;newfile-/g")
+	ITEM_LIST="newfile-${ITEM_LIST};"
 
 	# write [Desktop Entry] section
 	echo "[Desktop Entry]" > "${TMP_FILE}"
@@ -104,7 +104,7 @@ then
 		ICON=$(INI_Read_Key "${CONF_INI}" "${SECTION}" icon)
 
 		# set action desktop file name
-		FILE_DESKTOP="${ACTION_DIR}/new-file-${SECTION}.desktop"
+		FILE_DESKTOP="${ACTION_DIR}/newfile-${SECTION}.desktop"
   
 		# write [Desktop Entry] section
 		echo "[Desktop Entry]" > "${TMP_FILE}"
