@@ -23,7 +23,7 @@ sudo chmod +x /usr/local/bin/nautilus-newfile-declare
 sudo chmod +x /usr/local/bin/nautilus-newfile-action
 
 # install .ini configuration file
-wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/newfile.ini" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/newfile/newfile.ini
+wget --header='Accept-Encoding:none' -O "$HOME/.config/nautilus-actions/nautilus-newfile.ini" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile.ini
 
 # install empty docuemnt models
 mkdir --parents $HOME/.config/nautilus-actions/newfile
