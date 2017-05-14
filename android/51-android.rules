@@ -21,6 +21,8 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="0489", MODE="0666", GROUP="plugdev"
 SUBSYSTEM=="usb", ATTR{idVendor}=="04c5", MODE="0666", GROUP="plugdev"
 # Garmin-Asus
 SUBSYSTEM=="usb", ATTR{idVendor}=="091e", MODE="0666", GROUP="plugdev"
+# Genesys
+SUBSYSTEM=="usb", ATTR{idVendor}=="d324", MODE="0666", GROUP="plugdev"
 # Google
 SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666", GROUP="plugdev"
 # Haier
