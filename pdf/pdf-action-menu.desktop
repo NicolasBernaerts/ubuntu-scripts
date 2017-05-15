@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Menu
-Icon=pdf-menu
-Name[C]=Act on PDF ...
-Tooltip[C]=Tools to generate misc actions on PDF files
-ItemsList=pdf-rotate-left-action;pdf-rotate-right-action;pdf-rotate-updown-action;pdf-generate-action;
