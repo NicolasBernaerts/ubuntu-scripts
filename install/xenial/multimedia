@@ -41,6 +41,11 @@ sudo apt-get -y install handbrake
 # kdenlive video editor
 sudo apt-get -y install kdenlive
 
+# vidcutter
+sudo add-apt-repository -y ppa:ozmartian/apps
+sudo apt-get update
+sudo apt-get -y install vidcutter
+
 # audio recorder
 sudo add-apt-repository -y ppa:audio-recorder/ppa
 sudo apt-get update
