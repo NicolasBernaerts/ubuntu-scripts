@@ -23,7 +23,7 @@ sudo chmod +x /usr/local/bin/pdf-rotate
 
 # nautilus action integration
 sudo mkdir --parents /usr/share/file-manager/actions
-sudo wget --header='Accept-Encoding:none' -O /usr/share/file-manager/actions/pdf-action-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-action-menu.desktop
+sudo wget --header='Accept-Encoding:none' -O /usr/share/file-manager/actions/pdf-rotate-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-menu.desktop
 sudo wget --header='Accept-Encoding:none' -O /usr/share/file-manager/actions/pdf-rotate-left-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-left-action.desktop
 sudo wget --header='Accept-Encoding:none' -O /usr/share/file-manager/actions/pdf-rotate-right-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-right-action.desktop
 sudo wget --header='Accept-Encoding:none' -O /usr/share/file-manager/actions/pdf-rotate-updown-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-updown-action.desktop
