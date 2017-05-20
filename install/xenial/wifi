@@ -3,6 +3,7 @@
 # Script to tweak wifi cards
 #
 # 07/05/2015, V1.0 - Migrated from Trusty
+# 17/05/2017, V1.1 - Change RTL8821AE support with driver compilation
 # -------------------------------------------------------
 
 # Intel Centrino N 6235
