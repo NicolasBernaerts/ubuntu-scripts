@@ -2,7 +2,7 @@
 # -------------------------------------------------------
 #  Command line script to handle Firefox and Thunderbird extensions
 #  Manage installation and uninstallation
-#  Handle global and per-user extensions
+#  Handle system and per-user extensions
 #  
 #  Depends on unzip and wget
 #
@@ -12,15 +12,16 @@
 #    --install : install extension
 #    --remove  : remove extension
 #    --user    : extension as per-user
-#    --global  : extension global to system
+#    --system  : extension system to system
 #    https://addons.mozilla.org/... : URL of extension
 #
 #  26/03/2013, V1.0 - Creation by N. Bernaerts
 #  08/11/2015, V2.0 - Complete rewrite
 #                     Add install/remove
-#                     Add global/per-user
+#                     Add system/per-user
 #  28/12/2016, V2.1 - Add Fedora compatibility thanks to Cedric Brandenbourger
 #  07/02/2017  V2.2 - Remove zenity, as running zenity under root with wayland/mir is not working
+#  17/05/2017  V2.3 - Rewrite, add path parameters, read UID and name in different ways
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -38,187 +39,225 @@ command -v wget >/dev/null 2>&1 || { echo "Please install wget"; exit 1; }
 URL_FIREFOX="https://addons.mozilla.org/firefox/"
 URL_THUNDER="https://addons.mozilla.org/thunderbird/"
 
-# installation path for user extensions
-PATH_USER_FIREFOX="$HOME/.mozilla/firefox"
-PATH_USER_THUNDER="$HOME/.thunderbird"
-
-# ------------------------------------------------------
-#   Set installation path according to distribution
-# ------------------------------------------------------
-
-# detect architecture
-ARCHITECTURE=$(arch)
-
-# set installation path for debian based distribution (Debian, Ubuntu, ...)
-if [ -f /etc/debian_version ]
-then
-  PATH_GLOBAL_FIREFOX="/usr/lib/firefox-addons/extensions"
-  PATH_GLOBAL_THUNDER="/usr/lib/thunderbird-addons/extensions"
-
-# else, set for Fedora 64
-elif [ "${ARCHITECTURE}" = "x86_64" ]
-then
-  PATH_GLOBAL_FIREFOX="/usr/lib64/firefox/extensions"
-  PATH_GLOBAL_THUNDER="/usr/lib64/thunderbird/extensions"
-  
-# else set for Fedora 32 
-else
-  PATH_GLOBAL_FIREFOX="/usr/lib/firefox/extensions"
-  PATH_GLOBAL_THUNDER="/usr/lib/thunderbird/extensions"
-fi
-
 # -------------------------------------------------------
 #   Default values
 # -------------------------------------------------------
 
-# extension family (firefox or thunder)
-EXT_FAMILY=""
-
 # extension .xpi URL
 EXT_URL=""
-
-# extension installation path
 EXT_PATH=""
-
-# extension type (global or per user)
+EXT_ACTION=""
 EXT_TYPE="user"
-
-# action to be performed (install or remove)
-EXT_ACTION="install"
 
 # -------------------------------------------------------
 #   Parameters
 # -------------------------------------------------------
 
-for PARAM in "$@"
-do
-  # action according to parameter
-  case "${PARAM}" in
-    "--user")    EXT_TYPE="user" ;;
-    "--global")  EXT_TYPE="global" ;;
-    "--install") EXT_ACTION="install" ;;
-    "--remove")  EXT_ACTION="remove" ;;
-    *)
-      # get extension URL
-      EXT_URL="${PARAM}"
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+	echo "Tool to install or remove mozilla firefox or thunderbird extensions"
+	echo "Extensions can be installed in user mode or system mode (needs sudo)"
+	echo "Parameters are :"
+	echo "  --install         Install new extension"
+	echo "  --remove          Remove installed extension"
+	echo "  --user            Install/remove in user space (under $HOME) [default]"
+	echo "  --system          Install/remove in system space (under /usr)"
+	echo "  --path <path>     Force extension installation path"
+	echo "  <url>             URL of .xpi extension file (download button from mozilla extension site)"
+	exit 1
+fi
 
-      # determine if we are dealing with firefox extension
-      RESULT=$(echo "${PARAM}" | grep "${URL_FIREFOX}")
-      [ "${RESULT}" != "" ] && EXT_FAMILY="firefox"  
-  
-      # determine if we are dealing with thunderbird extension
-      RESULT=$(echo "${PARAM}" | grep "${URL_THUNDER}")
-      [ "${RESULT}" != "" ] && EXT_FAMILY="thunder"
-      ;;
+# loop to retrieve arguments
+while test $# -gt 0
+do
+  case "$1" in
+    "--user")    EXT_TYPE="user"; shift; ;;
+    "--system")  EXT_TYPE="system"; shift; ;;
+    "--install") EXT_ACTION="install"; shift; ;;
+    "--remove")  EXT_ACTION="remove"; shift; ;;
+    "--path")    shift; EXT_PATH="$1"; shift; ;;
+    *)           EXT_URL="$1"; shift; ;;
   esac
 done
 
-# -------------------------------------------------------
-#   Product family
-# -------------------------------------------------------
+# check installation mode
+[ "${EXT_ACTION}" = "" ] && { echo "[error] You must specify the action mode --install or --remove"; exit 1; }
 
-# firefox extension 
-if [ "${EXT_FAMILY}" = "firefox" ]
-then
-  PATH_GLOBAL="${PATH_GLOBAL_FIREFOX}"
-  PATH_USER="${PATH_USER_FIREFOX}"
+# check installation mode
+[ "${EXT_URL}" = "" ] && { echo "[error] You must specify the extension URL"; exit 1; }
 
-# thunderbird extension
-elif [ "${EXT_FAMILY}" = "thunder" ]
+# --------------------
+#   Extension family
+# --------------------
+
+# determine if we are dealing with firefox or thunderbird extension
+IS_FIREFOX=$(echo "${EXT_URL}" | grep "${URL_FIREFOX}")
+IS_THUNDERBIRD=$(echo "${EXT_URL}" | grep "${URL_THUNDER}")
+[ "${IS_FIREFOX}" != "" ] && EXT_FAMILY="firefox"  
+[ "${IS_THUNDERBIRD}" != "" ] && EXT_FAMILY="thunder"
+
+# set user profile path or exit if it doesn't exist
+[ "${EXT_FAMILY}" = "" ] && { echo "[error] URL ${EXT_URL} is not a recognised Firefox or Thunderbird extension"; exit 1; }
+
+# --------------------------
+#   Installation path
+# --------------------------
+
+# if installation in user mode
+if [ "${EXT_TYPE}" = "user" ]
 then
-  PATH_GLOBAL="${PATH_GLOBAL_THUNDER}"
-  PATH_USER="${PATH_USER_THUNDER}"
+  # set user space installation path
+  [ "${EXT_FAMILY}" = "firefox" ] && PATH_USER="$HOME/.mozilla/firefox" || PATH_USER="$HOME/.thunderbird"
+
+  # get profile path
+  PROFILE_PATH=$(grep "Path=" "${PATH_USER}/profiles.ini" | head -n 1 | cut -d'=' -f2)
   
-# none, error 
-else
-  echo "Given parameter is neither a firefox nor a thunderbird extension"
-  exit 1
+  # set user profile path
+  [ "${PROFILE_PATH}" != "" ] && EXT_PATH="${PATH_USER}/${PROFILE_PATH}/extensions"
+
+  # if no profile, error message
+  [ "${EXT_PATH}" = "" ] && echo "[error] User profile doesn't exist"
+
+# else, if system installation path has not been set, analyse distribution
+elif [ "${EXT_PATH}" = "" ]
+then
+  # detect architecture
+  ARCHITECTURE=$(arch)
+
+  # if system is debian based (Debian, Ubuntu, Fedora, ...)
+  if [ -f /etc/debian_version ]
+  then
+    [ "${EXT_FAMILY}" = "firefox" ] && EXT_PATH="/usr/lib/firefox-addons/extensions" || EXT_PATH="/usr/lib/thunderbird-addons/extensions"
+
+  # else, if system is Fedora 64
+  elif [ "${ARCHITECTURE}" = "x86_64" ]
+  then
+    [ "${EXT_FAMILY}" = "firefox" ] && EXT_PATH="/usr/lib64/firefox/extensions" || EXT_PATH="/usr/lib64/thunderbird/extensions"
+  
+  # else set for Fedora 32 
+  else
+    [ "${EXT_FAMILY}" = "firefox" ] && EXT_PATH="/usr/lib/firefox/extensions" || EXT_PATH="/usr/lib/thunderbird/extensions"
+  fi
 fi
 
-# -------------------------------------------------------
-#   User or Global extension
-# -------------------------------------------------------
+# set user profile path or exit if it doesn't exist
+[ "${EXT_PATH}" = "" ] && { echo "[error] Extension installation path could not be determined"; exit 1; }
 
-# if global extension, set installation path
-if [ "${EXT_TYPE}" = "global" ]
-then
-  EXT_PATH="${PATH_GLOBAL}"
+# ------------------------
+#   Download .xpi file
+# ------------------------
 
-# else determine installation path for user extensions
-else
-  # set profile.ini path
-  PROFILE_INI="${PATH_USER}/profiles.ini"
-  
-  # get profile path
-  PROFILE_PATH=$(grep "Path=" ${PROFILE_INI} | head -n 1 | cut -d'=' -f2)
-  
-  # set user profile path or exit if it doesn't exist
-  [ "${PROFILE_PATH}" != "" ] && EXT_PATH="${PATH_USER}/${PROFILE_PATH}/extensions" || { echo "User profile doesn't exist"; exit 1; }
-fi   
-
-# -------------------------------------------------------
-#   Installation / Removal
-# -------------------------------------------------------
+# set temporary file
+ADDON_XPI=$(mktemp "addon-XXXXXXXX.xpi") && rm "${ADDON_XPI}"
 
 # download extension
-rm -f addon.xpi 
-wget -O addon.xpi "${EXT_URL}"
+wget --quiet -O "${ADDON_XPI}" "${EXT_URL}"
 
-# get extension UID from install.rdf
-EXT_UID=$(unzip -p addon.xpi install.rdf | grep "<em:id>" | head -n 1 | sed 's/^.*>\(.*\)<.*$/\1/g')
+# ---------------------------
+#   Extract  extension UID
+# ---------------------------
 
-# if .xpi file could not be read, exit
-[ "${EXT_UID}" = "" ] && { echo "Could not retrieve extension file from server"; exit 1; }
+# get extension UID from install.rdf in original format (<em:id>extension-uid</em:id>)
+EXT_UID=$(unzip -qq -p "${ADDON_XPI}" install.rdf | grep "<em:id>" | head -n 1 | cut -d'>' -f2 | cut -d'<' -f1)
 
-# action : installation
-if [ "${EXT_ACTION}" = "install" ]
+# if extension UID not found, get it from install.rdf in new format (<RDF:Description ... em:id="{extension-uid}" ...) 
+[ "${EXT_UID}" = "" ] && EXT_UID=$(unzip -qq -p "${ADDON_XPI}" install.rdf | grep "em:id=" | head -n 1 | cut -d'{' -f2 | cut -d'}' -f1)
+
+# if extension UID not found, get it from key "id" in manifest.json ("id": "extension-uid") 
+[ "${EXT_UID}" = "" ] && EXT_UID=$(unzip -qq -p "${ADDON_XPI}" manifest.json | grep "\"id\"" | head -n 1 | cut -d'"' -f4)
+
+# if extension UID not found, get it from key "name" in manifest.json ("name": "extension name") 
+[ "${EXT_UID}" = "" ] && EXT_UID=$(unzip -qq -p "${ADDON_XPI}" manifest.json | grep "\"name\"" | head -n 1 | cut -d'"' -f4 | tr ' ' '-')
+
+# ----------------------------
+#   Extract  extension name
+# ----------------------------
+
+# get extension name from install.rdf in original format (<em:id>extension-uid</em:id>)
+EXT_NAME=$(unzip -qq -p "${ADDON_XPI}" install.rdf | grep "<em:name>" | head -n 1 | cut -d'>' -f2 | cut -d'<' -f1)
+
+# if extension name not found, get it from install.rdf in new format (<RDF:Description ... em:name="extension-name" ...) 
+[ "${EXT_NAME}" = "" ] && EXT_NAME=$(unzip -qq -p "${ADDON_XPI}" install.rdf | grep "em:name=" | head -n 1 | sed "s/^.*em:name//" | cut -d'"' -f2)
+
+# if extension name not found, get it from key "name" in manifest.json ("name": "extension name") 
+[ "${EXT_NAME}" = "" ] && EXT_NAME=$(unzip -qq -p "${ADDON_XPI}" manifest.json | grep "\"name\"" | head -n 1 | cut -d'"' -f4)
+
+# ---------------------------
+#   Installation / Removal
+# ---------------------------
+
+# if none of the method has provided the extension UID, error
+if [ "${EXT_UID}" = "" ]
+then
+    # error message
+    echo "[error] Could not retrieve extension file from server"
+
+# else if action is installation
+elif [ "${EXT_ACTION}" = "install" ]
 then
   # check if extension not already installed
-  [ -d "${EXT_PATH}/${EXT_UID}" ] && { echo "${EXT_TYPE} extension ${EXT_UID} is already installed"; exit 1; }
-
-  # installation of global extension
-  if [ "${EXT_TYPE}" = "global" ]
+  if [ -d "${EXT_PATH}/${EXT_UID}" ]
   then
-    # copy .xpi to global extension path
-    sudo cp -f addon.xpi "${EXT_PATH}/${EXT_UID}.xpi"
+    # display installation status
+    echo "[${EXT_TYPE}  mode] ${EXT_FAMILY} extension ${EXT_NAME} [${EXT_UID}] is already installed"
 
-    # extract extension to global extension path
-    sudo unzip addon.xpi -d "${EXT_PATH}/${EXT_UID}"
+  # else, if installation of system extension
+  elif [ "${EXT_TYPE}" = "system" ]
+  then
+    # copy .xpi to system extension path
+    sudo cp -f "${ADDON_XPI}" "${EXT_PATH}/${EXT_UID}.xpi"
+
+    # extract extension to system extension path
+    sudo unzip -qq "${ADDON_XPI}" -d "${EXT_PATH}/${EXT_UID}"
+
+    # end message
+    echo "[${EXT_TYPE}  mode] ${EXT_FAMILY} extension ${EXT_NAME} [${EXT_UID}] installed under ${EXT_PATH}/${EXT_UID}"
 
   # else, installation of extension for current user 
   else
     # copy .xpi to user profile extension path
-    cp -f addon.xpi "${EXT_PATH}/${EXT_UID}.xpi"
+    cp -f "${ADDON_XPI}" "${EXT_PATH}/${EXT_UID}.xpi"
 
     # extract extension to user profile extension path
-    unzip addon.xpi -d "${EXT_PATH}/${EXT_UID}"
+    unzip -qq "${ADDON_XPI}" -d "${EXT_PATH}/${EXT_UID}"
+
+    # end message
+    echo "[${EXT_TYPE}  mode] ${EXT_FAMILY} extension ${EXT_NAME} [${EXT_UID}] installed under ${EXT_PATH}/${EXT_UID}"
   fi
 
-  # end message
-  echo "${EXT_TYPE} extension ${EXT_UID} installed"
-
-# action : removal
+# else, action is removal
 else
   # check if extension is installed
-  [ -d "${EXT_PATH}/${EXT_UID}" ] || { echo "${EXT_TYPE} extension ${EXT_UID} was not installed"; exit 1; }
-
-  # removal of a global extension
-  if [ "${EXT_TYPE}" = "global" ]
+  if [ ! -d "${EXT_PATH}/${EXT_UID}" ]
   then
-    # remove global extension directory
+    # error message
+    echo "[${EXT_TYPE}  mode] ${EXT_FAMILY} extension ${EXT_NAME} [${EXT_UID}] is not installed"
+
+  # else, if removal of a system extension
+  elif [ "${EXT_TYPE}" = "system" ]
+  then
+    # remove system extension directory
     sudo rm "${EXT_PATH}/${EXT_UID}.xpi"
     sudo rm -R "${EXT_PATH}/${EXT_UID}"
+
+    # end message
+    echo "[${EXT_TYPE}  mode] ${EXT_FAMILY} extension ${EXT_NAME} [${EXT_UID}] removed"
 
   # else, removal of extension for current user 
   else
     # remove user xpi file and extension directory
     rm "${EXT_PATH}/${EXT_UID}.xpi"
     rm -R "${EXT_PATH}/${EXT_UID}"
-  fi
 
-  # end message
-  echo "${EXT_TYPE} extension ${EXT_UID} removed"
+    # end message
+    echo "[${EXT_TYPE}  mode] ${EXT_FAMILY} extension ${EXT_NAME} [${EXT_UID}] removed"
+  fi
 fi
 
+# -------------
+#   Cleanup
+# -------------
+
 # remove downloaded file
-rm -f addon.xpi
+rm -f "${ADDON_XPI}"
