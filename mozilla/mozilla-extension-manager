@@ -8,13 +8,6 @@
 #
 #  Manual available at http://bernaerts.dyndns.org/linux/74-ubuntu/271-ubuntu-firefox-thunderbird-addon-commandline
 #
-#  Parameters :
-#    --install : install extension
-#    --remove  : remove extension
-#    --user    : extension as per-user
-#    --system  : extension system to system
-#    https://addons.mozilla.org/... : URL of extension
-#
 #  26/03/2013, V1.0 - Creation by N. Bernaerts
 #  08/11/2015, V2.0 - Complete rewrite
 #                     Add install/remove
