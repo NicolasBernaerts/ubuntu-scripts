@@ -21,3 +21,6 @@ mkdir -p $HOME/.config/autostart
 wget -O $HOME/.config/autostart/update-monitor-position.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position.desktop
 sed -i -e 's/^Exec=.*$/Exec=update-monitor-position 5/' $HOME/.config/autostart/update-monitor-position.desktop
 chmod +x $HOME/.config/autostart/update-monitor-position.desktop
+
+# delete monitor.xml
+rm $HOME/.config/monitors.xml
