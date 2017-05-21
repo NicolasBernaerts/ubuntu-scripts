@@ -28,4 +28,6 @@ then
   cd rtlwifi_new
   make
   sudo make install
+  cd ..
+  rm -R rtlwifi_new
 fi
