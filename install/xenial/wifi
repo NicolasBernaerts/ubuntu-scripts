@@ -21,7 +21,7 @@ HAS_RTL8821AE=$(lspci | grep "RTL8821AE")
 if [ "${HAS_RTL8821AE}" != "" ]
 then
   # install compilation environment
-  sudo apt-get install linux-headers-generic build-essential git
+  sudo apt-get install -y linux-headers-generic build-essential git
   
   # compile driver from source
   git clone http://github.com/lwfinger/rtlwifi_new.git
