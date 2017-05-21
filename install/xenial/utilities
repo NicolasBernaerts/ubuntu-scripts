@@ -48,3 +48,9 @@ sudo apt-get -y install testdisk
 wget --header='Accept-Encoding:none' http://heanet.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
 sudo gdebi --non-interactive qphotorec_1.0_all.deb
 rm qphotorec_1.0_all.deb
+
+# dual monitor setup
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
+chmod +x update-monitor-position-install.sh
+./update-monitor-position-install.sh
+rm update-monitor-position-install.sh
