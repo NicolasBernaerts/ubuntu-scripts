@@ -3,7 +3,7 @@
 # Script to tweak wifi cards
 #
 # 07/05/2015, V1.0 - Migrated from Trusty
-# 17/05/2017, V1.1 - Change RTL8821AE support with driver compilation
+# 17/05/2017, V1.1 - Change RTL8821AE and RTL8723BE support with driver compilation
 # -------------------------------------------------------
 
 # Intel Centrino N 6235
@@ -11,26 +11,30 @@
 # Solves very slow connection since kernel 3.11.10+
 echo "options iwlwifi 11n_disable=8 bt_coex_active=0" | sudo tee /etc/modprobe.d/iwlwifi-11n.conf
 
-# RTL8723be
-# Solves stability issue on HP Stream 13
-echo "options rtl8723be fwlps=0 swlps=0 ips=0 swenc=1" | sudo tee /etc/modprobe.d/rtl8723be.conf
-
-# RTL8821ae
-# Solves stability issues on Lenovo Ideapad 110
+# RTL8723be : Solves stability issue on HP Stream 13
+# RTL8821ae : Solves stability issues on Lenovo Ideapad 110
+HAS_RTL8723BE=$(lspci | grep "RTL8723BE")
 HAS_RTL8821AE=$(lspci | grep "RTL8821AE")
-if [ "${HAS_RTL8821AE}" != "" ]
+
+if [ "${HAS_RTL8723BE}" != "" -o "${HAS_RTL8821AE}" != "" ]
 then
   # install compilation environment
   sudo apt-get install -y linux-headers-generic build-essential git
   
-  # compile driver from source
+  # create temporary directory
   TMP_DIR=$(mktemp -d)
+  
+  # clone git repository
   pushd "${TMP_DIR}"
   git clone http://github.com/lwfinger/rtlwifi_new.git
+
+  # compile driver from source
   pushd rtlwifi_new
   make
   sudo make install
   popd
+  
+  # remove temporary directory
   popd
   sudo rm -R ${TMP_DIR}
 fi
