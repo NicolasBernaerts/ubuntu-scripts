@@ -24,10 +24,13 @@ then
   sudo apt-get install -y linux-headers-generic build-essential git
   
   # compile driver from source
+  TMP_DIR=$(mktemp -d)
+  pushd "${TMP_DIR}"
   git clone http://github.com/lwfinger/rtlwifi_new.git
-  cd rtlwifi_new
+  pushd rtlwifi_new
   make
   sudo make install
-  cd ..
-  rm -R rtlwifi_new
+  popd
+  popd
+  rm -R ${TMP_DIR}
 fi
