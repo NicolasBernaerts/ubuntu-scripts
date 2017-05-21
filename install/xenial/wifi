@@ -32,5 +32,5 @@ then
   sudo make install
   popd
   popd
-  rm -R ${TMP_DIR}
+  sudo rm -R ${TMP_DIR}
 fi
