@@ -114,18 +114,25 @@ case "${MODE}" in
 	FLASHAIR_BOOKMARK=$(grep "${FLASHAIR_ROOT}" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks")
 	[ "${FLASHAIR_BOOKMARK}" = "" ] && echo "file://${FLASHAIR_ROOT} Flashair (disconnected)" >> "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks" 
 
-	# get the upload status of the card
-	UPLOAD_ENABLED=$(curl "http://flashair/CONFIG" | grep "UPLOAD=1")
-
-	# update nautilus bookmark with (connected)
-	sed -i "s/Flashair.*$/Flashair (connected)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks"
-
 	# enable right click download menu
 	sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-download.desktop"
 
+	# get the upload status of the card
+	UPLOAD_ENABLED=$(curl "http://flashair/CONFIG" | grep "UPLOAD=1")
+
 	# if upload is allowed, enable right click upload and delete menus
-	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
-	[ "${UPLOAD_ENABLED}" != "" ] && sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
+	if [ "${UPLOAD_ENABLED}" != "" ]
+	then
+		# enable upload and delete actions
+		sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
+		sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
+
+		# update nautilus bookmark as (read-write)
+		sed -i "s/Flashair.*$/Flashair (read-write)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks"
+	else
+		# update nautilus bookmark as (read-only)
+		sed -i "s/Flashair.*$/Flashair (read-only)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks"
+	fi
 	;;
 
 	# -----------------------------
