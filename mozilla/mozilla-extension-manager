@@ -9,8 +9,7 @@
 #
 #  26/03/2013, V1.0 - Creation by N. Bernaerts
 #  08/11/2015, V2.0 - Complete rewrite
-#                     Add install/remove
-#                     Add system/per-user
+#                     Add --install, --remove, --system and --user parameters
 #  28/12/2016, V2.1 - Add Fedora compatibility thanks to Cedric Brandenbourger
 #  07/02/2017  V2.2 - Remove zenity, as running zenity under root with wayland/mir is not working
 #  17/05/2017  V2.3 - Rewrite, add path parameters, read UID and name in different ways
