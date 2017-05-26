@@ -1,19 +1,11 @@
 #!/bin/bash
 # ------------------------------------------------------------------------
 #  Command line script to handle Firefox and Thunderbird extensions
-#  Manage installation and uninstallation
-#  Handle system and per-user extensions
+#  Manage installation, upgrade and removal of system wide and user extensions
 #  
 #  Depends on unzip and wget
 #
 #  Manual available at http://bernaerts.dyndns.org/linux/74-ubuntu/271-ubuntu-firefox-thunderbird-addon-commandline
-#
-#  Parameters :
-#    --install : install extension
-#    --remove  : remove extension
-#    --user    : extension as per-user
-#    --system  : extension system to system
-#    https://addons.mozilla.org/... : URL of extension
 #
 #  26/03/2013, V1.0 - Creation by N. Bernaerts
 #  08/11/2015, V2.0 - Complete rewrite
