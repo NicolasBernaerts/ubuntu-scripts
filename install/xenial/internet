@@ -58,9 +58,3 @@ sudo apt-get update
 sudo apt-get -y install syncthing
 sudo systemctl enable syncthing@${USER}.service
 sudo systemctl start syncthing@${USER}.service
-
-# TeamViewer
-wget https://download.teamviewer.com/download/teamviewer_i386.deb
-sudo dpkg -i teamviewer_i386.deb
-sudo apt-get -y -f install
-
