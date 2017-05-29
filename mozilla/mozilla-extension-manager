@@ -288,8 +288,19 @@ then
 
 # else, action is update or installation
 else
-	# set action type according toextension existence
-	[ -d "${EXT_PATH}/${EXT_UID}" ] && EXT_ACTION="update" || EXT_ACTION="install" 
+	# if extension already installed,
+	if [ -d "${EXT_PATH}/${EXT_UID}" ]
+	then
+		# update extension
+		EXT_ACTION="update"
+		
+		# remove previous extension version
+		"${EXT_SUDO}" rm "${EXT_PATH}/${EXT_UID}.xpi"
+		"${EXT_SUDO}" rm -R "${EXT_PATH}/${EXT_UID}"
+	else
+		# install new extension
+		EXT_ACTION="install"
+	fi
 
 	# copy .xpi to system extension path
 	"${EXT_SUDO}" cp -f "${ADDON_XPI}" "${EXT_PATH}/${EXT_UID}.xpi"
