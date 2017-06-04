@@ -3,7 +3,7 @@ Type=Action
 Icon=revert-updown
 Name[C]=Rotate 180°
 Tooltip[C]=Rotate 180°
-MimeType=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
+MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
 Capabilities=Writable
 Profiles=rotate;
   
