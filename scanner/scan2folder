@@ -17,17 +17,18 @@
 #  24/01/2015, V2.1 - Check tools availability
 #  26/02/2016, V2.2 - Move config to ~/.config and add auto adjust level
 #  28/02/2016, V2.3 - Select page size and generate multi-pages PDF (thanks to Kevin McArdle idea)
+#  05/06/2017, V2.4 - Code cleanup
 # ---------------------------------------------------
 
 # check tools availability
 command -v scanimage >/dev/null 2>&1 || { zenity --error --text="Please install scanimage"; exit 1; }
-command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
 command -v mogrify >/dev/null 2>&1 || { zenity --error --text="Please install mogrify [imagemagick package]"; exit 1; }
 command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs [ghostscript package]"; exit 1; }
+command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; exit 1; }
 
 # define and check configuration file
 CONF_FILE="$HOME/.config/scan2folder.conf"
-[ -f "$CONF_FILE" ] || { zenity --error --text="Please create and configure ${CONF_FILE}"; exit 1; }
+[ -f "${CONF_FILE}" ] || { zenity --error --text="Please create and configure ${CONF_FILE}"; exit 1; }
 
 # initialize default parameters
 TMP_FILE=$(mktemp)
@@ -64,14 +65,14 @@ then
 fi
 
 # if scanner not selected, force selection. Otherwise, display scan parameters dialog
-[ "$SCAN_DEVICE" = "" ] && CHOICE=$CHOICE_DEVICE || CHOICE=$CHOICE_PARAM
+[ "${SCAN_DEVICE}" = "" ] && CHOICE=${CHOICE_DEVICE} || CHOICE=${CHOICE_PARAM}
 
 # ----------------------------------------------------
 # Main loop
 # ----------------------------------------------------
 
-while [ "$CHOICE" != "$CHOICE_EXIT" ]
-do case $CHOICE in
+while [ "${CHOICE}" != "${CHOICE_EXIT}" ]
+do case ${CHOICE} in
 
   # --------------------------------------
   # Scan pages according to parameters
@@ -86,18 +87,17 @@ do case $CHOICE in
     FILE=$(date '+Scan_%Y%b%d-%Ih%Mm%Ss')
 
     # display scan message
-    echo "# Scanning document from $SOURCE ($DPI dpi) ..."
+    echo "# Scanning document from ${SOURCE} (${DPI} dpi) ..."
 
     # detect if scan is from the glass window
-    [ $SOURCE = "Flatbed" ] && PAGE_NUMBER="--batch-count 1" || PAGE_NUMBER=""
+    [ "${SOURCE}" = "Flatbed" ] && PAGE_NUMBER="--batch-count 1" || PAGE_NUMBER=""
 
     # scan image with needed resolution
-    NUMBER=$(scanimage --device-name="$SCAN_DEVICE" --format=pnm --mode=$MODE --resolution=$DPI $PAGE_NUMBER \
-                       --batch="$DIRECTORY/$FILE-%d.pnm" --source $SOURCE 2>&1 | \
-             grep "Scanned" | sed 's/^.*page \([0-9]*\).*$/\1/g' | tail --lines=1)
+    NUMBER=$(scanimage --device-name="${SCAN_DEVICE}" --format=pnm --mode=${MODE} --resolution=${DPI} ${PAGE_NUMBER} \
+                       --batch="${DIRECTORY}/${FILE}-%d.pnm" --source ${SOURCE} 2>&1 | grep "Scanned" | sed 's/^.*page \([0-9]*\).*$/\1/g' | tail --lines=1)
 
     # display conversion message
-    echo "# Converting $NUMBER document(s) ..."
+    echo "# Converting ${NUMBER} document(s) ..."
 
     # calculate default size according to page type
     WIDTH_MM=$(echo ${LIST_PAGE} | sed 's/^.*'${PAGE}' (\([0-9]*\)x[0-9]*).*$/\1/')
@@ -106,32 +106,32 @@ do case $CHOICE in
     HEIGHT_PIX=$((10*${HEIGHT_MM}*${DPI}/254))
 
     # auto adjust levels and crop picture to target page size
-    mogrify -crop "${WIDTH_PIX}x${HEIGHT_PIX}+0+0" -auto-level "$DIRECTORY/$FILE*.pnm"
+    mogrify -crop "${WIDTH_PIX}x${HEIGHT_PIX}+0+0" -auto-level ${DIRECTORY}/${FILE}*.pnm
 
     # convert to proper format
-    mogrify -format $FORMAT -page ${PAGE} "$DIRECTORY/$FILE*.pnm"
-    rm "$DIRECTORY/$FILE"*.pnm
+    mogrify -format ${FORMAT} -page ${PAGE} ${DIRECTORY}/${FILE}*.pnm
+    rm ${DIRECTORY}/${FILE}*.pnm
  
     # if needed, merge all scanned documents in a single PDF file
     if [ "${FORMAT}" = "pdf" ]
     then
       # generate array of PDF files
-      ARR_PDF=$( ls "${DIRECTORY}/${FILE}"*.pdf )
+      ARR_PDF=$(ls ${DIRECTORY}/${FILE}*.pdf)
 
       # generate resulting PDF
-      gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=${PDF_PAGE} -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${DIRECTORY}/${FILE}.pdf" ${ARR_PDF[@]}
+      gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=${PDF_PAGE} -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${DIRECTORY}/${FILE}.pdf" "${ARR_PDF[@]}"
 
       # remove PDF single pages
-      rm ${ARR_PDF[@]}
+      rm "${ARR_PDF[@]}"
     fi
 
     # end
     echo 100 
-    ) | yad --center --width=$DLG_WIDTH --window-icon="scanner" --image="scanner" \
+    ) | yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" \
             --title "Scanning documents ..." --text="" --progress --pulsate --auto-close --no-buttons
 
     # back to parameter dialog box
-    CHOICE=$CHOICE_PARAM
+    CHOICE=${CHOICE_PARAM}
     ;;
 
   # --------------------------------------
@@ -159,7 +159,7 @@ do case $CHOICE in
     echo "default-dir=${DIRECTORY}" >> ${CONF_FILE}
 
     # back to parameter dialog box
-    CHOICE=$CHOICE_PARAM
+    CHOICE=${CHOICE_PARAM}
     ;;
 
   # --------------------------------------
@@ -169,12 +169,12 @@ do case $CHOICE in
   $CHOICE_DEVICE)
   
     # list available scanners (remove all spaces and set space as separator)
-    ( echo 0 ; scanimage -L > $TMP_FILE ; echo 100 ) | \
-      yad --center --width=$DLG_WIDTH --window-icon="scanner" --image="scanner" \
+    ( echo 0 ; scanimage -L > ${TMP_FILE} ; echo 100 ) | \
+      yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" \
           --title "Detecting scanners ..." --text="" --progress --pulsate --auto-close --no-buttons
 
     # generate scanner list
-    LIST_SCANNER=$(cat $TMP_FILE | sed 's/device..\(.*\). is a \(.*\)$/\2|\1/' | tr ' ' '_' | tr '|' ' ' | tr '\n' ' ')
+    LIST_SCANNER=$(cat ${TMP_FILE} | sed 's/device..\(.*\). is a \(.*\)$/\2|\1/' | tr ' ' '_' | tr '|' ' ' | tr '\n' ' ')
 
     # display scanner selection dialog
     TITLE="Scanner selection"
@@ -184,28 +184,28 @@ do case $CHOICE in
                     --list --column="Scanner" --column="Device" --hide-column=2 $LIST_SCANNER)
 
     # if needed, update current scanner
-    if [ "$SELECTION" != "" ]
+    if [ "${SELECTION}" != "" ]
     then
       # retrieve selected scanner
-      SCAN_NAME=$(echo $SELECTION | cut -d'|' -f1 | tr '_' ' ')
-      SCAN_DEVICE=$(echo $SELECTION | cut -d'|' -f2)
+      SCAN_NAME=$(echo "${SELECTION}" | cut -d'|' -f1 | tr '_' ' ')
+      SCAN_DEVICE=$(echo "${SELECTION}" | cut -d'|' -f2)
  
       # get scanner possibilities
-      ( echo 0 ; scanimage --help --device $SCAN_DEVICE > $TMP_FILE ; echo 100 ) | \
-        yad --center --width=$DLG_WIDTH --window-icon="scanner" --image="scanner" \
+      ( echo 0 ; scanimage --help --device ${SCAN_DEVICE} > ${TMP_FILE} ; echo 100 ) | \
+        yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" \
             --title "Retrieving scanner parameters ..." --text="" --progress --pulsate --auto-close --no-buttons
 
       # retreive parameters list and default values
-      DPI=$(cat $TMP_FILE | grep "\-\-resolution" | sed 's/^.*\[\(.*\)\].*$/\1/')
-      LIST_DPI=$(cat $TMP_FILE | grep "\-\-resolution" | sed 's/^.*--resolution.\([0-9|]*\).*$/\1/' | sed 's/|/,/g')
-      MODE=$(cat $TMP_FILE | grep "\-\-mode" | sed 's/^.*\[\(.*\)\].*$/\1/')
-      LIST_MODE=$(cat $TMP_FILE | grep "\-\-mode" | sed 's/^.*--mode.\([^ ]*\).*$/\1/' | sed 's/|/,/g')
-      SOURCE=$(cat $TMP_FILE | grep "\-\-source" | sed 's/^.*\[\(.*\)\].*$/\1/')
-      LIST_SOURCE=$(cat $TMP_FILE | grep "\-\-source" | sed 's/^.*--source.\([^ ]*\).*$/\1/' | sed 's/|/,/g')
+      DPI=$(cat ${TMP_FILE} | grep "\-\-resolution" | sed 's/^.*\[\(.*\)\].*$/\1/')
+      LIST_DPI=$(cat ${TMP_FILE} | grep "\-\-resolution" | sed 's/^.*--resolution.\([0-9|]*\).*$/\1/' | sed 's/|/,/g')
+      MODE=$(cat ${TMP_FILE} | grep "\-\-mode" | sed 's/^.*\[\(.*\)\].*$/\1/')
+      LIST_MODE=$(cat ${TMP_FILE} | grep "\-\-mode" | sed 's/^.*--mode.\([^ ]*\).*$/\1/' | sed 's/|/,/g')
+      SOURCE=$(cat ${TMP_FILE} | grep "\-\-source" | sed 's/^.*\[\(.*\)\].*$/\1/')
+      LIST_SOURCE=$(cat ${TMP_FILE} | grep "\-\-source" | sed 's/^.*--source.\([^ ]*\).*$/\1/' | sed 's/|/,/g')
     fi
 
     # back to parameter dialog box
-    CHOICE=$CHOICE_PARAM
+    CHOICE=${CHOICE_PARAM}
     ;;
 
   # --------------------------------------
@@ -233,8 +233,8 @@ do case $CHOICE in
     # Scan parameter selection dialog
     TITLE="Scanning parameters"
     TEXT="Select parameters for the scan job :"
-    SELECTION=$(yad --center --width=$DLG_WIDTH --window-icon="scanner" --image="scanner" --title="$TITLE" --text="$TEXT" \
-                   --button="Device:$CHOICE_DEVICE" --button="Save:$CHOICE_SAVE" --button="Close:$CHOICE_EXIT" --button="Scan:$CHOICE_SCAN" \
+    SELECTION=$(yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" --title="${TITLE}" --text="${TEXT}" \
+                   --button="Device:${CHOICE_DEVICE}" --button="Save:${CHOICE_SAVE}" --button="Close:${CHOICE_EXIT}" --button="Scan:${CHOICE_SCAN}" \
                    --form --item-separator="," \
                    --field="Scanner:RO" "${SCAN_NAME}" --field="Resolution:CB" "${DLG_DPI}" --field="Mode:CB" "${DLG_MODE}" \
                    --field="Source:CB" "${DLG_SOURCE}" --field="Format:CB" "${DLG_FORMAT}" --field="Page size:CB" "${DLG_PAGE}" \
@@ -242,7 +242,7 @@ do case $CHOICE in
     CHOICE=$?
 
     # if needed, update parameters from dialog box selection
-    if [ "$SELECTION" != "" ]
+    if [ "${SELECTION}" != "" ]
     then
       DPI=$(echo ${SELECTION} | cut -d"|" -f2)
       MODE=$(echo ${SELECTION} | cut -d"|" -f3)
@@ -258,10 +258,10 @@ do case $CHOICE in
   # --------------------------------------
   *)
     # by default, exit
-    CHOICE=$CHOICE_EXIT
+    CHOICE=${CHOICE_EXIT}
     ;;
   esac
 done
 
 # remove temporary file
-rm $TMP_FILE
+rm -f ${TMP_FILE}
