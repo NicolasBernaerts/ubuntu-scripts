@@ -1,18 +1,16 @@
 #!/bin/bash
 # ----------------------------------------------
-# Scan to Folder utility
-# for network scanner managed by Sane
-# tested on HP AIO printer/scanner
+# Utility to Scan documents from HP AIO printer/scanner
+#  straight to a folder
 #
 # Depends on :
 #  * scanimage
-#  * yad
 #  * imagemagick (for mogrify)
 #  * ghostscript (for gs)
+#  * yad
 #
 # Revision history :
 #  08/02/2013, V1.0 - Creation by N. Bernaerts
-#  26/05/2014, V1.1 - Replace yad with zenity
 #  27/09/2014, V2.0 - Rework & multi scanner support
 #  24/01/2015, V2.1 - Check tools availability
 #  26/02/2016, V2.2 - Move config to ~/.config and add auto adjust level
@@ -77,7 +75,7 @@ do case ${CHOICE} in
   # --------------------------------------
   # Scan pages according to parameters
   # --------------------------------------
-  $CHOICE_SCAN)
+  ${CHOICE_SCAN})
   
     (
     # beginning
@@ -138,7 +136,7 @@ do case ${CHOICE} in
   # Save actual parameters as default
   # --------------------------------------
   
-  $CHOICE_SAVE)
+  ${CHOICE_SAVE})
 
     # save configuration
     echo "[scanner]" > ${CONF_FILE}
@@ -166,7 +164,7 @@ do case ${CHOICE} in
   # Select scanner to use
   # --------------------------------------
   
-  $CHOICE_DEVICE)
+  ${CHOICE_DEVICE})
   
     # list available scanners (remove all spaces and set space as separator)
     ( echo 0 ; scanimage -L > ${TMP_FILE} ; echo 100 ) | \
@@ -212,7 +210,7 @@ do case ${CHOICE} in
   # Select scan parameters
   # --------------------------------------
   
-  $CHOICE_PARAM)
+  ${CHOICE_PARAM})
   
     # prepare dialog box lists combo lists
     # -> remove default choice and add it on top of the list
