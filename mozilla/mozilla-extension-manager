@@ -151,12 +151,12 @@ done
 if [ "${EXT_FAMILY}" = "" -a "${EXT_URL}" != "" ]
 then
 	# determine if we are dealing with a firefox extension
-	IS_FIREFOX=$(echo "${EXT_URL}" | grep "https://addons.mozilla.org/firefox/")
+	IS_FIREFOX=$(echo "${EXT_URL}" | grep "/firefox")
 	[ "${IS_FIREFOX}" != "" ] && EXT_FAMILY="firefox"  
 
 	# determine if we are dealing with a thunderbird extension
-	IS_THUNDERBIRD=$(echo "${EXT_URL}" | grep "https://addons.mozilla.org/thunderbird/")
-	[ "${IS_THUNDERBIRD}" != "" ] && EXT_FAMILY="thunder"
+	IS_THUNDERBIRD=$(echo "${EXT_URL}" | grep "/thunderbird")
+	[ "${IS_THUNDERBIRD}" != "" ] && EXT_FAMILY="thunderbird"
 fi
 
 # check extension family is defined
