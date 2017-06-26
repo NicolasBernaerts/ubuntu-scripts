@@ -219,8 +219,13 @@ ADDON_XPI=$(mktemp "addon-XXXXXXXX.xpi") && rm "${ADDON_XPI}"
 # if list of extensions
 if [ "${EXT_URL}" != "" ]
 then
-	# download extension
-	wget --quiet -O "${ADDON_XPI}" "${EXT_URL}"
+	# download extension if not local (file:///)
+	if [[ "${EXT_URL}" =~ ^file:///.* ]]
+	then
+		cp "${EXT_URL#file://}" "${ADDON_XPI}"
+	else
+		wget --quiet -O "${ADDON_XPI}" "${EXT_URL}"
+	fi
 
 	# extract extension UID
 	EXT_UID=$(GetUID "${ADDON_XPI}")
