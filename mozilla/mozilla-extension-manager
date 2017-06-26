@@ -274,7 +274,7 @@ then
 elif [ "${EXT_ACTION}" = "remove" ]
 then
 	# remove system extension directory
-	"${EXT_SUDO}" rm "${EXT_PATH}/${EXT_UID}.xpi"
+	"${EXT_SUDO}" rm "${EXT_PATH}/../${EXT_UID}.xpi"
 	"${EXT_SUDO}" rm -R "${EXT_PATH}/${EXT_UID}"
 
 	# end message
@@ -295,7 +295,7 @@ else
 		EXT_ACTION="update"
 		
 		# remove previous extension version
-		"${EXT_SUDO}" rm "${EXT_PATH}/${EXT_UID}.xpi"
+		"${EXT_SUDO}" rm "${EXT_PATH}/../${EXT_UID}.xpi"
 		"${EXT_SUDO}" rm -R "${EXT_PATH}/${EXT_UID}"
 	else
 		# install new extension
@@ -303,7 +303,7 @@ else
 	fi
 
 	# copy .xpi to system extension path
-	"${EXT_SUDO}" cp -f "${ADDON_XPI}" "${EXT_PATH}/${EXT_UID}.xpi"
+	"${EXT_SUDO}" cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi"
 
 	# extract extension to system extension path
 	"${EXT_SUDO}" unzip -qq "${ADDON_XPI}" -d "${EXT_PATH}/${EXT_UID}"
