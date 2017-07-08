@@ -151,12 +151,12 @@ done
 if [ "${EXT_FAMILY}" = "" -a "${EXT_URL}" != "" ]
 then
 	# determine if we are dealing with a firefox extension
-	IS_FIREFOX=$(echo "${EXT_URL}" | grep "https://addons.mozilla.org/firefox/")
+	IS_FIREFOX=$(echo "${EXT_URL}" | grep "/firefox")
 	[ "${IS_FIREFOX}" != "" ] && EXT_FAMILY="firefox"  
 
 	# determine if we are dealing with a thunderbird extension
-	IS_THUNDERBIRD=$(echo "${EXT_URL}" | grep "https://addons.mozilla.org/thunderbird/")
-	[ "${IS_THUNDERBIRD}" != "" ] && EXT_FAMILY="thunder"
+	IS_THUNDERBIRD=$(echo "${EXT_URL}" | grep "/thunderbird")
+	[ "${IS_THUNDERBIRD}" != "" ] && EXT_FAMILY="thunderbird"
 fi
 
 # check extension family is defined
@@ -219,8 +219,13 @@ ADDON_XPI=$(mktemp "addon-XXXXXXXX.xpi") && rm "${ADDON_XPI}"
 # if list of extensions
 if [ "${EXT_URL}" != "" ]
 then
-	# download extension
-	wget --quiet -O "${ADDON_XPI}" "${EXT_URL}"
+	# download extension if not local (file:///)
+	if [[ "${EXT_URL}" =~ ^file:///.* ]]
+	then
+		cp "${EXT_URL#file://}" "${ADDON_XPI}"
+	else
+		wget --quiet -O "${ADDON_XPI}" "${EXT_URL}"
+	fi
 
 	# extract extension UID
 	EXT_UID=$(GetUID "${ADDON_XPI}")
@@ -274,7 +279,7 @@ then
 elif [ "${EXT_ACTION}" = "remove" ]
 then
 	# remove system extension directory
-	"${EXT_SUDO}" rm "${EXT_PATH}/${EXT_UID}.xpi"
+	"${EXT_SUDO}" rm "${EXT_PATH}/../${EXT_UID}.xpi"
 	"${EXT_SUDO}" rm -R "${EXT_PATH}/${EXT_UID}"
 
 	# end message
@@ -295,7 +300,7 @@ else
 		EXT_ACTION="update"
 		
 		# remove previous extension version
-		"${EXT_SUDO}" rm "${EXT_PATH}/${EXT_UID}.xpi"
+		"${EXT_SUDO}" rm "${EXT_PATH}/../${EXT_UID}.xpi"
 		"${EXT_SUDO}" rm -R "${EXT_PATH}/${EXT_UID}"
 	else
 		# install new extension
@@ -303,7 +308,7 @@ else
 	fi
 
 	# copy .xpi to system extension path
-	"${EXT_SUDO}" cp -f "${ADDON_XPI}" "${EXT_PATH}/${EXT_UID}.xpi"
+	"${EXT_SUDO}" cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi"
 
 	# extract extension to system extension path
 	"${EXT_SUDO}" unzip -qq "${ADDON_XPI}" -d "${EXT_PATH}/${EXT_UID}"
