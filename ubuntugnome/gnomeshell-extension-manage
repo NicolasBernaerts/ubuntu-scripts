@@ -16,6 +16,7 @@
 # -------------------------------------------
 
 # check tools availability
+command -v gnome-shell >/dev/null 2>&1 || { zenity --error --text="Please install gnome-shell"; exit 1; }
 command -v unzip >/dev/null 2>&1 || { zenity --error --text="Please install unzip"; exit 1; }
 command -v wget >/dev/null 2>&1 || { zenity --error --text="Please install wget"; exit 1; }
 
