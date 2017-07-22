@@ -3,5 +3,5 @@
 
 # Redeclare Nautilis GoPro patch when APT's cache is updated (i.e. apt update)
 DPkg::Post-Invoke-Success { 
-  "/opt/libgphoto2/nautilus-xenial-gopro --declare"; 
+  "/opt/libgphoto2/nautilus-xenial-gopro --verify"; 
 };
