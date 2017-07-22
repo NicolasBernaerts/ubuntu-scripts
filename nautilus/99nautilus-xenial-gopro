@@ -1,0 +1,7 @@
+## This file is provided by nautilus-xenial-gopro
+## to re-declare the patch after apt upgrade
+
+# Redeclare Nautilis GoPro patch when APT's cache is updated (i.e. apt update)
+DPkg::Post-Invoke-Success { 
+  "/opt/libgphoto2/nautilus-xenial-gopro --declare"; 
+};
