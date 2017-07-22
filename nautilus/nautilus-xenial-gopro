@@ -25,18 +25,18 @@ do
   case "$1" in
     "--install") MODE="install"; shift; ;;
     "--remove") MODE="remove"; shift; ;;
-    "--check") MODE="check"; shift; ;;
+    "--declare") MODE="declare"; shift; ;;
     *) shift; ;;
   esac
 done
 
 # check --update or --cleanup mode
-[ "${MODE}" = "" ] && { echo "Please use --install, --update or --remove mode"; exit 1; }
+[ "${MODE}" = "" ] && { echo "Please use --install, --remove or --declare mode"; exit 1; }
 
 case "${MODE}" in
 
   # ---------------------------
-  #  Install mode
+  #   Installation mode
   # ---------------------------
   "install") 
 	
@@ -63,10 +63,10 @@ case "${MODE}" in
     ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
     ;;
 
-    # ---------------------------
-    #  Removal mode
-    # ---------------------------
-    "remove")
+  # ---------------------------
+  #   Removal mode
+  # ---------------------------
+  "remove")
 	
     # remove targeted files and directories 
     rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
@@ -82,10 +82,10 @@ case "${MODE}" in
     rm -R /opt/libgphoto2
     ;;
 
-    # ---------------------------
-    #  Configuration check mode
-    # ---------------------------
-    "check")
+  # ---------------------------
+  #   Redeclaration mode
+  # ---------------------------
+  "declare")
 	
     # if links to new libgphoto2-port12 is not present
     if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 ]
@@ -114,7 +114,7 @@ case "${MODE}" in
     fi
     ;;
 
-    *)
+  *)
     ;;
 
 esac
