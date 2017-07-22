@@ -65,7 +65,7 @@ case "${MODE}" in
 	service udev restart
 	;;
 
-	"--remove")
+	"remove")
 	# remove targeted files and directories 
 	rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
 	rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
