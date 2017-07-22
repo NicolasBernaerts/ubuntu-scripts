@@ -123,7 +123,13 @@ case "${MODE}" in
 		ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
 		ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
 		ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
-	fi		
+	fi
+	
+	# update hardware database
+	udevadm hwdb --update
+
+	# restart udev service
+	service udev restart
 	;;
 
 	*)
