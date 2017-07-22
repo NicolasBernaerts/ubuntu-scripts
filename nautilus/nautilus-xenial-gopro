@@ -50,23 +50,17 @@ case "${MODE}" in
 	# unpack and declare libgphoto2-port12
 	wget -O /tmp/libgphoto2-port12.deb http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-port12_2.5.10-3_amd64.deb
 	dpkg --fsys-tarfile /tmp/libgphoto2-port12.deb | sudo tar xf - -C /opt/libgphoto2
+	rm /tmp/libgphoto2-port12.deb
 	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
 	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-	rm /tmp/libgphoto2-port12.deb
 
 	# unpack and declare libgphoto2
 	wget -O /tmp/libgphoto2.deb http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-6_2.5.10-3_amd64.deb
 	dpkg --fsys-tarfile /tmp/libgphoto2.deb | sudo tar xf - -C /opt/libgphoto2
+	rm /tmp/libgphoto2.deb
 	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
 	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
 	ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
-	rm /tmp/libgphoto2.deb
-
-	# update hardware database
-	udevadm hwdb --update
-
-	# restart udev service
-	service udev restart
 	;;
 
 	# ---------------------------
@@ -86,12 +80,6 @@ case "${MODE}" in
 
 	# remove /opt/libgphoto2 directory structure
 	rm -R /opt/libgphoto2
-
-	# update hardware database
-	udevadm hwdb --update
-
-	# restart udev service
-	service udev restart
 	;;
 
 	# ---------------------------
@@ -124,15 +112,15 @@ case "${MODE}" in
 		ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
 		ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 	fi
-	
-	# update hardware database
-	udevadm hwdb --update
-
-	# restart udev service
-	service udev restart
 	;;
 
 	*)
 	;;
 
 esac
+
+# update hardware database
+udevadm hwdb --update
+
+# restart udev service
+service udev restart
