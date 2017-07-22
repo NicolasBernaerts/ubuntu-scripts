@@ -11,23 +11,23 @@
 # if no argument, display help
 if [ $# -eq 0 ] 
 then
-	echo "Tool to install libgphoto2 2.5.10 libraries to correct latest GoPro DCIM bug under Xenial."
-	echo "Parameters are :"
-	echo "  --install       Install and declare the updated library"
-	echo "  --remove        Back to original library"
-	echo "  --check         Check that updated libraries are declared and declare them if needed"
-	exit
+  echo "Tool to install libgphoto2 2.5.10 libraries to correct latest GoPro DCIM bug under Xenial."
+  echo "Parameters are :"
+  echo "  --install       Install and declare the updated library"
+  echo "  --remove        Back to original library"
+  echo "  --check         Check that updated libraries are declared and declare them if needed"
+  exit
 fi
 
 # loop to retrieve arguments
 while test $# -gt 0
 do
-	case "$1" in
-		"--install") MODE="install"; shift; ;;
-		"--remove") MODE="remove"; shift; ;;
-		"--check") MODE="check"; shift; ;;
-		*) shift; ;;
-	esac
+  case "$1" in
+    "--install") MODE="install"; shift; ;;
+    "--remove") MODE="remove"; shift; ;;
+    "--check") MODE="check"; shift; ;;
+    *) shift; ;;
+  esac
 done
 
 # check --update or --cleanup mode
@@ -35,87 +35,87 @@ done
 
 case "${MODE}" in
 
-	# ---------------------------
-	#  Install mode
-	# ---------------------------
-	"install") 
+  # ---------------------------
+  #  Install mode
+  # ---------------------------
+  "install") 
 	
-	# remove targeted files and directories 
-	rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-	rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-	rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-	rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-	rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    # remove targeted files and directories 
+    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
-	# unpack and declare libgphoto2-port12
-	wget -O /tmp/libgphoto2-port12.deb http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-port12_2.5.10-3_amd64.deb
-	dpkg --fsys-tarfile /tmp/libgphoto2-port12.deb | sudo tar xf - -C /opt/libgphoto2
-	rm /tmp/libgphoto2-port12.deb
-	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    # unpack and declare libgphoto2-port12
+    wget -O /tmp/libgphoto2-port12.deb http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-port12_2.5.10-3_amd64.deb
+    dpkg --fsys-tarfile /tmp/libgphoto2-port12.deb | sudo tar xf - -C /opt/libgphoto2
+    rm /tmp/libgphoto2-port12.deb
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
 
-	# unpack and declare libgphoto2
-	wget -O /tmp/libgphoto2.deb http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-6_2.5.10-3_amd64.deb
-	dpkg --fsys-tarfile /tmp/libgphoto2.deb | sudo tar xf - -C /opt/libgphoto2
-	rm /tmp/libgphoto2.deb
-	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-	ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-	ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
-	;;
+    # unpack and declare libgphoto2
+    wget -O /tmp/libgphoto2.deb http://fr.archive.ubuntu.com/ubuntu/pool/main/libg/libgphoto2/libgphoto2-6_2.5.10-3_amd64.deb
+    dpkg --fsys-tarfile /tmp/libgphoto2.deb | sudo tar xf - -C /opt/libgphoto2
+    rm /tmp/libgphoto2.deb
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    ;;
 
-	# ---------------------------
-	#  Removal mode
-	# ---------------------------
-	"remove")
+    # ---------------------------
+    #  Removal mode
+    # ---------------------------
+    "remove")
 	
-	# remove targeted files and directories 
-	rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-	rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-	rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-	rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-	rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    # remove targeted files and directories 
+    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
-	# reinstall original packages
-	apt-get install --yes --reinstall libgphoto2-6 libgphoto2-port12
+    # reinstall original packages
+    apt-get install --yes --reinstall libgphoto2-6 libgphoto2-port12
 
-	# remove /opt/libgphoto2 directory structure
-	rm -R /opt/libgphoto2
-	;;
+    # remove /opt/libgphoto2 directory structure
+    rm -R /opt/libgphoto2
+    ;;
 
-	# ---------------------------
-	#  Configuration check mode
-	# ---------------------------
-	"check")
+    # ---------------------------
+    #  Configuration check mode
+    # ---------------------------
+    "check")
 	
-	# if links to new libgphoto2-port12 is not present
-	if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 ]
-	then
-		# remove targeted files and directories 
-		rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-		rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    # if links to new libgphoto2-port12 is not present
+    if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 ]
+    then
+      # remove targeted files and directories 
+      rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+      rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
 
-		# create links
-		ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-		ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-	fi
+      # create links
+      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    fi
 
-	# if links to new libgphoto2 is not present
-	if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 ]
-	then
-		# remove targeted files and directories 
-		rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-		rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-		rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    # if links to new libgphoto2 is not present
+    if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 ]
+    then
+      # remove targeted files and directories 
+      rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+      rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+      rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
-		# create links
-		ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-		ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-		ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
-	fi
-	;;
+      # create links
+      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+      ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    fi
+    ;;
 
-	*)
-	;;
+    *)
+    ;;
 
 esac
 
