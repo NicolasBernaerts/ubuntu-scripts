@@ -15,7 +15,7 @@ then
   echo "Parameters are :"
   echo "  --install       Install and declare the updated library"
   echo "  --remove        Back to original library"
-  echo "  --check         Check that updated libraries are declared and declare them if needed"
+  echo "  --verify        Check that updated libraries are properly declared and do it if needed"
   exit
 fi
 
@@ -25,14 +25,18 @@ do
   case "$1" in
     "--install") MODE="install"; shift; ;;
     "--remove") MODE="remove"; shift; ;;
-    "--declare") MODE="declare"; shift; ;;
+    "--verify") MODE="verify"; shift; ;;
     *) shift; ;;
   esac
 done
 
 # check --update or --cleanup mode
-[ "${MODE}" = "" ] && { echo "Please use --install, --remove or --declare mode"; exit 1; }
+[ "${MODE}" = "" ] && { echo "Please use --install, --remove or --verify mode"; exit 1; }
 
+# initialisation
+UPDATE="no"
+
+# select mode
 case "${MODE}" in
 
   # ---------------------------
@@ -61,6 +65,9 @@ case "${MODE}" in
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    
+    # ask for hardware database and udev update
+    UPDATE="yes"
     ;;
 
   # ---------------------------
@@ -80,37 +87,35 @@ case "${MODE}" in
 
     # remove /opt/libgphoto2 directory structure
     rm -R /opt/libgphoto2
+    
+    # ask for hardware database and udev update
+    UPDATE="yes"
     ;;
 
   # ---------------------------
-  #   Redeclaration mode
+  #   Verification mode
   # ---------------------------
-  "declare")
+  "verify")
 	
     # if links to new libgphoto2-port12 is not present
-    if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 ]
+    if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 -o -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 ]
     then
       # remove targeted files and directories 
       rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
       rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-
-      # create links
-      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-    fi
-
-    # if links to new libgphoto2 is not present
-    if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 ]
-    then
-      # remove targeted files and directories 
       rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
       rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
       rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
       # create links
+      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
       ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
       ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
       ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+      
+      # ask for hardware database and udev update
+      UPDATE="yes"
     fi
     ;;
 
@@ -119,8 +124,11 @@ case "${MODE}" in
 
 esac
 
-# update hardware database
-udevadm hwdb --update
+if [ "${UPDATE}" = "yes" ]
+then
+  # update hardware database
+  udevadm hwdb --update
 
-# restart udev service
-service udev restart
+  # restart udev service
+  service udev restart
+fi
