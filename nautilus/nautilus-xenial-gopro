@@ -104,7 +104,7 @@ case "${MODE}" in
   "verify")
 	
     # if links to new libgphoto2-port12 is not present
-    if [ -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 -o -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 ]
+    if [ ! -h /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 -o ! -h /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 ]
     then
       # remove targeted files and directories 
       rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
