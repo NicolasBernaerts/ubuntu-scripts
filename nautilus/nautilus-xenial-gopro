@@ -66,6 +66,9 @@ case "${MODE}" in
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
     
+    # download and declare apt post install hook
+    wget -O /etc/apt/apt.conf.d/99nautilus-xenial-gopro https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/99nautilus-xenial-gopro
+
     # ask for hardware database and udev update
     UPDATE="yes"
     ;;
@@ -82,12 +85,15 @@ case "${MODE}" in
     rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
+    # remove apt post install hook
+    rm /etc/apt/apt.conf.d/99nautilus-xenial-gopro
+
     # reinstall original packages
     apt-get install --yes --reinstall libgphoto2-6 libgphoto2-port12
 
     # remove /opt/libgphoto2 directory structure
     rm -R /opt/libgphoto2
-    
+
     # ask for hardware database and udev update
     UPDATE="yes"
     ;;
