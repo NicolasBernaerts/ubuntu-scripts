@@ -12,3 +12,5 @@ With these scripts you can :
   * Rename file according to its creation date, country and city tags
 
 All these operations can be done on a specific photo or a group of photos (mass-tagging).
+
+To install the complete environment, just run **tags-install.sh**
