@@ -37,7 +37,8 @@ sudo apt-get update
 sudo apt-get -y install skype
 
 # whatsapp client whatsie
-sudo apt-key adv --keyserver pool.sks-keyservers.net --recv-keys 1537994D
+gpg --keyserver pool.sks-keyservers.net --recv-keys 1537994D
+gpg --export --armor 1537994D | sudo apt-key add -
 echo "deb http://dl.bintray.com/aluxian/deb stable main" | sudo tee /etc/apt/sources.list.d/whatsie.list
 sudo apt-get update
 sudo apt-get -y install whatsie
