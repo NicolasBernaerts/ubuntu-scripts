@@ -33,9 +33,6 @@ done
 # check --update or --cleanup mode
 [ "${MODE}" = "" ] && { echo "Please use --install, --remove or --verify mode"; exit 1; }
 
-# initialisation
-UPDATE="no"
-
 # select mode
 case "${MODE}" in
 
@@ -68,9 +65,6 @@ case "${MODE}" in
     
     # download and declare apt post install hook
     wget -O /etc/apt/apt.conf.d/99nautilus-xenial-gopro https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/99nautilus-xenial-gopro
-
-    # ask for hardware database and udev update
-    UPDATE="yes"
     ;;
 
   # ---------------------------
@@ -93,9 +87,6 @@ case "${MODE}" in
 
     # remove /opt/libgphoto2 directory structure
     rm -R /opt/libgphoto2
-
-    # ask for hardware database and udev update
-    UPDATE="yes"
     ;;
 
   # ---------------------------
@@ -116,9 +107,6 @@ case "${MODE}" in
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
-      
-    # ask for hardware database and udev update
-    UPDATE="yes"
     ;;
 
   *)
@@ -126,11 +114,8 @@ case "${MODE}" in
 
 esac
 
-if [ "${UPDATE}" = "yes" ]
-then
-  # update hardware database
-  udevadm hwdb --update
+# update hardware database
+udevadm hwdb --update
 
-  # restart udev service
-  service udev restart
-fi
+# restart udev service
+service udev restart
