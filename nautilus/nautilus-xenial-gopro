@@ -15,7 +15,7 @@ then
   echo "Parameters are :"
   echo "  --install       Install and declare the updated library"
   echo "  --remove        Back to original library"
-  echo "  --verify        Check that updated libraries are properly declared and do it if needed"
+  echo "  --verify        Re-declare updated libraries"
   exit
 fi
 
@@ -103,26 +103,22 @@ case "${MODE}" in
   # ---------------------------
   "verify")
 	
-    # if links to new libgphoto2-port12 is not present
-    if [ ! -h /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12 -o ! -h /usr/lib/x86_64-linux-gnu/libgphoto2.so.6 ]
-    then
-      # remove targeted files and directories 
-      rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-      rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-      rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-      rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-      rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    # remove targeted files and directories 
+    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
-      # create links
-      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-      ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-      ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+    # create links
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+    ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
       
-      # ask for hardware database and udev update
-      UPDATE="yes"
-    fi
+    # ask for hardware database and udev update
+    UPDATE="yes"
     ;;
 
   *)
