@@ -2,4 +2,4 @@
 ## to re-declare the patch after apt upgrade
 
 # Verify Nautilus GoPro patch when dpkg has been executed (i.e. after apt upgrade)
-DPkg::Post-Invoke { "/opt/libgphoto2/nautilus-xenial-gopro --verify"; };
+DPkg::Post-Invoke { "/opt/libgphoto2/nautilus-xenial-gopro --update"; };
