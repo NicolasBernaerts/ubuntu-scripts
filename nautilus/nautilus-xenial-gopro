@@ -15,7 +15,7 @@ then
   echo "Parameters are :"
   echo "  --install       Install and declare the updated library"
   echo "  --remove        Back to original library"
-  echo "  --verify        Re-declare updated libraries"
+  echo "  --update        Re-declare updated libraries"
   exit
 fi
 
@@ -25,13 +25,13 @@ do
   case "$1" in
     "--install") MODE="install"; shift; ;;
     "--remove") MODE="remove"; shift; ;;
-    "--verify") MODE="verify"; shift; ;;
+    "--update") MODE="update"; shift; ;;
     *) shift; ;;
   esac
 done
 
 # check --update or --cleanup mode
-[ "${MODE}" = "" ] && { echo "Please use --install, --remove or --verify mode"; exit 1; }
+[ "${MODE}" = "" ] && { echo "Please use --install, --remove or --update mode"; exit 1; }
 
 # select mode
 case "${MODE}" in
@@ -90,9 +90,9 @@ case "${MODE}" in
     ;;
 
   # ---------------------------
-  #   Verification mode
+  #   Update mode
   # ---------------------------
-  "verify")
+  "update")
 	
     # remove targeted files and directories 
     rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
