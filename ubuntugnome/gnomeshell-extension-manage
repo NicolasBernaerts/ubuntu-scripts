@@ -138,11 +138,12 @@ then
     ${INSTALL_SUDO} chmod +r ${EXTENSION_PATH}/${EXTENSION_UUID}/*
 
     # list enabled extensions
-    EXTENSION_LIST=$(gsettings get org.gnome.shell enabled-extensions | sed 's/^.\(.*\).$/\1/')
+    EXTENSION_LIST=$(gsettings get org.gnome.shell enabled-extensions | sed 's/^@as //' | tr -d '[]')
 
     # if extension not already enabled, declare it
+    [ "${EXTENSION_LIST}" != "" ] && EXTENSION_LIST="${EXTENSION_LIST},"
     EXTENSION_ENABLED=$(echo ${EXTENSION_LIST} | grep ${EXTENSION_UUID})
-    [ "$EXTENSION_ENABLED" = "" ] && gsettings set org.gnome.shell enabled-extensions "[${EXTENSION_LIST},'${EXTENSION_UUID}']"
+    [ "$EXTENSION_ENABLED" = "" ] && gsettings set org.gnome.shell enabled-extensions "[${EXTENSION_LIST}'${EXTENSION_UUID}']"
 
     # success message
     echo "Gnome Shell version is ${GNOME_VERSION}."
