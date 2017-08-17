@@ -137,11 +137,11 @@ then
     ${INSTALL_SUDO} unzip -oq "${TMP_ZIP}" -d ${EXTENSION_PATH}/${EXTENSION_UUID}
     ${INSTALL_SUDO} chmod +r ${EXTENSION_PATH}/${EXTENSION_UUID}/*
 
-    # list enabled extensions
+    # list enabled extensions (remove @as in case of no extension enabled)
     EXTENSION_LIST=$(gsettings get org.gnome.shell enabled-extensions | sed 's/^@as //' | tr -d '[]')
+    [ "${EXTENSION_LIST}" != "" ] && EXTENSION_LIST="${EXTENSION_LIST},"
 
     # if extension not already enabled, declare it
-    [ "${EXTENSION_LIST}" != "" ] && EXTENSION_LIST="${EXTENSION_LIST},"
     EXTENSION_ENABLED=$(echo ${EXTENSION_LIST} | grep ${EXTENSION_UUID})
     [ "$EXTENSION_ENABLED" = "" ] && gsettings set org.gnome.shell enabled-extensions "[${EXTENSION_LIST}'${EXTENSION_UUID}']"
 
