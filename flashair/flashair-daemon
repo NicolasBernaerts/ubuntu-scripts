@@ -5,45 +5,47 @@
 # 
 # Revision history :
 #   30/03/2017, V1.0 - Creation by N. Bernaerts
+#   14/08/2017, V2.0 - Rewrite inotify with fifo
 # ---------------------------------------------------
 
-# get flashair mount directory
-FLASHAIR_CONF="/etc/flashair.conf"
-[ ! -f ${FLASHAIR_CONF} ] && { echo "Configuration file ${FLASHAIR_CONF} missing"; exit 1; }
-FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+# load flashair environment variables
+. /usr/local/sbin/flashair-common
 
-# infinite loop to detect filesystem events
+# enable recursive inotify on flashair root in daemon mode
+inotifywait --recursive --daemon --quiet --event open,moved_from --outfile "${FLASHAIR_FIFO}" --exclude "/PRIVATE/" "${FLASHAIR_ROOT}"
+
+# infinite loop to read filesystem events
 while true
 do
-	# wait for event on flashair card mount directory
-	FLASHAIR_EVENT=$(inotifywait -r -e open --exclude "/PRIVATE/" "${FLASHAIR_ROOT}")
+	if read FLASHAIR_EVENT; 
+	then
+		# analyse event data
+		EVENT_PATH=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f1)
+		EVENT_ACTION=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f2)
+		EVENT_ELEMENT=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f3-)
 
-	# analyse event data
-	EVENT_PATH=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f1)
-	EVENT_ACTION=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f2)
-	EVENT_ELEMENT=$(echo "${FLASHAIR_EVENT}" | cut -d' ' -f3-)
+		# local directory
+		ELEMENT_DIR=$(echo ${EVENT_PATH} | sed "s/\/$//")
+		ELEMENT_PATH="${EVENT_PATH}${EVENT_ELEMENT}"
 
-        # local directory
-        ELEMENT_PATH="${EVENT_PATH}${EVENT_ELEMENT}"
+		# action according to event
+		case "${EVENT_ACTION}" in
 
-	# action according to event
-	case "${EVENT_ACTION}" in
+			# a directory is being read
+			"OPEN,ISDIR")
+			# if 3rd argument is empty, update directory content
+			[ "${EVENT_ELEMENT}" = "" ] && flashair-command --update "${ELEMENT_DIR}"
+			;;
 
-		# directory content update
-		"OPEN,ISDIR")
-		flashair-command --update "${ELEMENT_PATH}"
-		;;
+			# a file has been moved
+			"MOVED_FROM")
+			# remove file from the card
+			flashair-command --delete "${ELEMENT_PATH}"
+			;;
 
-		# file to upload (created or modified)
-		"CLOSE_WRITE,CLOSE")
-		;;
-
-		# file to delete
-		"MOVED_FROM")
-		;;
-
-		# default : do nothing
-		*)
-		;;
-	esac
-done
+			# default : do nothing
+			*)
+			;;
+		esac
+	fi
+done < "${FLASHAIR_FIFO}"
