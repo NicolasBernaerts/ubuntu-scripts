@@ -4,44 +4,50 @@
 # 
 # Revision history :
 #   30/03/2017, V1.0 - Creation by N. Bernaerts
-#   28/04/2017, V1.1 - Add network interface detection
+#   12/08/2017, V1.1 - Restrict disconnect condition
 # ---------------------------------------------------
 
-# flashair environment
-FLASHAIR_NAME="flashair"
-FLASHAIR_DAEMON_NAME="${FLASHAIR_NAME}-daemon"
-FLASHAIR_DAEMON_PATH="/usr/local/sbin/${FLASHAIR_DAEMON_NAME}"
+# load flashair environment variables
+. /usr/local/sbin/flashair-common
 
 # check if connected to flashair wifi network
 FLASHAIR_INTERFACE=$(iwconfig | grep "ESSID" | grep "${FLASHAIR_NAME}_" | cut -d' ' -f1)
 
 # check if flashair daemon is running
 start-stop-daemon --status --name "${FLASHAIR_DAEMON_NAME}"
-RESULT=$?
+FLASHAIR_DAEMON_STATUS=$?
 
-# if connected to flashair wifi network
-if [ "${FLASHAIR_INTERFACE}" != "" ]
+echo "flashair network - ${FLASHAIR_DAEMON_NAME} status ${FLASHAIR_DAEMON_STATUS}" >> /tmp/flash.log
+
+# if connected to flashair wifi network and daemon not running
+if [ "${FLASHAIR_INTERFACE}" != "" -a "${FLASHAIR_DAEMON_STATUS}" != "0" ]
 then
-	# if daemon is not running,
-	if [ "${RESULT}" != "0" ]
-	then
-		# call flashair connect command
-		flashair-command --connect "${FLASHAIR_INTERFACE}"
+	# create fifo
+	rm -f "${FLASHAIR_FIFO}"
+	mkfifo "${FLASHAIR_FIFO}"
 
-		# start flashair daemon
-		start-stop-daemon --start --background --exec "${FLASHAIR_DAEMON_PATH}"
-	fi
+	# call flashair connect command
+	flashair-command --connect "${FLASHAIR_INTERFACE}"
 
-# else, if not connected to flashair wifi network
-else
-	# call flashair disconnect command
-	flashair-command --disconnect
+	# start flashair daemon
+	start-stop-daemon --start --background --exec "${FLASHAIR_DAEMON_PATH}"
 
-	# get processes PID
+# else, if not connected to flashair wifi network and daemon is running
+elif [ "${FLASHAIR_INTERFACE}" = "" -a "${FLASHAIR_DAEMON_STATUS}" = "0" ]
+then
+	# get processes ID
 	PID_DAEMON=$(pgrep "${FLASHAIR_DAEMON_NAME}")
 	PID_INOTIFY=$(pgrep --parent ${PID_DAEMON} "inotifywait")
 
-	# stop flashair daemon and inotifywait child process
-	start-stop-daemon --stop --name "${FLASHAIR_DAEMON_NAME}"
+	# stop inotifywait child process
 	[ "${PID_INOTIFY}" != "" ] && kill -9 ${PID_INOTIFY}
+
+	# stop flashair daemon
+	start-stop-daemon --stop --name "${FLASHAIR_DAEMON_NAME}"
+
+	# call flashair disconnect command
+	flashair-command --disconnect
+
+	# delete fifo
+	rm -f "${FLASHAIR_FIFO}"
 fi
