@@ -1,5 +1,5 @@
 #!/bin/bash
-# ---------------------------------------------------
+# -------------------------------------------------------------------
 # Tool to synchronise Toshiba Flashair SD Card
 # It synchronise either :
 #   - directory content
@@ -9,24 +9,26 @@
 #   30/03/2017, V1.0 - Creation by N. Bernaerts
 #   15/04/2017, V1.1 - Complete rewrite with parameters
 #   28/04/2017, V1.2 - Add single instance lock
-# ---------------------------------------------------
+#   12/08/2017, V1.3 - Add --delete-move parameter and notifications
+#   14/08/2017, V2.0 - Add progress notification
+# -------------------------------------------------------------------
 
-# set configuration file
-FLASHAIR_CONF="/etc/flashair.conf"
-FLASHAIR_LOCK="/tmp/flashair.lock"
+# load flashair environment variables
+. /usr/local/sbin/flashair-common
+
+# load latest desktop session environment
+[ -f "${DESKTOP_SESSION}" ] && . "${DESKTOP_SESSION}"
 
 # check tools
-command -v curl >/dev/null 2>&1 || { echo "Please install curl"; exit 1; }
-command -v composite >/dev/null 2>&1 || { echo "Please install composite [imagemagick package]"; exit 1; }
-command -v convert >/dev/null 2>&1 || { echo "Please install convert [imagemagick package]"; exit 1; }
-command -v inotifywait >/dev/null 2>&1 || { echo "Please install inotifywait [inotify-tools package]"; exit 1; }
-command -v zenity >/dev/null 2>&1 || { echo "Please install zenity package"; exit 1; }
-
-# check and set lock
-[ ! -f ${FLASHAIR_LOCK} ] && touch ${FLASHAIR_LOCK} || { echo "Another operation is already running. Please wait for it to finish."; exit 1; }
+command -v curl >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : curl"; exit 1; }
+command -v composite >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : composite [imagemagick package]"; exit 1; }
+command -v convert >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : convert [imagemagick package]"; exit 1; }
+command -v inotifywait >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : inotifywait [inotify-tools package]"; exit 1; }
+command -v zenity >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : zenity"; exit 1; }
 
 # empty arrays
 ARR_ITEM=()
+ARR_DESKTOP=()
 
 # if no argument, display help
 if [ $# -eq 0 ] 
@@ -39,7 +41,7 @@ then
 	echo "  --update               Update directory content from Flashair card"
 	echo "  --download             Download files from Flashair card"
 	echo "  --upload               Write files to Flashair card"
-	echo "  --delete               Delete file from Flashair card (file only)"
+	echo "  --delete               Delete file from Flashair card"
 	echo "  <item1> <item2> ...    Files/directories to handle"
 	exit 1
 fi
@@ -48,42 +50,46 @@ fi
 while test $# -gt 0
 do
 	case "$1" in
-	"--connect") MODE="connect"; shift; ;;
-	"--disconnect") MODE="disconnect"; shift; ;;
-	"--update") MODE="update"; shift; ;;
-	"--download") MODE="download"; shift; ;;
-	"--upload") MODE="upload"; shift; ;;
-	"--delete") MODE="delete"; shift; ;;
-	*) ARR_ITEM=( "${ARR_ITEM[@]}" "$1" ); shift; ;;
+		"--connect") MODE="connect"; shift; ;;
+		"--disconnect") MODE="disconnect"; shift; ;;
+		"--update") MODE="update"; shift; ;;
+		"--download") MODE="download"; shift; ;;
+		"--upload") MODE="upload"; shift; ;;
+		"--delete") MODE="delete"; shift; ;;
+		*) ARR_ITEM=( "${ARR_ITEM[@]}" "$1" ); shift; ;;
 	esac
 done
+
+echo "flashair command - ${MODE} : ${ARR_ITEM[@]}" >> /tmp/flash.log
+
+# get default parameters from flashair.conf
+FLASHAIR_CONFIRM=$(grep "^confirm-${MODE}=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+FLASHAIR_FILELIST=$(grep "^flashair-filelist=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+
+# if desktop environment is not set, generate the command line parameters to notify desktop
+[ "${DBUS_SESSION_BUS_ADDRESS}" = "" ] && ARR_DESKTOP=("sudo" "-u" "${DESKTOP_USER}" "DISPLAY=${DESKTOP_DISPLAY}" "DBUS_SESSION_BUS_ADDRESS=${DESKTOP_DBUS}")
+
+# check and set lock
+#[ ! -f ${FLASHAIR_LOCK} ] && touch ${FLASHAIR_LOCK} || { ${ARR_DESKTOP[@]} notify-send --icon=flashair-icon "FlashAir" "Another action is actually running"; exit 1; }
 
 # create temporary files
 TMP_HEADER=$(mktemp --tmpdir header-XXXXXXXXX.html)
 TMP_FILE=$(mktemp --tmpdir file-XXXXXXXXX.jpg)
 
-# get default parameters from flashair.conf
-FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
-FLASHAIR_USER=$(grep "^flashair-user=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
-FLASHAIR_CONFIRM=$(grep "^confirm-${MODE}=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
-FLASHAIR_FILELIST=$(grep "^flashair-filelist=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
+# --------------------------------------
+#  Step 1 : Controls & Main parameters
+# --------------------------------------
 
-# if default user not defined, get currently connected user
-[ "${FLASHAIR_USER}" = "" ] && FLASHAIR_USER=$(ps hau | grep -v "^root" | head -n 1 | cut -d' ' -f1)
-
-# ------------------------------------------
-#  Step 1
-#
-#   Main parameters and confirmation
-#
-# ------------------------------------------
-
-# by default, action is confirmed
+# confirmation by default
 CONFIRMED=0
 
-# get number of files
+# get number of files to handle
 NBR_ITEM=${#ARR_ITEM[@]}
 
+# if given, get first parameter
+[ ${NBR_ITEM} -gt 0 ] && CARD_FIRST_PATH=$(echo "${ARR_ITEM[0]}" | sed "s|^${FLASHAIR_ROOT}||")
+
+# action according to command
 case "${MODE}" in
 
 	# -----------------------------
@@ -111,8 +117,8 @@ case "${MODE}" in
 	[ ! -d "${FLASHAIR_ROOT}" ] && { mkdir "${FLASHAIR_ROOT}"; chmod 777 "${FLASHAIR_ROOT}"; }
 
 	# if first time, create flashair bookmark to user nautilus configuration
-	FLASHAIR_BOOKMARK=$(grep "${FLASHAIR_ROOT}" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks")
-	[ "${FLASHAIR_BOOKMARK}" = "" ] && echo "file://${FLASHAIR_ROOT} Flashair (disconnected)" >> "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks" 
+	FLASHAIR_BOOKMARK=$(grep "${FLASHAIR_ROOT}" "/home/${DESKTOP_USER}/.config/gtk-3.0/bookmarks")
+	[ "${FLASHAIR_BOOKMARK}" = "" ] && echo "file://${FLASHAIR_ROOT} Flashair (disconnected)" >> "/home/${DESKTOP_USER}/.config/gtk-3.0/bookmarks" 
 
 	# enable right click download menu
 	sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-download.desktop"
@@ -128,11 +134,17 @@ case "${MODE}" in
 		sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
 
 		# update nautilus bookmark as (read-write)
-		sed -i "s/Flashair.*$/Flashair (read-write)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks"
+		sed -i "s/Flashair.*$/Flashair (read-write)/g" "/home/${DESKTOP_USER}/.config/gtk-3.0/bookmarks"
 	else
 		# update nautilus bookmark as (read-only)
-		sed -i "s/Flashair.*$/Flashair (read-only)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks"
+		sed -i "s/Flashair.*$/Flashair (read-only)/g" "/home/${DESKTOP_USER}/.config/gtk-3.0/bookmarks"
 	fi
+
+	# no file to handle in step 2
+	ARR_ITEM=( )
+
+	# desktop notification
+	${ARR_DESKTOP[@]} notify-send --category=network.connected --icon=flashair-icon "FlashAir" "Card connected thru wifi & accessible under ${FLASHAIR_ROOT}"
 	;;
 
 	# -----------------------------
@@ -146,52 +158,20 @@ case "${MODE}" in
 	sed -i "s/^Enabled=.*$/Enabled=false/g" "/usr/local/share/file-manager/actions/flashair-action-delete.desktop"
 
 	# update nautilus bookmark with (disconnected)
-	sed -i "s/Flashair.*$/Flashair (disconnected)/g" "/home/${FLASHAIR_USER}/.config/gtk-3.0/bookmarks" 
+	sed -i "s/Flashair.*$/Flashair (disconnected)/g" "/home/${DESKTOP_USER}/.config/gtk-3.0/bookmarks" 
+
+	# no file to handle in step 2
+	ARR_ITEM=( )
+
+	# desktop notification
+	${ARR_DESKTOP[@]} notify-send --category=network.disconnected --icon=flashair-icon "FlashAir" "Card wifi disconnected"
 	;;
 
-	# -----------------------------
-	#  media files download
-	# -----------------------------
-	"download")
-
-	# if needed, ask confirmation
-	TEXT="${NBR_ITEM} files will be downloaded from your Flashair card\n\nDo you want to continue ?"
-	[ "${FLASHAIR_CONFIRM}" = "true" ] && { zenity --question --title "Download" --text "${TEXT}"; CONFIRMED=$?; }
-
-	# if download canceled, empty array of items
-	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
-	;;
-
-	# -----------------------------
-	#  media files upload
-	# -----------------------------
-	"upload")
-
-	# if needed, ask confirmation
-	TEXT="${NBR_ITEM} files will be uploaded to your Flashair card\n\nDo you want to continue ?"
-	[ "${FLASHAIR_CONFIRM}" = "true" ] && { zenity --question --title "Upload" --text "${TEXT}"; CONFIRMED=$?; }
-
-	# if upload canceled, empty array of items
-	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
-	;;
-
-	# -----------------------------
-	#  media files delete
-	# -----------------------------
-	"delete")
-
-	# if needed, ask confirmation
-	TEXT="${NBR_ITEM} files will be deleted from your Flashair card\n\nDo you want to continue ?"
-	[ "${FLASHAIR_CONFIRM}" = "true" ] && { zenity --question --title "Delete" --text "${TEXT}"; CONFIRMED=$?; }
-
-	# if deleted canceled, empty array of items
-	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
-	;;
-
-	# -----------------------------
-	#  directory content update
-	# -----------------------------
+	# -------------------
+	#  directory update
+	# -------------------
 	"update")
+
 
 	# generate temporary files
 	TMP_THUMB=$(mktemp --tmpdir thumb-XXXXXXXXX.png)
@@ -202,6 +182,11 @@ case "${MODE}" in
 
 	# path of the directory on flashair card
 	CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
+
+	(
+	# initial display
+	echo "1"
+	echo "# Flashair : Analyse content of ${CARD_ITEM_PATH}"
 
 	# path of flashair filelist for current directory 
 	ITEM_FILELIST="${ITEM}/${FLASHAIR_FILELIST}"
@@ -228,6 +213,9 @@ case "${MODE}" in
 			# if file does not exist locally, get thumbnail
 			if [ ! -f "${SUBITEM}" ]
 			then
+				# display progress
+				echo "# Flashair : Download ${CARD_ITEM_PATH}/${CARD_SUBITEM_NAME} thumbnail"
+
 				# get file size on flashair card
 				DISPLAY_SIZE=$(echo "${CARD_SUBITEM_SIZE}" | numfmt --to=iec)
 
@@ -267,79 +255,144 @@ case "${MODE}" in
 		fi
 	done < "${ITEM_FILELIST}"
 
+	echo "100"
+	) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-icon --no-buttons --undecorated --pulsate --center --auto-close
+
+	# no file to handle in step 2
+	ARR_ITEM=( )
+
 	# delete temporary files
 	rm -f "${TMP_THUMB}" "${TMP_BULLET}"
+	;;
+
+	# -----------------
+	#  files download
+	# -----------------
+	"download")
+
+	# if needed, ask confirmation
+	[ ${#ARR_ITEM[@]} -gt 1 ] && TEXT="Download ${NBR_ITEM} file(s) from card ?" || TEXT="Download ${CARD_FIRST_PATH} from card ?"
+	[ "${FLASHAIR_CONFIRM}" = "true" ] && { ${ARR_DESKTOP[@]} yad --question --image=flashair-download --center --title "Flashair : Download" --text "${TEXT}"; CONFIRMED=$?; }
+
+	# if download canceled, empty array of items
+	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
+	;;
+
+	# ---------------
+	#  files upload
+	# ---------------
+	"upload")
+
+	# if needed, ask confirmation
+	[ ${#ARR_ITEM[@]} -gt 1 ] && TEXT="Upload ${NBR_ITEM} file(s) to card ?" || TEXT="Upload ${CARD_FIRST_PATH} to card ?"
+	[ "${FLASHAIR_CONFIRM}" = "true" ] && { ${ARR_DESKTOP[@]} yad --question --image=flashair-delete --center --title "Flashair : Upload" --text "${TEXT}"; CONFIRMED=$?; }
+
+	# if upload canceled, empty array of items
+	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
+	;;
+
+	# ---------------
+	#  files delete
+	# ---------------
+	"delete")
+
+	# if needed, ask confirmation
+	[ ${#ARR_ITEM[@]} -gt 1 ] && TEXT="Delete ${NBR_ITEM} file(s) from card ?" || TEXT="Delete ${CARD_FIRST_PATH} from card ?"
+	[ "${FLASHAIR_CONFIRM}" = "true" ] && { ${ARR_DESKTOP[@]} yad --question --image=flashair-delete --center --title "Flashair : Delete" --text "${TEXT}"; CONFIRMED=$?; }
+
+	# if deleted canceled, empty array of items
+	[ ${CONFIRMED} -eq 1 ] && ARR_ITEM=( )
 	;;
 
 	*)
 	;;
 esac
 
-# ------------------------------------------
-#  Step 2
-#
-#  Action on files
-#
-# ------------------------------------------
+# ---------------------------
+#  Step 2 : Action on files
+# ---------------------------
 
+# loop thru candidate files
 for ITEM in "${ARR_ITEM[@]}"
 do
-
 	# path of item on flashair card
 	CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
+	
+	# log action
+	logger "flashair - ${MODE} ${CARD_ITEM_PATH}"
 
 	# action according to mode
 	case "${MODE}" in
 
-	# -----------------------------
-	#  image download
-	# -----------------------------
-	"download")
+		# -----------------
+		#   download
+		# -----------------
+		"download")
 
-	# delete thumbnail
-	rm -f "${ITEM}"
+		(
+		# initial display
+		echo "1"
+		echo "# Flashair : Download ${CARD_ITEM_PATH}"
 
-	# download file
-	curl -o "${ITEM}" "http://flashair/${CARD_ITEM_PATH}"
-	chmod 666 "${ITEM}"
-	;;
+		# delete thumbnail
+		rm -f "${ITEM}"
 
-	# -----------------------------
-	#  image upload
-	# -----------------------------
-	"upload")
+		# download file
+		curl -o "${ITEM}" "http://flashair/${CARD_ITEM_PATH}"
 
-	# get upload directory
-	CARD_ITEM_DIR=$(dirname "${CARD_ITEM_PATH}")
+		# set rw to all users
+		chmod 666 "${ITEM}"
+		echo "100"
+		) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-download --no-buttons --undecorated --pulsate --center --auto-close
+		;;
 
-	# set upload directory
-	curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/upload.cgi?UPDIR=${CARD_ITEM_DIR}"
-	OPERATION_OK=$(grep "SUCCESS" "${TMP_FILE}")
+		# ---------------
+		#   upload
+		# ---------------
+		"upload")
 
-	# if upload directory set, start upload
-	[ "${OPERATION_OK}" != "" ] && curl --dump-header "${TMP_HEADER}" -i -X POST -H "Content-Type: multipart/form-data" -F "data=@${ITEM}" "http://flashair/upload.cgi"
-	;;
+		(
+		# initial display
+		echo "1"
+		echo "# Flashair : Upload ${CARD_ITEM_PATH}"
 
-	# -----------------------------
-	#  image suppression
-	# -----------------------------
-	"delete")
+		# get upload directory
+		CARD_ITEM_DIR=$(dirname "${CARD_ITEM_PATH}")
 
-	# send deletion command
-	curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/upload.cgi?DEL=${CARD_ITEM_PATH}"
-	OPERATION_OK=$(grep "SUCCESS" "${TMP_FILE}")
+		# set upload directory
+		curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/upload.cgi?UPDIR=${CARD_ITEM_DIR}"
+		OPERATION_OK=$(grep "SUCCESS" "${TMP_FILE}")
 
-	# if deletion succesful, delete local file
-	[ "${OPERATION_OK}" != "" ] && rm -f "${ITEM}"
-	;;
+		# if upload directory set, start upload
+		[ "${OPERATION_OK}" != "" ] && curl --dump-header "${TMP_HEADER}" -i -X POST -H "Content-Type: multipart/form-data" -F "data=@${ITEM}" "http://flashair/upload.cgi"
+		echo "100"
+		) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-upload --no-buttons --undecorated --pulsate --center --auto-close
+		;;
 
-	*)
-	echo "Mode ${MODE} not supported"
-	;;
+		# --------------------
+		#   suppression
+		# --------------------
+		"delete")
+
+		(
+		# initial display
+		echo "1"
+		echo "# Flashair : Delete ${CARD_ITEM_PATH}"
+
+		# send deletion command
+		curl -o "${TMP_FILE}" --dump-header "${TMP_HEADER}" "http://flashair/upload.cgi?DEL=${CARD_ITEM_PATH}"
+
+		# delete local file
+		rm -f ${ITEM}
+		echo "100"
+		) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-delete --no-buttons --undecorated --pulsate --center --auto-close
+		;;
+
+		*)
+		;;
 
 	esac
 done
 
 # remove temporary files and lock
 rm -f "${TMP_FILE}" "${TMP_HEADER}"
-rm -f ${FLASHAIR_LOCK}
