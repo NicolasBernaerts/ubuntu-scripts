@@ -6,9 +6,6 @@
 # flashair environment base name
 FLASHAIR_NAME="flashair"
 
-# concurrency lock
-FLASHAIR_LOCK="/var/lock/${FLASHAIR_NAME}.lock"
-
 # fifo to serve events
 FLASHAIR_FIFO="/tmp/.${FLASHAIR_NAME}.fifo"
 
