@@ -12,7 +12,7 @@
 # ---------------------------------------------------
 
 # install inotifywait tool and imagemagick
-sudo apt install inotify-tools imagemagick curl
+sudo apt install inotify-tools imagemagick curl yad
 
 # install configuration file and set current user
 sudo wget -O /etc/flashair.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair.conf
@@ -28,10 +28,11 @@ sudo wget -O /usr/share/icons/flashair-type-photo.jpg https://github.com/Nicolas
 sudo wget -O /usr/share/icons/flashair-type-video.jpg https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/flashair/icons/flashair-type-video.jpg
 
 # download main scripts
+sudo wget -O /usr/local/sbin/flashair-common https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-common
 sudo wget -O /usr/local/sbin/flashair-daemon https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-daemon
 sudo wget -O /usr/local/sbin/flashair-command https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-command
 sudo wget -O /usr/local/sbin/flashair-network https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/flashair/flashair-network
-sudo chmod +x /usr/local/sbin/flashair-daemon /usr/local/sbin/flashair-command /usr/local/sbin/flashair-network
+sudo chmod +x /usr/local/sbin/flashair-common /usr/local/sbin/flashair-daemon /usr/local/sbin/flashair-command /usr/local/sbin/flashair-network
 
 # install network setup script
 sudo ln -s /usr/local/sbin/flashair-network /etc/network/if-up.d/flashair-network
