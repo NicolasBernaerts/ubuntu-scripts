@@ -7,7 +7,7 @@
 FLASHAIR_NAME="flashair"
 
 # fifo to serve events
-FLASHAIR_FIFO="/tmp/.${FLASHAIR_NAME}.fifo"
+FLASHAIR_FIFO="/tmp/${FLASHAIR_NAME}.fifo"
 
 # flashair daemon
 FLASHAIR_DAEMON_NAME="${FLASHAIR_NAME}-daemon"
