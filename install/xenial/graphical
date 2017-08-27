@@ -7,6 +7,7 @@
 # 12/08/2016, V1.2 - Replace image-resize by image-convert
 # 13/08/2016, V1.3 - Add raw-thumbnailer
 # 15/09/2016, V1.4 - Add EXIF nautilus extensions
+# 22/08/2017, V1.5 - Add RAW processing tools
 # -------------------------------------------------------
 
 # misc graphical apps
@@ -57,3 +58,9 @@ mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-columns.py
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-alltags.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-alltags.py
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/exif-geotag.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-geotag.py
+
+# Luminance HDR and RAW Therapee
+sudo add-apt-repository -y ppa:dhor/myway
+sudo apt update
+sudo apt -y install luminance-hdr
+sudo apt -y install rawtherapee
