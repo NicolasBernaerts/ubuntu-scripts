@@ -6,50 +6,63 @@
 # -------------------------------------------------------
 
 # yad editor (used by many scripts)
+logger "utilities - yad"
 sudo apt-get -y install yad
 
 # system extension really needed
+logger "utilities - system extension"
 sudo apt-get -y install linux-firmware-nonfree xbacklight preload
 
 # package management tools
+logger "utilities - package management"
 sudo apt-get -y install ppa-purge synaptic gdebi deborphan
 
 # filesystem clients
+logger "utilities - filesystem"
 sudo apt-get -y install cifs-utils autofs exfat-fuse
 
 # compression tools
+logger "utilities - compression"
 sudo apt-get -y install p7zip-full rar unrar unzip
 
 # file comparison
+logger "utilities - file comparison"
 sudo apt-get -y install meld
 
 # disk tools
+logger "utilities - disk"
 sudo apt-get -y install smartmontools disktype gparted
 
 # unetbootin
+logger "utilities - unetbootin"
 sudo add-apt-repository -y ppa:gezakovacs/ppa
 sudo apt-get update
 sudo apt-get -y install unetbootin
 
 # etcher
+logger "utilities - etcher"
 echo "deb https://dl.bintray.com/resin-io/debian stable etcher" | sudo tee '/etc/apt/sources.list.d/etcher.list'
 sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 379CE192D401AB61
 sudo apt update
 sudo apt install etcher-electron
 
 # keepassx : electronic wallet
+logger "utilities - keepassx"
 sudo apt-get -y install keepassx
 
 # alacarte : menu editor
+logger "utilities - alacarte"
 sudo apt-get -y install alacarte
 
 # photorec and qphotorec (recovery of files from SDCard)
+logger "utilities - photorec and qphotorec"
 sudo apt-get -y install testdisk
 wget --header='Accept-Encoding:none' http://heanet.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
 sudo gdebi --non-interactive qphotorec_1.0_all.deb
 rm qphotorec_1.0_all.deb
 
 # dual monitor setup
+logger "utilities - dual monitor setup"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
 chmod +x update-monitor-position-install.sh
 ./update-monitor-position-install.sh
