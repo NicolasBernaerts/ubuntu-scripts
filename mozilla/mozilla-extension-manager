@@ -14,6 +14,7 @@
 #  07/02/2017  V2.2 - Remove zenity, as running zenity under root with wayland/mir is not working
 #  17/05/2017  V2.3 - Rewrite, add path parameters, read UID and name in different ways
 #  25/05/2017  V2.4 - Add --update and --list parameters
+#  05/09/2017  V2.5 - Change handling of sudo commands for more compatibility
 # ------------------------------------------------------------------------
 
 # --------------
@@ -94,7 +95,6 @@ EXT_FAMILY=""
 EXT_TYPE=""
 EXT_URL=""
 EXT_PATH=""
-EXT_SUDO=""
 
 # ---------------
 #   Parameters
@@ -165,9 +165,6 @@ fi
 # ------------------------------------
 #   Set installation root and mode
 # ------------------------------------
-
-# set sudo command if system mode
-[ "${EXT_TYPE}" = "system" ] && EXT_SUDO="sudo"
 
 # if installation in user mode
 if [ "${EXT_TYPE}" = "user" ]
@@ -279,8 +276,8 @@ then
 elif [ "${EXT_ACTION}" = "remove" ]
 then
 	# remove system extension directory
-	"${EXT_SUDO}" rm "${EXT_PATH}/../${EXT_UID}.xpi"
-	"${EXT_SUDO}" rm -R "${EXT_PATH}/${EXT_UID}"
+	[ "${EXT_TYPE}" = "user" ] && rm "${EXT_PATH}/../${EXT_UID}.xpi" || sudo rm "${EXT_PATH}/../${EXT_UID}.xpi"
+	[ "${EXT_TYPE}" = "user" ] && rm -R "${EXT_PATH}/${EXT_UID}" || sudo rm -R "${EXT_PATH}/${EXT_UID}"
 
 	# end message
 	echo "[success] ${EXT_ACTION} ${EXT_FAMILY} ${EXT_TYPE} extension ${EXT_NAME}, uid=${EXT_UID}, version=${EXT_VERSION}"
@@ -300,18 +297,20 @@ else
 		EXT_ACTION="update"
 		
 		# remove previous extension version
-		"${EXT_SUDO}" rm "${EXT_PATH}/../${EXT_UID}.xpi"
-		"${EXT_SUDO}" rm -R "${EXT_PATH}/${EXT_UID}"
+		[ "${EXT_TYPE}" = "user" ] && rm "${EXT_PATH}/../${EXT_UID}.xpi" || sudo rm "${EXT_PATH}/../${EXT_UID}.xpi"
+		[ "${EXT_TYPE}" = "user" ] && rm -R "${EXT_PATH}/${EXT_UID}" || sudo rm -R "${EXT_PATH}/${EXT_UID}"
 	else
 		# install new extension
 		EXT_ACTION="install"
 	fi
 
 	# copy .xpi to system extension path
-	"${EXT_SUDO}" cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi"
+	[ "${EXT_TYPE}" = "user" ] && cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi" \
+	                           || sudo cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi"
 
 	# extract extension to system extension path
-	"${EXT_SUDO}" unzip -qq "${ADDON_XPI}" -d "${EXT_PATH}/${EXT_UID}"
+	[ "${EXT_TYPE}" = "user" ] && unzip -qq "${ADDON_XPI}" -d "${EXT_PATH}/${EXT_UID}" \
+	                           || sudo unzip -qq "${ADDON_XPI}" -d "${EXT_PATH}/${EXT_UID}"
 
 	# end message
 	echo "[success] ${EXT_ACTION} ${EXT_FAMILY} ${EXT_TYPE} extension ${EXT_NAME}, uid=${EXT_UID}, version=${EXT_VERSION}"
