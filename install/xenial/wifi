@@ -9,6 +9,7 @@
 # Intel Centrino N 6235
 # Re-enable AMPDU for iwldvm devices
 # Solves very slow connection since kernel 3.11.10+
+logger "wifi - yad"
 echo "options iwlwifi 11n_disable=8 bt_coex_active=0" | sudo tee /etc/modprobe.d/iwlwifi-11n.conf
 
 # RTL8723be : Solves stability issue on HP Stream 13
@@ -19,6 +20,7 @@ HAS_RTL8821AE=$(lspci | grep "RTL8821AE")
 if [ "${HAS_RTL8723BE}" != "" -o "${HAS_RTL8821AE}" != "" ]
 then
   # install compilation environment
+  logger "wifi - RTL8723be & RTL8821ae"
   sudo apt-get install -y linux-headers-generic build-essential git
   
   # create temporary directory
