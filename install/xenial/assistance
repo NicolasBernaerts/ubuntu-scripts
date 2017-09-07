@@ -12,14 +12,14 @@
 # define remote support address (for gitso)
 SUPPORT_SITE="bernaerts-nicolas.dyndns.org"
 
-# install package gitso
+# gitso
+logger "assistance - gitso"
 sudo apt-get -y install gitso
-
-# include remote assistance site in launcher
 cp /usr/share/applications/gitso.desktop $HOME/.local/share/applications/gitso.desktop
 sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/applications/gitso.desktop
 
 # TeamViewer
+logger "assistance - TeamViewer"
 wget https://download.teamviewer.com/download/teamviewer_i386.deb
 sudo dpkg -i teamviewer_i386.deb
 sudo apt-get -y -f install
