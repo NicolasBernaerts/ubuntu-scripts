@@ -10,33 +10,41 @@
 # ----------------------------------------------------------------
 
 # curl
+logger "internet - curl"
 sudo apt-get -y install curl
 
 # network tools
+logger "internet - network tools"
 sudo apt-get -y install nmap snmp snmp-mibs-downloader
 
 # thunderbird
+logger "internet - thunderbird"
 sudo apt-get -y install thunderbird-gnome-support
 
-# chromium & filezilla
+# chromium and filezilla
+logger "internet - chromium & filezilla"
 sudo apt-get -y install chromium-browser filezilla
 
-# youtube-dl & gui
+# youtube-dl
+logger "internet - youtube-dl "
 sudo add-apt-repository -y ppa:nilarimogard/webupd8
 sudo apt-get update
 sudo apt-get -y install youtube-dl youtube-dlg
 
 # youtubedl-gui
+logger "internet - youtubedl-gui"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui-install.sh
 . ./youtubedl-gui-install.sh
 rm youtubedl-gui-install.sh
 
 # skype 4.3
+logger "internet - skype"
 sudo add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
 sudo apt-get update
 sudo apt-get -y install skype
 
 # whatsapp client whatsie
+logger "internet - whatsie"
 gpg --keyserver pool.sks-keyservers.net --recv-keys 1537994D
 gpg --export --armor 1537994D | sudo apt-key add -
 echo "deb http://dl.bintray.com/aluxian/deb stable main" | sudo tee /etc/apt/sources.list.d/whatsie.list
@@ -44,6 +52,7 @@ sudo apt-get update
 sudo apt-get -y install whatsie
 
 # telegram client
+logger "internet - telegram"
 [ "${ARCHI}" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
 wget -O tsetup.tar.xz "${TELEGRAM_URL}"
 mkdir $HOME/.TelegramDesktop
@@ -53,6 +62,7 @@ $HOME/.TelegramDesktop/Telegram/Telegram &
 chmod +x $HOME/.local/share/applications/telegramdesktop.desktop
 
 # Syncthing (release channel)
+logger "internet - Syncthing"
 curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
 echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
 sudo apt-get update
