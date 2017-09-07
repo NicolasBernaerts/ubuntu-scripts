@@ -6,53 +6,65 @@
 # -------------------------------------------------------
 
 # libreoffice PPA
+logger "office - libreoffice"
 sudo add-apt-repository -y ppa:libreoffice/ppa
 sudo apt-get update
 sudo apt-get -y dist-upgrade
 
 # grisbi
+logger "office - grisbi"
 sudo apt-get -y install grisbi
 
 # hplip
+logger "office - hplip"
 sudo apt-get -y install hplip-gui
 
-# ocr client and french langage
+# tesseract-ocr client and french langage
+logger "office - tesseract-ocr"
 sudo apt-get -y install tesseract-ocr-fra aspell-fr
 
 # gramps (genealogy)
+logger "office - gramps"
 sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
 
 # PDF editor
+logger "office - PDF editor"
 PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.deb" | cut -d'"' -f2)
 wget -O master-pdf-editor.deb --header='Accept-Encoding:none' "${PACKAGE}"
 sudo gdebi --n master-pdf-editor.deb
 rm master-pdf-editor.deb
 
-# declare file association 
+# declare office file association 
+logger "office - office file association"
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
 xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
 
 # LibreOffice thumbnailer
+logger "office - LibreOffice thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
 . ./lo-thumbnailer-install.sh
 rm lo-thumbnailer-install.sh
 
 # Ms Office thumbnailer
+logger "office - Ms Office thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
 . ./msoffice-thumbnailer-install.sh
 rm msoffice-thumbnailer-install.sh
 
 # PDF booklet generation extension
+logger "office - PDF booklet"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
 . ./generate-booklet-install.sh
 rm generate-booklet-install.sh
 
 # PDF rotation extension
+logger "office - PDF rotation extension"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-install.sh
 . ./pdf-rotate-install.sh
 rm pdf-rotate-install.sh
 
 # PDF document generation from multiple files
+logger "office - PDF document generation"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
 . ./pdf-generate-install.sh
 rm pdf-generate-install.sh
