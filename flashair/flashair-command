@@ -10,25 +10,26 @@
 #   15/04/2017, V1.1 - Complete rewrite with parameters
 #   28/04/2017, V1.2 - Add single instance lock
 #   12/08/2017, V1.3 - Add --delete-move parameter and notifications
-#   14/08/2017, V2.0 - Add progress notification
+#   02/09/2017, V1.4 - Add service notifications on current desktop
 # -------------------------------------------------------------------
+
+# check tools
+command -v curl >/dev/null 2>&1 || { logger "FlashAir - curl is not installed"; exit 1; }
+command -v composite >/dev/null 2>&1 || { logger "FlashAir - composite is not installed [imagemagick package]"; exit 1; }
+command -v convert >/dev/null 2>&1 || { logger "FlashAir - convert is not installed [imagemagick package]"; exit 1; }
+command -v inotifywait >/dev/null 2>&1 || { logger "FlashAir - inotifywait is not installed [inotify-tools package]"; exit 1; }
+command -v zenity >/dev/null 2>&1 || { logger "FlashAir - zenity is not installed"; exit 1; }
+command -v yad >/dev/null 2>&1 || { logger "FlashAir - yad is not installed"; exit 1; }
+command -v desktop-display >/dev/null 2>&1 || { logger "FlashAir - desktop-display is not installed"; exit 1; }
 
 # load flashair environment variables
 . /usr/local/sbin/flashair-common
 
 # load latest desktop session environment
-[ -f "${DESKTOP_SESSION}" ] && . "${DESKTOP_SESSION}"
-
-# check tools
-command -v curl >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : curl"; exit 1; }
-command -v composite >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : composite [imagemagick package]"; exit 1; }
-command -v convert >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : convert [imagemagick package]"; exit 1; }
-command -v inotifywait >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : inotifywait [inotify-tools package]"; exit 1; }
-command -v zenity >/dev/null 2>&1 || { logger "flashair - missing compulsory tool : zenity"; exit 1; }
+. /usr/local/sbin/desktop-display
 
 # empty arrays
 ARR_ITEM=()
-ARR_DESKTOP=()
 
 # if no argument, display help
 if [ $# -eq 0 ] 
@@ -65,12 +66,6 @@ echo "flashair command - ${MODE} : ${ARR_ITEM[@]}" >> /tmp/flash.log
 # get default parameters from flashair.conf
 FLASHAIR_CONFIRM=$(grep "^confirm-${MODE}=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
 FLASHAIR_FILELIST=$(grep "^flashair-filelist=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
-
-# if desktop environment is not set, generate the command line parameters to notify desktop
-[ "${DBUS_SESSION_BUS_ADDRESS}" = "" ] && ARR_DESKTOP=("sudo" "-u" "${DESKTOP_USER}" "DISPLAY=${DESKTOP_DISPLAY}" "DBUS_SESSION_BUS_ADDRESS=${DESKTOP_DBUS}")
-
-# check and set lock
-#[ ! -f ${FLASHAIR_LOCK} ] && touch ${FLASHAIR_LOCK} || { ${ARR_DESKTOP[@]} notify-send --icon=flashair-icon "FlashAir" "Another action is actually running"; exit 1; }
 
 # create temporary files
 TMP_HEADER=$(mktemp --tmpdir header-XXXXXXXXX.html)
@@ -124,10 +119,10 @@ case "${MODE}" in
 	sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-download.desktop"
 
 	# get the upload status of the card
-	UPLOAD_ENABLED=$(curl "http://flashair/CONFIG" | grep "UPLOAD=1")
+	UPLOAD_ENABLED=$(curl "http://flashair/command.cgi?op=118")
 
 	# if upload is allowed, enable right click upload and delete menus
-	if [ "${UPLOAD_ENABLED}" != "" ]
+	if [ "${UPLOAD_ENABLED}" = "1" ]
 	then
 		# enable upload and delete actions
 		sed -i "s/^Enabled=.*$/Enabled=true/g" "/usr/local/share/file-manager/actions/flashair-action-upload.desktop"
@@ -144,7 +139,7 @@ case "${MODE}" in
 	ARR_ITEM=( )
 
 	# desktop notification
-	${ARR_DESKTOP[@]} notify-send --category=network.connected --icon=flashair-icon "FlashAir" "Card connected thru wifi & accessible under ${FLASHAIR_ROOT}"
+	desktop-display notify-send --category=network.connected --icon=flashair-icon "FlashAir" "Card connected thru wifi & accessible under ${FLASHAIR_ROOT}"
 	;;
 
 	# -----------------------------
@@ -164,7 +159,7 @@ case "${MODE}" in
 	ARR_ITEM=( )
 
 	# desktop notification
-	${ARR_DESKTOP[@]} notify-send --category=network.disconnected --icon=flashair-icon "FlashAir" "Card wifi disconnected"
+	desktop-display notify-send --category=network.disconnected --icon=flashair-icon "FlashAir" "Card disconnected thru wifi"
 	;;
 
 	# -------------------
@@ -182,6 +177,7 @@ case "${MODE}" in
 
 	# path of the directory on flashair card
 	CARD_ITEM_PATH=$(echo "${ITEM}" | sed "s|^${FLASHAIR_ROOT}||")
+	[ "${CARD_ITEM_PATH}" = "" ] && CARD_ITEM_PATH="/"
 
 	(
 	# initial display
@@ -255,8 +251,9 @@ case "${MODE}" in
 		fi
 	done < "${ITEM_FILELIST}"
 
+	# end of progress display
 	echo "100"
-	) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-icon --no-buttons --undecorated --pulsate --center --auto-close
+	) | desktop-display yad --progress --image=flashair-icon --no-buttons --undecorated --pulsate --center --auto-close
 
 	# no file to handle in step 2
 	ARR_ITEM=( )
@@ -343,7 +340,7 @@ do
 		# set rw to all users
 		chmod 666 "${ITEM}"
 		echo "100"
-		) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-download --no-buttons --undecorated --pulsate --center --auto-close
+		) | desktop-display yad --progress --image=flashair-download --no-buttons --undecorated --pulsate --center --auto-close
 		;;
 
 		# ---------------
@@ -366,7 +363,7 @@ do
 		# if upload directory set, start upload
 		[ "${OPERATION_OK}" != "" ] && curl --dump-header "${TMP_HEADER}" -i -X POST -H "Content-Type: multipart/form-data" -F "data=@${ITEM}" "http://flashair/upload.cgi"
 		echo "100"
-		) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-upload --no-buttons --undecorated --pulsate --center --auto-close
+		) | desktop-display yad --progress --image=flashair-upload --no-buttons --undecorated --pulsate --center --auto-close
 		;;
 
 		# --------------------
@@ -385,7 +382,7 @@ do
 		# delete local file
 		rm -f ${ITEM}
 		echo "100"
-		) | ${ARR_DESKTOP[@]} yad --progress --image=flashair-delete --no-buttons --undecorated --pulsate --center --auto-close
+		) | desktop-display yad --progress --image=flashair-delete --no-buttons --undecorated --pulsate --center --auto-close
 		;;
 
 		*)
