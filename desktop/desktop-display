@@ -1,0 +1,44 @@
+#!/bin/bash
+# Command to display interacton in the latest desktop session
+# If called from an interactive session,
+#   no specific behaviour
+# If called from a service or a daemon, 
+#   get latest desktop environment and display interaction in this desktop
+#
+# Installation is described in http://bernaerts.dynds.org/....
+#
+# Revision history :
+#   05/09/2017, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------------------
+
+# empty parameters array
+ARR_DESKTOP=
+
+# if process is not running in a desktop session
+if [ "${DBUS_SESSION_BUS_ADDRESS}" = "" ]
+then
+	# set latest desktop session file
+	DESKTOP_SESSION="/tmp/.desktop-session.last"
+
+	# if latest desktop session file exists
+	if [ -f "${DESKTOP_SESSION}" ]
+	then
+		# load latest desktop session environment
+		. "${DESKTOP_SESSION}"
+
+		# fill-up array for session display parameters
+		ARR_DESKTOP=("sudo" "-u" "${DESKTOP_USER}" "DISPLAY=${DESKTOP_DISPLAY}" "DBUS_SESSION_BUS_ADDRESS=${DESKTOP_DBUS}")
+
+	# else display is impossible
+	else
+		# łog problem
+		logger "Desktop session data file absent (${DESKTOP_SESSION}). Notification could not be displayed."
+	fi
+fi
+
+# if some display command has been given
+if [ $# -gt 1 ]
+then
+	# display given command
+	[ ${#ARR_DESKTOP[@]} -gt 0 ] && "${ARR_DESKTOP[@]}" "$@" || "$@"
+fi
