@@ -49,3 +49,4 @@ do
 		esac
 	fi
 done < "${FLASHAIR_FIFO}"
+
