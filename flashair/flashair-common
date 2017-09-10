@@ -6,8 +6,11 @@
 # flashair environment base name
 FLASHAIR_NAME="flashair"
 
+# concurrency lock
+FLASHAIR_LOCK="/var/lock/${FLASHAIR_NAME}.lock"
+
 # fifo to serve events
-FLASHAIR_FIFO="/tmp/${FLASHAIR_NAME}.fifo"
+FLASHAIR_FIFO="/tmp/.${FLASHAIR_NAME}.fifo"
 
 # flashair daemon
 FLASHAIR_DAEMON_NAME="${FLASHAIR_NAME}-daemon"
@@ -15,10 +18,7 @@ FLASHAIR_DAEMON_PATH="/usr/local/sbin/${FLASHAIR_DAEMON_NAME}"
 
 # configuration file
 FLASHAIR_CONF="/etc/${FLASHAIR_NAME}.conf"
-[ ! -f ${FLASHAIR_CONF} ] && { logger "flashair - configuration file ${FLASHAIR_CONF} missing"; exit 1; }
+[ ! -f ${FLASHAIR_CONF} ] && { logger "FlashAir - Configuration file ${FLASHAIR_CONF} missing"; exit 1; }
 
 # flashair.conf : mount point
 FLASHAIR_ROOT=$(grep "^flashair-mount=" "${FLASHAIR_CONF}" | cut -d'=' -f2-)
-
-# desktop session data file
-DESKTOP_SESSION="/tmp/.desktop-session.last"
