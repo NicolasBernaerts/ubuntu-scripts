@@ -9,7 +9,11 @@
 #
 # Revision history :
 #   05/09/2017, V1.0 - Creation by N. Bernaerts
+#   12/09/2017, V1.1 - Switch config from shell to ini file
 # -------------------------------------------------------------------
+
+# latest desktop session file
+DESKTOP_SESSION="/tmp/.desktop-session.ini"
 
 # empty parameters array
 ARR_DESKTOP=
@@ -17,14 +21,13 @@ ARR_DESKTOP=
 # if process is not running in a desktop session
 if [ "${DBUS_SESSION_BUS_ADDRESS}" = "" ]
 then
-	# set latest desktop session file
-	DESKTOP_SESSION="/tmp/.desktop-session.last"
-
 	# if latest desktop session file exists
 	if [ -f "${DESKTOP_SESSION}" ]
 	then
 		# load latest desktop session environment
-		. "${DESKTOP_SESSION}"
+		DESKTOP_USER=$(grep "^User=" "${DESKTOP_SESSION}" | cut -d'=' -f2-)
+		DESKTOP_DISPLAY=$(grep "^Display=" "${DESKTOP_SESSION}" | cut -d'=' -f2-)
+		DESKTOP_DBUS=$(grep "^DBus=" "${DESKTOP_SESSION}" | cut -d'=' -f2-)
 
 		# fill-up array for session display parameters
 		ARR_DESKTOP=("sudo" "-u" "${DESKTOP_USER}" "DISPLAY=${DESKTOP_DISPLAY}" "DBUS_SESSION_BUS_ADDRESS=${DESKTOP_DBUS}")
