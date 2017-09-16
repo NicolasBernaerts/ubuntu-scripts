@@ -7,23 +7,24 @@
 # 20/08/2016, V1.2 - Change Telegram from PPA to direct download
 # 05/10/2016, V1.3 - Add SyncThing
 # 29/03/2017, V1.4 - Add TeamViewer
+# 15/09/2017, V1.5 - Update Telegram and Whatsie
 # ----------------------------------------------------------------
 
 # curl
 logger "internet - curl"
-sudo apt-get -y install curl
+sudo apt -y install curl
 
 # network tools
 logger "internet - network tools"
-sudo apt-get -y install nmap snmp snmp-mibs-downloader
+sudo apt -y install nmap snmp snmp-mibs-downloader
 
 # thunderbird
 logger "internet - thunderbird"
-sudo apt-get -y install thunderbird-gnome-support
+sudo apt -y install thunderbird-gnome-support
 
 # chromium and filezilla
 logger "internet - chromium & filezilla"
-sudo apt-get -y install chromium-browser filezilla
+sudo apt -y install chromium-browser filezilla
 
 # youtube-dl
 logger "internet - youtube-dl "
@@ -37,35 +38,22 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 . ./youtubedl-gui-install.sh
 rm youtubedl-gui-install.sh
 
-# skype 4.3
-logger "internet - skype"
-sudo add-apt-repository "deb http://archive.canonical.com/ $(lsb_release -sc) partner"
-sudo apt-get update
-sudo apt-get -y install skype
-
 # whatsapp client whatsie
 logger "internet - whatsie"
-gpg --keyserver pool.sks-keyservers.net --recv-keys 1537994D
-gpg --export --armor 1537994D | sudo apt-key add -
-echo "deb http://dl.bintray.com/aluxian/deb stable main" | sudo tee /etc/apt/sources.list.d/whatsie.list
-sudo apt-get update
-sudo apt-get -y install whatsie
+wget https://github.com/gsantner/whatsie/releases/download/v2.1.0/whatsie-2.1.0-linux-amd64.deb
+sudo dpkg -i whatsie-2.1.0-linux-amd64.deb
+rm whatsie-2.1.0-linux-amd64.deb
 
 # telegram client
-logger "internet - telegram"
-[ "${ARCHI}" = "amd64" ] && TELEGRAM_URL="https://tdesktop.com/linux" || TELEGRAM_URL="https://tdesktop.com/linux32"
-wget -O tsetup.tar.xz "${TELEGRAM_URL}"
-mkdir $HOME/.TelegramDesktop
-tar xf tsetup.tar.xz -C "$HOME/.TelegramDesktop"
-rm tsetup.tar.xz
-$HOME/.TelegramDesktop/Telegram/Telegram &
-chmod +x $HOME/.local/share/applications/telegramdesktop.desktop
+sudo add-apt-repository -y ppa:atareao/telegram
+sudo apt update
+sudo apt install telegram
 
 # Syncthing (release channel)
 logger "internet - Syncthing"
 curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
 echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
-sudo apt-get update
-sudo apt-get -y install syncthing
+sudo apt update
+sudo apt -y install syncthing
 sudo systemctl enable syncthing@${USER}.service
 sudo systemctl start syncthing@${USER}.service
