@@ -21,6 +21,7 @@ command -v exiftool >/dev/null 2>&1 || exit 1
 command -v djpeg >/dev/null 2>&1 || exit 1
 command -v pngtopnm >/dev/null 2>&1 || exit 1
 command -v pnmscalefixed >/dev/null 2>&1 || exit 1
+command -v pnmflip >/dev/null 2>&1 || exit 1
 command -v pnmcomp >/dev/null 2>&1 || exit 1
 command -v pnmtopng >/dev/null 2>&1 || exit 1
 
@@ -30,11 +31,8 @@ FILE_PATH=$1
 FILE_THUMB=$2
 SIZE=$3
 
-echo "$0 $1 $2 $3" >> $HOME/thumb.log
-
 # generate temporary local filename
 TMP_PGM=$(mktemp -t XXXXXXXX.pgm)
-#cp "${FILE_PATH}" "${TMP_FILE}"
 
 # calculate icon size
 TAG_WIDTH=$((${SIZE} / 4))
@@ -45,31 +43,45 @@ EXIF_ORIENT=$(echo "${EXIF_DATA}" | grep -i "orientation=" | grep -i "rotate" | 
 EXIF_MODEL=$(echo "${EXIF_DATA}" | grep -i "model=" | cut -d'=' -f2- | tr '[:upper:]' '[:lower:]')
 EXIF_GPS=$(echo "${EXIF_DATA}" | grep -i "gpslatitude=" | cut -d'=' -f2-)
 
-# icon system path
+# icon in system path
 PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
 NONE_ICON="${PATH_SYSTEM}/none.png"
 GPS_ICON="${PATH_SYSTEM}/gps.png"
 
-# icon user path
+# icon in user path
 PATH_USER="$HOME/.local/share/icons"
 CAMERA_ICON="${PATH_USER}/${EXIF_MODEL}.png"
 
-# cache files
+# tag cache files
 CACHE_PATH="$HOME/.cache/${SCRIPT_NAME}"
 NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
-GPS_TAG="${CACHE_PATH}/${SIZE}-gps-tag.pnm"
-GPS_ALPHA="${CACHE_PATH}/${SIZE}-gps-alpha.pnm"
-
-# if needed, create cache files
 [ ! -d "${CACHE_PATH}" ] && mkdir --parent "${CACHE_PATH}"
 [ ! -f "${NONE_ALPHA}" ] && pngtopnm -alpha "${NONE_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${NONE_ALPHA}"
-[ ! -f "${GPS_TAG}" ] && pngtopnm "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_TAG}"
-[ ! -f "${GPS_ALPHA}" ] && pngtopnm -alpha "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_ALPHA}"
 
-# if GPS data absent, set transparent tag
-[ "${EXIF_GPS}" = "" ] && GPS_ALPHA="${NONE_ALPHA}"
+#  set rotation angle
+[ "${EXIF_ORIENT}" = "" ] && ROTATE_ANGLE="0" || ROTATE_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
 
-# check camera tag
+# -------------
+#   GPS tag
+# -------------
+if [ "${EXIF_GPS}" != "" ]
+then
+	# declare tags
+	GPS_TAG="${CACHE_PATH}/${SIZE}-gps-tag.pnm"
+	GPS_ALPHA="${CACHE_PATH}/${SIZE}-gps-alpha.pnm"
+
+	# if needed, create them
+	[ ! -f "${GPS_TAG}" ] && pngtopnm "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_TAG}"
+	[ ! -f "${GPS_ALPHA}" ] && pngtopnm -alpha "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_ALPHA}"
+else
+	# set to transparent tags
+	GPS_TAG="${NONE_ALPHA}"
+	GPS_ALPHA="${NONE_ALPHA}"
+fi
+
+# -------------
+#  camera tag
+# -------------
 if [ -f "${CAMERA_ICON}" ]
 then
 	# set camera tags
@@ -85,19 +97,25 @@ else
 	CAMERA_ALPHA="${NONE_ALPHA}"
 fi
 
-# set flip according to angle
-EXIF_ANGLE="0"
-if [ "${EXIF_ORIENT}" != "" ]
-then
-	EXIF_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
-	EXIF_CWISE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f3 | tr '[:upper:]' '[:lower:]')
-fi
-
-# generate thumbnail
-#djpeg -fast "${FILE_PATH}" | pnmscalefixed -xysize "${HEIGHT}" "${HEIGHT}" - | pnmflip "-leftright" - | pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" - | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale > "${FILE_THUMB}"
+# --------------------
+#  generate thumbnail
+# --------------------
 
 # generate image miniature
 djpeg -fast "${FILE_PATH}" | pnmscalefixed -xysize "${SIZE}" "${SIZE}" - > "${TMP_PGM}"
+
+# if needed, rotate miniature
+if [ "${ROTATE_ANGLE}" != "0" ]
+then
+	# generate temporary rotation file
+	TMP_FLIP=$(mktemp -t XXXXXXXX.pgm)
+
+	# flip miniature
+	pnmflip -lr -rotate${ROTATE_ANGLE} "${TMP_PGM}" > "${TMP_FLIP}"
+
+	# move back to miniature
+	mv --force "${TMP_FLIP}" "${TMP_PGM}"
+fi
 
 # add camera and GPS tags
 pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PGM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
