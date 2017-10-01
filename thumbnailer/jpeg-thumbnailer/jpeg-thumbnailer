@@ -7,7 +7,7 @@
 # Depends on :
 #   * exiftool
 #   * djpeg (libjpeg-turbo-progs package)
-#   * pngtopnm, pnmscalefixed, pnmcomp and pnmtopng  (netpbm package)
+#   * pngtopnm, pnmscalefixed, pnmflip, pnmcomp and pnmtopng  (netpbm package)
 # Parameters :
 #   $1 - full path of JPEG image
 #   $2 - full path of generated thumbnail
