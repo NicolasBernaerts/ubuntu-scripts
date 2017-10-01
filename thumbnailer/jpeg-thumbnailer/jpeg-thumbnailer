@@ -1,0 +1,106 @@
+#!/bin/bash
+# ---------------------------------------------------------------
+# Thumbnailer for JPEG files including camera and location tags
+#
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/...
+# Depends on :
+#   * exiftool
+#   * djpeg (libjpeg-turbo-progs package)
+#   * pngtopnm, pnmscalefixed, pnmcomp and pnmtopng  (netpbm package)
+# Parameters :
+#   $1 - full path of JPEG image
+#   $2 - full path of generated thumbnail
+#   $3 - height of thumbnail in pixels
+# Revision history :
+# 29/09/2017, V1.0 - Creation by N. Bernaerts
+# --------------------------------------------------------------
+
+# check tools availability
+command -v exiftool >/dev/null 2>&1 || exit 1
+command -v djpeg >/dev/null 2>&1 || exit 1
+command -v pngtopnm >/dev/null 2>&1 || exit 1
+command -v pnmscalefixed >/dev/null 2>&1 || exit 1
+command -v pnmcomp >/dev/null 2>&1 || exit 1
+command -v pnmtopng >/dev/null 2>&1 || exit 1
+
+# get parameters
+SCRIPT_NAME=$(basename $0)
+FILE_PATH=$1
+FILE_THUMB=$2
+SIZE=$3
+
+echo "$0 $1 $2 $3" >> $HOME/thumb.log
+
+# generate temporary local filename
+TMP_PGM=$(mktemp -t XXXXXXXX.pgm)
+#cp "${FILE_PATH}" "${TMP_FILE}"
+
+# calculate icon size
+TAG_WIDTH=$((${SIZE} / 4))
+
+# read exif data
+EXIF_DATA=$(exiftool -args -orientation -model -gpslatitude "${FILE_PATH}")
+EXIF_ORIENT=$(echo "${EXIF_DATA}" | grep -i "orientation=" | grep -i "rotate" | cut -d'=' -f2-)
+EXIF_MODEL=$(echo "${EXIF_DATA}" | grep -i "model=" | cut -d'=' -f2- | tr '[:upper:]' '[:lower:]')
+EXIF_GPS=$(echo "${EXIF_DATA}" | grep -i "gpslatitude=" | cut -d'=' -f2-)
+
+# icon system path
+PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
+NONE_ICON="${PATH_SYSTEM}/none.png"
+GPS_ICON="${PATH_SYSTEM}/gps.png"
+
+# icon user path
+PATH_USER="$HOME/.local/share/icons"
+CAMERA_ICON="${PATH_USER}/${EXIF_MODEL}.png"
+
+# cache files
+CACHE_PATH="$HOME/.cache/${SCRIPT_NAME}"
+NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
+GPS_TAG="${CACHE_PATH}/${SIZE}-gps-tag.pnm"
+GPS_ALPHA="${CACHE_PATH}/${SIZE}-gps-alpha.pnm"
+
+# if needed, create cache files
+[ ! -d "${CACHE_PATH}" ] && mkdir --parent "${CACHE_PATH}"
+[ ! -f "${NONE_ALPHA}" ] && pngtopnm -alpha "${NONE_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${NONE_ALPHA}"
+[ ! -f "${GPS_TAG}" ] && pngtopnm "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_TAG}"
+[ ! -f "${GPS_ALPHA}" ] && pngtopnm -alpha "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_ALPHA}"
+
+# if GPS data absent, set transparent tag
+[ "${EXIF_GPS}" = "" ] && GPS_ALPHA="${NONE_ALPHA}"
+
+# check camera tag
+if [ -f "${CAMERA_ICON}" ]
+then
+	# set camera tags
+	CAMERA_TAG="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-tag.pnm"
+	CAMERA_ALPHA="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-alpha.pnm"
+
+	# if needed, create cache files
+	[ ! -f "${CAMERA_TAG}" ] && pngtopnm "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_TAG}"
+	[ ! -f "${CAMERA_ALPHA}" ] && pngtopnm -alpha "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_ALPHA}"
+else
+	# set camera tags
+	CAMERA_TAG="${NONE_ALPHA}"
+	CAMERA_ALPHA="${NONE_ALPHA}"
+fi
+
+# set flip according to angle
+EXIF_ANGLE="0"
+if [ "${EXIF_ORIENT}" != "" ]
+then
+	EXIF_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
+	EXIF_CWISE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f3 | tr '[:upper:]' '[:lower:]')
+fi
+
+# generate thumbnail
+#djpeg -fast "${FILE_PATH}" | pnmscalefixed -xysize "${HEIGHT}" "${HEIGHT}" - | pnmflip "-leftright" - | pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" - | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale > "${FILE_THUMB}"
+
+# generate image miniature
+djpeg -fast "${FILE_PATH}" | pnmscalefixed -xysize "${SIZE}" "${SIZE}" - > "${TMP_PGM}"
+
+# add camera and GPS tags
+pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PGM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
+
+# remove temporary local file
+rm "${TMP_PGM}"
