@@ -32,6 +32,12 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 . ./sweethome3d-install.sh
 rm sweethome3d-install.sh
 
+# JPEG fast thumbnailer
+logger "graphical - JPEG fast thumbnailer"
+wget --header='Accept-Encoding:none'https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
+. ./jpeg-tumbnailer-install.sh
+rm jpeg-tumbnailer-install.sh
+
 # GIMP XCF thumbnailer
 logger "graphical - GIMP XCF thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
