@@ -27,7 +27,7 @@ sudo mkdir /usr/local/sbin/jpeg-thumbnailer.res
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/jpeg-thumbnailer.res/location.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/location.png
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/jpeg-thumbnailer.res/none.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/none.png
 
-# install main script
+# install main thumbnailer script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/jpeg-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer
 sudo chmod +rx /usr/local/sbin/jpeg-thumbnailer
 
