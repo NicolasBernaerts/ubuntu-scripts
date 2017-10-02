@@ -7,23 +7,29 @@
 # Depends on :
 #   * exiftool
 #   * djpeg (libjpeg-turbo-progs package)
-#   * pngtopnm, pnmscalefixed, pnmflip, pnmcomp and pnmtopng  (netpbm package)
+#   * pngtopnm, pnmscalefixed, pnmcomp and pnmtopng  (netpbm package)
 # Parameters :
 #   $1 - full path of JPEG image
 #   $2 - full path of generated thumbnail
 #   $3 - height of thumbnail in pixels
 # Revision history :
 # 29/09/2017, V1.0 - Creation by N. Bernaerts
+# 02/10/2017, V1.1 - Switch to epeg and jpegtran
+#                    (x2 performance increase)
 # --------------------------------------------------------------
+
+# export local library for epeg
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 
 # check tools availability
 command -v exiftool >/dev/null 2>&1 || exit 1
 command -v djpeg >/dev/null 2>&1 || exit 1
 command -v pngtopnm >/dev/null 2>&1 || exit 1
 command -v pnmscalefixed >/dev/null 2>&1 || exit 1
-command -v pnmflip >/dev/null 2>&1 || exit 1
 command -v pnmcomp >/dev/null 2>&1 || exit 1
 command -v pnmtopng >/dev/null 2>&1 || exit 1
+command -v epeg >/dev/null 2>&1 || exit 1
+command -v jpegtran >/dev/null 2>&1 || exit 1
 
 # get parameters
 SCRIPT_NAME=$(basename $0)
@@ -32,7 +38,7 @@ FILE_THUMB=$2
 SIZE=$3
 
 # generate temporary local filename
-TMP_PGM=$(mktemp -t XXXXXXXX.pgm)
+TMP_JPG=$(mktemp -t XXXXXXXX.jpg)
 
 # calculate icon size
 TAG_WIDTH=$((${SIZE} / 4))
@@ -101,24 +107,25 @@ fi
 #  generate thumbnail
 # --------------------
 
-# generate image miniature
-djpeg -fast "${FILE_PATH}" | pnmscalefixed -xysize "${SIZE}" "${SIZE}" - > "${TMP_PGM}"
+# generate thumbnail
+epeg --max=${SIZE} "${FILE_PATH}" "${TMP_JPG}"
 
-# if needed, rotate miniature
+# if needed, rotate thumbnail
 if [ "${ROTATE_ANGLE}" != "0" ]
 then
 	# generate temporary rotation file
-	TMP_FLIP=$(mktemp -t XXXXXXXX.pgm)
+	TMP_ROTATE=$(mktemp -t XXXXXXXX-rotate.jpg)
 
 	# flip miniature
-	pnmflip -lr -rotate${ROTATE_ANGLE} "${TMP_PGM}" > "${TMP_FLIP}"
+	jpegtran -rotate ${ROTATE_ANGLE} "${TMP_JPG}" > "${TMP_ROTATE}"
 
 	# move back to miniature
-	mv --force "${TMP_FLIP}" "${TMP_PGM}"
+	rm "${TMP_JPG}"
+	TMP_JPG="${TMP_ROTATE}"
 fi
 
-# add camera and GPS tags
-pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PGM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
+# add camera and GPS tags to thumbnail
+djpeg "${TMP_JPG}" | pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" - | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
 
-# remove temporary local file
-rm "${TMP_PGM}"
+# remove temporary file
+rm "${TMP_JPG}"
