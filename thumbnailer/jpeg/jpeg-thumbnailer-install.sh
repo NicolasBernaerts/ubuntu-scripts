@@ -5,10 +5,13 @@
 DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
-# install compilation tools
-sudo apt-get -y install build-essential cmake nasm git autoconf libtool
+# install tools
+sudo apt -y install exiftool libjpeg-turbo-progs netpbm
 
-# install libraries
+# install compilation tools
+sudo apt -y install build-essential cmake nasm git autoconf libtool
+
+# install development libraries
 sudo apt install libjpeg-turbo8-dev libexif-dev
 
 # compile epeg
