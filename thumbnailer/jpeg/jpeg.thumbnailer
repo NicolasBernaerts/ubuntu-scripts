@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
 TryExec=/usr/local/sbin/jpeg-thumbnailer
-Exec=/usr/local/sbin/jpeg-thumbnailer %i %o %s
+Exec=/usr/local/sbin/jpeg-thumbnailer %u %o %s
 MimeType=image/jpeg;
