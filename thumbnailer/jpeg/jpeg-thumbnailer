@@ -6,8 +6,9 @@
 #   http://bernaerts.dyndns.org/linux/...
 # Depends on :
 #   * exiftool
-#   * djpeg (libjpeg-turbo-progs package)
-#   * pngtopnm, pnmscalefixed, pnmcomp and pnmtopng  (netpbm package)
+#   * epeg (compiled)
+#   * djpeg and jpegtran (libjpeg-turbo-progs package)
+#   * pnmcomp and pnmtopng  (netpbm package)
 # Parameters :
 #   $1 - full path of JPEG image
 #   $2 - full path of generated thumbnail
@@ -23,28 +24,38 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 
 # check tools availability
 command -v exiftool >/dev/null 2>&1 || exit 1
-command -v djpeg >/dev/null 2>&1 || exit 1
-command -v pngtopnm >/dev/null 2>&1 || exit 1
-command -v pnmscalefixed >/dev/null 2>&1 || exit 1
-command -v pnmcomp >/dev/null 2>&1 || exit 1
-command -v pnmtopng >/dev/null 2>&1 || exit 1
 command -v epeg >/dev/null 2>&1 || exit 1
 command -v jpegtran >/dev/null 2>&1 || exit 1
+command -v djpeg >/dev/null 2>&1 || exit 1
+command -v pnmcomp >/dev/null 2>&1 || exit 1
+command -v pnmtopng >/dev/null 2>&1 || exit 1
 
 # get parameters
 SCRIPT_NAME=$(basename $0)
-FILE_PATH=$1
+FILE_URI=$1
 FILE_THUMB=$2
 SIZE=$3
 
 # generate temporary local filename
-TMP_JPG=$(mktemp -t XXXXXXXX.jpg)
+TMP_LOCAL=$(mktemp -t XXXXXXXX.jpg)
+TMP_THUMB=$(mktemp -t XXXXXXXX.jpg)
+
+# if file is a remote one
+if [ "${FILE_URI:0:4}" = "file" ]
+then
+	# extract local path
+	FILE_LOCAL="${FILE_URI:7}"
+else
+	# copy input file to temporary local file
+	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+	FILE_LOCAL="${TMP_LOCAL}"	
+fi
 
 # calculate icon size
 TAG_WIDTH=$((${SIZE} / 4))
 
 # read exif data
-EXIF_DATA=$(exiftool -args -orientation -model -gpslatitude "${FILE_PATH}")
+EXIF_DATA=$(exiftool -args -orientation -model -gpslatitude "${FILE_LOCAL}")
 EXIF_ORIENT=$(echo "${EXIF_DATA}" | grep -i "orientation=" | grep -i "rotate" | cut -d'=' -f2-)
 EXIF_MODEL=$(echo "${EXIF_DATA}" | grep -i "model=" | cut -d'=' -f2- | tr '[:upper:]' '[:lower:]')
 EXIF_GPS=$(echo "${EXIF_DATA}" | grep -i "gpslatitude=" | cut -d'=' -f2-)
@@ -108,7 +119,7 @@ fi
 # --------------------
 
 # generate thumbnail
-epeg --max=${SIZE} "${FILE_PATH}" "${TMP_JPG}"
+epeg --max=${SIZE} "${FILE_LOCAL}" "${TMP_THUMB}"
 
 # if needed, rotate thumbnail
 if [ "${ROTATE_ANGLE}" != "0" ]
@@ -117,15 +128,15 @@ then
 	TMP_ROTATE=$(mktemp -t XXXXXXXX-rotate.jpg)
 
 	# flip miniature
-	jpegtran -rotate ${ROTATE_ANGLE} "${TMP_JPG}" > "${TMP_ROTATE}"
+	jpegtran -rotate ${ROTATE_ANGLE} "${TMP_THUMB}" > "${TMP_ROTATE}"
 
 	# move back to miniature
-	rm "${TMP_JPG}"
-	TMP_JPG="${TMP_ROTATE}"
+	rm "${TMP_THUMB}"
+	TMP_THUMB="${TMP_ROTATE}"
 fi
 
 # add camera and GPS tags to thumbnail
-djpeg "${TMP_JPG}" | pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" - | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
+djpeg "${TMP_THUMB}" | pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" - | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
 
 # remove temporary file
-rm "${TMP_JPG}"
+rm "${TMP_LOCAL}" "${TMP_THUMB}"
