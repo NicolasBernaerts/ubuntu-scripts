@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 # ---------------------------------------------------
 # Thumbnailer for LibreOffice & OpenOffice documents
 #
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
 # Depends on :
+#   * mimetype
 #   * unzip
 #   * composite (imagemagick package)
 #   * gvfs-copy (gvfs-bin package)
@@ -18,7 +19,7 @@
 # ---------------------------------------------------
 
 # check tools availability
-command -v gvfs-copy >/dev/null 2>&1 || exit 1
+command -v mimetype >/dev/null 2>&1 || exit 1
 command -v unzip >/dev/null 2>&1 || exit 1
 command -v composite >/dev/null 2>&1 || exit 1
 
@@ -26,27 +27,41 @@ command -v composite >/dev/null 2>&1 || exit 1
 ICONPATH="/usr/local/sbin/lo-thumbnailer-icons"
 
 # get parameters
-FILE_URI=$1
-FILE_THUMB=$2
-HEIGHT=$3
+FILE_URI="$1"
+FILE_THUMB="$2"
+HEIGHT="$3"
 
 # get filename extension
-FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
+FILE_EXT=$(echo "${FILE_URI}" | sed "s/^.*\.\(.*\)/\1/")
 
 # generate temporary local filename
-TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
+TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
 
-# copy input file to temporary local file
-gvfs-copy "${FILE_URI}" "${TMP_FILE}"
+# if file is a remote one
+if [ "${FILE_URI:0:4}" = "file" ]
+then
+    # convert URI to local path
+    FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+
+    # extract local path
+    FILE_LOCAL="${FILE_PATH:7}"
+else
+    # check gvfs-copy availability
+    command -v gvfs-copy >/dev/null 2>&1 || exit 1
+
+    # copy input file to temporary local file
+    gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+    FILE_LOCAL="${TMP_LOCAL}"	
+fi
 
 # get the file mime type (application/vnd.oasis.opendocument...)
-MIMETYPE=$(mimetype -b "${TMP_FILE}")
+MIMETYPE=$(mimetype -b "${FILE_LOCAL}")
 
 # get document type (text, spreadsheet, graphics or presentation)
 DOCTYPE=$(echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/')
 
 # generate thumbnail according to document type
-unzip -p "${TMP_FILE}" Thumbnails/thumbnail.png | composite -gravity center \( -resize x244 - \) ${ICONPATH}/lo-${DOCTYPE}.png ${ICONPATH}/lo-mask.png \( -resize x${HEIGHT} \) "${FILE_THUMB}"
+unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | composite -gravity center \( -resize x244 - \) "${ICONPATH}/lo-${DOCTYPE}.png" "${ICONPATH}/lo-mask.png" \( -resize x${HEIGHT} \) "${FILE_THUMB}"
 
 # remove temporary local file
-rm ${TMP_FILE}
+rm ${TMP_LOCAL}
