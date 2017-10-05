@@ -8,7 +8,8 @@
 #   * exiftool
 #   * epeg (compiled)
 #   * djpeg and jpegtran (libjpeg-turbo-progs package)
-#   * pnmcomp and pnmtopng  (netpbm package)
+#   * pnmcomp and pnmtopng  (netpbm package)# Parameters :
+#   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - full path of JPEG image
 #   $2 - full path of generated thumbnail
@@ -43,9 +44,15 @@ TMP_THUMB=$(mktemp -t XXXXXXXX.jpg)
 # if file is a remote one
 if [ "${FILE_URI:0:4}" = "file" ]
 then
+	# convert URI to local path
+	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+
 	# extract local path
-	FILE_LOCAL="${FILE_URI:7}"
+	FILE_LOCAL="${FILE_PATH:7}"
 else
+	# check gvfs-copy availability
+	command -v gvfs-copy >/dev/null 2>&1 || exit 1
+
 	# copy input file to temporary local file
 	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
 	FILE_LOCAL="${TMP_LOCAL}"	
