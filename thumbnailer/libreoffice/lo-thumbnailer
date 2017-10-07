@@ -7,7 +7,7 @@
 # Depends on :
 #   * mimetype
 #   * unzip
-#   * composite (imagemagick package)
+#   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
 #   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - URI of office file
@@ -16,52 +16,69 @@
 # Revision history :
 # 04/08/2013, V1.0 - Creation by N. Bernaerts
 # 15/11/2014, V2.0 - Use URI to handle network shares
+# 07/10/2017, V2.1 - Speedup with netpbm tools
 # ---------------------------------------------------
 
 # check tools availability
 command -v mimetype >/dev/null 2>&1 || exit 1
 command -v unzip >/dev/null 2>&1 || exit 1
-command -v composite >/dev/null 2>&1 || exit 1
+command -v pbmmake >/dev/null 2>&1 || exit 1
+command -v pngtopnm >/dev/null 2>&1 || exit 1
+command -v pnmscalefixed >/dev/null 2>&1 || exit 1
+command -v pnmcomp >/dev/null 2>&1 || exit 1
+command -v pnmtopng >/dev/null 2>&1 || exit 1
 
 # path where to get icons used for generation
 ICONPATH="/usr/local/sbin/lo-thumbnailer-icons"
 
 # get parameters
+SCRIPT_NAME=$(basename $0)
 FILE_URI="$1"
 FILE_THUMB="$2"
-HEIGHT="$3"
+SIZE="$3"
+
+# set working path
+PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
+PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
+[ ! -d "${PATH_CACHE}" ] && mkdir --parent "${PATH_CACHE}"
 
 # get filename extension
 FILE_EXT=$(echo "${FILE_URI}" | sed "s/^.*\.\(.*\)/\1/")
 
 # generate temporary local filename
 TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
+TMP_PNM=$(mktemp -t "XXXXXXXX.pnm")
 
 # if file is a remote one
-if [ "${FILE_URI:0:4}" = "file" ]
+URI_TYPE="${FILE_URI:0:4}"
+if [ "${URI_TYPE}" = "file" ]
 then
-    # convert URI to local path
-    FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+	# convert URI to local path
+	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
 
-    # extract local path
-    FILE_LOCAL="${FILE_PATH:7}"
+	# extract local path
+	FILE_LOCAL="${FILE_PATH:7}"
 else
-    # check gvfs-copy availability
-    command -v gvfs-copy >/dev/null 2>&1 || exit 1
+	# check gvfs-copy availability
+	command -v gvfs-copy >/dev/null 2>&1 || exit 1
 
-    # copy input file to temporary local file
-    gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
-    FILE_LOCAL="${TMP_LOCAL}"	
+	# copy input file to temporary local file
+	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+	FILE_LOCAL="${TMP_LOCAL}"	
 fi
 
-# get the file mime type (application/vnd.oasis.opendocument...)
-MIMETYPE=$(mimetype -b "${FILE_LOCAL}")
-
 # get document type (text, spreadsheet, graphics or presentation)
-DOCTYPE=$(echo "${MIMETYPE}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/')
+DOC_TYPE=$(mimetype -b "${FILE_LOCAL}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/')
+
+# if needed, create tag and mask
+DOC_TAG="${PATH_CACHE}/${SIZE}-${DOC_TYPE}.pnm"
+DOC_ALPHA="${PATH_CACHE}/${SIZE}-${DOC_TYPE}-alpha.pnm"
+[ ! -f "${TYPE_TAG}" ] && pngtopnm "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_TAG}"
+[ ! -f "${TYPE_ALPHA}" ] && pngtopnm -alpha "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_ALPHA}"
 
 # generate thumbnail according to document type
-unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | composite -gravity center \( -resize x244 - \) "${ICONPATH}/lo-${DOCTYPE}.png" "${ICONPATH}/lo-mask.png" \( -resize x${HEIGHT} \) "${FILE_THUMB}"
+unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | pngtopnm > "${TMP_PNM}"
+pbmmake -white 208 256 | pnmcomp -align center -valign middle "${TMP_PNM}" - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmcomp -align center -valign middle -alpha "${DOC_ALPHA}" "${DOC_TAG}" - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
 # remove temporary local file
-rm ${TMP_LOCAL}
+rm "${TMP_LOCAL}" "${TMP_PNM}"
