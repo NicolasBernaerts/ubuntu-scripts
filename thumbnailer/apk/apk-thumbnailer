@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ---------------------------------------------------
 # Thumbnailer for APK archives files
 # Display embedded icon and version number (option)
@@ -7,9 +7,10 @@
 #   http://bernaerts.dyndns.org/linux/76-gnome/284-gnome-shell-generate-apk-thumbnail-nautilus
 # Depends on :
 #   * unzip
-#   * convert (imagemagick package)
 #   * aapt
-#   * gvfs
+#   * convert (imagemagick package)
+#   * pngtopnm, pnmtopng, pnmcrop, pnmpad, pnmscalefixed and pnmcomp (netpbm package)
+#   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - URI of APK archive
 #   $2 - full path of generated thumbnail
@@ -20,55 +21,78 @@
 #   05/11/2014, V2.0 - Add version display
 #   06/11/2014, V2.1 - Don't use renamed aapt anymore
 #   15/11/2014, V3.0 - Use URI to handle network shares
+#   07/10/2017, V3.1 - Speedup with netpbm tools
 # ---------------------------------------------------
 
 # check tools availability 
-command -v gvfs-copy >/dev/null 2>&1 || exit 1
 command -v aapt >/dev/null 2>&1 || exit 1
 command -v unzip >/dev/null 2>&1 || exit 1
-command -v convert >/dev/null 2>&1 || exit 1
+command -v pnmcrop >/dev/null 2>&1 || exit 1
+command -v pnmpad >/dev/null 2>&1 || exit 1
+command -v pngtopnm >/dev/null 2>&1 || exit 1
+command -v pnmscalefixed >/dev/null 2>&1 || exit 1
+command -v pnmcomp >/dev/null 2>&1 || exit 1
+command -v pnmtopng >/dev/null 2>&1 || exit 1
 
-# select to display version on the icon
-# set to yes to display version number on the icon
-DISPLAY_VERSION="no"
+# set to no to remove version number on the icon
+DISPLAY_VERSION="yes"
 
 # get parameters
-FILE_URI=$1
-FILE_THUMB=$2
-HEIGHT=$3
+FILE_URI="$1"
+FILE_THUMB="$2"
+SIZE="$3"
 
 # get filename extension
 FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 
 # generate temporary local filename
-TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
+TMP_LOCAL=$(mktemp -t XXXXXXXX.${FILE_EXT})
+TMP_PNM=$(mktemp -t XXXXXXXX.pnm)
 
-# copy input file to temporary local file
-gvfs-copy "${FILE_URI}" "${TMP_FILE}"
+# if file is a remote one
+URI_TYPE="${FILE_URI:0:4}"
+if [ "${URI_TYPE}" = "file" ]
+then
+	# convert URI to local path
+	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+
+	# extract local path
+	FILE_LOCAL="${FILE_PATH:7}"
+else
+	# check gvfs-copy availability
+	command -v gvfs-copy >/dev/null 2>&1 || exit 1
+
+	# copy input file to temporary local file
+	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+	FILE_LOCAL="${TMP_LOCAL}"	
+fi
 
 # get application icon
-ICON=$(aapt d badging "${TMP_FILE}" | grep "application-icon" | sed 's/^.*icon-\(.*\):.\(.*\).$/\2/' | tail -1)
+ICON=$(aapt d badging "${FILE_LOCAL}" | grep "application-icon" | sed 's/^.*icon-\(.*\):.\(.*\).$/\2/' | tail -1)
 
 # if icon exists, extract icon & generate thumbnail 
-if [ "$ICON" != "" ] ;
+if [ "$ICON" != "" ]
 then 
-  # if needed, add version display options
-  if [ "$DISPLAY_VERSION" = "yes" ] ;
-  then
-    # get version
-    VERSION=$(aapt d badging "${TMP_FILE}" | grep versionName | sed 's/^.*versionName=.\(.*\)..*$/\1/')
+	# if needed, add version display options
+	if [ "$DISPLAY_VERSION" = "yes" ]
+	then
+		# get version
+		VERSION=$(aapt d badging "${FILE_LOCAL}" | grep "versionName=" | sed 's/^.*versionName=.\([0-9.]*\).*$/\1/')
 
-    # calculate optimum font size
-    FONT_SIZE=`echo $HEIGHT / 5 | bc`
+		# calculate optimum font size
+		FONT_SIZE=$((${SIZE} / 10 + 1))
 
-    # generate icon including version number
-    unzip -p "${TMP_FILE}" "${ICON}" | convert -resize x${HEIGHT} - -pointsize $FONT_SIZE -fill black -gravity south -undercolor white -annotate 0 " $VERSION " "${FILE_THUMB}"
+		# generate version image
+		pbmtextps -fontsize ${FONT_SIZE} "${VERSION}" | pnmcrop - | pnmpad -white -left 4 -right 4 -top 4 -bottom 4 - | pnmpad -black -left 2 -right 2 -top 2 -bottom 2 - > "${TMP_PNM}"
 
-  # else, generate plain icon without version number
-  else
-    unzip -p "${TMP_FILE}" "${ICON}" | convert -resize x${HEIGHT} - "${FILE_THUMB}"
-  fi
+		# generate icon including version number
+		unzip -p "${FILE_LOCAL}" "${ICON}" | pngtopnm - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmcomp -align center -valign bottom "${TMP_PNM}" - | pnmtopng > "${FILE_THUMB}"
+
+	# else, generate plain icon without version number
+	else
+		unzip -p "${FILE_LOCAL}" "${ICON}" | pngtopnm - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
+	fi
 fi
 
 # remove temporary local file
-rm ${TMP_FILE}
+rm ${TMP_LOCAL} ${TMP_PNM}
