@@ -88,8 +88,9 @@ then
 		# generate icon including version number
 		unzip -p "${FILE_LOCAL}" "${ICON}" | pngtopnm - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmcomp -align center -valign bottom "${TMP_PNM}" - | pnmtopng > "${FILE_THUMB}"
 
-	# else, generate plain icon without version number
+	# else, no version needed
 	else
+		# generate plain icon without version number
 		unzip -p "${FILE_LOCAL}" "${ICON}" | pngtopnm - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 	fi
 fi
