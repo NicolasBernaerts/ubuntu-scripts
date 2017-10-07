@@ -73,8 +73,8 @@ DOC_TYPE=$(mimetype -b "${FILE_LOCAL}" | sed 's/.*: //' | sed 's/^.*opendocument
 # if needed, create tag and mask
 DOC_TAG="${PATH_CACHE}/${SIZE}-${DOC_TYPE}.pnm"
 DOC_ALPHA="${PATH_CACHE}/${SIZE}-${DOC_TYPE}-alpha.pnm"
-[ ! -f "${TYPE_TAG}" ] && pngtopnm "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_TAG}"
-[ ! -f "${TYPE_ALPHA}" ] && pngtopnm -alpha "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_ALPHA}"
+[ ! -f "${DOC_TAG}" ] && pngtopnm "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_TAG}"
+[ ! -f "${DOC_ALPHA}" ] && pngtopnm -alpha "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_ALPHA}"
 
 # generate thumbnail according to document type
 unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | pngtopnm > "${TMP_PNM}"
