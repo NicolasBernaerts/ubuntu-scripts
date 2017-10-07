@@ -6,7 +6,7 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # install tools
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip imagemagick python-nautilus
+sudo apt-get -y install gvfs-bin unzip imagemagick netpbm
 
 # install aapt
 sudo apt-get -y install aapt
