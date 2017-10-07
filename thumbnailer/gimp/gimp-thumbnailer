@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 # ---------------------------------------------------
 # Thumbnailer for GIMP XCF files
 #
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/xxx
 # Depends on :
-#   * xcf2png (xcftools package)
-#   * convert (imagemagick package)
+#   * xcf2pnm (xcftools package)
+#   * pnmscalefixed and pnmtopng (netpbm package)
 #   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - URI of XCF file
@@ -14,29 +14,45 @@
 #   $3 - height of thumbnail in pixels
 # Revision history :
 #   26/11/2014, V1.0 - Creation by N. Bernaerts
+#   07/10/2017, V1.1 - Speedup with netpbm tools
 # ---------------------------------------------------
 
 # check tools availability 
-command -v gvfs-copy >/dev/null 2>&1 || exit 1
-command -v xcf2png >/dev/null 2>&1 || exit 1
-command -v convert >/dev/null 2>&1 || exit 1
+command -v xcf2pnm >/dev/null 2>&1 || exit 1
+command -v pnmscalefixed >/dev/null 2>&1 || exit 1
+command -v pnmtopng >/dev/null 2>&1 || exit 1
 
 # get parameters
-FILE_URI=$1
-FILE_THUMB=$2
-HEIGHT=$3
+FILE_URI="$1"
+FILE_THUMB="$2"
+HEIGHT="$3"
 
 # get filename extension
 FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 
 # generate temporary local filename
-TMP_FILE=$(mktemp -t XXXXXXXX.${FILE_EXT})
+TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
 
-# copy input file to temporary local file
-gvfs-copy "${FILE_URI}" "${TMP_FILE}"
+# if file is a remote one
+URI_TYPE="${FILE_URI:0:4}"
+if [ "${URI_TYPE}" = "file" ]
+then
+    # convert URI to local path
+    FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+
+    # extract local path
+    FILE_LOCAL="${FILE_PATH:7}"
+else
+    # check gvfs-copy availability
+    command -v gvfs-copy >/dev/null 2>&1 || exit 1
+
+    # copy input file to temporary local file
+    gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+    FILE_LOCAL="${TMP_LOCAL}"	
+fi
 
 # generate thumbnail
-xcf2png "${TMP_FILE}" | convert -resize x${HEIGHT} - "${FILE_THUMB}"
+xcf2pnm -c --autocrop "${FILE_LOCAL}" | pnmscalefixed -xysize ${HEIGHT} ${HEIGHT} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
 # remove temporary local file
-rm ${TMP_FILE}
+rm ${TMP_LOCAL}
