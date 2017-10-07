@@ -10,11 +10,11 @@ sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unzip netpbm
 
 # install thumbnailer icons
 sudo mkdir /usr/local/sbin/lo-thumbnailer.res
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-database.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-database.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-graphics.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-graphics.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-presentation.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-presentation.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-spreadsheet.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-spreadsheet.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer-icons/lo-text.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-text.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer.res/lo-database.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-database.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer.res/lo-graphics.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-graphics.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer.res/lo-presentation.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-presentation.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer.res/lo-spreadsheet.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-spreadsheet.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer.res/lo-text.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/icons/lo-text.png
 
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/lo-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer
