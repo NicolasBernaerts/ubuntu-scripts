@@ -14,3 +14,9 @@ sudo chmod +x /usr/local/sbin/apk-thumbnailer
 
 # thumbnailer integration
 sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/apk.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/apk/apk.thumbnailer
+
+# stop nautilus
+nautilus -q
+
+# remove previous thumbnails
+rm -R $HOME/.cache/thumbnails/*
