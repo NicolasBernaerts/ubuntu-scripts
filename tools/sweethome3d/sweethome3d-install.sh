@@ -7,11 +7,10 @@
 sudo apt-get -y install libjava3d-java
 
 # install latest version under $HOME/.local/apps/SweetHome3D
-mkdir $HOME/.local/apps
-wget -O sweethome3d.tgz https://vorboss.dl.sourceforge.net/project/sweethome3d/SweetHome3D/SweetHome3D-5.3/SweetHome3D-5.3-linux-x64.tgz
+wget -O sweethome3d.tgz https://kent.dl.sourceforge.net/project/sweethome3d/SweetHome3D/SweetHome3D-5.5.2/SweetHome3D-5.5.2-linux-x64.tgz
 tar -xvf sweethome3d.tgz
-mv SweetHome3D-* $HOME/.local/apps/SweetHome3D
-rm sweethome3d.tgz
+sudo mv SweetHome3D-* /opt/sweethome3d
+rm ./sweethome3d.tgz
 
 # install sweethome3d project icon
 sudo wget -O "/usr/share/icons/sweethome3d.png" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/tools/sweethome3d/sweethome3d.png
@@ -21,9 +20,8 @@ sudo wget -O "/usr/share/mime/packages/sweethome3d.xml" https://raw.githubuserco
 sudo update-mime-database /usr/share/mime
 
 # declare desktop file
-wget -O $HOME/.local/share/applications/sweethome3d.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d.desktop
-sed -i "s/##USER##/$USER/g" $HOME/.local/share/applications/sweethome3d.desktop
-chmod +x $HOME/.local/share/applications/sweethome3d.desktop
+sudo wget /usr/share/applications/sweethome3d.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d.desktop
+sudo chmod +x /usr/share/applications/sweethome3d.desktop
 
 # associate mimetype to desktop file
 ASSOCIATION=$(grep "application/sweethome3d=" "$HOME/.local/share/applications/mimeapps.list")
