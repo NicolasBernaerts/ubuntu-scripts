@@ -2,7 +2,7 @@
 # RAW files thumbnailer
 
 # install tools
-sudo apt-get -y install dcraw imagemagick
+sudo apt-get -y install dcraw libjpeg-turbo-progs netpbm
 
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/raw-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer
