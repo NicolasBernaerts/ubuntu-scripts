@@ -6,14 +6,13 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # install tools
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unoconv imagemagick
+sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin unoconv netpbm
 
 # install thumbnailer icons
-sudo mkdir /usr/local/sbin/msoffice-thumbnailer-icons
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-mask.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-mask.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-word.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-word.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-excel.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-excel.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer-icons/msoffice-powerpoint.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-powerpoint.png
+sudo mkdir /usr/local/sbin/msoffice-thumbnailer.res
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer.res/msoffice-odt.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-odt.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer.res/msoffice-ods.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-ods.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer.res/msoffice-odp.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-odp.png
 
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
