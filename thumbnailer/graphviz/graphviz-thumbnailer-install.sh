@@ -18,8 +18,8 @@ sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/graphviz.de
 sudo chmod +x /usr/share/applications/graphviz.desktop
 
 # install main thumnailer script
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/graphviz-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer
-sudo chmod +x /usr/local/bin/graphviz-thumbnailer
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/graphviz-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer
+sudo chmod +x /usr/local/sbin/graphviz-thumbnailer
 
 # thumbnailer integration
 sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/graphviz.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz.thumbnailer
