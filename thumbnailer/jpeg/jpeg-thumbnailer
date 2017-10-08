@@ -16,8 +16,8 @@
 #   $3 - height of thumbnail in pixels
 # Revision history :
 # 29/09/2017, V1.0 - Creation by N. Bernaerts
-# 02/10/2017, V1.1 - Switch to epeg and jpegtran
-#                    (x2 performance increase)
+# 02/10/2017, V1.1 - Speedup with epeg and jpegtran
+# 07/10/2017, V1.2 - Speedup with thumbnail extraction if available
 # --------------------------------------------------------------
 
 # export local library for epeg
@@ -59,7 +59,7 @@ else
 	FILE_LOCAL="${TMP_LOCAL}"	
 fi
 
-# calculate icon size
+# calculate tags width
 TAG_WIDTH=$((${SIZE} / 4))
 
 # read exif data
@@ -67,6 +67,9 @@ EXIF_DATA=$(exiftool -args -orientation -model -gpslatitude "${FILE_LOCAL}")
 EXIF_ORIENT=$(echo "${EXIF_DATA}" | grep -i "orientation=" | grep -i "rotate" | cut -d'=' -f2-)
 EXIF_MODEL=$(echo "${EXIF_DATA}" | grep -i "model=" | cut -d'=' -f2- | tr '[:upper:]' '[:lower:]')
 EXIF_GPS=$(echo "${EXIF_DATA}" | grep -i "gpslatitude=" | cut -d'=' -f2-)
+
+# extract embedded thumbnail
+exiftool -b -ThumbnailImage "${FILE_LOCAL}" > "${TMP_THUMB}"
 
 # icon in system path
 PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
@@ -83,8 +86,9 @@ NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
 [ ! -d "${CACHE_PATH}" ] && mkdir --parent "${CACHE_PATH}"
 [ ! -f "${NONE_ALPHA}" ] && pngtopnm -alpha "${NONE_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${NONE_ALPHA}"
 
-#  set rotation angle
-[ "${EXIF_ORIENT}" = "" ] && ROTATE_ANGLE="0" || ROTATE_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
+# if thumnail extracted or image has no rotation, angle=0
+#  else extract rotation angle
+[ "${EXIF_ORIENT}" = "" -o -s "${TMP_THUMB}" ] && ROTATE_ANGLE="0" || ROTATE_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
 
 # -------------
 #   GPS tag
@@ -122,18 +126,20 @@ else
 	CAMERA_ALPHA="${NONE_ALPHA}"
 fi
 
-# --------------------
-#  generate thumbnail
-# --------------------
+# ----------------------
+#  thumbnail generation
+# ----------------------
 
-# generate thumbnail
-epeg --max=${SIZE} "${FILE_LOCAL}" "${TMP_THUMB}"
+# if thumbnail has not been extracted, generate thumbnail from picture
+[ ! -s "${TMP_THUMB}" ] && epeg --max=${SIZE} "${FILE_LOCAL}" "${TMP_THUMB}"
 
 # if needed, rotate thumbnail
 if [ "${ROTATE_ANGLE}" != "0" ]
 then
 	# generate temporary rotation file
 	TMP_ROTATE=$(mktemp -t XXXXXXXX-rotate.jpg)
+
+echo "Rotation ${ROTATE_ANGLE}"
 
 	# flip miniature
 	jpegtran -rotate ${ROTATE_ANGLE} "${TMP_THUMB}" > "${TMP_ROTATE}"
