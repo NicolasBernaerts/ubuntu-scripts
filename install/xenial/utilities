@@ -66,4 +66,4 @@ logger "utilities - dual monitor setup"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
 chmod +x update-monitor-position-install.sh
 ./update-monitor-position-install.sh
-rm update-monitor-position-install.sh
+rm ./update-monitor-position-install.sh
