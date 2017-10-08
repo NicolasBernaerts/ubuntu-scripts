@@ -25,3 +25,9 @@ sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/lo.thumbnai
 
 # if present, disable gsf-office.thumbnailer (used in UbuntuGnome 16.04)
 [ -f /usr/share/thumbnailers/gsf-office.thumbnailer ] && sudo mv /usr/share/thumbnailers/gsf-office.thumbnailer /usr/share/thumbnailers/gsf-office.thumbnailer.org
+
+# stop nautilus
+nautilus -q
+
+# remove previous thumbnails
+rm -R $HOME/.cache/thumbnails/*
