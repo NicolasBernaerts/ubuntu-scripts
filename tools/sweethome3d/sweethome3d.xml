@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="application/sweethome3d">
+    <comment>SweetHome3D project</comment>
+    <glob pattern="*.sh3d"/>
+    <icon name="sweethome3d"/>
+  </mime-type>
+</mime-info>
