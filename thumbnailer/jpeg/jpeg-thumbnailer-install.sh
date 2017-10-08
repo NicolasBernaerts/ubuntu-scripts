@@ -39,11 +39,17 @@ sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/jpeg.thumbn
 
 # camera icons
 sudo mkdir --parents $HOME/.local/share/icons
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/canon eos 1000d.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon eos 1000d.png"
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/canon eos 1100d.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon eos 1100d.png"
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/canon powershot g7 x.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon powershot g7 x.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/dmc-fz200.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/dmc-fz200.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/dmc-tz5.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/dmc-tz5.png"
-wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a2000.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a2000.png"
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus e1003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus e1003.png"
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a0001.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a0001.png"
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a2003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a2003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a3003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a3003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a5000.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a5000.png"
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/qcam-aa.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/qcam-aa.png.png"
 
 # stop nautilus
 nautilus -q
