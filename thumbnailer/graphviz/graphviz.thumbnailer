@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
-TryExec=/usr/local/bin/graphviz-thumbnailer
-Exec=/usr/local/bin/graphviz-thumbnailer %i %o %s
+TryExec=/usr/local/sbin/graphviz-thumbnailer
+Exec=/usr/local/sbin/graphviz-thumbnailer %u %o %s
 MimeType=text/vnd.graphviz;
