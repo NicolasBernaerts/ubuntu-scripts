@@ -71,13 +71,15 @@ sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
 # Convert video to MKV container and transcode audio to AAC
 logger "multimedia - convert video to MKV"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkv-install.sh
-. ./video-convert2mkv-install.sh
+chmod +x ./video-convert2mkv-install.sh
+./video-convert2mkv-install.sh
 rm video-convert2mkv-install.sh
 
 # Video Stabilizer based on MLT and vid.stab
 logger "multimedia - video Stabilizer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-install.sh
-. ./video-stabilize-install.sh
+chmod +x ./video-stabilize-install.sh
+./video-stabilize-install.sh
 rm video-stabilize-install.sh
 
 # openshot
