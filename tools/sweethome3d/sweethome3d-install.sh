@@ -10,6 +10,7 @@ sudo apt-get -y install libjava3d-java
 wget -O sweethome3d.tgz https://kent.dl.sourceforge.net/project/sweethome3d/SweetHome3D/SweetHome3D-5.5.2/SweetHome3D-5.5.2-linux-x64.tgz
 tar -xvf sweethome3d.tgz
 sudo mv SweetHome3D-* /opt/sweethome3d
+sudo chown -R root:root /opt/sweethome3d
 rm ./sweethome3d.tgz
 
 # install sweethome3d project icon
