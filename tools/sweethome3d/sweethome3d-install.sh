@@ -24,3 +24,7 @@ sudo update-mime-database /usr/share/mime
 wget -O $HOME/.local/share/applications/sweethome3d.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d.desktop
 sed -i "s/##USER##/$USER/g" $HOME/.local/share/applications/sweethome3d.desktop
 chmod +x $HOME/.local/share/applications/sweethome3d.desktop
+
+# associate mimetype to desktop file
+ASSOCIATION=$(grep "application/sweethome3d=" "$HOME/.local/share/applications/mimeapps.list")
+[ "${ASSOCIATION}" = "" ] && echo "application/sweethome3d=sweethome3d.desktop" >> "$HOME/.local/share/applications/mimeapps.list"
