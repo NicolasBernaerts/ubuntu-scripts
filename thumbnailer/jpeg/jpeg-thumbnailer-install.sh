@@ -27,7 +27,7 @@ sudo make install
 
 # install thumbnailer icons
 sudo mkdir /usr/local/sbin/jpeg-thumbnailer.res
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/jpeg-thumbnailer.res/location.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/location.png
+sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/jpeg-thumbnailer.res/gps.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/gps.png
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/jpeg-thumbnailer.res/none.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/none.png
 
 # install main thumbnailer script
