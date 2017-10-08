@@ -21,7 +21,8 @@ cat $HOME/.config/nautilus-actions/nautilus-actions.conf.org | sed 's/items-crea
 # nautilus : add new empty files right click menu
 logger "gnome-fallback - add new empty files right click menu"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
-. ./nautilus-newfile-install.sh
+chmod +x ./nautilus-newfile-install.sh
+./nautilus-newfile-install.sh
 rm nautilus-newfile-install.sh
 
 # tweak to allow nautilus windows resize under compiz
