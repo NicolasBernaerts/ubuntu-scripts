@@ -76,4 +76,4 @@ fi
 pnmscalefixed -xysize ${SIZE} ${SIZE} "${TMP_PNM}" | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
 # remove temporary  files
-rm -f "${TMP_LOCAL}" "${TMP_THUMB}" "${TMP_PPM}"
+rm -f "${TMP_LOCAL}" "${TMP_THUMB}" "${TMP_PNM}"
