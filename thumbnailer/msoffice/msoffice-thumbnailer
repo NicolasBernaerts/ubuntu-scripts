@@ -7,6 +7,7 @@
 # Depends on :
 #   * unoconv
 #   * unzip
+#   * mimetype (libfile-mimeinfo-perl package)
 #   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
 #   * gvfs-copy (gvfs-bin package)
 # Parameters :
