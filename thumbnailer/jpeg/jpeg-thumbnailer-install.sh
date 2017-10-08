@@ -14,7 +14,7 @@ sudo apt -y install build-essential cmake nasm git autoconf libtool
 # install development libraries
 sudo apt install libjpeg-turbo8-dev libexif-dev
 
-# compile epeg
+# compile and install epeg
 mkdir ~/sources
 cd ~/sources
 git clone https://github.com/mattes/epeg.git
