@@ -5,24 +5,56 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/333-gnome-shell-graphviz-viewer-thumbnailer
 # Depends on :
-#   * convert (imagemagick package)
 #   * dot (graphviz package)
+#   * pngtopnm, pnmtopng and pnmscalefixed (netpbm package)
+#   * gvfs-copy (gvfs-bin package)
+# Parameters :
+#   $1 - URI of graphviz file
+#   $2 - full path of generated thumbnail
+#   $3 - height of thumbnail in pixels
 # Revision history :
 #   04/08/2013, V1.0 - Creation by N. Bernaerts
 #   25/04/2015, V1.1 - Convert to bash
+#   07/10/2017, V1.2 - Conversion to URI and speedup with netpbm
 # -------------------------------------------
 
 # check tools availability
 command -v dot >/dev/null 2>&1 || exit 1
-command -v convert >/dev/null 2>&1 || exit 1
+command -v pngtopnm >/dev/null 2>&1 || exit 1
+command -v pnmtopng >/dev/null 2>&1 || exit 1
+command -v pnmscalefixed >/dev/null 2>&1 || exit 1
 
 # get parameters
-INPUT="$1"
-OUTPUT="$2"
-HEIGHT=$3
+FILE_URI="$1"
+FILE_THUMB="$2"
+SIZE="$3"
 
-# go to graphviz DOT file directory
-cd $(dirname "${INPUT}")
+# generate temporary local filename
+TMP_LOCAL=$(mktemp -t XXXXXXXX.dot)
+
+# if file is a remote one
+URI_TYPE="${FILE_URI:0:4}"
+if [ "${URI_TYPE}" = "file" ]
+then
+	# convert URI to local path
+	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+
+	# extract local path
+	FILE_LOCAL="${FILE_PATH:7}"
+
+	# go to graphviz DOT file directory
+	cd $(dirname "${FILE_LOCAL}")
+else
+	# check gvfs-copy availability
+	command -v gvfs-copy >/dev/null 2>&1 || exit 1
+
+	# copy input file to temporary local file
+	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+	FILE_LOCAL="${TMP_LOCAL}"	
+fi
 
 # generation
-dot -Tpng "${INPUT}" | convert -resize x${HEIGHT} - "${OUTPUT}"
+dot -Tpng "${FILE_LOCAL}" | pngtopnm - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
+
+# remove temporary  file
+rm -f "${TMP_LOCAL}"
