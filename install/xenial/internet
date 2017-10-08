@@ -35,7 +35,8 @@ sudo apt-get -y install youtube-dl youtube-dlg
 # youtubedl-gui
 logger "internet - youtubedl-gui"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui-install.sh
-. ./youtubedl-gui-install.sh
+chmod +x ./youtubedl-gui-install.sh
+./youtubedl-gui-install.sh
 rm youtubedl-gui-install.sh
 
 # whatsapp client whatsie
