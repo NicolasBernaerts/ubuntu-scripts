@@ -14,3 +14,9 @@ sudo chmod +x /usr/local/sbin/gimp-thumbnailer
 
 # thumbnailer integration
 sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/gimp.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp.thumbnailer
+
+# stop nautilus
+nautilus -q
+
+# remove previous thumbnails
+rm -R $HOME/.cache/thumbnails/*
