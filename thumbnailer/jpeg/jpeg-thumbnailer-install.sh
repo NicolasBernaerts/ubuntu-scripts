@@ -45,8 +45,8 @@ wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a2000.
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a3003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a3003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a5000.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a5000.png"
 
-# remove thumbnails
-rm -R $HOME/.cache/thumbnails/*
-
-# kill nautilus
+# stop nautilus
 nautilus -q
+
+# remove previous thumbnails
+rm -R $HOME/.cache/thumbnails/*
