@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ---------------------------------------------------
 # Thumbnailer for Ms Office documents
 #
@@ -6,8 +6,9 @@
 #   http://bernaerts.dyndns.org/linux/76-gnome/325-gnome-shell-generate-msoffice-thumbnail-nautilus
 # Depends on :
 #   * unoconv
+#   * unzip
+#   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
 #   * gvfs-copy (gvfs-bin package)
-#   * convert and composite (imagemagick package)
 # Parameters :
 #   $1 - URI of office file
 #   $2 - full path of generated thumbnail
@@ -16,63 +17,110 @@
 # 11/11/2014, V1.0 - Creation by N. Bernaerts
 # 15/11/2014, V2.0 - Change to URI and GVFS to handle thumbnails on network shares
 # 31/07/2015, V2.1 - More robust unoconv command line (thanks to Vaderqk)
+# 07/10/2017, V2.2 - Speedup with netpbm tools
 # ---------------------------------------------------
 
 # check tools availability
-command -v gvfs-copy >/dev/null 2>&1 || exit 1
 command -v unoconv >/dev/null 2>&1 || exit 1
-command -v convert >/dev/null 2>&1 || exit 1
-command -v composite >/dev/null 2>&1 || exit 1
+command -v unzip >/dev/null 2>&1 || exit 1
+command -v pbmmake >/dev/null 2>&1 || exit 1
+command -v pngtopnm >/dev/null 2>&1 || exit 1
+command -v pnmscalefixed >/dev/null 2>&1 || exit 1
+command -v pnmcomp >/dev/null 2>&1 || exit 1
+command -v pnmtopng >/dev/null 2>&1 || exit 1
 
 # path where to get icons used for generation
 ICONPATH="/usr/local/sbin/msoffice-thumbnailer-icons"
 
 # get parameters
-FILE_URI=$1
-FILE_THUMB=$2
-HEIGHT=$3
+SCRIPT_NAME=$(basename $0)
+FILE_URI="$1"
+FILE_THUMB="$2"
+SIZE="$3"
+
+# set working path
+PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
+PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
+[ ! -d "${PATH_CACHE}" ] && mkdir --parent "${PATH_CACHE}"
 
 # get filename extension
 FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 
-# generate temporary directory
-TMP_DIR=$(mktemp -d)
-TMP_BASEFILE="$TMP_DIR/file"
+# generate temporary local filename
+TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
+TMP_PNM=$(mktemp -t "XXXXXXXX.pnm")
 
-# copy file to temporary local directory
-gvfs-copy "${FILE_URI}" "${TMP_BASEFILE}.${FILE_EXT}"
+# generate temporary directory
+#TMP_DIR=$(mktemp -d)
+#TMP_BASEFILE="$TMP_DIR/file"
+
+# if file is a remote one
+URI_TYPE="${FILE_URI:0:4}"
+if [ "${URI_TYPE}" = "file" ]
+then
+	# convert URI to local path
+	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+
+	# extract local path
+	FILE_LOCAL="${FILE_PATH:7}"
+else
+	# check gvfs-copy availability
+	command -v gvfs-copy >/dev/null 2>&1 || exit 1
+
+	# copy input file to temporary local file
+	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+	FILE_LOCAL="${TMP_LOCAL}"	
+fi
 
 # get the file mime type (application/msword, ...)
-MIMETYPE=$(mimetype -b "${TMP_BASEFILE}.${FILE_EXT}")
+MIMETYPE=$(mimetype -b "${FILE_LOCAL}")
 
 # determine icon type according to mime type
-case $MIMETYPE in 
-  "application/msword" | "application/vnd.ms-word" | \
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document" )
-    DOCTYPE="word"
-    ;;
-  "application/vnd.ms-excel" | \
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | \
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.template" )
-    DOCTYPE="excel"
-    ;;
-  "application/vnd.ms-powerpoint" | \
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation" | \
-  "application/vnd.openxmlformats-officedocument.presentationml.template" | \
-  "application/vnd.openxmlformats-officedocument.presentationml.slideshow" )
-    DOCTYPE="powerpoint"
-    ;;
-  * )
+case ${MIMETYPE} in
+
+	# text
+	"application/msword" | \
+	"application/vnd.ms-word" | \
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document" )
+	LIBREOFFICE_TYPE="odt"
+	;;
+
+	# spreadsheet
+	"application/vnd.ms-excel" | \
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | \
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.template" )
+	LIBREOFFICE_TYPE="ods"
+	;;
+
+	# presentation
+	"application/vnd.ms-powerpoint" | \
+	"application/vnd.openxmlformats-officedocument.presentationml.presentation" | \
+	"application/vnd.openxmlformats-officedocument.presentationml.template" | \
+	"application/vnd.openxmlformats-officedocument.presentationml.slideshow" )
+	LIBREOFFICE_TYPE="odp"
+	;;
+
+	* )
+	;;
 esac
 
-# convert first document page to PDF
-unoconv -e PageRange=1-1 -f pdf "${TMP_BASEFILE}.${FILE_EXT}"
+# temporary libreoffice file
+TMP_LIBREOFFICE=$(mktemp -t XXXXXXXX.${LIBREOFFICE_TYPE})
 
-# convert PDF to PNG
-convert "${TMP_BASEFILE}.pdf" "${TMP_BASEFILE}.png"
+# if needed, create tag and mask of document type
+DOC_TAG="${PATH_CACHE}/${LIBREOFFICE_TYPE}.pnm"
+DOC_ALPHA="${PATH_CACHE}/${LIBREOFFICE_TYPE}-alpha.pnm"
+[ ! -f "${DOC_TAG}" ] && pngtopnm "${PATH_SYSTEM}/msoffice-${LIBREOFFICE_TYPE}.png" > "${DOC_TAG}"
+[ ! -f "${DOC_ALPHA}" ] && pngtopnm -alpha "${PATH_SYSTEM}/msoffice-${LIBREOFFICE_TYPE}.png" > "${DOC_ALPHA}"
 
-# generate thumbnail according to document type
-composite -gravity center \( -resize x244 "${TMP_BASEFILE}.png" \) ${ICONPATH}/msoffice-${DOCTYPE}.png ${ICONPATH}/msoffice-mask.png \( -resize x${HEIGHT} \) "$FILE_THUMB"
+# convert document to libreoffice equivalent format
+unoconv -e PageRange=1-1 -o "${TMP_LIBREOFFICE}" -f "${LIBREOFFICE_TYPE}" "${FILE_LOCAL}"
+
+# extract thumbnail
+unzip -p "${TMP_LIBREOFFICE}" "Thumbnails/thumbnail.png" | pngtopnm - > "${TMP_PNM}"
+
+# generate thumbnail
+pbmmake -white 188 256 | pnmcomp -xoff 2 -yoff=52 "${TMP_PNM}" - | pnmcomp -align left -valign top -alpha "${DOC_ALPHA}" "${DOC_TAG}" - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
 # remove temporary files
-rm -R $TMP_DIR
+rm -R "${TMP_LOCAL}" "${TMP_PNM}" "${TMP_LIBREOFFICE}"
