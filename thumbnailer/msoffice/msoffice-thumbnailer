@@ -30,9 +30,6 @@ command -v pnmscalefixed >/dev/null 2>&1 || exit 1
 command -v pnmcomp >/dev/null 2>&1 || exit 1
 command -v pnmtopng >/dev/null 2>&1 || exit 1
 
-# path where to get icons used for generation
-ICONPATH="/usr/local/sbin/msoffice-thumbnailer-icons"
-
 # get parameters
 SCRIPT_NAME=$(basename $0)
 FILE_URI="$1"
@@ -50,10 +47,6 @@ FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 # generate temporary local filename
 TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
 TMP_PNM=$(mktemp -t "XXXXXXXX.pnm")
-
-# generate temporary directory
-#TMP_DIR=$(mktemp -d)
-#TMP_BASEFILE="$TMP_DIR/file"
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
