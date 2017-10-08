@@ -29,43 +29,50 @@ sudo apt-get -y install gimp gimp-plugin-registry
 # Sweet Home 3D
 logger "graphical - Sweet Home 3D"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d-install.sh
-. ./sweethome3d-install.sh
+chmod +x ./sweethome3d-install.sh
+./sweethome3d-install.sh
 rm sweethome3d-install.sh
 
 # JPEG fast thumbnailer
 logger "graphical - JPEG fast thumbnailer"
 wget --header='Accept-Encoding:none'https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
-. ./jpeg-tumbnailer-install.sh
+chmod +x ./jpeg-tumbnailer-install.sh
+./jpeg-tumbnailer-install.sh
 rm jpeg-tumbnailer-install.sh
 
 # GIMP XCF thumbnailer
 logger "graphical - GIMP XCF thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
-. ./gimp-tumbnailer-install.sh
+chmod +x ./gimp-tumbnailer-install.sh
+./gimp-tumbnailer-install.sh
 rm gimp-tumbnailer-install.sh
 
 # Graphviz DOT thumbnailer
 logger "graphical - Graphviz DOT thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
-. ./graphviz-thumbnailer-install.sh
+chmod +x ./graphviz-thumbnailer-install.sh
+./graphviz-thumbnailer-install.sh
 rm graphviz-thumbnailer-install.sh
 
 # RAW pictures thumbnailer
 logger "graphical - RAW pictures thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer-install.sh
-. ./raw-thumbnailer-install.sh
+chmod +x ./raw-thumbnailer-install.sh
+./raw-thumbnailer-install.sh
 rm raw-thumbnailer-install.sh
 
 # Image convert extension
 logger "graphical - Image convert extension"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
-. ./image-convert-install.sh
+chmod +x ./image-convert-install.sh
+./image-convert-install.sh
 rm image-convert-install.sh
 
 # scan2folder tool
 logger "graphical - scan2folder"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
-. ./scan2folder-install.sh
+chmod +x ./scan2folder-install.sh
+./scan2folder-install.sh
 rm scan2folder-install.sh
 
 # file manager EXIF extensions
