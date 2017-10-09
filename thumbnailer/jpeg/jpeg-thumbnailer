@@ -93,6 +93,7 @@ NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
 # -------------
 #   GPS tag
 # -------------
+
 if [ "${EXIF_GPS}" != "" ]
 then
 	# declare tags
@@ -111,6 +112,8 @@ fi
 # -------------
 #  camera tag
 # -------------
+
+# if camera icon is available, generate icon tags
 if [ -f "${CAMERA_ICON}" ]
 then
 	# set camera tags
@@ -123,6 +126,8 @@ then
 		pngtopnm "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_TAG}"
 		pngtopnm -alpha "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_ALPHA}"
 	fi
+
+# else, generate text tags
 else
 	# set camera tags
 	CAMERA_TAG="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-text.pnm"
