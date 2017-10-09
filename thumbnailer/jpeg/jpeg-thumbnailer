@@ -139,8 +139,6 @@ then
 	# generate temporary rotation file
 	TMP_ROTATE=$(mktemp -t XXXXXXXX-rotate.jpg)
 
-echo "Rotation ${ROTATE_ANGLE}"
-
 	# flip miniature
 	jpegtran -rotate ${ROTATE_ANGLE} "${TMP_THUMB}" > "${TMP_ROTATE}"
 
