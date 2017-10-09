@@ -49,7 +49,6 @@ wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a0001.
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a2003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a2003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a3003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a3003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a5000.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a5000.png"
-wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/qcam-aa.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/qcam-aa.png"
 
 # stop nautilus
 nautilus -q
