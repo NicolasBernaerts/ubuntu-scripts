@@ -114,16 +114,39 @@ fi
 if [ -f "${CAMERA_ICON}" ]
 then
 	# set camera tags
-	CAMERA_TAG="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-tag.pnm"
-	CAMERA_ALPHA="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-alpha.pnm"
+	CAMERA_TAG="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-icon.pnm"
+	CAMERA_ALPHA="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-icon-alpha.pnm"
 
 	# if needed, create cache files
-	[ ! -f "${CAMERA_TAG}" ] && pngtopnm "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_TAG}"
-	[ ! -f "${CAMERA_ALPHA}" ] && pngtopnm -alpha "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_ALPHA}"
+	if [ ! -f "${CAMERA_TAG}" -o ! -f "${CAMERA_ALPHA}" ]
+	then
+		pngtopnm "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_TAG}"
+		pngtopnm -alpha "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_ALPHA}"
+	fi
 else
 	# set camera tags
-	CAMERA_TAG="${NONE_ALPHA}"
-	CAMERA_ALPHA="${NONE_ALPHA}"
+	CAMERA_TAG="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-text.pnm"
+	CAMERA_ALPHA="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-text-alpha.pnm"
+
+	# if needed, create cache files
+	if [ ! -f "${CAMERA_TAG}" -o ! -f "${CAMERA_ALPHA}" ]
+	then
+		# temporary PNM file
+		TMP_PNG=$(mktemp -t XXXXXXXX.png)
+
+		# calculate optimum font size
+		FONT_SIZE=$((${SIZE} / 10 + 1))
+
+		# generate version image
+		pbmtextps -fontsize ${FONT_SIZE} "${EXIF_MODEL}" | pnmcrop - | pnmpad -white -left 4 -right 4 -top 4 -bottom 4 - | pnmpad -black -left 2 -right 2 -top 2 -bottom 2 - | pnmtopng - > "${TMP_PNG}"
+
+		# generate tags
+		pngtopnm "${TMP_PNG}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_TAG}"
+		pngtopnm -alpha "${TMP_PNG}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_ALPHA}"
+		
+		# remove temporary file
+		rm "${TMP_PNG}"
+	fi
 fi
 
 # ----------------------
