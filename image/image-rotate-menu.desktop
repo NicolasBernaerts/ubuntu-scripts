@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Menu
+Icon=image-rotate
+Name[C]=Rotate Image ...
+Tooltip[C]=Tools to rotate Image files
+MimeTypes=image/jpeg;image/png;image/gif;image/tiff;
+Capabilities=Writable
+ItemsList=image-rotate-left-action;image-rotate-right-action;image-rotate-updown-action;
+
