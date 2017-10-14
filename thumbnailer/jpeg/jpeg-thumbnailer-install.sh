@@ -46,7 +46,7 @@ wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/dmc-fz200.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/dmc-tz5.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/dmc-tz5.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus e1003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus e1003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a0001.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a0001.png"
-wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a2003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a2003.png"
+wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/one a2003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/one a2003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a3003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a3003.png"
 wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a5000.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a5000.png"
 
