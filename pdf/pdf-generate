@@ -7,13 +7,11 @@
 #  Setup procedure : http://bernaerts.dyndns.org/linux/74-ubuntu/338-ubuntu-generate-pdf-from-documents
 #
 #  Depends on :
-#   * imagemagick
-#   * unoconv
-#   * ghostscript
 #   * mimetype
+#   * convert [imagemagick]
+#   * unoconv
 #   * wkhtmltopdf
-#
-#  Parameters : full path of documents
+#   * gs [ghostscript]
 #
 #  Revision history :
 #   05/07/2015, V1.0 - Creation by N. Bernaerts
@@ -21,13 +19,13 @@
 #   25/09/2015, V1.2 - Add configuration file
 #   02/10/2015, V2.0 - Code rewrite to handle progress and notification
 #   01/05/2016, V2.1 - Add HTML conversion
+#   12/10/2017, V2.2 - Correct PNG conversion bug giving white page
 # ---------------------------------------------------
 
 # -------------------------------------------------------
 # check tools availability
 # -------------------------------------------------------
 
-command -v bc >/dev/null 2>&1 || { zenity --error --text="Please install bc"; exit 1; }
 command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype"; exit 1; }
 command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
 command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
@@ -49,8 +47,8 @@ COMPRESSION=$(cat "${FILE_CONF}" | grep "compression" | cut -d'=' -f2)
 DENSITY=$(cat "${FILE_CONF}" | grep "density" | cut -d'=' -f2)
 
 # calculate page size
-PAGE_WIDTH=$(echo "${DENSITY} * 8.27" | bc)
-PAGE_HEIGHT=$(echo "${DENSITY} * 11.7" | bc)
+PAGE_WIDTH=$((${DENSITY} * 827 / 100))
+PAGE_HEIGHT=$((${DENSITY} * 1170 / 100))
 
 # -------------------------------------------------------
 #          Retrieve or select input files
@@ -193,7 +191,7 @@ do
 
     # image files
     "image" )
-    convert "${FILE}" -compress jpeg -quality ${COMPRESSION} -resize ${PAGE_WIDTH}x${PAGE_HEIGHT} -gravity center -extent ${PAGE_WIDTH}x${PAGE_HEIGHT} -units PixelsPerInch -density ${DENSITY}x${DENSITY} "${FILE_PDF}"
+    convert "${FILE}" -compress jpeg -quality ${COMPRESSION} -resize ${PAGE_WIDTH}x${PAGE_HEIGHT} -extent ${PAGE_WIDTH}x${PAGE_HEIGHT} -units PixelsPerInch -density ${DENSITY}x${DENSITY} "${FILE_PDF}"
     ARR_TMP=("${ARR_TMP[@]}" "${FILE_PDF}")
     ARR_PDF=("${ARR_PDF[@]}" "${FILE_PDF}")
     ;;
@@ -239,7 +237,7 @@ fi
 # loop to remove temporary files
 for TMP_FILE in "${ARR_TMP[@]}"
 do
-  rm "${TMP_FILE}"
+   rm "${TMP_FILE}"
 done
 
 ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "Merge to PDF"
@@ -250,4 +248,3 @@ done
 
 [ ${#ARR_CANDIDATE[@]} -gt 0 ] && zenity --notification --window-icon="evince" --text="${FILE_FINAL} generated." \
                                || zenity --notification --window-icon="error" --text="Document type was not compatible for PDF generation."
-        
