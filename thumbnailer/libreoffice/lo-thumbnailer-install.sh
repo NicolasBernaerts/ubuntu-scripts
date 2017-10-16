@@ -30,5 +30,6 @@ sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/lo.thumbnai
 nautilus -q
 
 # remove previously cached files (thumbnails and masks)
-rm -R $HOME/.cache/thumbnails/*
-rm -R $HOME/.cache/lo-thumbnailer
+[ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
+[ -d "$HOME/.thumbnails" ] && rm -R $HOME/.thumbnails/*
+[ -d "$HOME/.cache/lo-thumbnailer" ] && rm -R $HOME/.cache/lo-thumbnailer
