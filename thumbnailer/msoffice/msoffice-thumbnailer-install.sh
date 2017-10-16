@@ -28,5 +28,6 @@ sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/msoffice.th
 nautilus -q
 
 # remove previously cached files (thumbnails and masks)
-rm -R $HOME/.cache/thumbnails/*
-rm -R $HOME/.cache/msoffice-thumbnailer
+[ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
+[ -d "$HOME/.thumbnails" ] && rm -R $HOME/.thumbnails/*
+[ -d "$HOME/.cache/msoffice-thumbnailer" ] && rm -R $HOME/.cache/msoffice-thumbnailer
