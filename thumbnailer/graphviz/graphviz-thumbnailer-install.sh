@@ -23,3 +23,10 @@ sudo chmod +x /usr/local/sbin/graphviz-thumbnailer
 
 # thumbnailer integration
 sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/graphviz.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz.thumbnailer
+
+# stop nautilus
+nautilus -q
+
+# empty cache of previous thumbnails
+[ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
+[ -d "$HOME/.thumbnails" ] && rm -R $HOME/.thumbnails/*
