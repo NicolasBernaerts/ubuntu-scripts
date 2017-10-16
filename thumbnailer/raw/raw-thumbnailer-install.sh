@@ -10,3 +10,10 @@ sudo chmod +x /usr/local/sbin/raw-thumbnailer
 
 # thumbnailer integration
 sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/raw.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw.thumbnailer
+
+# stop nautilus
+nautilus -q
+
+# empty cache of previous thumbnails
+[ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
+[ -d "$HOME/.thumbnails" ] && rm -R $HOME/.thumbnails/*
