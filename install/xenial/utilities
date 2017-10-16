@@ -46,13 +46,17 @@ sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 379CE192D401AB61
 sudo apt update
 sudo apt install etcher-electron
 
-# keepassx : electronic wallet
-logger "utilities - keepassx"
-sudo apt-get -y install keepassx
-
 # alacarte : menu editor
 logger "utilities - alacarte"
 sudo apt-get -y install alacarte
+
+# keepassx : electronic wallet
+logger "utilities - keepassx"
+sudo apt-get -y install keepassx libykpers-1-1
+wget -O keepassxc.deb https://github.com/magkopian/keepassxc-debian/releases/download/2.2.1-1/keepassxc_2.2.1-1_amd64_ubuntu_16.04_xenial.deb
+sudo dpkg -i ./keepassxc.deb
+sudo apy -y install -f
+rm ./keepassxc.deb
 
 # photorec and qphotorec (recovery of files from SDCard)
 logger "utilities - photorec and qphotorec"
