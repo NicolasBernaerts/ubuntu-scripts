@@ -18,5 +18,6 @@ sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/apk.thumbna
 # stop nautilus
 nautilus -q
 
-# remove previous thumbnails
+# empty cache of previous thumbnails
 [ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
+[ -d "$HOME/.thumbnails" ] && rm -R $HOME/.thumbnails/*
