@@ -47,7 +47,7 @@ CHECK=$(echo "${MIMETYPE}" | grep "vnd.openxmlformats-officedocument.")
 [ "${CHECK}" != "" ] && TYPE="ms-office"
 
 # if type is not found, check specific document types
-[ "${TYPE}" = "" ] && case $MIMETYPE in 
+[ "${TYPE}" = "" ] && case ${MIMETYPE} in 
   # ms-office document (.doc, .xls, .ppt, ...)
   "application/msword" | "application/vnd.ms-word" | "application/vnd.ms-powerpoint" )
     TYPE="ms-office"
@@ -75,10 +75,10 @@ esac
 ARR_FORMAT=('false' 'A2' 'false' 'A3' 'true' 'A4' 'false' 'A5' 'false' 'Letter' 'false' 'Executive' 'false' 'Legal')
 TITLE=$(basename "${FILE_ORIGINAL}")
 TEXT="Booklet will be generated from this document.\nPlease select target format.\n"
-FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "$TITLE" --text "$TEXT" --column="Choice" --column="Format" ${ARR_FORMAT[@]})
+FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "${TITLE}" --text "${TEXT}" --column="Choice" --column="Format" ${ARR_FORMAT[@]})
 
 # if no format selected, exit
-[ "$FORMAT" = "" ] && exit 1
+[ "${FORMAT}" = "" ] && exit 1
 
 # --------------------
 #  booklet conversion 
@@ -101,8 +101,8 @@ echo "# Conversion of original document to PDF format"
 # and determine if blank pages to be added at the end to get multiple of 4
 echo "# Calculate number of booklet pages"
 NUMPAGES=$(pdfinfo "${FILE_SOURCE}" | grep Pages | sed 's/^Pages:[ ]*\([0-9]*\).*$/\1/g')
-DIVPAGES=$(expr $NUMPAGES % 4)
-[ "$DIVPAGES" -gt "0" ] && NUMPAGES=$(expr $NUMPAGES + 4 - $DIVPAGES)
+DIVPAGES=$(expr ${NUMPAGES} % 4)
+[ "${DIVPAGES}" -gt "0" ] && NUMPAGES=$(expr ${NUMPAGES} + 4 - ${DIVPAGES})
 
 # generate document with proper page number (multiple of 4)
 echo "# Generation of PDF booklet"
