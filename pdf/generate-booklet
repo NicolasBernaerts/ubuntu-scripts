@@ -16,6 +16,7 @@
 #   16/12/2014, V2.1 - Add file selection dialog
 #   10/05/2015, V2.2 - Check tools availability
 #   03/11/2015, V3.0 - Add support for LibreOffice & Ms-Office documents
+#   18/10/2017, V3.1 - Correct critical bug (thanks to Igor Kushnir)
 # ---------------------------------------------------------
 
 # check mimetype, pdfinfo, pdfbook and unoconv
@@ -24,88 +25,87 @@ command -v pdfinfo >/dev/null 2>&1 || { zenity --error --text="Please install pd
 command -v pdfbook >/dev/null 2>&1 || { zenity --error --text="Please install pdfbook [texlive-extra-utils package]"; exit 1; }
 command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
 
-# suffix to be added at the end of booklet file
-SUFFIX="book"
-
 # check if parameter is given, otherwise open dialog box selection
-[ "$1" != "" ] && FILE="$1" || FILE=$(zenity --file-selection --title="Select document to convert to booklet")
+[ "$1" != "" ] && FILE_ORIGINAL="$1" || FILE_ORIGINAL=$(zenity --file-selection --title="Select document to convert to booklet")
 
-# if a document has been selected, start conversion
-if [ "${FILE}" != "" ];
+# if no document selected, exit
+[ ! -f "${FILE_ORIGINAL}" ] && exit 1
+
+# booklet name will be originalname-book.pdf
+FILE_BOOKLET="$(echo "${FILE_ORIGINAL}" | sed 's/\(.*\)\..*/\1/')-book.pdf"
+
+# get the file mime type (application/msword, ...)
+TYPE=""
+MIMETYPE=$(mimetype -b "${FILE_ORIGINAL}")
+
+# check if file is a libreoffice file (.odt, .ods, ...)
+CHECK=$(echo "${MIMETYPE}" | grep ".opendocument.")
+[ "${CHECK}" != "" ] && TYPE="libreoffice"
+
+# check if file is a microsoft file 2007+ file (.docx, .xlsx, .pptx, ...)
+CHECK=$(echo "${MIMETYPE}" | grep "vnd.openxmlformats-officedocument.")
+[ "${CHECK}" != "" ] && TYPE="ms-office"
+
+# if type is not found, check specific document types
+[ "${TYPE}" = "" ] && case $MIMETYPE in 
+  # ms-office document (.doc, .xls, .ppt, ...)
+  "application/msword" | "application/vnd.ms-word" | "application/vnd.ms-powerpoint" )
+    TYPE="ms-office"
+    ;;
+
+  # PDF document (.pdf)
+  "application/pdf" | "application/x-pdf" | "application/x-bzpdf" | "application/x-gzpdf" )
+    TYPE="pdf"
+    ;;
+
+  # plain text file (.txt)
+  "text/plain" | "application/x-shellscript" )
+    TYPE="text"
+    ;;
+
+  # other mimetype
+  * )
+    ;;
+esac
+
+# if document type is not a candidate one, exit
+[ "${TYPE}" = "" ] && { zenity --error --text="Document format is not compatible (pdf, libreoffice or ms-office)"; exit 1; }
+
+# select target format
+ARR_FORMAT=('false' 'A2' 'false' 'A3' 'true' 'A4' 'false' 'A5' 'false' 'Letter' 'false' 'Executive' 'false' 'Legal')
+TITLE=$(basename "${FILE_ORIGINAL}")
+TEXT="Booklet will be generated from this document.\nPlease select target format.\n"
+FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "$TITLE" --text "$TEXT" --column="Choice" --column="Format" ${ARR_FORMAT[@]})
+
+# if a format has been selected, start booklet conversion process
+if [ "$FORMAT" != "" ]
 then
-  # document type undefined
-  TYPE=""
-
-  # booklet name will be originalname-book.pdf
-  BOOKLET="$(echo "${FILE}" | sed 's/\(.*\)\..*/\1/')-${SUFFIX}.pdf"
-  FILETMP="$(echo "${FILE}" | sed 's/\(.*\)\..*/\1/')-tmp.pdf"
-
-  # get the file mime type (application/msword, ...)
-  MIMETYPE=$(mimetype -b "${FILE}")
-
-  # check if file is a libreoffice file (.odt, .ods, ...)
-  CHECK=$(echo "${MIMETYPE}" | grep ".opendocument.")
-  [ "${CHECK}" != "" ] && TYPE="libreoffice"
-
-  # check if file is a microsoft file 2007+ file (.docx, .xlsx, .pptx, ...)
-  CHECK=$(echo "${MIMETYPE}" | grep "vnd.openxmlformats-officedocument.")
-  [ "${CHECK}" != "" ] && TYPE="ms-office"
-
-  # check specific document types
-  case $MIMETYPE in 
-    # ms-office document (.doc, .xls, .ppt, ...)
-    "application/msword" | "application/vnd.ms-word" | "application/vnd.ms-powerpoint" )
-      TYPE="ms-office"
-      ;;
-
-    # PDF document (.pdf)
-    "application/pdf" | "application/x-pdf" | "application/x-bzpdf" | "application/x-gzpdf" )
-      TYPE="pdf"
-      ;;
-
-    # plain text file (.txt)
-    "text/plain" | "application/x-shellscript" )
-      TYPE="text"
-      ;;
-
-    # other mimetype
-    * )
-      ;;
-  esac
-
-  # if document type is not recognised as candidate, exit
-  [ "${TYPE}" = "" ] && { zenity --error --text="Document format is not compatible (pdf, libreoffice or ms-office)"; exit 1; }
-
-  # select target format
-  ARR_FORMAT=('false' 'A2' 'false' 'A3' 'true' 'A4' 'false' 'A5' 'false' 'Letter' 'false' 'Executive' 'false' 'Legal')
-  TITLE=$(basename "${FILE}")
-  TEXT="Booklet will be generated from this document.\nPlease select target format.\n"
-  FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "$TITLE" --text "$TEXT" --column="Choice" --column="Format" ${ARR_FORMAT[@]})
-
-  # if a format has been selected, start booklet conversion process
   (
-  if [ "$FORMAT" != "" ]
-  then
-    # set target format as expected by pdfbook
-    OPTION="--${FORMAT,,}paper"
+  # temporary file
+  FILE_TMP=$(mktemp -t XXXXXXXX.pdf) && rm "${FILE_TMP}"
+  
+  # set target format as expected by pdfbook
+  OPTION="--${FORMAT,,}paper"
 
-    # if file is not PDF, convert file to pdf, else use original
-    echo "# Conversion of original document to PDF format"
-    [ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${FILETMP}" "${FILE}" || FILETMP="${FILE}"
+  # if file is not PDF, convert file to pdf, else use original
+  echo "# Conversion of original document to PDF format"
+  [ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${FILE_TMP}" "${FILE_ORIGINAL}"
 
-    # calculate number of pages of original PDF 
-    # and determine if blank pages to be added at the end to get multiple of 4
-    echo "# Calculate number of booklet pages"
-    NUMPAGES=$(pdfinfo "${FILETMP}" | grep Pages | sed 's/^Pages:[ ]*\([0-9]*\).*$/\1/g')
-    DIVPAGES=$(expr $NUMPAGES % 4)
-    [ "$DIVPAGES" -gt "0" ] && NUMPAGES=$(expr $NUMPAGES + 4 - $DIVPAGES)
+  # set conversion source as temporary PDF or original PDF
+  [ -f "${FILE_TMP}" ] && FILE_SOURCE="${FILE_TMP}" || FILE_SOURCE="${FILE_ORIGINAL}"
+  
+  # calculate number of pages of original PDF 
+  # and determine if blank pages to be added at the end to get multiple of 4
+  echo "# Calculate number of booklet pages"
+  NUMPAGES=$(pdfinfo "${FILE_SOURCE}" | grep Pages | sed 's/^Pages:[ ]*\([0-9]*\).*$/\1/g')
+  DIVPAGES=$(expr $NUMPAGES % 4)
+  [ "$DIVPAGES" -gt "0" ] && NUMPAGES=$(expr $NUMPAGES + 4 - $DIVPAGES)
 
-    # generate document with proper page number (multiple of 4)
-    echo "# Generation of PDF booklet"
-    pdfbook ${OPTION} --signature ${NUMPAGES} --booklet true --landscape "${FILETMP}" -o "${BOOKLET}"
-  fi
+  # generate document with proper page number (multiple of 4)
+  echo "# Generation of PDF booklet"
+  pdfbook ${OPTION} --signature ${NUMPAGES} --booklet true --landscape "${FILE_SOURCE}" -o "${FILE_BOOKLET}"
 
-  # if file is not PDF, remove temporary PDF file
-  [ "${TYPE}" != "pdf" ] && rm "${FILETMP}"
+  # remove temporary PDF file
+  rm -f "${FILE_TMP}"
   ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${FORMAT} booklet generation"
 fi
