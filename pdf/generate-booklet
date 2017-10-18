@@ -77,35 +77,37 @@ TITLE=$(basename "${FILE_ORIGINAL}")
 TEXT="Booklet will be generated from this document.\nPlease select target format.\n"
 FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "$TITLE" --text "$TEXT" --column="Choice" --column="Format" ${ARR_FORMAT[@]})
 
-# if a format has been selected, start booklet conversion process
-if [ "$FORMAT" != "" ]
-then
-  (
-  # temporary file
-  FILE_TMP=$(mktemp -t XXXXXXXX.pdf) && rm "${FILE_TMP}"
+# if no format selected, exit
+[ "$FORMAT" = "" ] && exit 1
+
+# --------------------
+#  booklet conversion 
+# --------------------
+(
+# temporary file
+FILE_TMP=$(mktemp -t XXXXXXXX.pdf) && rm "${FILE_TMP}"
   
-  # set target format as expected by pdfbook
-  OPTION="--${FORMAT,,}paper"
+# set target format as expected by pdfbook
+OPTION="--${FORMAT,,}paper"
 
-  # if file is not PDF, convert file to pdf, else use original
-  echo "# Conversion of original document to PDF format"
-  [ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${FILE_TMP}" "${FILE_ORIGINAL}"
+# if file is not PDF, convert file to pdf, else use original
+echo "# Conversion of original document to PDF format"
+[ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${FILE_TMP}" "${FILE_ORIGINAL}"
 
-  # set conversion source as temporary PDF or original PDF
-  [ -f "${FILE_TMP}" ] && FILE_SOURCE="${FILE_TMP}" || FILE_SOURCE="${FILE_ORIGINAL}"
+# set conversion source as temporary PDF or original PDF
+[ -f "${FILE_TMP}" ] && FILE_SOURCE="${FILE_TMP}" || FILE_SOURCE="${FILE_ORIGINAL}"
   
-  # calculate number of pages of original PDF 
-  # and determine if blank pages to be added at the end to get multiple of 4
-  echo "# Calculate number of booklet pages"
-  NUMPAGES=$(pdfinfo "${FILE_SOURCE}" | grep Pages | sed 's/^Pages:[ ]*\([0-9]*\).*$/\1/g')
-  DIVPAGES=$(expr $NUMPAGES % 4)
-  [ "$DIVPAGES" -gt "0" ] && NUMPAGES=$(expr $NUMPAGES + 4 - $DIVPAGES)
+# calculate number of pages of original PDF 
+# and determine if blank pages to be added at the end to get multiple of 4
+echo "# Calculate number of booklet pages"
+NUMPAGES=$(pdfinfo "${FILE_SOURCE}" | grep Pages | sed 's/^Pages:[ ]*\([0-9]*\).*$/\1/g')
+DIVPAGES=$(expr $NUMPAGES % 4)
+[ "$DIVPAGES" -gt "0" ] && NUMPAGES=$(expr $NUMPAGES + 4 - $DIVPAGES)
 
-  # generate document with proper page number (multiple of 4)
-  echo "# Generation of PDF booklet"
-  pdfbook ${OPTION} --signature ${NUMPAGES} --booklet true --landscape "${FILE_SOURCE}" -o "${FILE_BOOKLET}"
+# generate document with proper page number (multiple of 4)
+echo "# Generation of PDF booklet"
+pdfbook ${OPTION} --signature ${NUMPAGES} --booklet true --landscape "${FILE_SOURCE}" -o "${FILE_BOOKLET}"
 
-  # remove temporary PDF file
-  rm -f "${FILE_TMP}"
-  ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${FORMAT} booklet generation"
-fi
+# remove temporary PDF file
+rm -f "${FILE_TMP}"
+) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${FORMAT} booklet generation"
