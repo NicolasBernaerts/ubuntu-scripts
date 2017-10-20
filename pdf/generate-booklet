@@ -92,7 +92,7 @@ OPTION="--${FORMAT,,}paper"
 
 # if file is not PDF, convert file to pdf, else use original
 echo "# Conversion of original document to PDF format"
-[ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${FILE_TMP}" "${FILE_ORIGINAL}"
+[ "${TYPE}" != "pdf" -a "${FILE_TMP}" != "" ] && unoconv -f pdf -o "${FILE_TMP}" "${FILE_ORIGINAL}"
 
 # set conversion source as temporary PDF or original PDF
 [ -f "${FILE_TMP}" ] && FILE_SOURCE="${FILE_TMP}" || FILE_SOURCE="${FILE_ORIGINAL}"
