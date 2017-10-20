@@ -108,6 +108,6 @@ OPTION="--${FORMAT,,}paper"
 echo "# Generation of PDF booklet"
 pdfbook ${OPTION} --signature ${NUMPAGES} --booklet true --landscape "${FILE_SOURCE}" -o "${FILE_BOOKLET}"
 
-# remove temporary PDF file
+# remove temporary PDF file (may exist or not)
 rm -f "${FILE_TMP}"
 ) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${FORMAT} booklet generation"
