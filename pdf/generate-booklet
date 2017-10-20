@@ -87,9 +87,6 @@ FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "${TITLE}" -
 # temporary file
 FILE_TMP=$(mktemp -t XXXXXXXX.pdf) && rm "${FILE_TMP}"
   
-# set target format as expected by pdfbook
-OPTION="--${FORMAT,,}paper"
-
 # if file is not PDF, convert file to pdf, else use original
 echo "# Conversion of original document to PDF format"
 [ "${TYPE}" != "pdf" -a "${FILE_TMP}" != "" ] && unoconv -f pdf -o "${FILE_TMP}" "${FILE_ORIGINAL}"
@@ -103,6 +100,9 @@ echo "# Calculate number of booklet pages"
 NUMPAGES=$(pdfinfo "${FILE_SOURCE}" | grep Pages | sed 's/^Pages:[ ]*\([0-9]*\).*$/\1/g')
 DIVPAGES=$(expr ${NUMPAGES} % 4)
 [ "${DIVPAGES}" -gt "0" ] && NUMPAGES=$(expr ${NUMPAGES} + 4 - ${DIVPAGES})
+
+# set target format as expected by pdfbook
+OPTION="--${FORMAT,,}paper"
 
 # generate document with proper page number (multiple of 4)
 echo "# Generation of PDF booklet"
