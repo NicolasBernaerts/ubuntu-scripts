@@ -13,6 +13,7 @@
 #   15/08/2016, V1.1 - Add target directory
 #   10/04/2017, V1.2 - Add docky
 #   17/04/2017, V2.0 - Complete rewrite, based on .ini configuration
+#   15/09/2017, V2.1 - Add dconf handling
 # ---------------------------------------------------------------------
 
 # default to normal mode
@@ -40,12 +41,12 @@ if [ ${#} -eq 0 ];
 then
 	echo "Script to backup/restore user data between computers."
 	echo "General parameters :"
-	echo "  --backup     Backup user data to current folder"
-	echo "  --restore    Restore user data from current folder"
-	echo "  --name       Include application environment"      
-	echo "  --all        Include all found appplication environments"
-	echo "  --test       Test mode without real backup or restore"
-	echo "Recognised application environments are :"
+	echo "  --backup           Backup user data to current folder"
+	echo "  --restore          Restore user data from current folder"
+	echo "  --test             Test mode without real backup or restore"
+	echo "  --all              Include all possible data"
+	echo "  data1 data2 ...    Data environment to include"      
+	echo "Possible data are :"
 	echo "${ARR_SECTION[@]}"
     exit 1
 fi
@@ -58,7 +59,7 @@ do
 		--restore) OPERATION="restore"; shift; ;;
 		--test) MODE="test"; shift; ;;
 		--all) ARR_TODO=( "${ARR_SECTION[@]}" ); shift; ;;
-		*) ARR_TODO=( "${ARR_TODO[@]}" "${1:2}" ); shift; ;;
+		*) ARR_TODO=( "${ARR_TODO[@]}" "$1" ); shift; ;;
 	esac
 done
 
@@ -92,10 +93,13 @@ do
 		[ -d "${ENV_PATH}" ] && ENV_TYPE="folder"
 
 		# set type to tar if parameter is set and path is a folder
-		[ "${ENV_PARAM}" = "tar" -a "${ENV_TYPE}" = "folder" ] && ENV_TYPE="tar"
+		[ "${ENV_PARAM}" = "tar" ] && ENV_TYPE="tar"
 
 		# set type to gconf if parameter is set
 		[ "${ENV_PARAM}" = "gconf" ] && ENV_TYPE="gconf"
+
+		# set type to dconf if parameter is set
+		[ "${ENV_PARAM}" = "dconf" ] && ENV_TYPE="dconf"
 
 		# add $HOME root to a relative path
 		[ "${ENV_PATH:0:1}" != "/" ] && ENV_PATH="${HOME}/${ENV_PATH}"
@@ -107,17 +111,26 @@ do
 		case ${ENV_TYPE} in
 
 		"tar")
+			# set data file
+			BACKUP_FILE="${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
+
 			# backup mode
 			if [ "${OPERATION}" = "backup" ]
 			then
 				# if environment is present, backup
 				if [ -d "${ENV_PATH}" ]
 				then
-					[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}"
-					[ "${MODE}" = "normal" ] && rm --force "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
-					[ "${MODE}" = "normal" ] && cd "${ENV_PATH}"
-					[ "${MODE}" = "normal" ] && tar -zcvf "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz" *
-					echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
+					# if not in test mode
+					if [ "${MODE}" = "normal" ]
+					then
+						mkdir --parent "${BACKUP_DIR}/${ENV_NAME}"
+						rm --force "${BACKUP_FILE}"
+						cd "${ENV_PATH}"
+						tar -zcvf "${BACKUP_FILE}" *
+					fi
+
+					# dislay progress
+					echo " -> [${MODE}] Backed-up to ${BACKUP_FILE}"
 
 				# else, error message
 				else
@@ -127,32 +140,47 @@ do
 			# restore mode
 			else
 				# if backup file is present, restore
-				if [ -f "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz" ]
+				if [ -f "${BACKUP_FILE}" ]
 				then
-					[ "${MODE}" = "normal" ] && mkdir --parents "${ENV_PATH}"
-					[ "${MODE}" = "normal" ] && rm --force --recursive ${ENV_PATH}/*
-					[ "${MODE}" = "normal" ] && cd "${ENV_PATH}"
-					[ "${MODE}" = "normal" ] && tar -zxvf "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
-					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz"
+					# if not in test mode
+					if [ "${MODE}" = "normal" ]
+					then
+						mkdir --parents "${ENV_PATH}"
+						rm --force --recursive ${ENV_PATH}/*
+						cd "${ENV_PATH}"
+						tar -zxvf "${BACKUP_FILE}"
+					fi
+
+					# dislay progress
+					echo " -> [${MODE}] Restored from ${BACKUP_FILE}"
 
 				# else, error message
 				else
-					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.tar.gz is absent"
+					echo " -> Impossible as ${BACKUP_FILE} is absent"
 				fi
 			fi
 			;;
 
 		"folder")
+			# set data file
+			BACKUP_FOLDER="${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+
 			# backup mode
 			if [ "${OPERATION}" = "backup" ]
 			then
 				# if environment is present, backup
 				if [ -d "${ENV_PATH}" ]
 				then
-					[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
-					[ "${MODE}" = "normal" ] && rm --recursive --force ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/*
-					[ "${MODE}" = "normal" ] && cp --recursive --verbose ${ENV_PATH}/* "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
-					echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+					# if not in test mode
+					if [ "${MODE}" = "normal" ]
+					then
+						mkdir --parent "${BACKUP_FOLDER}"
+						rm --recursive --force ${BACKUP_FOLDER}/*
+						cp --recursive --verbose ${ENV_PATH}/* "${BACKUP_FOLDER}"
+					fi
+
+					# dislay progress
+					echo " -> [${MODE}] Backed-up to ${BACKUP_FOLDER}"
 
 				# else, error message
 				else
@@ -162,16 +190,22 @@ do
 			# restore mode
 			else
 				# if backup file is present, restore
-				if [ -d "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}" ]
+				if [ -d "${BACKUP_FOLDER}" ]
 				then
-					[ "${MODE}" = "normal" ] && mkdir --parents "${ENV_PATH}"
-					[ "${MODE}" = "normal" ] && rm --recursive --force ${ENV_PATH}/*
-					[ "${MODE}" = "normal" ] && cp --recursive --verbose ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/* "${ENV_PATH}"
-					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+					# if not in test mode
+					if [ "${MODE}" = "normal" ]
+					then
+						mkdir --parents "${ENV_PATH}"
+						rm --recursive --force ${ENV_PATH}/*
+						cp --recursive --verbose ${BACKUP_FOLDER}/* "${ENV_PATH}"
+					fi
+
+					# dislay progress
+					echo " -> [${MODE}] Restored from ${BACKUP_FOLDER}"
 
 				# else, error message
 				else
-					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM} is absent"
+					echo " -> Impossible as ${BACKUP_FOLDER} is absent"
 				fi
 			fi
 			;;
@@ -180,16 +214,25 @@ do
 			# get filename
 			ENV_FILE=$(basename "${ENV_PATH}")
 
+			# set data file
+			BACKUP_FILE="${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}"
+
 			# backup mode
 			if [ "${OPERATION}" = "backup" ]
 			then
 				# if environment is present, backup
 				if [ -f "${ENV_PATH}" ]
 				then
-					[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
-					[ "${MODE}" = "normal" ] && rm --recursive --force ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/*
-					[ "${MODE}" = "normal" ] && cp ${ENV_PATH} "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
-					echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}"
+					# if not in test mode
+					if [ "${MODE}" = "normal" ]
+					then
+						mkdir --parent "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}"
+						rm --recursive --force ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/*
+						cp ${ENV_PATH} "${BACKUP_FILE}"
+					fi
+
+					# dislay progress
+					echo " -> [${MODE}] Backed-up to ${BACKUP_FILE}"
 
 				# else, error message
 				else
@@ -199,37 +242,87 @@ do
 			# restore mode
 			else
 				# if backup file is present, restore
-				if [ -f "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}" ]
+				if [ -f "${BACKUP_FILE}" ]
 				then
-					[ "${MODE}" = "normal" ] && cp "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}" "${ENV_PATH}"
-					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE}"
+					# if not in test mode
+					[ "${MODE}" = "normal" ] && cp "${BACKUP_FILE}" "${ENV_PATH}"
+
+					# dislay progress
+					echo " -> [${MODE}] Restored from ${BACKUP_FILE}"
 
 				# else, error message
 				else
-					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}/${ENV_FILE} is absent"
+					echo " -> Impossible as ${BACKUP_FILE} is absent"
 				fi
 			fi
 			;;
 
 		"gconf")
+			# set data file
+			BACKUP_FILE="${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
+
 			# backup mode
 			if [ "${OPERATION}" = "backup" ]
 			then
-				[ "${MODE}" = "normal" ] && mkdir --parent "${BACKUP_DIR}/${ENV_NAME}"
-				[ "${MODE}" = "normal" ] && gconftool-2 --dump "${ENV_PATH}" > "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
-				echo " -> Backed-up to ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
+				# if not in test mode
+				if [ "${MODE}" = "normal" ]
+				then
+					mkdir --parent "${BACKUP_DIR}/${ENV_NAME}"
+					gconftool-2 --dump "${ENV_PATH}" > "${BACKUP_FILE}"
+				fi
+
+				# dislay progress
+				echo " -> [${MODE}] Backed-up to ${BACKUP_FILE}"
 
 			# restore mode
 			else
 				# if backup file is present, restore
-				if [ -f "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml" ]
+				if [ -f "${BACKUP_FILE}" ]
 				then
-					[ "${MODE}" = "normal" ] && gconftool-2 --load "${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
-					echo " -> Restored from ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml"
+					# if not in test mode
+					[ "${MODE}" = "normal" ] && gconftool-2 --load "${BACKUP_FILE}"
+
+					# dislay progress
+					echo " -> [${MODE}] Restored from ${BACKUP_FILE}"
 
 				# else, error message
 				else
-					echo " -> Impossible as ${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.xml is absent"
+					echo " -> Impossible as ${BACKUP_FILE} is absent"
+				fi
+			fi
+			;;
+
+		"dconf")
+			# set data file
+			BACKUP_FILE="${BACKUP_DIR}/${ENV_NAME}/${ENV_ITEM}.ini"
+
+			# backup mode
+			if [ "${OPERATION}" = "backup" ]
+			then
+				# if not in test mode
+				if [ "${MODE}" = "normal" ]
+				then
+					mkdir --parent "${BACKUP_DIR}/${ENV_NAME}"
+					dconf dump "${ENV_PATH}" > "${BACKUP_FILE}"
+				fi
+
+				# dislay progress
+				echo " -> [${MODE}] Backed-up to ${BACKUP_FILE}"
+
+			# restore mode
+			else
+				# if backup file is present, restore
+				if [ -f "${BACKUP_FILE}" ]
+				then
+					# if not in test mode
+					[ "${MODE}" = "normal" ] && cat "${BACKUP_FILE}" | dconf load "${ENV_PATH}"
+
+					# dislay progress
+					echo " -> [${MODE}] Restored from ${BACKUP_FILE}"
+
+				# else, error message
+				else
+					echo " -> Impossible as ${BACKUP_FILE} is absent"
 				fi
 			fi
 			;;
