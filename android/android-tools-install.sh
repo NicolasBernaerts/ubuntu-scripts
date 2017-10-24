@@ -2,7 +2,7 @@
 # Android Platform Tools installation
 
 # install adb and fastboot
-sudo apt-get -y install android-tools-adb android-tools-fastboot
+sudo apt -y install android-tools-adb android-tools-fastboot
 
 # install latest version from Google
 wget --header='Accept-Encoding:none' https://dl.google.com/android/repository/platform-tools-latest-linux.zip
