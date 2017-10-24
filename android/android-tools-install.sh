@@ -11,8 +11,8 @@ rm platform-tools-latest-linux.zip
 
 # launcher for latest adb
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/adb https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/adb
-sudo chmod +x /usr/local/sbin/adb
+sudo chmod +x /usr/local/sbin/platform-tools/adb /usr/local/sbin/adb
 
 # launcher for latest fastboot
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/fastboot https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/fastboot
-sudo chmod +x /usr/local/sbin/fastboot
+sudo chmod +x /usr/local/sbin/platform-tools/fastboot /usr/local/sbin/fastboot
