@@ -15,11 +15,8 @@ mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/do
 # FlashDisable
 mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/downloads/latest/383235/addon-383235-latest.xpi
 
-# Print PDF
-mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/downloads/latest/5971/platform:5/addon-5971-latest.xpi
+# Print Friendly and PDF
+mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/downloads/latest/print-friendly-pdf/platform:5/addon-465349-latest.xpi
 
 # Video DownloadHelper
 mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/downloads/latest/video-downloadhelper/addon-3006-latest.xpi
-
-# Smart Proxy
-mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/downloads/latest/smartproxy/platform:5/addon-845653-latest.xpi
