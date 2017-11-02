@@ -22,6 +22,12 @@ sudo apt -y install nmap snmp snmp-mibs-downloader
 logger "internet - thunderbird"
 sudo apt -y install thunderbird-gnome-support
 
+# firefox extension manager
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/mozilla-extension-manager-install.sh
+chmod +x ./mozilla-extension-manager-install.sh
+./mozilla-extension-manager-install.sh
+rm mozilla-extension-manager-install.sh
+
 # chromium and filezilla
 logger "internet - chromium & filezilla"
 sudo apt -y install chromium-browser filezilla
