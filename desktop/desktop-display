@@ -16,7 +16,7 @@
 DESKTOP_SESSION="/tmp/.desktop-session.ini"
 
 # empty parameters array
-ARR_DESKTOP=
+ARR_DESKTOP=( )
 
 # if process is not running in a desktop session
 if [ "${DBUS_SESSION_BUS_ADDRESS}" = "" ]
