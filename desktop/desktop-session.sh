@@ -5,8 +5,9 @@
 #  - DISPLAY
 #  - DBUS_SESSION_BUS_ADDRESS
 
-# desktop session data file
-DESKTOP_SESSION=/tmp/.latest-desktop-session.ini
+# set latest desktop session file in temporary directory
+DESKTOP_TMP=$(dirname $(mktemp "XXXXXXX" -ut))
+DESKTOP_SESSION="${DESKTOP_TMP}/.latest-desktop-session.ini"
 
 # Write current session data
 echo "[desktop-session]" > "${DESKTOP_SESSION}"
