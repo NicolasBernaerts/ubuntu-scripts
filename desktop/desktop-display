@@ -1,19 +1,20 @@
 #!/bin/bash
-# Command to display interacton in the latest desktop session
-# If called from an interactive session,
-#   no specific behaviour
+# Command to display dialog box on latest desktop session
+# If called from an interactive session, 
+#   it runs the display command whithout specific behaviour
 # If called from a service or a daemon, 
-#   get latest desktop environment and display interaction in this desktop
+#   it recovers latest desktop environment from /tmp/.latest-desktop-session.ini
+#   and runs the display command on this desktop environment thru DBUS
 #
 # Installation is described in http://bernaerts.dynds.org/....
 #
 # Revision history :
 #   05/09/2017, V1.0 - Creation by N. Bernaerts
-#   12/09/2017, V1.1 - Switch config from shell to ini file
+#   12/09/2017, V1.1 - Switch config from shell to ini file 
 # -------------------------------------------------------------------
 
 # latest desktop session file
-DESKTOP_SESSION="/tmp/.desktop-session.ini"
+DESKTOP_SESSION="/tmp/.latest-desktop-session.ini"
 
 # empty parameters array
 ARR_DESKTOP=( )
@@ -42,6 +43,6 @@ fi
 # if some display command has been given
 if [ $# -gt 1 ]
 then
-	# display given command
+	# display given command according to environment
 	[ ${#ARR_DESKTOP[@]} -gt 0 ] && "${ARR_DESKTOP[@]}" "$@" || "$@"
 fi
