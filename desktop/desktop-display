@@ -13,8 +13,9 @@
 #   12/09/2017, V1.1 - Switch config from shell to ini file 
 # -------------------------------------------------------------------
 
-# latest desktop session file
-DESKTOP_SESSION="/tmp/.latest-desktop-session.ini"
+# set latest desktop session file in temporary directory
+DESKTOP_TMP=$(dirname $(mktemp "XXXXXXX" -ut))
+DESKTOP_SESSION="${DESKTOP_TMP}/.latest-desktop-session.ini"
 
 # empty parameters array
 ARR_DESKTOP=( )
