@@ -25,9 +25,6 @@ command -v desktop-display >/dev/null 2>&1 || { logger "FlashAir - desktop-displ
 # load flashair environment variables
 . /usr/local/sbin/flashair-common
 
-# load latest desktop session environment
-. /usr/local/sbin/desktop-display
-
 # empty arrays
 ARR_ITEM=()
 
