@@ -1,7 +1,6 @@
 #!/bin/bash
 # ---------------------------------------------------
-# Daemon to handle communication 
-#  with Toshiba Flashair SD Card
+# Daemon to detect FlashAir card communication events
 # 
 # Revision history :
 #   30/03/2017, V1.0 - Creation by N. Bernaerts
