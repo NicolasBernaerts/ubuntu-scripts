@@ -20,7 +20,7 @@ command -v convert >/dev/null 2>&1 || { logger "FlashAir - convert is not instal
 command -v inotifywait >/dev/null 2>&1 || { logger "FlashAir - inotifywait is not installed [inotify-tools package]"; exit 1; }
 command -v zenity >/dev/null 2>&1 || { logger "FlashAir - zenity is not installed"; exit 1; }
 command -v yad >/dev/null 2>&1 || { logger "FlashAir - yad is not installed"; exit 1; }
-command -v desktop-display >/dev/null 2>&1 || { logger "FlashAir - desktop-display is not installed"; exit 1; }
+command -v desktop-display >/dev/null 2>&1 || { logger "FlashAir - desktop-display is not installed (https://github.com/NicolasBernaerts/ubuntu-scripts/tree/master/desktop)"; exit 1; }
 
 # load flashair environment variables
 . /usr/local/sbin/flashair-common
