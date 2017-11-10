@@ -4,7 +4,7 @@
 #  of Toshiba FlashAir SD Cards under Ubuntu
 # 
 # Procedure :
-#   http://bernaerts.dyndns.org/linux/76-gnome/xxx
+#   http://bernaerts.dyndns.org/linux/74-ubuntu/355-ubuntu-xenial-browse-flashair-nautilus
 #
 # Card will be mounted under /media/flashair
 # If you change this directory, please update
