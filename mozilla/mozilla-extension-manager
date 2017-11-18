@@ -305,7 +305,7 @@ else
 	fi
 
 	# copy .xpi to system extension path
-	[ "${EXT_TYPE}" = "user" ] && cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi" \
+	[ "${EXT_TYPE}" = "user" ] && mkdir -p "${EXT_PATH}/.." && cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi" \
 	                           || sudo cp -f "${ADDON_XPI}" "${EXT_PATH}/../${EXT_UID}.xpi"
 
 	# extract extension to system extension path
