@@ -64,4 +64,5 @@ sudo apt update
 sudo apt -y install syncthing
 sudo systemctl enable syncthing@${USER}.service
 sudo systemctl start syncthing@${USER}.service
-wget $HOME/.local/share/icons/syncthing.png  https://github.com/NicolasBernaerts/icon/blob/master/syncthing.png
+mkdir --parents $HOME/.local/share/icons
+wget -O $HOME/.local/share/icons/syncthing.png  https://github.com/NicolasBernaerts/icon/blob/master/syncthing.png
