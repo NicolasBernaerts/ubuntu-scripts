@@ -31,8 +31,8 @@ command -v urlencode >/dev/null 2>&1 || { zenity --error --text="Please install 
 [ "$DOC_URI" = "" ] && exit 1
 
 # extract document name and extension
-DOC_BASE=$(echo "${DOC_URI}" | sed 's/^\(.*\)\..*$/\1/')
-DOC_EXT=$(echo "${DOC_URI}" | sed 's/^.*\.\(.*\)$/\1/')
+DOC_BASE=$(echo "${DOC_URI}" | sed 's/^\(.*\)\.[a-zA-Z0-9]*$/\1/')
+DOC_EXT=$(echo "${DOC_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
 
 # set PDF extension for files without extension
 [ "${DOC_BASE}" = "${DOC_EXT}" ] && DOC_EXT="pdf"
