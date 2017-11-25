@@ -19,3 +19,6 @@ sudo chmod +x /usr/local/bin/pdf-repair
 sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/pdf-repair.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-action.desktop
+
+# enable icon in nautilus menus
+gsettings set org.gnome.desktop.interface menus-have-icons true
