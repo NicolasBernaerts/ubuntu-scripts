@@ -65,7 +65,7 @@ rm -f "${TMP_REPAIRED}"
 mutool clean "${TMP_ORIGINAL}" "${TMP_REPAIRED}"
 
 # place corrected file side to original 
-gvfs-copy "${TMP_REPAIRED}" "${DOC_BASE} (MuTool repaired).${DOC_EXT}"
+gvfs-copy "${TMP_REPAIRED}" "${DOC_BASE} (MuPDF repaired).${DOC_EXT}"
 
 # ------------
 # Notification
