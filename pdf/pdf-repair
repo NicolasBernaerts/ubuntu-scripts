@@ -76,7 +76,7 @@ DOC_NAME=$(basename "${DOC_URI}")
 DOC_DISPLAY=$(urlencode -d "${DOC_NAME}")
 
 # send desktop notification
-notify-send "${DOC_DISPLAY} repaired"
+notify-send -i pdf-repair "${DOC_DISPLAY} repaired"
 
 # remove temporary files
 rm -f "${TMP_ORIGINAL}" "${TMP_REPAIRED}"
