@@ -6,7 +6,7 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # install tools
-sudo apt-get -y install gvfs-bin libnotify-bin ghostscript mupdf-tools gridsite-clients
+sudo apt-get -y install gvfs-bin libnotify-bin ghostscript mupdf-tools gridsite-clients nautilus-actions
 
 # install icons
 sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/pdf-repair.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-repair.png
