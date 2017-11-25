@@ -4,53 +4,79 @@
 #
 # Depends on :
 #   * ghostscript
-#   * gvfs-bin
-#   * libnotify-bin
-#   * zenity
+#   * mupdf-tools
+#   * gridsite-clients
 #
 # Parameter :
-#   $1 - full path of original PDF
+#   $1 - URI of original PDF
 #
 # Revision history :
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
 #   20/11/2014, V1.1 - Add file selection dialog box
 #   24/01/2015, V1.2 - Check tools availability
+#   24/11/2017, V2.0 - Add MuTool repair method (thank to Willie Wildgrube idea)
 # ---------------------------------------------------
 
 # check tools availability
 command -v gvfs-copy >/dev/null 2>&1 || { zenity --error --text="Please install gvfs-copy [gvfs-bin]"; exit 1; }
-command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs [ghostscript]"; exit 1; }
 command -v notify-send >/dev/null 2>&1 || { zenity --error --text="Please install notify-send [libnotify-bin]"; exit 1; }
+command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs [ghostscript]"; exit 1; }
+command -v mutool >/dev/null 2>&1 || { zenity --error --text="Please install mutool [mupdf-tools]"; exit 1; }
+command -v urlencode >/dev/null 2>&1 || { zenity --error --text="Please install urlencode [gridsite-clients]"; exit 1; }
 
 # check if parameter is given, otherwise open dialog box selection
-[ "$1" != "" ] && ORG_URI="$1" || ORG_URI=$(zenity --file-selection --title="Select PDF file to repair")
+[ "$1" != "" ] && DOC_URI="$1" || DOC_URI=$(zenity --file-selection --title="Select PDF file to repair")
 
-# if a PDF file is selected
-if [ "$ORG_URI" != "" ]
-then
-  # generate corrected document name
-  ORG_BASE=$(echo "$ORG_URI" | sed 's/^\(.*\)\..*$/\1/')
-  ORG_EXT=$(echo "$ORG_URI" | sed 's/^.*\.\(.*\)$/\1/')
-  NEW_URI="$ORG_BASE-repaired.$ORG_EXT"
+# if no file selected, exit
+[ "$DOC_URI" = "" ] && exit 1
 
-  # generate temporary local filename
-  ORG_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
-  NEW_TMP=$(mktemp -t XXXXXXXX.${ORG_EXT})
+# extract document name and extension
+DOC_BASE=$(echo "${DOC_URI%%.*}")
+DOC_EXT=$(echo "${DOC_URI#*.}")
 
-  # copy input file to temporary local file
-  gvfs-copy "${ORG_URI}" "${ORG_TMP}"
+# set PDF extension for files without extension
+[ "${DOC_BASE}" = "${DOC_EXT}" ] && DOC_EXT="pdf"
 
-  # generate corrected PDF
-  gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="${NEW_TMP}" "${ORG_TMP}"
+# generate temporary local filename
+TMP_ORIGINAL=$(mktemp -t XXXXXXXX.pdf) && rm "${TMP_ORIGINAL}"
+TMP_REPAIRED=$(mktemp -t XXXXXXXX.pdf) && rm "${TMP_REPAIRED}"
 
-  # copy back corrected file
-  gvfs-copy "${NEW_TMP}" "${NEW_URI}"
+# copy input file to temporary local file
+gvfs-copy "${DOC_URI}" "${TMP_ORIGINAL}"
 
-  # remove temporary local files
-  rm ${ORG_TMP}
-  rm ${NEW_TMP}
+# -----------------------
+# Repair with GhostScript
+# -----------------------
 
-  # send desktop notification
-  NEW_NAME=$(echo "$NEW_URI" | sed 's/^.*\/\(.*\)$/\1/')
-  notify-send "Repaired PDF is $NEW_NAME"
-fi
+# generate repaired PDF
+gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="${TMP_REPAIRED}" "${TMP_ORIGINAL}"
+
+# place corrected file side to original 
+gvfs-copy "${TMP_REPAIRED}" "${DOC_BASE} (GhostScript repaired).${DOC_EXT}"
+
+# remove temporary file
+rm -f "${TMP_REPAIRED}" 
+
+# ------------------
+# Repair with MuTool
+# ------------------
+
+# generate repaired PDF
+mutool clean "${TMP_ORIGINAL}" "${TMP_REPAIRED}"
+
+# place corrected file side to original 
+gvfs-copy "${TMP_REPAIRED}" "${DOC_BASE} (MuTool repaired).${DOC_EXT}"
+
+# ------------
+# Notification
+# ------------
+
+# get document name and convert URI format
+DOC_NAME=$(basename "${DOC_URI}")
+DOC_DISPLAY=$(urlencode -d "${DOC_NAME}")
+
+# send desktop notification
+notify-send "${DOC_DISPLAY} repaired"
+
+# remove temporary files
+rm -f "${TMP_ORIGINAL}" "${TMP_REPAIRED}"
