@@ -3,7 +3,9 @@ Ubuntu post-installation scripts
 
 Here are the scripts I use to automatise installation of an Ubuntu or Ubuntu Gnome workstation.
 
-Main script to be called is **post-install**. It takes few parameters according to the distribution type you are installing and the options you want.
+Main script to be called is **post-install**.
+
+It takes few parameters according to the distribution type you are installing and the options you want.
 
 | Option             | Description |
 | -------------      | ------------- |
