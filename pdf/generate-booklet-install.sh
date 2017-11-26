@@ -1,5 +1,5 @@
 #!/bin/sh
-# PDF booklet generation extension
+# Install PDF booklet generation extension
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
