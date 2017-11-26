@@ -1,5 +1,5 @@
 #!/bin/sh
-# PDF rotation nautilus extension
+# Install PDF rotation nautilus extension
 
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
