@@ -87,6 +87,12 @@ sudo apt -y upgrade
 # ----------------- Common Packages  ----------------
 # ---------------------------------------------------
 
+# utilities and tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
+chmod +x ./utilities
+./utilities
+rm ./utilities
+
 # office tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
 chmod +x ./office
@@ -116,12 +122,6 @@ wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBe
 chmod +x ./android
 ./android
 rm ./android
-
-# misc utilities and tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
-chmod +x ./utilities
-./utilities
-rm ./utilities
 
 # ---------------------------------------------------
 # -----------------  Common options  ----------------
