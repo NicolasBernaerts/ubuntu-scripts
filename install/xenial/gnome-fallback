@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # -------------------------------------------------------
 # Script to install gnome environment
 #
@@ -7,11 +7,11 @@
 
 # install gnome classic session
 logger "gnome-fallback - gnome classic session"
-sudo apt-get -y install gnome-session-flashback gnome-tweak-tool
+sudo apt -y install gnome-session-flashback gnome-tweak-tool
 
 # install nautilus-actions
 logger "gnome-fallback - nautilus-actions"
-sudo apt-get -y install nautilus-action
+sudo apt -y install nautilus-action
 
 # nautilus : remove nautilus action root menu
 logger "gnome-fallback - remove nautilus action root menu"
@@ -27,8 +27,10 @@ rm nautilus-newfile-install.sh
 
 # tweak to allow nautilus windows resize under compiz
 logger "gnome-fallback - allow nautilus windows resize under compiz"
+mkdir --parents $HOME/.config/gtk-3.0
 wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/config/gtk.css
 
 # console management of gnomeshell extensions
 logger "gnome-fallback - console management of gnomeshell extensions"
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/gnomeshell-extension-install https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-install
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/gnomeshell-extension-manage https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-manage
+sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
