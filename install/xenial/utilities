@@ -11,7 +11,7 @@ sudo apt -y install yad
 
 # system extension really needed
 logger "utilities - system extension"
-sudo apt -y install linux-firmware-nonfree xbacklight preload
+sudo apt -y install linux-firmware xbacklight preload
 
 # package management tools
 logger "utilities - package management"
