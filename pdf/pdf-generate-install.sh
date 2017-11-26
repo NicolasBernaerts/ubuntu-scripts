@@ -22,5 +22,6 @@ sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/pdf-generate https:/
 sudo chmod +x /usr/local/bin/pdf-generate
 
 # desktop integration
+sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/pdf-generate.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate.desktop
 mkdir --parents $HOME/.local/share/file-manager/actions
 wget --header='Accept-Encoding:none' -O $HOME/.local/share/file-manager/actions/pdf-generate-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-action.desktop
