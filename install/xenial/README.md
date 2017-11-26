@@ -5,16 +5,16 @@ Here are the scripts I use to automatise installation of an Ubuntu or Ubuntu Gno
 
 Main script to be called is **post-install**. It takes few parameters according to the distribution type you are installing and the options you want.
 
-| Option  | Description |
-| ------------- | ------------- |
-| **--ubuntu**  | Run post-installation for a Ubuntu distribution (unity)  |
-| **--ubuntugnome **  | Run post-installation for a Ubuntu Gnome distribution |
-| **--assistance **  | Add remote assistance tools |
-| **--docky **  | Add docky launcher |
-| **--wifi **  | Add some tweaks for problematic wifi cards |
-| **--ssd **  | Add some tweaks for SSD disk |
-| **--touchpad **  | Add some tweaks for trackpad and touchpad (use with caution) |
-| **--gopro **  | Add GoPro bug correction |
+| Option             | Description |
+| -------------      | ------------- |
+| **--ubuntu**       | Run post-installation for a Ubuntu distribution (unity)  |
+| **--ubuntugnome**  | Run post-installation for a Ubuntu Gnome distribution |
+| **--assistance**   | Add remote assistance tools |
+| **--docky**        | Add docky launcher |
+| **--wifi**         | Add some tweaks for problematic wifi cards |
+| **--ssd**          | Add some tweaks for SSD disk |
+| **--touchpad**     | Add some tweaks for trackpad and touchpad (use with caution) |
+| **--gopro**        | Add GoPro bug correction |
 
 This script call various specialized script in charge of installing latest tools for :
   * office work
