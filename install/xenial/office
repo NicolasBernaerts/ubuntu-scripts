@@ -39,37 +39,45 @@ logger "office - office file association"
 xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
 xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
 
-# LibreOffice thumbnailer
+# Thumbnailer - LibreOffice
 logger "office - LibreOffice thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
 chmod +x ./lo-thumbnailer-install.sh
 ./lo-thumbnailer-install.sh
 rm lo-thumbnailer-install.sh
 
-# Ms Office thumbnailer
+# Thumbnailer - Ms Office thumbnailer
 logger "office - Ms Office thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
 chmod +x ./msoffice-thumbnailer-install.sh
 ./msoffice-thumbnailer-install.sh
 rm msoffice-thumbnailer-install.sh
 
-# PDF booklet generation extension
-logger "office - PDF booklet"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
-chmod +x ./generate-booklet-install.sh
-./generate-booklet-install.sh
-rm generate-booklet-install.sh
+# PDF : document generation from multiple files
+logger "office - PDF document generation"
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
+chmod +x ./pdf-generate-install.sh
+./pdf-generate-install.sh
+rm pdf-generate-install.sh
 
-# PDF rotation extension
+# PDF : rotation extension
 logger "office - PDF rotation extension"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-install.sh
 chmod +x ./pdf-rotate-install.sh
 ./pdf-rotate-install.sh
 rm pdf-rotate-install.sh
 
-# PDF document generation from multiple files
-logger "office - PDF document generation"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
-chmod +x ./pdf-generate-install.sh
-./pdf-generate-install.sh
-rm pdf-generate-install.sh
+# PDF : repair extension
+logger "office - PDF repair extension"
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
+chmod +x ./pdf-repair-install.sh
+./pdf-repair-install.sh
+rm pdf-repair-install.sh
+
+# PDF : booklet generation extension
+logger "office - PDF booklet"
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
+chmod +x ./generate-booklet-install.sh
+./generate-booklet-install.sh
+rm generate-booklet-install.sh
+
