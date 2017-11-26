@@ -80,8 +80,8 @@ sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
 # --------------- Full System Update ----------------
 # ---------------------------------------------------
 
-sudo apt-get update
-sudo apt-get -y dist-upgrade
+sudo apt update
+sudo apt -y dist-upgrade
 
 # ---------------------------------------------------
 # ----------------- Common Packages  ----------------
@@ -211,8 +211,8 @@ fi
 # ---------------------------------------------------
 
 # packages
-sudo apt-get -y autoremove
-sudo apt-get -y autoclean
+sudo apt -y autoremove
+sudo apt -y autoclean
 
 # purge thumbnails cache
 rm -r $HOME/.thumbnails
