@@ -28,26 +28,26 @@ command -v pnmscalefixed >/dev/null 2>&1 || exit 1
 command -v pnmcomp >/dev/null 2>&1 || exit 1
 command -v pnmtopng >/dev/null 2>&1 || exit 1
 
-# path where to get icons used for generation
-ICONPATH="/usr/local/sbin/lo-thumbnailer-icons"
-
 # get parameters
 SCRIPT_NAME=$(basename $0)
 FILE_URI="$1"
 FILE_THUMB="$2"
 SIZE="$3"
 
-# set working path
-PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
-PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
-[ ! -d "${PATH_CACHE}" ] && mkdir --parent "${PATH_CACHE}"
-
 # get filename extension
-FILE_EXT=$(echo "${FILE_URI}" | sed "s/^.*\.\(.*\)/\1/")
+FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
+[ "${FILE_EXT}" = "${FILE_URI}" ] && FILE_EXT="none"
 
 # generate temporary local filename
 TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
 TMP_PNM=$(mktemp -t "XXXXXXXX.pnm")
+
+# set working path
+PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
+PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
+
+# if needed, create cache directory
+[ ! -d "${PATH_CACHE}" ] && mkdir --parent "${PATH_CACHE}"
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -81,4 +81,4 @@ unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | pngtopnm > "${TMP_PNM}"
 pbmmake -white 208 256 | pnmcomp -align center -valign middle "${TMP_PNM}" - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmcomp -align center -valign middle -alpha "${DOC_ALPHA}" "${DOC_TAG}" - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
 # remove temporary local file
-rm "${TMP_LOCAL}" "${TMP_PNM}"
+rm -f "${TMP_LOCAL}" "${TMP_PNM}"
