@@ -81,7 +81,7 @@ sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
 # ---------------------------------------------------
 
 sudo apt update
-sudo apt -y dist-upgrade
+sudo apt -y upgrade
 
 # ---------------------------------------------------
 # ----------------- Common Packages  ----------------
