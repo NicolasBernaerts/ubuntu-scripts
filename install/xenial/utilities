@@ -60,7 +60,7 @@ rm ./keepassxc.deb
 
 # photorec and qphotorec (recovery of files from SDCard)
 logger "utilities - photorec and qphotorec"
-sudo apt-get -y install testdisk
+sudo apt -y install testdisk
 wget --header='Accept-Encoding:none' http://heanet.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
 sudo gdebi --non-interactive qphotorec_1.0_all.deb
 rm qphotorec_1.0_all.deb
