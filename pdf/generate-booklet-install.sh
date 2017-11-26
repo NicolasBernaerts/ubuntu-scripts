@@ -11,8 +11,9 @@ sudo apt-get -y install poppler-utils texlive-extra-utils mimetype unoconv
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 
-# show icon in menus
+# show icon in menus (command different according to gnome version)
 gsettings set org.gnome.desktop.interface menus-have-icons true
+gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/generate-booklet https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet
