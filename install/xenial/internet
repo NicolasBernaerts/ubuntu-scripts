@@ -54,6 +54,7 @@ rm youtubedl-gui-install.sh
 logger "internet - whatsie"
 wget https://github.com/gsantner/whatsie/releases/download/v2.1.0/whatsie-2.1.0-linux-amd64.deb
 sudo dpkg -i whatsie-2.1.0-linux-amd64.deb
+sudo apt-get -y -f install
 rm whatsie-2.1.0-linux-amd64.deb
 
 # telegram client
