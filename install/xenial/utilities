@@ -7,37 +7,37 @@
 
 # yad editor (used by many scripts)
 logger "utilities - yad"
-sudo apt-get -y install yad
+sudo apt -y install yad
 
 # system extension really needed
 logger "utilities - system extension"
-sudo apt-get -y install linux-firmware-nonfree xbacklight preload
+sudo apt -y install linux-firmware-nonfree xbacklight preload
 
 # package management tools
 logger "utilities - package management"
-sudo apt-get -y install ppa-purge synaptic gdebi deborphan
+sudo apt -y install ppa-purge synaptic gdebi deborphan
 
 # filesystem clients
 logger "utilities - filesystem"
-sudo apt-get -y install cifs-utils autofs exfat-fuse
+sudo apt -y install cifs-utils autofs exfat-fuse
 
 # compression tools
 logger "utilities - compression"
-sudo apt-get -y install p7zip-full rar unrar unzip
+sudo apt -y install p7zip-full rar unrar unzip
 
 # file comparison
 logger "utilities - file comparison"
-sudo apt-get -y install meld
+sudo apt -y install meld
 
 # disk tools
 logger "utilities - disk"
-sudo apt-get -y install smartmontools disktype gparted
+sudo apt -y install smartmontools disktype gparted
 
 # unetbootin
 logger "utilities - unetbootin"
 sudo add-apt-repository -y ppa:gezakovacs/ppa
-sudo apt-get update
-sudo apt-get -y install unetbootin
+sudo apt update
+sudo apt -y install unetbootin
 
 # etcher
 logger "utilities - etcher"
@@ -48,14 +48,14 @@ sudo apt install etcher-electron
 
 # alacarte : menu editor
 logger "utilities - alacarte"
-sudo apt-get -y install alacarte
+sudo apt -y install alacarte
 
 # keepassxc : electronic wallet
 logger "utilities - keepassxc"
 sudo apt-get -y install libykpers-1-1
 wget -O keepassxc.deb https://github.com/magkopian/keepassxc-debian/releases/download/2.2.1-1/keepassxc_2.2.1-1_amd64_ubuntu_16.04_xenial.deb
 sudo dpkg -i ./keepassxc.deb
-sudo apy -y install -f
+sudo apt-get -y -f install
 rm ./keepassxc.deb
 
 # photorec and qphotorec (recovery of files from SDCard)
