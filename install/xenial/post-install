@@ -22,7 +22,7 @@ DISTRI_NAME="xenial"
 # ---------------------------------------------------
 
 RESULT=$(cat /etc/lsb-release | grep "DISTRIB_CODENAME" | cut -d'=' -f2-)
-[ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Your distribution is not ${DISTRI_NAME}"; exit 1; }
+[ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_NAME}"; exit 1; }
 
 # ---------------------------------------------------
 # ------------ Architecture detection ---------------
