@@ -18,12 +18,19 @@
 DISTRI_NAME="xenial"
 
 # ---------------------------------------------------
+# ------------ Distribution detection ---------------
+# ---------------------------------------------------
+
+RESULT=$(cat /etc/lsb-release | grep "DISTRIB_CODENAME" | cut -d'=' -f2-)
+[ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Your distribution is not ${DISTRI_NAME}"; exit 1; }
+
+# ---------------------------------------------------
 # ------------ Architecture detection ---------------
 # ---------------------------------------------------
 
 RESULT=$(uname -a | grep x86_64)
-[ "$RESULT" != "" ] && ARCHI="amd64" || ARCHI="i386"
-[ "$ARCHI" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+[ "${RESULT}" != "" ] && ARCHI="amd64" || ARCHI="i386"
+[ "${ARCHI}" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
 
 # ---------------------------------------------------
 # -------------- Parameters handling ----------------
