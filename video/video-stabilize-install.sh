@@ -20,7 +20,9 @@ command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 if [ ! -f /opt/vidstab/melt ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/melt-vidstab-install.sh
-  . ./melt-vidstab-install.sh
+  chmod +x melt-vidstab-install.sh
+  ./melt-vidstab-install.sh
+  rm melt-vidstab-install.sh
 fi
 
 # install configuration file
