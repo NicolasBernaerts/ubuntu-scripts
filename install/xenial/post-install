@@ -215,7 +215,8 @@ sudo apt -y autoremove
 sudo apt -y autoclean
 
 # purge thumbnails cache
-rm -r $HOME/.thumbnails
+[ -d $HOME/.thumbnails ] && rm -r $HOME/.thumbnails/*
+[ -d $HOME/.cache/thumbnails ] && rm -r $HOME/.cache/thumbnails/*
 
 # ---------------------------------------------------
 # -------------- Enable sudo timeout ---------------
