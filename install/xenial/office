@@ -8,24 +8,24 @@
 # libreoffice PPA
 logger "office - libreoffice"
 sudo add-apt-repository -y ppa:libreoffice/ppa
-sudo apt-get update
-sudo apt-get -y dist-upgrade
+sudo apt update
+sudo apt -y upgrade
 
 # grisbi
 logger "office - grisbi"
-sudo apt-get -y install grisbi
+sudo apt -y install grisbi
 
 # hplip
 logger "office - hplip"
-sudo apt-get -y install hplip-gui
+sudo apt -y install hplip-gui
 
 # tesseract-ocr client and french langage
 logger "office - tesseract-ocr"
-sudo apt-get -y install tesseract-ocr-fra aspell-fr
+sudo apt -y install tesseract-ocr-fra aspell-fr
 
 # gramps (genealogy)
 logger "office - gramps"
-sudo apt-get -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
+sudo apt -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
 
 # PDF editor
 logger "office - PDF editor"
