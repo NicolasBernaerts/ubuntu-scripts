@@ -89,39 +89,39 @@ sudo apt -y upgrade
 
 # utilities and tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
-chmod +x ./utilities
+chmod +x utilities
 ./utilities
-rm ./utilities
+rm utilities
 
 # office tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
-chmod +x ./office
+chmod +x office
 ./office
-rm ./office
+rm office
 
 # graphical tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
-chmod +x ./graphical
+chmod +x graphical
 ./graphical
-rm ./graphical
+rm graphical
 
 # multimedia tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
-chmod +x ./multimedia
+chmod +x multimedia
 ./multimedia
-rm ./multimedia
+rm multimedia
 
 # internet tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
-chmod +x ./internet
+chmod +x internet
 ./internet
-rm ./internet
+rm internet
 
 # android tools
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
-chmod +x ./android
+chmod +x android
 ./android
-rm ./android
+rm android
 
 # ---------------------------------------------------
 # -----------------  Common options  ----------------
@@ -131,27 +131,27 @@ rm ./android
 if [ "${WIFI}" = "ok" ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
-  chmod +x ./wifi
+  chmod +x wifi
   ./wifi
-  rm ./wifi
+  rm wifi
 fi
 
 # SSD tweaks
 if [ "${SSD}" = "ok" ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
-  chmod +x ./ssd
+  chmod +x ssd
   ./ssd
-  rm ./ssd
+  rm ssd
 fi
 
 # remote assistance
 if [ "${ASSIST}" = "ok" ]
 then
   wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
-  chmod +x ./assistance
+  chmod +x assistance
   ./assistance
-  rm ./assistance
+  rm assistance
 fi
 
 # ---------------------------------------------------
@@ -162,16 +162,16 @@ case ${DISTRI_TYPE} in
     "UBUNTU") 
       # gnome session fallback
       wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-fallback
-      chmod +x ./gnome-fallback
+      chmod +x gnome-fallback
       ./gnome-fallback
-      rm ./gnome-fallback
+      rm gnome-fallback
       ;;
     "UBUNTUGNOME") 
       # gnomeshell
       wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
-      chmod +x ./gnome-shell
+      chmod +x gnome-shell
       ./gnome-shell
-      rm ./gnome-shell
+      rm gnome-shell
       ;;
     *) 
       ;;
@@ -185,9 +185,9 @@ esac
 if [ "${DOCKY}" = "ok" ]
 then
   wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/docky-install.sh
-  chmod +x ./docky-install.sh
+  chmod +x docky-install.sh
   ./docky-install.sh
-  rm ./docky-install.sh
+  rm docky-install.sh
 fi
 
 # touchpad : add palm detection
@@ -201,9 +201,9 @@ fi
 if [ "${GOPRO}" = "ok" ]
 then
   wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro-install.sh
-  chmod +x ./nautilus-xenial-gopro-install.sh --install
+  chmod +x nautilus-xenial-gopro-install.sh
   ./nautilus-xenial-gopro-install.sh --install
-  rm ./nautilus-xenial-gopro-install.sh
+  rm nautilus-xenial-gopro-install.sh
 fi
 
 # ---------------------------------------------------
