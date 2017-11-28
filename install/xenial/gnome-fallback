@@ -28,7 +28,7 @@ rm nautilus-newfile-install.sh
 # tweak to allow nautilus windows resize under compiz
 logger "gnome-fallback - allow nautilus windows resize under compiz"
 mkdir --parents $HOME/.config/gtk-3.0
-wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRINAME}/config/gtk.css
+wget -O $HOME/.config/gtk-3.0/gtk.css --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/config/gtk.css
 
 # console management of gnomeshell extensions
 logger "gnome-fallback - console management of gnomeshell extensions"
