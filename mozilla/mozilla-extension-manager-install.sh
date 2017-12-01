@@ -20,3 +20,6 @@ mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/do
 
 # Video DownloadHelper
 mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/downloads/latest/video-downloadhelper/addon-3006-latest.xpi
+
+# Empty cache button
+mozilla-extension-manager --user --install https://addons.mozilla.org/firefox/downloads/file/782571/empty_cache_button-3.4-an+fx.xpi
