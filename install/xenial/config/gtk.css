@@ -2,3 +2,56 @@
     margin: 2px;
     background-color: white;
 }
+
+/* Adding the buttons on the edges (if you don't need them, skip the next 4 lines)
+ */
+
+.scrollbar {
+  -GtkScrollbar-has-backward-stepper: 1;
+  -GtkScrollbar-has-forward-stepper: 1;
+  -GtkRange-slider-width: 20;
+}
+
+/* Scrollbar trough squeezes when cursor hovers over it. Disabling that
+ */
+
+.scrollbar.vertical:hover:dir(ltr),
+.scrollbar.vertical.dragging:dir(ltr) {
+    margin-left: 0px;
+}
+
+.scrollbar.vertical:hover:dir(rtl),
+.scrollbar.vertical.dragging:dir(rtl) {
+    margin-right: 0px;
+}
+
+.scrollbar.horizontal:hover,
+.scrollbar.horizontal.dragging,
+.scrollbar.horizontal.slider:hover,
+.scrollbar.horizontal.slider.dragging {
+    margin-top: 0px;
+}
+
+/* Slider widens to fill the scrollbar when cursor hovers over it. Making it permanent
+ */
+
+.scrollbar.slider.vertical:dir(ltr):not(:hover):not(.dragging) {
+    margin-left: 0px;
+}
+
+.scrollbar.slider.vertical:dir(rtl):not(:hover):not(.dragging) {
+    margin-right: 0px;
+}
+
+.scrollbar.slider.horizontal:not(:hover):not(.dragging) {
+    margin-top: 0px;
+}
+
+scrollbar slider {
+    /* size of the slider */
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 22px;
+    /* padding around the slider */
+    border: 5px solid transparent;
+}
