@@ -265,10 +265,10 @@ do
     X_ANGLE=$((10 * ${ROTATE_ANGLE} / 2))
 
     # set rotation filter
-    ARR_ROTATE=("-filter" "affine" "transition.fix_rotate_x=${X_ANGLE}")
+    ARR_ROTATE=( "-filter" "affine" "transition.fix_rotate_x=${X_ANGLE}" )
 
     # if different than 1, set transformation ratio
-    [ "${ROTATE_RATIO}" != "1" ] && ARR_ROTATE=("${ARR_ROTATE[@]}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}")
+    [ "${ROTATE_RATIO}" != "1" ] && ARR_ROTATE=( "${ARR_ROTATE[@]}" "transition.scale_x=${ROTATE_RATIO}" "transition.scale_y=${ROTATE_RATIO}" )
   fi
 
   # ----------------------------------------------
