@@ -249,12 +249,17 @@ do
   echo "0"
 
   # if needed, generate stabilizer parameters array
-  ARR_EXTRA=($(echo "${STAB_EXTRA}" | cut -d ";" --output-delimiter=" " -f 1-))
-  [ "$STABILIZE" = "TRUE" ] && ARR_STABILIZE=("-filter" "${STAB_FILTER}" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" \
-                                              "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${ARR_EXTRA[@]}")
-
+  if [ "${STABILIZE}" = "TRUE" ]
+  then
+    # get default parameters
+    ARR_STABILIZE=( $(echo "${STAB_EXTRA}" | cut -d ";" --output-delimiter=" " -f 1-) )
+    
+    # add current parameters
+    ARR_STABILIZE=( "-filter" "${STAB_FILTER}" "filename=${FILE_TRF}" "shakiness=${STAB_SHAKINESS}" "smoothing=${STAB_SMOOTHING}" "optzoom=${STAB_OPTZOOM}" "${ARR_STABILIZE[@]}" )
+  fi
+  
   # if needed, set rotation filter
-  if [ "$ROTATE" = "TRUE" ]
+  if [ "${ROTATE}" = "TRUE" ]
   then
     # convert angle for filter use
     X_ANGLE=$((10 * ${ROTATE_ANGLE} / 2))
@@ -274,7 +279,7 @@ do
   echo "# Analysing file"
 
   # launch analysis command
-  ${CMD_MELT} -progress "${FILE_PATH}" ${ARR_ROTATE[@]} ${ARR_STABILIZE[@]} -consumer xml:"${FILE_MLT}" all=1 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_PATH}" "${ARR_ROTATE[@]}" "${ARR_STABILIZE[@]}" -consumer "xml:${FILE_MLT}" all=1 2>"${FILE_LOG}" &
 
   # save current process and melt command process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_PATH}" | awk '{print $2}')
@@ -306,12 +311,14 @@ do
   # information display
   echo "# Generating file"
 
-  # generate encoder parameters array
-  ARR_OPTION=($(echo "${ENCODE_OPTION}" | cut -d ";" --output-delimiter=" " -f 1-))
-  ARR_ENCODE=("vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_OPTION[@]}" )
+  # get default encoding parameters
+  ARR_ENCODE=( $(echo "${ENCODE_OPTION}" | cut -d ";" --output-delimiter=" " -f 1-) )
+  
+  # add current encoding parameters
+  ARR_ENCODE=( "vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_ENCODE[@]}" )
 
   # launch generation command
-  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer avformat:"${FILE_STAB}" ${ARR_ENCODE[@]} real_time=-${ENCODE_THREAD} 2>"${FILE_LOG}" &
+  ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer "avformat:${FILE_STAB}" "${ARR_ENCODE[@]}" real_time=-${ENCODE_THREAD} 2>"${FILE_LOG}" &
 
   # save current process and melt command process id
   PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_MLT}" | awk '{print $2}')
