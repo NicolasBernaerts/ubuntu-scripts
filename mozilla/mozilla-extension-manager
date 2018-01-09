@@ -242,7 +242,7 @@ fi
 if [ "${EXT_ACTION}" = "list" ]
 then
 	# list installed XPI files
-	ARR_XPI=( $(ls ${EXT_PATH}/*.xpi) )
+	ARR_XPI=( $(ls ${EXT_PATH}/*.xpi ${EXT_PATH}/../*.xpi 2>/dev/null) )
 
 	# loop thru installed XPI
 	for FILE_XPI in "${ARR_XPI[@]}"
