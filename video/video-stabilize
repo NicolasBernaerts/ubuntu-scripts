@@ -60,7 +60,7 @@ FILE_CONF="$HOME/.config/video-stabilize.conf"
 [ -f "$FILE_CONF" ] || { zenity --error --text="[error] Please create and configure ${FILE_CONF}"; exit 1; }
 
 # Load configuration file
-ARR_EXT=($(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-))
+ARR_EXT=( $(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-) )
 STAB_SHAKINESS=$(cat "${FILE_CONF}" | grep "shakiness" | cut -d'=' -f2)
 STAB_SMOOTHING=$(cat "${FILE_CONF}" | grep "smoothing" | cut -d'=' -f2)
 STAB_OPTZOOM=$(cat "${FILE_CONF}" | grep "optzoom" | cut -d'=' -f2)
@@ -86,7 +86,7 @@ do
   FILE_EXT=$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')
 
   # check if file extension given in parameter is in the allowed extension list
-  [ -f "$FILE_PATH" ] && EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case ${FILE_EXT}) || EXT_OK=""
+  [ -f "$FILE_PATH" ] && EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case "${FILE_EXT}") || EXT_OK=""
 
   # if ok, add it to the video files array
   [ -n "$EXT_OK" ] && ARR_VIDEO=("${ARR_VIDEO[@]}" "${FILE_PATH}")
@@ -115,27 +115,27 @@ fi
 for FILE_PATH in "${ARR_VIDEO[@]}"
 do
   # generate temporary exif file
-  FILE_EXIF=$(mktemp -t stab-XXXXXXXX.exif)
+  FILE_EXIF=$(mktemp -t "stab-XXXXXXXX.exif")
 
   # get video metadata
-  exiftool "${FILE_PATH}" > ${FILE_EXIF}
-  FILE_WIDTH=$(cat ${FILE_EXIF} | grep "^Image Width" | cut -d':' -f2 | xargs)
-  FILE_HEIGHT=$(cat ${FILE_EXIF} | grep "^Image Height" | cut -d':' -f2 | xargs)
-  FILE_BITRATE=$(cat ${FILE_EXIF} | grep "^Avg Bitrate" | cut -d':' -f2 | xargs)
-  FILE_ROTATE=$(cat ${FILE_EXIF} | grep "^Rotation" | cut -d':' -f2 | xargs)
+  exiftool "${FILE_PATH}" > "${FILE_EXIF}"
+  FILE_WIDTH=$(cat "${FILE_EXIF}" | grep "^Image Width" | cut -d':' -f2 | xargs)
+  FILE_HEIGHT=$(cat "${FILE_EXIF}" | grep "^Image Height" | cut -d':' -f2 | xargs)
+  FILE_BITRATE=$(cat "${FILE_EXIF}" | grep "^Avg Bitrate" | cut -d':' -f2 | xargs)
+  FILE_ROTATE=$(cat "${FILE_EXIF}" | grep "^Rotation" | cut -d':' -f2 | xargs)
   [ "${FILE_BITRATE}" == "" ] && FILE_BITRATE="Unknown"
   [ "${FILE_ROTATE}" == "" ] && FILE_ROTATE="0"
 
   # remove temporary exif file
-  rm ${FILE_EXIF}
+  rm "${FILE_EXIF}"
 
   # get encoding parameters using local number decimal separator (, or .)
   SEPARATOR=$(printf "%'.2f" 1 | sed 's/^1\(.\).*$/\1/')
   VIDEO_RATIO=$(echo "scale=2; ${FILE_WIDTH} / ${FILE_HEIGHT}" | bc | sed 's/[\.\,]/'${SEPARATOR}'/g')
-  [ "$FILE_ROTATE" = "0" -o "$FILE_ROTATE" = "180" ] && LST_RATIO="1|${VIDEO_RATIO}" || LST_RATIO="${VIDEO_RATIO}|1" 
+  [ "${FILE_ROTATE}" = "0" -o "${FILE_ROTATE}" = "180" ] && LST_RATIO="1|${VIDEO_RATIO}" || LST_RATIO="${VIDEO_RATIO}|1" 
 
   # detect if rotation needed
-  [ "$FILE_ROTATE" = "0" ] && CHECK_ROTATE="FALSE" || CHECK_ROTATE="TRUE"
+  [ "${FILE_ROTATE}" = "0" ] && CHECK_ROTATE="FALSE" || CHECK_ROTATE="TRUE"
 
   # set title and text of dialog box
   TITLE="${FILE_PATH}"
@@ -143,7 +143,7 @@ do
 
   # get list of stabilization filters available from current melt version
   ARR_FILTER=$(${CMD_MELT} -query filters | grep stab | awk '{print $2}' | sort -r)
-  LST_FILTER=$(echo ${ARR_FILTER} | sed 's/ /|/g')
+  LST_FILTER=$(echo "${ARR_FILTER}" | sed 's/ /|/g')
 
   # display dialog box
   CHOICE=$(yad --title "${TITLE}" --text "${TEXT}" --center --window-icon "video" --image "stabilizer" --width 500 \
@@ -163,21 +163,21 @@ do
     --field="  - Extra encoder parameters" "${ENCODE_OPTION}" )
 
   # retrieve parameters
-  ROTATE=$(echo ${CHOICE} | cut -d'|' -f1)
-  ROTATE_ANGLE=$(echo ${CHOICE} | cut -d'|' -f2)
-  ROTATE_RATIO=$(echo ${CHOICE} | cut -d'|' -f3)
-  STABILIZE=$(echo ${CHOICE} | cut -d'|' -f4)
-  STAB_FILTER=$(echo ${CHOICE} | cut -d'|' -f5)
-  STAB_SHAKINESS=$(echo ${CHOICE} | cut -d'|' -f6)
-  STAB_SMOOTHING=$(echo ${CHOICE} | cut -d'|' -f7)
-  STAB_OPTZOOM=$(echo ${CHOICE} | cut -d'|' -f8)
-  STAB_EXTRA=$(echo ${CHOICE} | cut -d'|' -f9)
-  VIDEO_RATE=$(echo ${CHOICE} | cut -d'|' -f11 | tr ',' '.' | awk '{ print sprintf("%.0f", $1); }')
-  AUDIO_RATE=$(echo ${CHOICE} | cut -d'|' -f12)
-  ENCODE_OPTION=$(echo ${CHOICE} | cut -d'|' -f13)
+  ROTATE=$(echo "${CHOICE}" | cut -d'|' -f1)
+  ROTATE_ANGLE=$(echo "${CHOICE}" | cut -d'|' -f2)
+  ROTATE_RATIO=$(echo "${CHOICE}" | cut -d'|' -f3)
+  STABILIZE=$(echo "${CHOICE}" | cut -d'|' -f4)
+  STAB_FILTER=$(echo "${CHOICE}" | cut -d'|' -f5)
+  STAB_SHAKINESS=$(echo "${CHOICE}" | cut -d'|' -f6)
+  STAB_SMOOTHING=$(echo "${CHOICE}" | cut -d'|' -f7)
+  STAB_OPTZOOM=$(echo "${CHOICE}" | cut -d'|' -f8)
+  STAB_EXTRA=$(echo "${CHOICE}" | cut -d'|' -f9)
+  VIDEO_RATE=$(echo "${CHOICE}" | cut -d'|' -f11 | tr ',' '.' | awk '{ print sprintf("%.0f", $1); }')
+  AUDIO_RATE=$(echo "${CHOICE}" | cut -d'|' -f12)
+  ENCODE_OPTION=$(echo "${CHOICE}" | cut -d'|' -f13)
 
   # if it is needed, add file to processing queue
-  if [ "$STABILIZE" = "TRUE" ] || [ "$ROTATE" = "TRUE" ];
+  if [ "${STABILIZE}" = "TRUE" ] || [ "${ROTATE}" = "TRUE" ];
   then
     ARR_FILE=("${ARR_FILE[@]}" "${FILE_PATH}")
     ARR_ROTATE=("${ARR_ROTATE[@]}" "${ROTATE}")
@@ -292,7 +292,7 @@ do
     PID=$(ps aux | awk '{print $2}' | grep ${PID})
 
     # calculate process completion
-    LOG_LINE="$(tail --bytes=50 ${FILE_LOG} | grep 'Frame' | grep 'percentage')"
+    LOG_LINE=$(tail --bytes=50 "${FILE_LOG}" | grep "Frame" | grep "percentage")
     LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame[ :]*\([0-9]*\).*$/\1/')
     LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage[ :]*\([0-9]*\).*$/\1/')
 
@@ -326,13 +326,13 @@ do
   echo "${PID}" >> "${FILE_PID}"
 
   # follow the stabilization progress
-  while [ "$PID" != "" ] 
+  while [ "${PID}" != "" ] 
   do    
     # check if process is still running
-    PID=$(ps aux | awk '{print $2}' | grep ${PID})
+    PID=$(ps aux | awk '{print $2}' | grep "${PID}")
 
     # calculate process completion
-    LOG_LINE="$(tail --bytes=50 ${FILE_LOG} | grep 'Frame' | grep 'percentage')"
+    LOG_LINE=$(tail --bytes=50 "${FILE_LOG}" | grep "Frame" | grep "percentage")
     LOG_FRAME=$(echo "${LOG_LINE}" | sed 's/^.*Frame[ :]*\([0-9]*\).*$/\1/')
     LOG_PERCENT=$(echo "${LOG_LINE}" | sed 's/^.*percentage[ :]*\([0-9]*\).*$/\1/')
 
@@ -357,7 +357,7 @@ do
   # -----------------------------------------
 
   # if process is still running (operation has been canceled), kill the process
-  [ -f "${FILE_PID}" ] && kill -9 $( cat "${FILE_PID}" )
+  [ -f "${FILE_PID}" ] && kill -9 $(cat "${FILE_PID}")
 
   #  cleaning-up of all temporary files
   rm -R ${DIR_TMP}
