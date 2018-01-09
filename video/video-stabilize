@@ -292,10 +292,10 @@ do
   echo "${BASHPID}" > "${FILE_PID}"
   echo "${PID}" >> "${FILE_PID}"
 
-  while [ "$PID" != "" ] 
+  while [ "${PID}" != "" ] 
   do    
     # check if process is still running
-    PID=$(ps aux | awk '{print $2}' | grep ${PID})
+    PID=$(ps aux | awk '{print $2}' | grep "${PID}")
 
     # calculate process completion
     LOG_LINE=$(tail --bytes=50 "${FILE_LOG}" | grep "Frame" | grep "percentage")
