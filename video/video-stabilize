@@ -284,12 +284,12 @@ do
   # information display
   echo "# Analysing file"
 
-  # launch analysis command
+  # launch analysis command in background and get its process id
   ${CMD_MELT} -progress "${FILE_PATH}" "${ARR_ROTATE[@]}" "${ARR_STABILIZE[@]}" -consumer "xml:${FILE_MLT}" all=1 2>"${FILE_LOG}" &
+  PID=$!
 
-  # save current process and melt command process id
-  PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_PATH}" | awk '{print $2}')
-  echo "${BASHPID}" > "${FILE_PID}"
+  # save current shell and background process id
+  echo "$BASHPID" > "${FILE_PID}"
   echo "${PID}" >> "${FILE_PID}"
 
   while [ "${PID}" != "" ] 
@@ -323,12 +323,12 @@ do
   # add current encoding parameters
   ARR_ENCODE=( "vcodec=${VIDEO_CODEC}" "b=${VIDEO_RATE}k" "acodec=${AUDIO_CODEC}" "ab=${AUDIO_RATE}k" "${ARR_ENCODE[@]}" )
 
-  # launch generation command
+  # launch generation command in background and get its process id
   ${CMD_MELT} -progress "${FILE_MLT}" -audio-track "${FILE_PATH}" -consumer "avformat:${FILE_STAB}" "${ARR_ENCODE[@]}" real_time=-${ENCODE_THREAD} 2>"${FILE_LOG}" &
+  PID=$!
 
-  # save current process and melt command process id
-  PID=$(ps aux | grep "${CMD_MELT}" | grep "${FILE_MLT}" | awk '{print $2}')
-  echo "${BASHPID}" > "${FILE_PID}"
+  # save current shell and background process id
+  echo "$BASHPID" > "${FILE_PID}"
   echo "${PID}" >> "${FILE_PID}"
 
   # follow the stabilization progress
