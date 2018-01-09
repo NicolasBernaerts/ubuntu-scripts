@@ -78,18 +78,24 @@ ENCODE_THREAD=$(cat "${FILE_CONF}" | grep "thread" | cut -d'=' -f2-)
 
 IFS=$'\n'
 
-# loop thru arguments to check that they are video files
-for arg
+# loop thru parameters to check for video extensions
+while test ${#} -gt 0
 do
-  # get file name and extension
-  FILE_PATH="$arg"
-  FILE_EXT=$(echo "${FILE_PATH}" | sed 's/^.*\.\(.*\)$/\1/')
+  # if parameter is a file
+  if [ -f "$1" ]
+  then
+    # get file extension
+    FILE_EXT=$(echo "$1" | sed 's/^.*\.\(.*\)$/\1/')
+    
+    # check if file extension given in parameter is in the allowed extension list
+    EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case "${FILE_EXT}")
 
-  # check if file extension given in parameter is in the allowed extension list
-  [ -f "$FILE_PATH" ] && EXT_OK=$(echo "${ARR_EXT[@]}" | grep --ignore-case "${FILE_EXT}") || EXT_OK=""
-
-  # if ok, add it to the video files array
-  [ -n "$EXT_OK" ] && ARR_VIDEO=("${ARR_VIDEO[@]}" "${FILE_PATH}")
+    # if ok, add it to the video files array
+    [ "${EXT_OK}" != "" ] && ARR_VIDEO=( "${ARR_VIDEO[@]}" "$1" )
+  fi
+  
+  # go to next parameter
+  shift
 done
 
 # if there is no candidate files
