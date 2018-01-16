@@ -3,7 +3,7 @@ Ubuntu post-installation scripts
 
 Here are the scripts I use to automatise installation of an Ubuntu or Ubuntu Gnome workstation.
 
-Main script to be called is **post-install**.
+Main script to be called is **post-install**. As it needs to run some **sudo** commands to install packages, you'll be prompted for your session password.
 
 It takes few parameters according to the distribution type you are installing and the options you want.
 
@@ -27,3 +27,9 @@ This script call various specialized script in charge of installing latest tools
   * utilities
 
 Some of these post-installation operations are explained in details in various articles available under http://bernaerts.dyndns.org/linux/
+
+Typical post Ubuntu installation command is :
+
+  # wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial/post-install
+  # chmod +x ./post-install
+  # ./post-install
