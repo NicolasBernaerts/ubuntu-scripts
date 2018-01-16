@@ -32,4 +32,4 @@ Typical post Ubuntu installation command is :
 
     # wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/xenial/post-install
     # chmod +x ./post-install
-    # ./post-install
+    # ./post-install --ubuntu --docky --gopro
