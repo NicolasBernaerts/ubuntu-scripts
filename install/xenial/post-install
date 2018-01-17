@@ -9,6 +9,7 @@
 #  20/08/2016, V2.0 - Complete rework to merge different distribution post-install
 #  27/09/2016, V2.1 - Add GoPro USB mount bug correction
 #  26/12/2016, V2.2 - Add Docky launcher option
+#  15/01/2018, V2.3 - Add apport disabling
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------
@@ -126,6 +127,9 @@ rm android
 # ---------------------------------------------------
 # -----------------  Common options  ----------------
 # ---------------------------------------------------
+
+# disable apport crash report
+sudo systemctl disable apport.service
 
 # wifi tweaks
 if [ "${WIFI}" = "ok" ]
