@@ -16,8 +16,8 @@ sudo apt-get -y install nautilus-action
 
 # console management of gnomeshell extensions
 logger "gnome-shell - console management of gnomeshell extensions"
-sudo wget -O /usr/local/bin/gnomeshell-extension-install https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-install
-sudo chmod +x /usr/local/bin/gnomeshell-extension-install
+sudo wget -O /usr/local/bin/gnomeshell-extension-manage https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-manage
+sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
 
 # gnome shell window bar icons
 logger "gnome-shell - gnome shell window bar icons"
