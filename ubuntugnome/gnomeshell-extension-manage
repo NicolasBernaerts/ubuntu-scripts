@@ -13,7 +13,7 @@
 #   09/08/2016 - V2.1 : Handle exact or previously available version installation (idea from eddy-geek)
 #   09/09/2016 - V2.2 : Switch to gnome-shell to get version [UbuntuGnome 16.04] (thanks to edgard)
 #   05/11/2016 - V2.3 : Trim Gnome version and add Fedora compatibility (thanks to Cedric Brandenbourger)
-#   19/01/2018 - V2.4 : Add option to force latest version (idea from Yasir Atabani and Eduardo Minguez)
+#   19/01/2018 - V2.4 : Add option to force latest version (idea from Eduardo Minguez)
 # -------------------------------------------
 
 # check tools availability
