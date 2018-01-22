@@ -15,10 +15,6 @@ sudo apt -y upgrade
 logger "office - grisbi"
 sudo apt -y install grisbi
 
-# hplip
-logger "office - hplip"
-sudo apt -y install hplip-gui
-
 # tesseract-ocr client and french langage
 logger "office - tesseract-ocr"
 sudo apt -y install tesseract-ocr-fra aspell-fr
