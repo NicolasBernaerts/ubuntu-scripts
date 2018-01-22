@@ -17,6 +17,7 @@ It takes few parameters according to the distribution type you are installing an
 | **--ssd**          | Add some tweaks for SSD disk |
 | **--touchpad**     | Add some tweaks for trackpad and touchpad (use with caution) |
 | **--gopro**        | Add GoPro bug correction |
+| **--hp-printer**   | Add HP printers GUI |
 
 This script call various specialized script in charge of installing latest tools for :
   * office work
