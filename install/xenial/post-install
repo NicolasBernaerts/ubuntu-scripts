@@ -52,23 +52,25 @@ then
     echo "  --touchpad        Add some tweaks for trackpad"
     echo "  --assistance      Add remote assistance tools"
     echo "  --gopro           Add GoPro bug correction"
+    echo "  --hp-printer      Add HP printer GUI"
     exit 1
 fi
 
 # iterate thru parameters
 while test ${#} -gt 0
 do
-  case $1 in
-    --ubuntu) DISTRI_TYPE="UBUNTU"; shift; ;;
-    --ubuntugnome) DISTRI_TYPE="UBUNTUGNOME"; shift; ;;
-    --docky) DOCKY="ok"; shift; ;;
-    --wifi) WIFI="ok"; shift; ;;
-    --ssd) SSD="ok"; shift; ;;
-    --touchpad) TOUCHPAD="ok"; shift; ;;
-    --assistance) ASSIST="ok"; shift; ;;
-    --gopro) GOPRO="ok"; shift; ;;
-    *) shift; ;;
-  esac
+    case $1 in
+        --ubuntu) DISTRI_TYPE="UBUNTU"; shift; ;;
+        --ubuntugnome) DISTRI_TYPE="UBUNTUGNOME"; shift; ;;
+        --docky) DOCKY="ok"; shift; ;;
+        --wifi) WIFI="ok"; shift; ;;
+        --ssd) SSD="ok"; shift; ;;
+        --touchpad) TOUCHPAD="ok"; shift; ;;
+        --assistance) ASSIST="ok"; shift; ;;
+        --gopro) GOPRO="ok"; shift; ;;
+        --hp-printer) HPPRINTER="ok"; shift; ;;
+        *) shift; ;;
+    esac
 done
 
 # ---------------------------------------------------
@@ -134,28 +136,60 @@ sudo systemctl disable apport.service
 # wifi tweaks
 if [ "${WIFI}" = "ok" ]
 then
-  wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
-  chmod +x wifi
-  ./wifi
-  rm wifi
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
+    chmod +x wifi
+    ./wifi
+    rm wifi
 fi
 
 # SSD tweaks
 if [ "${SSD}" = "ok" ]
 then
-  wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
-  chmod +x ssd
-  ./ssd
-  rm ssd
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
+    chmod +x ssd
+    ./ssd
+    rm ssd
 fi
 
 # remote assistance
 if [ "${ASSIST}" = "ok" ]
 then
-  wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
-  chmod +x assistance
-  ./assistance
-  rm assistance
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
+    chmod +x assistance
+    ./assistance
+    rm assistance
+fi
+
+# docky : add desktop launcher
+if [ "${DOCKY}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/docky-install.sh
+    chmod +x docky-install.sh
+    ./docky-install.sh
+    rm docky-install.sh
+fi
+
+# touchpad : add palm detection
+if [ "${TOUCHPAD}" = "ok" ]
+then
+    sudo mkdir --parent /etc/X11/xorg.conf.d
+    sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
+fi
+
+# correct GoPro USB mount under Xenial 
+if [ "${GOPRO}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro-install.sh
+    chmod +x nautilus-xenial-gopro-install.sh
+    ./nautilus-xenial-gopro-install.sh --install
+    rm nautilus-xenial-gopro-install.sh
+fi
+
+# HP printer GUI 
+if [ "${HPPRINTER}" = "ok" ]
+then
+    logger "hp printer - hplip"
+    sudo apt -y install hplip-gui
 fi
 
 # ---------------------------------------------------
@@ -164,51 +198,22 @@ fi
 
 case ${DISTRI_TYPE} in
     "UBUNTU") 
-      # gnome session fallback
-      wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-fallback
-      chmod +x gnome-fallback
-      ./gnome-fallback
-      rm gnome-fallback
-      ;;
+        # gnome session fallback
+        wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-fallback
+        chmod +x gnome-fallback
+        ./gnome-fallback
+        rm gnome-fallback
+        ;;
     "UBUNTUGNOME") 
-      # gnomeshell
-      wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
-      chmod +x gnome-shell
-      ./gnome-shell
-      rm gnome-shell
-      ;;
+        # gnomeshell
+        wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
+        chmod +x gnome-shell
+        ./gnome-shell
+        rm gnome-shell
+        ;;
     *) 
-      ;;
+        ;;
 esac
-
-# ---------------------------------------------------
-# ------------------ Common options -----------------
-# ---------------------------------------------------
-
-# docky : add desktop launcher
-if [ "${DOCKY}" = "ok" ]
-then
-  wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/docky-install.sh
-  chmod +x docky-install.sh
-  ./docky-install.sh
-  rm docky-install.sh
-fi
-
-# touchpad : add palm detection
-if [ "${TOUCHPAD}" = "ok" ]
-then
-  sudo mkdir --parent /etc/X11/xorg.conf.d
-  sudo wget --header='Accept-Encoding:none' -O /etc/X11/xorg.conf.d/touchpad-palm.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/X11/touchpad-palm.conf
-fi
-
-# correct GoPro USB mount under Xenial 
-if [ "${GOPRO}" = "ok" ]
-then
-  wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro-install.sh
-  chmod +x nautilus-xenial-gopro-install.sh
-  ./nautilus-xenial-gopro-install.sh --install
-  rm nautilus-xenial-gopro-install.sh
-fi
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
