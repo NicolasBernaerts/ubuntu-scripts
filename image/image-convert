@@ -90,12 +90,13 @@ QUALITY=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f6)
 # if only file format change, no suffix will be added
 [ "${WIDTH}" = "-" -a "${HEIGHT}" = "-" ] && SIZE_CHANGE="no" || SIZE_CHANGE="yes"
 
+# create temporary files
+TMP_RAW=$(mktemp -t convert-XXXXXXXX.ppm) && rm "${TMP_RAW}"
+TMP_OUT=$(mktemp -t convert-XXXXXXXX.${TYPE}) && rm "${TMP_OUT}"
+
 # -------------------------------------------------------
 #   File conversion
 # -------------------------------------------------------
-
-# create temporary file
-TMP_PPM=$(mktemp -t convert-XXXXXXXX.ppm)
 
 # set progress dialog box title
 [ "${SIZE_CHANGE}" = "no" ] && TITLE="Conversion to ${DESCRIPTION}" || TITLE="Conversion to ${DESCRIPTION} (${WIDTH}x${HEIGHT})"
@@ -108,16 +109,16 @@ do
   # generate output filemane
   DIRECTORY=$(dirname "${IMAGE}")
   BASEFILE=$(basename "${IMAGE}")
-  BASENAME=$(echo ${BASEFILE} | sed 's/^\(.*\)[.].*$/\1/g')
-
-  # generate file names (change extension for type conversion, append suffix for format conversion)
-  [ "${SIZE_CHANGE}" = "no" ] && OUTPUT="${DIRECTORY}/${BASENAME}.${TYPE}" || OUTPUT="${DIRECTORY}/${BASENAME}-${NAME}.${TYPE}"
+  BASENAME=$(echo ${BASEFILE} | sed 's|^\(.*\)[.].*$|\1|g')
 
   # display progress
   echo $((INDEX*100/NBR_FILE))
 
+  # index increment
+  INDEX=$((INDEX+1))
+
   # display current image filename
-  echo "# ${BASEFILE}"
+  echo "# ${INDEX}/${NBR_FILE} - ${BASEFILE}"
 
   # check if we are dealing with RAW file
   IS_RAW=$(dcraw -i -v "${IMAGE}"  | grep raw | cut -d':' -f2 | xargs)
@@ -126,10 +127,10 @@ do
   if [ ${IS_RAW} -gt 0 ]
   then
     # convert RAW to PPM
-    dcraw -w -c "${IMAGE}" > "${TMP_PPM}"
+    dcraw -w -c "${IMAGE}" > "${TMP_RAW}"
 
     # set PPM as original image
-    IMAGE="${TMP_PPM}"
+    IMAGE="${TMP_RAW}"
   fi 
 
   # get image width and height
@@ -144,12 +145,21 @@ do
   [ "${PIX_WIDTH}" -gt "${PIX_HEIGHT}" ] && SIZE="${TARGET_WIDTH}" || SIZE="x${TARGET_HEIGHT}"
 
   # convert picture with auto orientation
-  convert -auto-orient "${IMAGE}" -resize "${SIZE}" -quality "${QUALITY}" "${OUTPUT}"
+  convert -auto-orient "${IMAGE}" -resize "${SIZE}" -quality "${QUALITY}" "${TMP_OUT}"
 
-  # index increment
-  INDEX=$((INDEX+1))
-  
+  # get final image width and height
+  PIX_WIDTH=$(identify -format "%w" "${TMP_OUT}")
+  PIX_HEIGHT=$(identify -format "%h" "${TMP_OUT}")
+
+  # generate final file names
+  #  - type conversion   : change extension 
+  #  - format conversion : change extension and append size
+  [ "${SIZE_CHANGE}" = "no" ] && OUTPUT="${DIRECTORY}/${BASENAME}.${TYPE}" || OUTPUT="${DIRECTORY}/${BASENAME}-${PIX_WIDTH}x${PIX_HEIGHT}.${TYPE}"
+
+  # mv result to final file
+  mv "${TMP_OUT}" "${OUTPUT}"
+ 
 done | zenity --width=500 --height=25 --progress --auto-close --title "${TITLE}"
 
 # remove temporary file
-rm -f "${TMP_PPM}"
+rm -f "${TMP_RAW}" "${TMP_OUT}"
