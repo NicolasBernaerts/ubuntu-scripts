@@ -216,7 +216,7 @@ do
   FILE_PATH="${ARR_FILE[$INDEX]}"
 
   # generate the filenames
-  FILE_BASE="$(echo "${FILE_PATH}" | sed 's/^\(.*\)\..*$/\1/')"
+  FILE_BASE=$(echo "${FILE_PATH}" | sed "s|^\(.*\)\..*$|\1|")
   FILE_STAB="${FILE_BASE}-stab.mp4"
 
   # generate temporary files
