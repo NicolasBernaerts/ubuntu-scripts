@@ -15,6 +15,7 @@
 #  17/05/2017  V2.3 - Rewrite, add path parameters, read UID and name in different ways
 #  25/05/2017  V2.4 - Add --update and --list parameters
 #  05/09/2017  V2.5 - Change handling of sudo commands for more compatibility
+#  15/02/2018  V2.6 - Add download failure handling thanks to Rene Nyffenegger
 # ------------------------------------------------------------------------
 
 # --------------
