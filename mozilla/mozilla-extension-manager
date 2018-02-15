@@ -221,7 +221,11 @@ then
 	then
 		cp "${EXT_URL#file://}" "${ADDON_XPI}"
 	else
-		wget --quiet -O "${ADDON_XPI}" "${EXT_URL}"
+		if ! wget --quiet -O "${ADDON_XPI}" "${EXT_URL}" then
+		then
+			echo "Could not download ${EXT_URL}"
+			exit -1
+		fi
 	fi
 
 	# extract extension UID
