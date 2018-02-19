@@ -72,7 +72,7 @@ case "${MODE}" in
     rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
     ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
-    # download this script script (for post install hook)
+    # download this script (for post install hook)
     wget --quiet -O /opt/libgphoto2/nautilus-xenial-gopro https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro
     chmod +x /opt/libgphoto2/nautilus-xenial-gopro
     
