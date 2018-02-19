@@ -46,7 +46,7 @@ case "${MODE}" in
   "install") 
 
     # create main directory	
-    mkdir /opt/libgphoto2
+    mkdir --parent /opt/libgphoto2
 
     # libgphoto2-port12 : unpack
     echo "Install libgphoto2-port12"
@@ -56,7 +56,7 @@ case "${MODE}" in
     # libgphoto2-port12 : declare
     rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-    rm -Rf /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
 
     # libgphoto2 : unpack
@@ -67,10 +67,14 @@ case "${MODE}" in
     # libgphoto2 : declare
     rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-    rm -Rf /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
     ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
+
+    # download this script script (for post install hook)
+    wget -O /opt/libgphoto2/nautilus-xenial-gopro https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro
+    chmod +x /opt/libgphoto2/nautilus-xenial-gopro
     
     # apt post install hook : download and declare
     echo "Install apt post install hook"
@@ -86,7 +90,7 @@ case "${MODE}" in
     rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
     rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
     rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-    rm -Rf /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
 
     # remove apt post install hook
@@ -104,18 +108,18 @@ case "${MODE}" in
   # ---------------------------
   "update")
 
-    # remove targeted files and directories 
+    # remove original libgphoto2_port and create links 
     rm -f /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
-    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
-    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
-    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
-    rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
-
-    # create links
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port.so.12
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0 /usr/lib/x86_64-linux-gnu/libgphoto2_port/0.12.0
+
+    # remove original libgphoto2 and create links 
+    rm -f /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2.so.6.0.0 /usr/lib/x86_64-linux-gnu/libgphoto2.so.6
+    rm -R /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
     ln -s /opt/libgphoto2/usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10 /usr/lib/x86_64-linux-gnu/libgphoto2/2.5.10
+    rm -f /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
     ln -s /opt/libgphoto2/lib/udev/hwdb.d/20-libgphoto2-6.hwdb /lib/udev/hwdb.d/20-libgphoto2-6.hwdb
     ;;
 
