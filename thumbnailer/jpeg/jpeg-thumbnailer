@@ -88,7 +88,7 @@ NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
 
 # if thumnail extracted or image has no rotation, angle=0
 #  else extract rotation angle
-[ "${EXIF_ORIENT}" = "" -o -s "${TMP_THUMB}" ] && ROTATE_ANGLE="0" || ROTATE_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
+[ "${EXIF_ORIENT}" = "" ] && ROTATE_ANGLE="0" || ROTATE_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
 
 # -------------
 #   GPS tag
