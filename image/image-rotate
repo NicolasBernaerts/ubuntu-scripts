@@ -59,7 +59,7 @@ do
 
 	"image/jpeg")
 		# rotate image
-		jpegtran -rotate ${JPEG_ANGLE} "${FILE}" > "${TMP_ROTATE}"
+		jpegtran -copy all -rotate ${JPEG_ANGLE} "${FILE}" > "${TMP_ROTATE}"
 		;;
 
 	"image/png")
