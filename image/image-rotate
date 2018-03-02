@@ -4,34 +4,20 @@
 #
 #  Depends on :
 #    * mimetype (libfile-mimeinfo-perl package)
-#    * jpegtran (libjpeg-turbo-progs package)
+#    * exiftool (libimage-exiftool-perl package)
 #    * pngtopnm, pnmtopng, giftopnm, ppmtogif, tifftopnm, pnmtotiff and pnmflip (netpbm package)
 #
 #  Revision history :
 #   09/10/2017, V1.0 - Creation by N. Bernaerts
+#   01/03/2018, V1.1 - Jpeg lossless rotation with exiftool
 # ---------------------------------------------------
 
-# -------------------------------------------------------
+# --------------------------
 # check tools availability
-# -------------------------------------------------------
+# --------------------------
 
-# loop to retrieve arguments
-while test $# -gt 0
-do
-	case "$1" in
-	"--right") JPEG_ANGLE="90"; PNM_ANGLE="270"; shift; ;;
-	"--left") JPEG_ANGLE="270"; PNM_ANGLE="90"; shift; ;;
-	"--up-down") JPEG_ANGLE="180"; PNM_ANGLE="180"; shift; ;;
-	*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
-	esac
-done
-
-# check rotation is selected
-[ "${JPEG_ANGLE}" = "" ] && { zenity --error --text="Please select rotation parameter"; exit 1; }
-
-# check tools availability
 command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype [libfile-mimeinfo-perl]"; exit 1; }
-command -v jpegtran >/dev/null 2>&1 || { zenity --error --text="Please install jpegtran [libjpeg-turbo-progs]"; exit 1; }
+command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool [libimage-exiftool-perl]"; exit 1; }
 command -v pngtopnm >/dev/null 2>&1 || { zenity --error --text="Please install pngtopnm [netpbm]"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { zenity --error --text="Please install pnmtopng [netpbm]"; exit 1; }
 command -v giftopnm >/dev/null 2>&1 || { zenity --error --text="Please install giftopnm [netpbm]"; exit 1; }
@@ -39,6 +25,38 @@ command -v ppmtogif >/dev/null 2>&1 || { zenity --error --text="Please install p
 command -v tifftopnm >/dev/null 2>&1 || { zenity --error --text="Please install tifftopnm [netpbm]"; exit 1; }
 command -v pnmtotiff >/dev/null 2>&1 || { zenity --error --text="Please install pnmtotiff [netpbm]"; exit 1; }
 command -v pnmflip >/dev/null 2>&1 || { zenity --error --text="Please install pnmflip [netpbm]"; exit 1; }
+
+# ----------------------
+# JPEG rotation tables
+# ----------------------
+
+# no tag : no change
+# 1 : no change
+# 2 : horizontal mirror
+# 3 : 180
+# 4 : horizontal mirror + 180
+# 5 : horizontal mirror + left
+# 6 : right
+# 7 : horizontal mirror + right
+# 8 : left
+ARR_LEFT=( "8" "8" "5" "6" "7" "4" "1" "2" "3" )
+ARR_RIGHT=( "6" "6" "7" "8" "5" "2" "3" "4" "1" )
+ARR_UPDOWN=( "3" "3" "4" "1" "2" "7" "8" "5" "6" )
+ARR_MIRROR=( "2" "2" "1" "4" "3" "8" "7" "6" "5" )
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+	case "$1" in
+	"--right") ARR_ROTATE=( "${ARR_RIGHT[@]}" ); PNM_ANGLE="270"; shift; ;;
+	"--left") ARR_ROTATE=( "${ARR_LEFT[@]}" ); PNM_ANGLE="90"; shift; ;;
+	"--up-down") ARR_ROTATE=( "${ARR_UPDOWN[@]}" ); PNM_ANGLE="180"; shift; ;;
+	*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
+	esac
+done
+
+# check rotation is selected
+[ "${ARR_ROTATE}" = "" ] && { zenity --error --text="Please select rotation parameter"; exit 1; }
 
 # -------------------------------------
 # loop thru PDF files to convert them
@@ -51,15 +69,20 @@ TMP_ROTATE=$(mktemp --tmpdir XXXXXXXX-rot.pnm)
 # loop thru files 
 for FILE in "${ARR_FILE[@]}"
 do
-	# get file mimetype
-	TYPE_FILE=$(mimetype --brief "${FILE}")
+	# remove temporary file
+	rm -f "${TMP_ROTATE}"
 
 	# rotate file according to mimetype
+	TYPE_FILE=$(mimetype --brief "${FILE}")
 	case "${TYPE_FILE}" in
 
 	"image/jpeg")
+		# read rotation tag
+		ANGLE=$(exiftool -args -Orientation -n "${FILE}" | cut -d'=' -f2)
+		[ "${ANGLE}" = "" ] && ANGLE="0"
+
 		# rotate image
-		jpegtran -copy all -rotate ${JPEG_ANGLE} "${FILE}" > "${TMP_ROTATE}"
+		exiftool -overwrite_original -Orientation=${ARR_ROTATE[${ANGLE}]} -n "${FILE}"
 		;;
 
 	"image/png")
@@ -97,5 +120,3 @@ done
 
 # remove temporary file
 rm -f "${TMP_PNM}" "${TMP_ROTATE}"
-
-
