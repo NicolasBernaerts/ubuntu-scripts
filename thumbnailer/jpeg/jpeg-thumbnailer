@@ -7,7 +7,7 @@
 # Depends on :
 #   * exiftool
 #   * epeg (compiled)
-#   * djpeg and jpegtran (libjpeg-turbo-progs package)
+#   * convert (imagemagick package)
 #   * pnmcomp and pnmtopng  (netpbm package)
 #   * gvfs-copy (gvfs-bin package)
 # Parameters :
@@ -18,6 +18,7 @@
 # 29/09/2017, V1.0 - Creation by N. Bernaerts
 # 02/10/2017, V1.1 - Speedup with epeg and jpegtran
 # 07/10/2017, V1.2 - Speedup with thumbnail extraction if available
+# 01/03/2018, V1.3 - Correct Jpeg rotation bug
 # --------------------------------------------------------------
 
 # export local library for epeg
@@ -26,8 +27,7 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 # check tools availability
 command -v exiftool >/dev/null 2>&1 || exit 1
 command -v epeg >/dev/null 2>&1 || exit 1
-command -v jpegtran >/dev/null 2>&1 || exit 1
-command -v djpeg >/dev/null 2>&1 || exit 1
+command -v convert >/dev/null 2>&1 || exit 1
 command -v pnmcomp >/dev/null 2>&1 || exit 1
 command -v pnmtopng >/dev/null 2>&1 || exit 1
 
@@ -40,6 +40,7 @@ SIZE="$3"
 # generate temporary local filename
 TMP_LOCAL=$(mktemp -t XXXXXXXX.jpg)
 TMP_THUMB=$(mktemp -t XXXXXXXX.jpg)
+TMP_PNM=$(mktemp -t XXXXXXXX.pnm)
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -59,17 +60,15 @@ else
 	FILE_LOCAL="${TMP_LOCAL}"	
 fi
 
-# calculate tags width
-TAG_WIDTH=$((${SIZE} / 4))
-
 # read exif data
-EXIF_DATA=$(exiftool -args -orientation -model -gpslatitude "${FILE_LOCAL}")
-EXIF_ORIENT=$(echo "${EXIF_DATA}" | grep -i "orientation=" | grep -i "rotate" | cut -d'=' -f2-)
-EXIF_MODEL=$(echo "${EXIF_DATA}" | grep -i "model=" | cut -d'=' -f2- | tr '[:upper:]' '[:lower:]')
-EXIF_GPS=$(echo "${EXIF_DATA}" | grep -i "gpslatitude=" | cut -d'=' -f2-)
+EXIF_DATA=$(exiftool -args -orientation -n -model -gpslatitude "${FILE_LOCAL}")
+EXIF_ROTATE=$(echo "${EXIF_DATA}" | grep "Orientation=" | cut -d'=' -f2)
+EXIF_MODEL=$(echo "${EXIF_DATA}" | grep -i "Model=" | cut -d'=' -f2- | tr '[:upper:]' '[:lower:]')
+EXIF_GPS=$(echo "${EXIF_DATA}" | grep -i "GPSLatitude=" | cut -d'=' -f2-)
 
-# extract embedded thumbnail
-exiftool -b -ThumbnailImage "${FILE_LOCAL}" > "${TMP_THUMB}"
+# calculate tags width
+CAMERA_WIDTH=$((${SIZE} / 3))
+GPS_WIDTH=$((${SIZE} / 4))
 
 # icon in system path
 PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
@@ -84,15 +83,24 @@ CAMERA_ICON="${PATH_USER}/${EXIF_MODEL}.png"
 CACHE_PATH="$HOME/.cache/${SCRIPT_NAME}"
 NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
 [ ! -d "${CACHE_PATH}" ] && mkdir --parent "${CACHE_PATH}"
-[ ! -f "${NONE_ALPHA}" ] && pngtopnm -alpha "${NONE_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${NONE_ALPHA}"
-
-# if thumnail extracted or image has no rotation, angle=0
-#  else extract rotation angle
-[ "${EXIF_ORIENT}" = "" ] && ROTATE_ANGLE="0" || ROTATE_ANGLE=$(echo "${EXIF_ORIENT}" | cut -d' ' -f2)
+[ ! -f "${NONE_ALPHA}" ] && pngtopnm -alpha "${NONE_ICON}" | pnmscalefixed -xsize ${SIZE} - > "${NONE_ALPHA}"
 
 # -------------
+#   Thumbnail
+# -------------
+
+# if image has no rotation tag, set to 1
+[ "${EXIF_ROTATE}" = "" ] && EXIF_ROTATE="1"
+
+# extract embedded thumbnail
+exiftool -b -ThumbnailImage "${FILE_LOCAL}" > "${TMP_THUMB}"
+
+# if thumbnail extracted, apply rotation, else generate thumbnail from picture
+[ -s "${TMP_THUMB}" ] && exiftool -overwrite_original -Orientation=${EXIF_ROTATE} -n "${TMP_THUMB}" || epeg --max=${SIZE} "${FILE_LOCAL}" "${TMP_THUMB}"
+
+# -----------
 #   GPS tag
-# -------------
+# -----------
 
 if [ "${EXIF_GPS}" != "" ]
 then
@@ -101,17 +109,17 @@ then
 	GPS_ALPHA="${CACHE_PATH}/${SIZE}-gps-alpha.pnm"
 
 	# if needed, create them
-	[ ! -f "${GPS_TAG}" ] && pngtopnm "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_TAG}"
-	[ ! -f "${GPS_ALPHA}" ] && pngtopnm -alpha "${GPS_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${GPS_ALPHA}"
+	[ ! -f "${GPS_TAG}" ] && pngtopnm "${GPS_ICON}" | pnmscalefixed -xsize ${GPS_WIDTH} - > "${GPS_TAG}"
+	[ ! -f "${GPS_ALPHA}" ] && pngtopnm -alpha "${GPS_ICON}" | pnmscalefixed -xsize ${GPS_WIDTH} - > "${GPS_ALPHA}"
 else
 	# set to transparent tags
 	GPS_TAG="${NONE_ALPHA}"
 	GPS_ALPHA="${NONE_ALPHA}"
 fi
 
-# -------------
-#  camera tag
-# -------------
+# -------------------
+#  Camera model tag
+# -------------------
 
 # if model exif is defined,
 if [ "${EXIF_MODEL}" != "" ]
@@ -126,8 +134,8 @@ then
 		# if needed, create cache files
 		if [ ! -f "${CAMERA_TAG}" -o ! -f "${CAMERA_ALPHA}" ]
 		then
-			pngtopnm "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_TAG}"
-			pngtopnm -alpha "${CAMERA_ICON}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_ALPHA}"
+			pngtopnm "${CAMERA_ICON}" | pnmscalefixed -xsize ${CAMERA_WIDTH} - > "${CAMERA_TAG}"
+			pngtopnm -alpha "${CAMERA_ICON}" | pnmscalefixed -xsize ${CAMERA_WIDTH} - > "${CAMERA_ALPHA}"
 		fi
 
 	# else, generate text tags
@@ -143,14 +151,14 @@ then
 			TMP_PNG=$(mktemp -t XXXXXXXX.png)
 
 			# calculate optimum font size
-			FONT_SIZE=$((${SIZE} / 10 + 1))
+			FONT_SIZE=$((${SIZE} / 20))
 
 			# generate version image
 			pbmtextps -fontsize ${FONT_SIZE} "${EXIF_MODEL}" | pnmcrop - | pnmpad -white -left 4 -right 4 -top 4 -bottom 4 - | pnmpad -black -left 2 -right 2 -top 2 -bottom 2 - | pnmtopng - > "${TMP_PNG}"
 
 			# generate tags
-			pngtopnm "${TMP_PNG}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_TAG}"
-			pngtopnm -alpha "${TMP_PNG}" | pnmscalefixed -xsize ${TAG_WIDTH} - > "${CAMERA_ALPHA}"
+			pngtopnm "${TMP_PNG}" > "${CAMERA_TAG}"
+			pngtopnm -alpha "${TMP_PNG}" > "${CAMERA_ALPHA}"
 		
 			# remove temporary file
 			rm "${TMP_PNG}"
@@ -164,29 +172,14 @@ else
 	CAMERA_ALPHA="${NONE_ALPHA}"
 fi
 
-# ----------------------
-#  thumbnail generation
-# ----------------------
-
-# if thumbnail has not been extracted, generate thumbnail from picture
-[ ! -s "${TMP_THUMB}" ] && epeg --max=${SIZE} "${FILE_LOCAL}" "${TMP_THUMB}"
-
-# if needed, rotate thumbnail
-if [ "${ROTATE_ANGLE}" != "0" ]
-then
-	# generate temporary rotation file
-	TMP_ROTATE=$(mktemp -t XXXXXXXX-rotate.jpg)
-
-	# flip miniature
-	jpegtran -rotate ${ROTATE_ANGLE} "${TMP_THUMB}" > "${TMP_ROTATE}"
-
-	# move back to miniature
-	rm "${TMP_THUMB}"
-	TMP_THUMB="${TMP_ROTATE}"
-fi
+# ------------------
+#  Final thumbnail
+# ------------------
 
 # add camera and GPS tags to thumbnail
-djpeg "${TMP_THUMB}" | pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" - | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
+convert -auto-orient "${TMP_THUMB}" "${TMP_PNM}" 
+
+pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PNM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
 
 # remove temporary file
-rm "${TMP_LOCAL}" "${TMP_THUMB}"
+rm -f "${TMP_LOCAL}" "${TMP_THUMB}" "${TMP_PNM}"
