@@ -120,4 +120,4 @@ unzip -p "${TMP_LIBREOFFICE}" "Thumbnails/thumbnail.png" | pngtopnm - > "${TMP_P
 pbmmake -white 188 256 | pnmcomp -xoff 2 -yoff=52 "${TMP_PNM}" - | pnmcomp -align left -valign top -alpha "${DOC_ALPHA}" "${DOC_TAG}" - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
 # remove temporary files
-rm -f "${TMP_LOCAL}" "${TMP_PNM}" "${TMP_LIBREOFFICE}"
+rm -f "${TMP_LOCAL}" "${TMP_PNM}"
