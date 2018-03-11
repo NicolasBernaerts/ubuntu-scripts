@@ -19,10 +19,11 @@
 # ---------------------------------------------------
 
 # check tools availability 
-command -v dcraw >/dev/null 2>&1 || exit 1
-command -v djpeg >/dev/null 2>&1 || exit 1
-command -v pnmtopng >/dev/null 2>&1 || exit 1
-command -v pnmscalefixed >/dev/null 2>&1 || exit 1
+command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
+command -v dcraw >/dev/null 2>&1 || { echo "[error] dcraw missing"; exit 1; }
+command -v djpeg >/dev/null 2>&1 || { echo "[error] djpeg missing"; exit 1; }
+command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
+command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
 
 # get parameters
 FILE_URI="$1"
