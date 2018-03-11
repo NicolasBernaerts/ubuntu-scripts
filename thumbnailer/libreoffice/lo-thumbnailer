@@ -20,14 +20,14 @@
 # ---------------------------------------------------
 
 # check tools availability
-command -v gvfs-copy >/dev/null 2>&1 || exit 1
-command -v mimetype >/dev/null 2>&1 || exit 1
-command -v unzip >/dev/null 2>&1 || exit 1
-command -v pbmmake >/dev/null 2>&1 || exit 1
-command -v pngtopnm >/dev/null 2>&1 || exit 1
-command -v pnmscalefixed >/dev/null 2>&1 || exit 1
-command -v pnmcomp >/dev/null 2>&1 || exit 1
-command -v pnmtopng >/dev/null 2>&1 || exit 1
+command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
+command -v mimetype >/dev/null 2>&1 || { echo "[error] mimetype missing"; exit 1; }
+command -v unzip >/dev/null 2>&1 || { echo "[error] unzip missing"; exit 1; }
+command -v pbmmake >/dev/null 2>&1 || { echo "[error] pbmmake missing"; exit 1; }
+command -v pngtopnm >/dev/null 2>&1 || { echo "[error] pngtopnm missing"; exit 1; }
+command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
+command -v pnmcomp >/dev/null 2>&1 || { echo "[error] pnmcomp missing"; exit 1; }
+command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 
 # get parameters
 SCRIPT_NAME=$(basename $0)
