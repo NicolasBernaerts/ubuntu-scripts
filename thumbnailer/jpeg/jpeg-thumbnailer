@@ -25,11 +25,17 @@
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 
 # check tools availability
+command -v gvfs-copy >/dev/null 2>&1 || exit 1
 command -v exiftool >/dev/null 2>&1 || exit 1
 command -v epeg >/dev/null 2>&1 || exit 1
 command -v convert >/dev/null 2>&1 || exit 1
+command -v pngtopnm >/dev/null 2>&1 || exit 1
+command -v pnmscalefixed >/dev/null 2>&1 || exit 1
 command -v pnmcomp >/dev/null 2>&1 || exit 1
 command -v pnmtopng >/dev/null 2>&1 || exit 1
+command -v pbmtextps >/dev/null 2>&1 || exit 1
+command -v pnmcrop >/dev/null 2>&1 || exit 1
+command -v pnmpad >/dev/null 2>&1 || exit 1
 
 # get parameters
 SCRIPT_NAME=$(basename $0)
