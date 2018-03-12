@@ -31,7 +31,7 @@ FILE_THUMB="$2"
 SIZE="$3"
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t XXXXXXXX.dot)
+TMP_LOCAL=$(mktemp -t "thumb-graph-XXXXXXXX.dot")
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
