@@ -41,8 +41,8 @@ FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
 [ "${FILE_EXT}" = "${FILE_URI}" ] && FILE_EXT="none"
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
-TMP_PNM=$(mktemp -t "XXXXXXXX.pnm")
+TMP_LOCAL=$(mktemp -t "thumb-msoffice-XXXXXXXX.${FILE_EXT}")
+TMP_PNM=$(mktemp -t "thumb-msoffice-XXXXXXXX.pnm")
 
 # set working path
 PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
@@ -102,7 +102,7 @@ case ${MIMETYPE} in
 esac
 
 # temporary libreoffice file
-TMP_LIBREOFFICE=$(mktemp -t XXXXXXXX.${LIBREOFFICE_TYPE})
+TMP_LIBREOFFICE=$(mktemp -t "thumb-msoffice-XXXXXXXX.${LIBREOFFICE_TYPE}")
 
 # if needed, create tag and mask of document type
 DOC_TAG="${PATH_CACHE}/${LIBREOFFICE_TYPE}.pnm"
