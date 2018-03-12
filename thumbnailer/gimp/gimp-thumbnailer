@@ -32,7 +32,7 @@ HEIGHT="$3"
 FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
+TMP_LOCAL=$(mktemp -t "thumb-gimp-XXXXXXXX.${FILE_EXT}")
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -53,4 +53,4 @@ fi
 xcf2pnm -c --autocrop "${FILE_LOCAL}" | pnmscalefixed -xysize ${HEIGHT} ${HEIGHT} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
 # remove temporary local file
-rm ${TMP_LOCAL}
+rm -f "${TMP_LOCAL}"
