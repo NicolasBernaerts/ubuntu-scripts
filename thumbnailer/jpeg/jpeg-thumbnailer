@@ -44,9 +44,9 @@ FILE_THUMB="$2"
 SIZE="$3"
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t XXXXXXXX.jpg)
-TMP_THUMB=$(mktemp -t XXXXXXXX.jpg)
-TMP_PNM=$(mktemp -t XXXXXXXX.pnm)
+TMP_LOCAL=$(mktemp -t "thumb-jpeg-XXXXXXXX.jpg")
+TMP_THUMB=$(mktemp -t "thumb-jpeg-XXXXXXXX.jpg")
+TMP_PNM=$(mktemp -t "thumb-jpeg-XXXXXXXX.pnm")
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -182,9 +182,10 @@ fi
 #  Final thumbnail
 # ------------------
 
-# add camera and GPS tags to thumbnail
+# generate PNM with proper orientation
 convert -auto-orient "${TMP_THUMB}" "${TMP_PNM}" 
 
+# generate final thumbnail
 pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PNM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
 
 # remove temporary file
