@@ -5,10 +5,11 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
 # Depends on :
+#   * gvfs-copy (gvfs-bin package)
+#   * libreoffice
 #   * mimetype
 #   * unzip
 #   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
-#   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - URI of office file
 #   $2 - full path of generated thumbnail
@@ -17,10 +18,12 @@
 # 04/08/2013, V1.0 - Creation by N. Bernaerts
 # 15/11/2014, V2.0 - Use URI to handle network shares
 # 07/10/2017, V2.1 - Speedup with netpbm tools
+# 09/0"/2018, V3.0 - Add flat XML files support
 # ---------------------------------------------------
 
 # check tools availability
 command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
+command -v libreoffice >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
 command -v mimetype >/dev/null 2>&1 || { echo "[error] mimetype missing"; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "[error] unzip missing"; exit 1; }
 command -v pbmmake >/dev/null 2>&1 || { echo "[error] pbmmake missing"; exit 1; }
@@ -39,9 +42,10 @@ SIZE="$3"
 FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
 [ "${FILE_EXT}" = "${FILE_URI}" ] && FILE_EXT="none"
 
-# generate temporary local filename
-TMP_LOCAL=$(mktemp -t "thumb-lo-XXXXXXXX.${FILE_EXT}")
-TMP_PNM=$(mktemp -t "thumb-lo-XXXXXXXX.pnm")
+# generate temporary files and directory
+TMP_DIR=$(mktemp -t -d "thumb-lo-XXXXXXXX")
+TMP_LOCAL="${TMP_DIR}/thumbnail.${FILE_EXT}"
+TMP_PNM="${TMP_DIR}/thumbnail.pnm"
 
 # set working path
 PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
@@ -69,7 +73,7 @@ else
 fi
 
 # get document type (text, spreadsheet, graphics or presentation)
-DOC_TYPE=$(mimetype -b "${FILE_LOCAL}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/')
+DOC_TYPE=$(mimetype -b "${FILE_LOCAL}" | sed 's/.*: //' | sed 's/^.*opendocument.\([^-]*\).*/\1/' | cut -d'-' -f1)
 
 # if needed, create tag and mask
 DOC_TAG="${PATH_CACHE}/${SIZE}-${DOC_TYPE}.pnm"
@@ -77,9 +81,28 @@ DOC_ALPHA="${PATH_CACHE}/${SIZE}-${DOC_TYPE}-alpha.pnm"
 [ ! -f "${DOC_TAG}" ] && pngtopnm "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_TAG}"
 [ ! -f "${DOC_ALPHA}" ] && pngtopnm -alpha "${PATH_SYSTEM}/lo-${DOC_TYPE}.png" | pnmscalefixed -xysize ${SIZE} ${SIZE} - > "${DOC_ALPHA}"
 
-# generate thumbnail according to document type
-unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | pngtopnm > "${TMP_PNM}"
-pbmmake -white 208 256 | pnmcomp -align center -valign middle "${TMP_PNM}" - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmcomp -align center -valign middle -alpha "${DOC_ALPHA}" "${DOC_TAG}" - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
+# check if document is a zipped one
+IS_ZIPPED=$(file -ib "${FILE_LOCAL}" | cut -d';' -f2 | grep "binary")
 
-# remove temporary local file
-rm -f "${TMP_LOCAL}" "${TMP_PNM}"
+# if file is zipped, extract thumbnail
+if [ "${IS_ZIPPED}" != "" ]
+then
+	# extract thumbnail from zipped document
+	unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | pngtopnm > "${TMP_PNM}"
+
+# else, file is a flat one, generate thumbnail
+else
+	# convert first page to PNG
+	libreoffice "-env:UserInstallation=file://${TMP_DIR}" --headless --convert-to png --outdir "${TMP_DIR}" "${FILE_LOCAL}"
+
+	# convert PNG to PNM
+	FILE_NAME=$(basename "${FILE_LOCAL}")
+	FILE_NAME="${FILE_NAME%.*}"
+	pngtopnm "${TMP_DIR}/${FILE_NAME}.png" | pnmscalefixed -xysize 256 256 - > "${TMP_PNM}"
+fi
+
+# generate thumbnail with masks
+pbmmake -white 208 256 | pnmcomp -align center -valign middle "${TMP_PNM}" - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmcomp -align center -valign middle -alpha "${DOC_ALPHA}" "${DOC_TAG}" - | pnmtopng -downscale - > "${FILE_THUMB}"
+
+# remove temporary directory
+rm -r "${TMP_DIR}"
