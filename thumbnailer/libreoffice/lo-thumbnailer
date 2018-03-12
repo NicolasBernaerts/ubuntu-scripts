@@ -40,8 +40,8 @@ FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
 [ "${FILE_EXT}" = "${FILE_URI}" ] && FILE_EXT="none"
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
-TMP_PNM=$(mktemp -t "XXXXXXXX.pnm")
+TMP_LOCAL=$(mktemp -t "thumb-lo-XXXXXXXX.${FILE_EXT}")
+TMP_PNM=$(mktemp -t "thumb-lo-XXXXXXXX.pnm")
 
 # set working path
 PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
