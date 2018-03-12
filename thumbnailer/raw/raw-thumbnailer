@@ -34,9 +34,9 @@ SIZE="$3"
 FILE_EXT=$(echo "${FILE_URI}" | sed "s/^.*\.\(.*\)/\1/")
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t "XXXXXXXX.${FILE_EXT}")
-TMP_THUMB=$(mktemp -t XXXXXXXX.thumb)
-TMP_PNM=$(mktemp -t XXXXXXXX.pnm)
+TMP_LOCAL=$(mktemp -t "thumb-raw-XXXXXXXX.${FILE_EXT}")
+TMP_THUMB=$(mktemp -t "thumb-raw-XXXXXXXX.thumb")
+TMP_PNM=$(mktemp -t "thumb-raw-XXXXXXXX.pnm")
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -48,9 +48,6 @@ then
 	# extract local path
 	FILE_LOCAL="${FILE_PATH:7}"
 else
-	# check gvfs-copy availability
-	command -v gvfs-copy >/dev/null 2>&1 || exit 1
-
 	# copy input file to temporary local file
 	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
 	FILE_LOCAL="${TMP_LOCAL}"	
