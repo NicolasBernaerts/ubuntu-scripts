@@ -47,8 +47,8 @@ SIZE="$3"
 FILE_EXT=$(echo "$FILE_URI" | sed 's/^.*\.\(.*\)/\1/')
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t XXXXXXXX.${FILE_EXT})
-TMP_PNM=$(mktemp -t XXXXXXXX.pnm)
+TMP_LOCAL=$(mktemp -t "thumb-apk-XXXXXXXX.${FILE_EXT}")
+TMP_PNM=$(mktemp -t "thumb-apk-XXXXXXXX.pnm")
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -97,4 +97,4 @@ then
 fi
 
 # remove temporary local file
-rm ${TMP_LOCAL} ${TMP_PNM}
+rm -f "${TMP_LOCAL}" "${TMP_PNM}"
