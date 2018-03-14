@@ -41,8 +41,8 @@
 
 # check /opt/mlt-vidstab/melt (specific build with vid.stab filter) or melt (ubuntu) or mlt-melt (fedora)
 [ -f /opt/vidstab/melt ] && CMD_MELT="/opt/vidstab/melt" || CMD_MELT="melt"
-command -v $CMD_MELT >/dev/null 2>&1 || { CMD_MELT="mlt-melt"; }
-command -v $CMD_MELT >/dev/null 2>&1 || { zenity --error --text="[error] Please install Melt from MLT framework"; exit 1; }
+command -v ${CMD_MELT} >/dev/null 2>&1 || { CMD_MELT="mlt-melt"; }
+command -v ${CMD_MELT} >/dev/null 2>&1 || { zenity --error --text="[error] Please install Melt from MLT framework"; exit 1; }
 
 # check yad, exiftool and x264
 command -v yad >/dev/null 2>&1 || { zenity --error --text="[error] Please install Yad"; exit 1; }
@@ -57,7 +57,7 @@ command -v x264 >/dev/null 2>&1 || { zenity --error --text="[error] Please insta
 FILE_CONF="$HOME/.config/video-stabilize.conf"
 
 # check configuration file
-[ -f "$FILE_CONF" ] || { zenity --error --text="[error] Please create and configure ${FILE_CONF}"; exit 1; }
+[ -f "${FILE_CONF}" ] || { zenity --error --text="[error] Please create and configure ${FILE_CONF}"; exit 1; }
 
 # Load configuration file
 ARR_EXT=( $(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f 2- | cut -d ";" --output-delimiter=" " -f 1-) )
