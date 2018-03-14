@@ -18,12 +18,17 @@
 # 04/08/2013, V1.0 - Creation by N. Bernaerts
 # 15/11/2014, V2.0 - Use URI to handle network shares
 # 07/10/2017, V2.1 - Speedup with netpbm tools
-# 09/0"/2018, V3.0 - Add flat XML files support
+# 09/03/2018, V3.0 - Add flat XML files support
+# 12/03/2018, V3.1 - Handle libreoffice and soffice binaries
 # ---------------------------------------------------
+
+# check libreoffice availability
+CMD_OFFICE="libreoffice"
+command -v "${CMD_OFFICE}" >/dev/null 2>&1 || CMD_OFFICE="soffice"
+command -v "${CMD_OFFICE}" >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
 
 # check tools availability
 command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
-command -v libreoffice >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
 command -v mimetype >/dev/null 2>&1 || { echo "[error] mimetype missing"; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "[error] unzip missing"; exit 1; }
 command -v pbmmake >/dev/null 2>&1 || { echo "[error] pbmmake missing"; exit 1; }
@@ -93,7 +98,7 @@ then
 # else, file is a flat one, generate thumbnail
 else
 	# convert first page to PNG
-	libreoffice "-env:UserInstallation=file://${TMP_DIR}" --headless --convert-to png --outdir "${TMP_DIR}" "${FILE_LOCAL}"
+	${CMD_OFFICE} "-env:UserInstallation=file://${TMP_DIR}" --headless --convert-to png --outdir "${TMP_DIR}" "${FILE_LOCAL}"
 
 	# convert PNG to PNM
 	FILE_NAME=$(basename "${FILE_LOCAL}")
