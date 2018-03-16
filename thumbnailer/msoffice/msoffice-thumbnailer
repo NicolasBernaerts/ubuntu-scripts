@@ -19,6 +19,7 @@
 # 31/07/2015, V2.1 - More robust unoconv command line (thanks to Vaderqk)
 # 07/10/2017, V2.2 - Speedup with netpbm tools
 # 10/03/2018, V3.0 - Switch from unoconv to libreoffice in headless mode
+# 15/03/2018, V3.1 - Handle libreoffice and soffice binaries
 # ---------------------------------------------------
 
 # check libreoffice availability (binary can be either libreoffice or soffice)
@@ -27,12 +28,12 @@ command -v "${CMD_OFFICE}" >/dev/null 2>&1 || CMD_OFFICE="soffice"
 command -v "${CMD_OFFICE}" >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
 
 # check tools availability
+command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
 command -v pbmmake >/dev/null 2>&1 || { echo "[error] pbmmake missing"; exit 1; }
 command -v pngtopnm >/dev/null 2>&1 || { echo "[error] pngtopnm missing"; exit 1; }
 command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
 command -v pnmcomp >/dev/null 2>&1 || { echo "[error] pnmcomp missing"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
-command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
 
 # get parameters
 SCRIPT_NAME=$(basename $0)
