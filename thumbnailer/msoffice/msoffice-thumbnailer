@@ -21,13 +21,18 @@
 # 10/03/2018, V3.0 - Switch from unoconv to libreoffice in headless mode
 # ---------------------------------------------------
 
+# check libreoffice availability (binary can be either libreoffice or soffice)
+CMD_OFFICE="libreoffice"
+command -v "${CMD_OFFICE}" >/dev/null 2>&1 || CMD_OFFICE="soffice"
+command -v "${CMD_OFFICE}" >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
+
 # check tools availability
-command -v libreoffice >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
 command -v pbmmake >/dev/null 2>&1 || { echo "[error] pbmmake missing"; exit 1; }
 command -v pngtopnm >/dev/null 2>&1 || { echo "[error] pngtopnm missing"; exit 1; }
 command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
 command -v pnmcomp >/dev/null 2>&1 || { echo "[error] pnmcomp missing"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
+command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
 
 # get parameters
 SCRIPT_NAME=$(basename $0)
@@ -55,15 +60,10 @@ PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
 URI_TYPE="${FILE_URI:0:4}"
 if [ "${URI_TYPE}" = "file" ]
 then
-	# convert URI to local path
+	# convert URI to local path and extract local path
 	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
-
-	# extract local path
 	FILE_LOCAL="${FILE_PATH:7}"
 else
-	# check gvfs-copy availability
-	command -v gvfs-copy >/dev/null 2>&1 || exit 1
-
 	# copy input file to temporary local file
 	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
 	FILE_LOCAL="${TMP_LOCAL}"	
@@ -108,7 +108,7 @@ DOC_ALPHA="${PATH_CACHE}/${LIBREOFFICE_TYPE}-alpha.pnm"
 [ ! -f "${DOC_ALPHA}" ] && pngtopnm -alpha "${PATH_SYSTEM}/msoffice-${LIBREOFFICE_TYPE}.png" > "${DOC_ALPHA}"
 
 # convert first page to PNG
-libreoffice "-env:UserInstallation=file://${TMP_DIR}" --headless --convert-to png --outdir "${TMP_DIR}" "${FILE_LOCAL}"
+${CMD_OFFICE} "-env:UserInstallation=file://${TMP_DIR}" --headless --convert-to png --outdir "${TMP_DIR}" "${FILE_LOCAL}"
 
 # convert PNG to PNM
 FILE_NAME=$(basename "${FILE_LOCAL}")
