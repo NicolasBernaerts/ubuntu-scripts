@@ -63,15 +63,10 @@ PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
 URI_TYPE="${FILE_URI:0:4}"
 if [ "${URI_TYPE}" = "file" ]
 then
-	# convert URI to local path
+	# convert URI to local path and extract local path
 	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
-
-	# extract local path
 	FILE_LOCAL="${FILE_PATH:7}"
 else
-	# check gvfs-copy availability
-	command -v gvfs-copy >/dev/null 2>&1 || exit 1
-
 	# copy input file to temporary local file
 	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
 	FILE_LOCAL="${TMP_LOCAL}"	
