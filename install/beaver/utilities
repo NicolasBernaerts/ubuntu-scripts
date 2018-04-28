@@ -1,0 +1,67 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to install misc utilities & tools
+#
+# 27/04/20188, v1.0 - Migrated from Xenial
+# -------------------------------------------------------
+
+# yad editor (used by many scripts)
+logger "utilities - yad"
+sudo apt -y install yad
+
+# system extension really needed
+logger "utilities - system extension"
+sudo apt -y install xbacklight preload
+
+# package management tools
+logger "utilities - package management"
+sudo apt -y install ppa-purge synaptic gdebi deborphan
+
+# filesystem clients
+logger "utilities - filesystem"
+sudo apt -y install cifs-utils autofs exfat-fuse
+
+# compression tools
+logger "utilities - compression"
+sudo apt -y install p7zip-full p7zip-rar rar unrar
+
+# file comparison
+logger "utilities - file comparison"
+sudo apt -y install meld
+
+# disk tools
+logger "utilities - disk"
+sudo apt -y install smartmontools disktype gparted
+
+# etcher
+logger "utilities - etcher"
+echo "deb https://dl.bintray.com/resin-io/debian stable etcher" | sudo tee '/etc/apt/sources.list.d/etcher.list'
+sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 379CE192D401AB61
+sudo apt update
+sudo apt -y install etcher-electron
+
+# alacarte : menu editor
+logger "utilities - alacarte"
+sudo apt -y install alacarte
+
+# keepassxc : electronic wallet
+logger "utilities - keepassxc"
+sudo apt -y install libykpers-1-1
+wget -O keepassxc.deb https://github.com/magkopian/keepassxc-debian/releases/download/2.3.1-1/keepassxc_2.3.1-1_amd64_stable_stretch.deb
+sudo gdebi --non-interactive keepassxc.deb
+sudo apt-get -y -f install
+rm ./keepassxc.deb
+
+# photorec and qphotorec (recovery of files from SDCard)
+logger "utilities - photorec and qphotorec"
+sudo apt -y install testdisk
+wget -O qphotorec.deb https://datapacket.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
+sudo gdebi --non-interactive qphotorec.deb
+rm qphotorec.deb
+
+# dual monitor setup
+logger "utilities - dual monitor setup"
+#wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
+#chmod +x update-monitor-position-install.sh
+#./update-monitor-position-install.sh
+#rm ./update-monitor-position-install.sh
