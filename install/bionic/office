@@ -2,7 +2,7 @@
 # -------------------------------------------------------
 # Script to install office tools
 #
-# 20/12/2015, V1.0 - Migrated from Trusty
+# 26/04/2018, V1.0 - Migrated from Xenial
 # -------------------------------------------------------
 
 # libreoffice PPA
