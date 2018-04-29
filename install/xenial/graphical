@@ -36,9 +36,9 @@ rm sweethome3d-install.sh
 # JPEG fast thumbnailer
 logger "graphical - JPEG fast thumbnailer"
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
-chmod +x ./jpeg-tumbnailer-install.sh
-./jpeg-tumbnailer-install.sh
-rm jpeg-tumbnailer-install.sh
+chmod +x ./jpeg-thumbnailer-install.sh
+./jpeg-thumbnailer-install.sh
+rm jpeg-thumbnailer-install.sh
 
 # GIMP XCF thumbnailer
 logger "graphical - GIMP XCF thumbnailer"
