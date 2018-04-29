@@ -1,0 +1,77 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to install office tools
+#
+# 20/12/2015, V1.0 - Migrated from Trusty
+# -------------------------------------------------------
+
+# libreoffice PPA
+logger "office - libreoffice"
+sudo add-apt-repository -y ppa:libreoffice/ppa
+sudo apt -y upgrade
+
+# grisbi
+logger "office - grisbi"
+sudo apt -y install grisbi
+
+# tesseract-ocr client and french langage
+logger "office - tesseract-ocr"
+sudo apt -y install tesseract-ocr-fra aspell-fr
+
+# gramps (genealogy)
+logger "office - gramps"
+sudo apt -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
+
+# PDF editor
+logger "office - PDF editor"
+PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.deb" | cut -d'"' -f2)
+wget -O master-pdf-editor.deb "${PACKAGE}"
+sudo gdebi --n master-pdf-editor.deb
+rm master-pdf-editor.deb
+
+# declare office file association 
+logger "office - office file association"
+xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
+xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
+
+# Thumbnailer - LibreOffice
+logger "office - LibreOffice thumbnailer"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
+chmod +x ./lo-thumbnailer-install.sh
+./lo-thumbnailer-install.sh
+rm lo-thumbnailer-install.sh
+
+# Thumbnailer - Ms Office thumbnailer
+logger "office - Ms Office thumbnailer"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
+chmod +x ./msoffice-thumbnailer-install.sh
+./msoffice-thumbnailer-install.sh
+rm msoffice-thumbnailer-install.sh
+
+# PDF : document generation from multiple files
+logger "office - PDF document generation"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
+chmod +x ./pdf-generate-install.sh
+./pdf-generate-install.sh
+rm pdf-generate-install.sh
+
+# PDF : rotation extension
+logger "office - PDF rotation extension"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-install.sh
+chmod +x ./pdf-rotate-install.sh
+./pdf-rotate-install.sh
+rm pdf-rotate-install.sh
+
+# PDF : repair extension
+logger "office - PDF repair extension"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
+chmod +x ./pdf-repair-install.sh
+./pdf-repair-install.sh
+rm pdf-repair-install.sh
+
+# PDF : booklet generation extension
+logger "office - PDF booklet"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
+chmod +x ./generate-booklet-install.sh
+./generate-booklet-install.sh
+rm generate-booklet-install.sh
