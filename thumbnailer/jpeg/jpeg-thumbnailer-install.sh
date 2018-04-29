@@ -12,7 +12,7 @@ sudo apt -y install exiftool libjpeg-turbo-progs netpbm
 sudo apt -y install build-essential cmake nasm git autoconf libtool
 
 # install development libraries
-sudo apt install libjpeg-turbo8-dev libexif-dev
+sudo apt -y install libjpeg-turbo8-dev libexif-dev
 
 # compile and install epeg
 mkdir ~/sources
