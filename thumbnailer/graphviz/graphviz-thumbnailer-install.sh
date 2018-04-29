@@ -28,5 +28,5 @@ sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/graphviz.th
 nautilus -q
 
 # empty cache of previous thumbnails
-[ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
-[ -d "$HOME/.thumbnails" ] && rm -R $HOME/.thumbnails/*
+[ -d "$HOME/.cache/thumbnails" ] && rm --recursive --force $HOME/.cache/thumbnails/*
+[ -d "$HOME/.thumbnails" ] && rm --recursive --force $HOME/.thumbnails/*
