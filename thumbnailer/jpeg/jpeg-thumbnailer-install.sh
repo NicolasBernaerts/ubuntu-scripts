@@ -41,7 +41,7 @@ sudo chmod +rx /usr/local/sbin/jpeg-thumbnailer
 sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg.thumbnailer
 
 # camera icons
-sudo mkdir --parents $HOME/.local/share/icons
+mkdir --parents $HOME/.local/share/icons
 wget -O "$HOME/.local/share/icons/canon eos 1000d.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon eos 1000d.png"
 wget -O "$HOME/.local/share/icons/canon eos 1100d.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon eos 1100d.png"
 wget -O "$HOME/.local/share/icons/canon powershot g7 x.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon powershot g7 x.png"
