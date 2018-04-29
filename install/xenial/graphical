@@ -28,14 +28,14 @@ sudo apt-get -y install gimp gimp-plugin-registry
 
 # Sweet Home 3D
 logger "graphical - Sweet Home 3D"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
 chmod +x ./sweethome3d-install.sh
 ./sweethome3d-install.sh
 rm sweethome3d-install.sh
 
 # JPEG fast thumbnailer
 logger "graphical - JPEG fast thumbnailer"
-wget --header='Accept-Encoding:none'https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
 chmod +x ./jpeg-tumbnailer-install.sh
 ./jpeg-tumbnailer-install.sh
 rm jpeg-tumbnailer-install.sh
