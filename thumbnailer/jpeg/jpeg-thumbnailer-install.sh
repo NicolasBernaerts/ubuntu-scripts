@@ -38,7 +38,7 @@ sudo wget -O /usr/local/sbin/jpeg-thumbnailer https://raw.githubusercontent.com/
 sudo chmod +rx /usr/local/sbin/jpeg-thumbnailer
 
 # thumbnailer integration
-sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg.thumbnailer
+sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg.thumbnailer
 
 # camera icons
 sudo mkdir --parents $HOME/.local/share/icons
