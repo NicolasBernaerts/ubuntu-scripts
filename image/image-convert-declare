@@ -69,14 +69,13 @@ then
   grep "=" "${CONVERT_CONF}" > "${FILE_TMP}"
 
   # loop thru formats
-  while read LINE; do
-
+  while read LINE
+  do
     # get data
     NAME=$(echo "${LINE}" | cut -d"=" -f1 )
 
     # add desktop file to menu items list
     ITEM_LIST="${ITEM_LIST}image-convert-${NAME};"
-
   done < "${FILE_TMP}"
 
   # ----------------------
@@ -106,8 +105,8 @@ then
   sleep 5
 
   # loop thru formats
-  while read LINE; do
-
+  while read LINE
+  do
     # get data
     NAME=$(echo "${LINE}" | cut -d"=" -f1 )
     LABEL=$(echo "${LINE}" | cut -d"=" -f2 | cut -d',' -f1)
@@ -140,7 +139,6 @@ then
     # write [X-Action-Profile ] section
     echo "[X-Action-Profile convert]" >> "${FILE_DESKTOP}"
     echo "Exec=${ACTION_SCRIPT} --format ${NAME} %F" >> "${FILE_DESKTOP}"
-
   done < "${FILE_TMP}"
 
 fi
