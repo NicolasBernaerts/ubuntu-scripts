@@ -53,5 +53,5 @@ done
 nautilus -q
 
 # remove previously cached files (thumbnails and masks)
-[ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
-[ -d "$HOME/.cache/jpeg-thumbnailer" ] && rm -R $HOME/.cache/jpeg-thumbnailer/*
+[ -d "$HOME/.cache/thumbnails" ] && rm --recursive --force $HOME/.cache/thumbnails/*
+[ -d "$HOME/.cache/jpeg-thumbnailer" ] && rm --recursive --force $HOME/.cache/jpeg-thumbnailer/*
