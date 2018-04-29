@@ -54,5 +54,5 @@ wget --header='Accept-Encoding:none' -O "$HOME/.local/share/icons/oneplus a5000.
 nautilus -q
 
 # remove previously cached files (thumbnails and masks)
-rm -R $HOME/.cache/thumbnails/*
-rm -R $HOME/.cache/jpeg-thumbnailer
+[ -d "$HOME/.cache/thumbnails" ] && rm -R $HOME/.cache/thumbnails/*
+[ -d "$HOME/.cache/jpeg-thumbnailer" ] && rm -R $HOME/.cache/jpeg-thumbnailer/*
