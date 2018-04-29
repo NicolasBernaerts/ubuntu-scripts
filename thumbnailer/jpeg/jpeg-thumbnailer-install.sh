@@ -42,16 +42,12 @@ sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercont
 
 # camera icons
 mkdir --parents $HOME/.local/share/icons
-wget -O "$HOME/.local/share/icons/canon eos 1000d.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon eos 1000d.png"
-wget -O "$HOME/.local/share/icons/canon eos 1100d.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon eos 1100d.png"
-wget -O "$HOME/.local/share/icons/canon powershot g7 x.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/canon powershot g7 x.png"
-wget -O "$HOME/.local/share/icons/dmc-fz200.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/dmc-fz200.png"
-wget -O "$HOME/.local/share/icons/dmc-tz5.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/dmc-tz5.png"
-wget -O "$HOME/.local/share/icons/oneplus e1003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus e1003.png"
-wget -O "$HOME/.local/share/icons/oneplus a0001.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a0001.png"
-wget -O "$HOME/.local/share/icons/one a2003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/one a2003.png"
-wget -O "$HOME/.local/share/icons/oneplus a3003.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a3003.png"
-wget -O "$HOME/.local/share/icons/oneplus a5000.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/oneplus a5000.png"
+ARR_ICON=( "canon eos 1000d.png" "canon eos 1100d.png" "canon powershot g7 x.png" "dmc-fz200.png" "dmc-tz5.png" )
+ARR_ICON=( "${ARR_ICON[@]}" "oneplus e1003.png" "oneplus a0001.png" "one a2003.png" "oneplus a3003.png" "oneplus a5000.png" )
+for ICON in "${ARR_ICON[@]}"
+do
+  wget -O "$HOME/.local/share/icons/${ICON}" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}"
+done 
 
 # stop nautilus
 nautilus -q
