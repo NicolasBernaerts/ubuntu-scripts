@@ -19,13 +19,13 @@
 # 02/10/2017, V1.1 - Speedup with epeg and jpegtran
 # 07/10/2017, V1.2 - Speedup with thumbnail extraction if available
 # 01/03/2018, V1.3 - Correct Jpeg rotation bug
+# 28/04/2018, V1.4 - Handle gio or gvfs-copy
 # --------------------------------------------------------------
 
 # export local library for epeg
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 
 # check tools availability
-command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
 command -v exiftool >/dev/null 2>&1 || { echo "[error] exiftool missing"; exit 1; }
 command -v epeg >/dev/null 2>&1 || { echo "[error] epeg missing"; exit 1; }
 command -v convert >/dev/null 2>&1 || { echo "[error] convert missing"; exit 1; }
@@ -36,6 +36,11 @@ command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1
 command -v pbmtextps >/dev/null 2>&1 || { echo "[error] pbmtextps missing"; exit 1; }
 command -v pnmcrop >/dev/null 2>&1 || { echo "[error] pnmcrop missing"; exit 1; }
 command -v pnmpad >/dev/null 2>&1 || { echo "[error] pnmpad missing"; exit 1; }
+
+# check gvfs or gio availability
+command -v gvfs-copy >/dev/null 2>&1 && ARR_COPY=( "gvfs-copy" )
+command -v gio >/dev/null 2>&1 && ARR_COPY=( "gio" "copy" )
+[ ${#ARR_COPY[@]} -eq 0 ] && { echo "[error] gio or gvfs-copy missing"; exit 1; }
 
 # check parameters
 [ "$#" -ne 3 ] && { echo "[error] waiting for 3 parameters"; exit 1; }
@@ -51,6 +56,7 @@ TMP_DIR=$(mktemp -t -d "thumb-jpeg-XXXXXXXX")
 TMP_LOCAL="${TMP_DIR}/local.jpg"
 TMP_THUMB="${TMP_DIR}/thumb.jpg"
 TMP_PNM="${TMP_DIR}/thumb.pnm"
+TMP_PNG="${TMP_DIR}/thumb.png"
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -63,7 +69,7 @@ then
 	FILE_LOCAL="${FILE_PATH:7}"
 else
 	# copy input file to temporary local file
-	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+	"${ARR_COPY[@]}" "${FILE_URI}" "${TMP_LOCAL}"
 	FILE_LOCAL="${TMP_LOCAL}"	
 fi
 
@@ -154,9 +160,6 @@ then
 		# if needed, create cache files
 		if [ ! -f "${CAMERA_TAG}" -o ! -f "${CAMERA_ALPHA}" ]
 		then
-			# temporary PNM file
-			TMP_PNG=$(mktemp -t XXXXXXXX.png)
-
 			# calculate optimum font size
 			FONT_SIZE=$((${SIZE} / 20))
 
@@ -166,9 +169,6 @@ then
 			# generate tags
 			pngtopnm "${TMP_PNG}" > "${CAMERA_TAG}"
 			pngtopnm -alpha "${TMP_PNG}" > "${CAMERA_ALPHA}"
-		
-			# remove temporary file
-			rm "${TMP_PNG}"
 		fi
 	fi
 
