@@ -37,6 +37,9 @@ command -v pbmtextps >/dev/null 2>&1 || { echo "[error] pbmtextps missing"; exit
 command -v pnmcrop >/dev/null 2>&1 || { echo "[error] pnmcrop missing"; exit 1; }
 command -v pnmpad >/dev/null 2>&1 || { echo "[error] pnmpad missing"; exit 1; }
 
+# check parameters
+[ "$#" -ne 3 ] && { echo "[error] waiting for 3 parameters"; exit 1; }
+
 # get parameters
 SCRIPT_NAME=$(basename $0)
 FILE_URI="$1"
@@ -44,9 +47,10 @@ FILE_THUMB="$2"
 SIZE="$3"
 
 # generate temporary local filename
-TMP_LOCAL=$(mktemp -t "thumb-jpeg-XXXXXXXX.jpg")
-TMP_THUMB=$(mktemp -t "thumb-jpeg-XXXXXXXX.jpg")
-TMP_PNM=$(mktemp -t "thumb-jpeg-XXXXXXXX.pnm")
+TMP_DIR=$(mktemp -t -d "thumb-jpeg-XXXXXXXX")
+TMP_LOCAL="${TMP_DIR}/local.jpg"
+TMP_THUMB="${TMP_DIR}/thumb.jpg"
+TMP_PNM="${TMP_DIR}/thumb.pnm"
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
@@ -189,4 +193,4 @@ convert -auto-orient "${TMP_THUMB}" "${TMP_PNM}"
 pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PNM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
 
 # remove temporary file
-rm -f "${TMP_LOCAL}" "${TMP_THUMB}" "${TMP_PNM}"
+rm --recursive --force "${TMP_DIR}"
