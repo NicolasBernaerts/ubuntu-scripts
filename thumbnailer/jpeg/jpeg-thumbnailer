@@ -62,9 +62,6 @@ then
 	# extract local path
 	FILE_LOCAL="${FILE_PATH:7}"
 else
-	# check gvfs-copy availability
-	command -v gvfs-copy >/dev/null 2>&1 || exit 1
-
 	# copy input file to temporary local file
 	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
 	FILE_LOCAL="${TMP_LOCAL}"	
