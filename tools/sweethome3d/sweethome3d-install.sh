@@ -25,5 +25,6 @@ sudo wget -O /usr/share/applications/sweethome3d.desktop https://raw.githubuserc
 sudo chmod +x /usr/share/applications/sweethome3d.desktop
 
 # associate mimetype to desktop file
-ASSOCIATION=$(grep "application/sweethome3d=" "$HOME/.local/share/applications/mimeapps.list")
-[ "${ASSOCIATION}" = "" ] && echo "application/sweethome3d=sweethome3d.desktop" >> "$HOME/.local/share/applications/mimeapps.list"
+MIMEFILE="$HOME/.local/share/applications/mimeapps.list"
+[ -f "${MIMEFILE}" ] && ASSOCIATION=$(grep "application/sweethome3d=" "${MIMEFILE}") || ASSOCIATION=""
+[ "${ASSOCIATION}" = "" ] && echo "application/sweethome3d=sweethome3d.desktop" >> "${MIMEFILE}"
