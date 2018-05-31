@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------
-# Script to install graphical tools
+# Script to install graphical tools on Bionic
 #
 # 28/04/2018, V1.0 - Migrated from Xenial
 # -------------------------------------------------------
