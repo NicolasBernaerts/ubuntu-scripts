@@ -1,8 +1,8 @@
 #!/bin/bash
 # -------------------------------------------------------
-# Script to install misc utilities & tools
+# Script to install misc utilities & tools on Bionic
 #
-# 27/04/20188, v1.0 - Migrated from Xenial
+# 27/04/2018, v1.0 - Migrated from Xenial
 # -------------------------------------------------------
 
 # yad editor (used by many scripts)
