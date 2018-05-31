@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------
-# Script to install office tools
+# Script to install office tools on Bionic
 #
 # 26/04/2018, V1.0 - Migrated from Xenial
 # -------------------------------------------------------
@@ -23,11 +23,14 @@ logger "office - gramps"
 sudo apt -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
 
 # PDF editor
-logger "office - PDF editor"
 PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.deb" | cut -d'"' -f2)
-wget -O master-pdf-editor.deb "${PACKAGE}"
-sudo gdebi --n master-pdf-editor.deb
-rm master-pdf-editor.deb
+[ "${PACKAGE}" != "" ] && wget -O master-pdf-editor.deb "${PACKAGE}"
+if [ -f ./master-pdf-editor.deb ]
+then
+  logger "office - PDF editor"
+  sudo gdebi --n master-pdf-editor.deb
+  rm master-pdf-editor.deb
+fi
 
 # declare office file association 
 logger "office - office file association"
@@ -35,43 +38,61 @@ xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.t
 xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
 
 # Thumbnailer - LibreOffice
-logger "office - LibreOffice thumbnailer"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
-chmod +x ./lo-thumbnailer-install.sh
-./lo-thumbnailer-install.sh
-rm lo-thumbnailer-install.sh
+if [ -f ./lo-thumbnailer-install.sh ]
+then
+  logger "office - LibreOffice thumbnailer"
+  chmod +x ./lo-thumbnailer-install.sh
+  ./lo-thumbnailer-install.sh
+  rm ./lo-thumbnailer-install.sh
+fi
 
 # Thumbnailer - Ms Office thumbnailer
-logger "office - Ms Office thumbnailer"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
-chmod +x ./msoffice-thumbnailer-install.sh
-./msoffice-thumbnailer-install.sh
-rm msoffice-thumbnailer-install.sh
+if [ -f ./msoffice-thumbnailer-install.sh ]
+then
+  logger "office - Ms Office thumbnailer"
+  chmod +x ./msoffice-thumbnailer-install.sh
+  ./msoffice-thumbnailer-install.sh
+  rm ./msoffice-thumbnailer-install.sh
+fi
 
 # PDF : document generation from multiple files
-logger "office - PDF document generation"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
-chmod +x ./pdf-generate-install.sh
-./pdf-generate-install.sh
-rm pdf-generate-install.sh
+if [ -f ./pdf-generate-install.sh ]
+then
+  logger "office - PDF document generation"
+  chmod +x ./pdf-generate-install.sh
+  ./pdf-generate-install.sh
+  rm ./pdf-generate-install.sh
+fi
 
 # PDF : rotation extension
-logger "office - PDF rotation extension"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-install.sh
-chmod +x ./pdf-rotate-install.sh
-./pdf-rotate-install.sh
-rm pdf-rotate-install.sh
+if [ -f ./pdf-rotate-install.sh ]
+then
+  logger "office - PDF rotation extension"
+  chmod +x ./pdf-rotate-install.sh
+  ./pdf-rotate-install.sh
+  rm ./pdf-rotate-install.sh
+fi
 
 # PDF : repair extension
-logger "office - PDF repair extension"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
-chmod +x ./pdf-repair-install.sh
-./pdf-repair-install.sh
-rm pdf-repair-install.sh
+if [ -f ./pdf-repair-install.sh ]
+then
+  logger "office - PDF repair extension"
+  chmod +x ./pdf-repair-install.sh
+  ./pdf-repair-install.sh
+  rm ./pdf-repair-install.sh
+fi
 
 # PDF : booklet generation extension
-logger "office - PDF booklet"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
-chmod +x ./generate-booklet-install.sh
-./generate-booklet-install.sh
-rm generate-booklet-install.sh
+if [ -f ./generate-booklet-install.sh ]
+then
+  logger "office - PDF booklet"
+  chmod +x ./generate-booklet-install.sh
+  ./generate-booklet-install.sh
+  rm ./generate-booklet-install.sh
+fi
