@@ -1,0 +1,80 @@
+#!/bin/bash
+# ----------------------------------------------------------------
+# Script to install internet tools on Bionic
+#
+# 30/05/2018, V1.0 - Migrated from Xenial
+# ----------------------------------------------------------------
+
+# curl
+logger "internet - curl"
+sudo apt -y install curl
+
+# network tools
+logger "internet - nmap and snmp"
+sudo apt -y install nmap snmp snmp-mibs-downloader
+
+# thunderbird
+logger "internet - thunderbird"
+sudo apt -y install thunderbird-gnome-support
+
+# firefox extension manager
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/mozilla-extension-manager-install.sh
+if [ -f ./mozilla-extension-manager-install.sh ]
+then
+  logger "internet - firefox extension manager"
+  chmod +x ./mozilla-extension-manager-install.sh
+  ./mozilla-extension-manager-install.sh
+  rm ./mozilla-extension-manager-install.sh
+fi
+
+# firefox downloadhelper extension
+wget -O downloadhelper.deb https://github.com/mi-g/vdhcoapp/releases/download/v1.2.1/net.downloadhelper.coapp-1.2.1-1_amd64.deb
+if [ -f ./net.downloadhelper.coapp-1.2.1-1_amd64.deb ]
+then
+  logger "internet - firefox downloadhelper extension"
+  sudo dpkg -i ./downloadhelper.deb
+  rm ./downloadhelper.deb
+fi
+
+# chromium and filezilla
+logger "internet - chromium & filezilla"
+sudo apt -y install chromium-browser filezilla
+
+# youtube-dl
+#logger "internet - youtube-dl "
+#sudo add-apt-repository -y ppa:nilarimogard/webupd8
+#sudo apt-get update
+#sudo apt-get -y install youtube-dl youtube-dlg
+
+# youtubedl-gui
+#logger "internet - youtubedl-gui"
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui-install.sh
+#chmod +x ./youtubedl-gui-install.sh
+#./youtubedl-gui-install.sh
+#rm youtubedl-gui-install.sh
+
+# whatsapp client whatsie
+wget https://github.com/gsantner/whatsie/releases/download/v2.1.0/whatsie-2.1.0-linux-amd64.deb
+if [ -f ./whatsie-2.1.0-linux-amd64.deb ]
+then
+  logger "internet - whatsie"
+  sudo dpkg -i ./whatsie-2.1.0-linux-amd64.deb
+  sudo apt-get -y -f install
+  rm ./whatsie-2.1.0-linux-amd64.deb
+fi
+
+# telegram client
+sudo add-apt-repository -y ppa:atareao/telegram
+sudo apt update
+sudo apt install telegram
+
+# Syncthing (release channel)
+logger "internet - Syncthing"
+curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
+sudo apt update
+sudo apt -y install syncthing
+sudo systemctl enable syncthing@${USER}.service
+sudo systemctl start syncthing@${USER}.service
+mkdir --parents $HOME/.local/share/icons
+wget -O $HOME/.local/share/icons/syncthing.png  https://github.com/NicolasBernaerts/icon/raw/master/syncthing.png
