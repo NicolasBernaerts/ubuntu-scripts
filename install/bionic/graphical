@@ -19,53 +19,74 @@ sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp-edge
 sudo apt -y install gimp
 
 # Sweet Home 3D
-logger "graphical - Sweet Home 3D"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
-chmod +x ./sweethome3d-install.sh
-./sweethome3d-install.sh
-rm sweethome3d-install.sh
+if [ -f ./sweethome3d-install.sh ]
+then
+  logger "graphical - Sweet Home 3D"
+  chmod +x ./sweethome3d-install.sh
+  ./sweethome3d-install.sh
+  rm ./sweethome3d-install.sh
+fi
 
 # JPEG fast thumbnailer
-logger "graphical - JPEG fast thumbnailer"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
-chmod +x ./jpeg-thumbnailer-install.sh
-./jpeg-thumbnailer-install.sh
-rm jpeg-thumbnailer-install.sh
+if [ -f ./jpeg-thumbnailer-install.sh ]
+then
+  logger "graphical - JPEG fast thumbnailer"
+  chmod +x ./jpeg-thumbnailer-install.sh
+  ./jpeg-thumbnailer-install.sh
+  rm ./jpeg-thumbnailer-install.sh
+fi
 
 # GIMP XCF thumbnailer
-logger "graphical - GIMP XCF thumbnailer"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
-chmod +x ./gimp-tumbnailer-install.sh
-./gimp-tumbnailer-install.sh
-rm gimp-tumbnailer-install.sh
+if [ -f ./gimp-tumbnailer-install.sh ]
+then
+  logger "graphical - GIMP XCF thumbnailer"
+  chmod +x ./gimp-tumbnailer-install.sh
+  ./gimp-tumbnailer-install.sh
+  rm ./gimp-tumbnailer-install.sh
+fi
 
 # Graphviz DOT thumbnailer
-logger "graphical - Graphviz DOT thumbnailer"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
-chmod +x ./graphviz-thumbnailer-install.sh
-./graphviz-thumbnailer-install.sh
-rm graphviz-thumbnailer-install.sh
+if [ -f ./graphviz-thumbnailer-install.sh ]
+then
+  logger "graphical - Graphviz DOT thumbnailer"
+  chmod +x ./graphviz-thumbnailer-install.sh
+  ./graphviz-thumbnailer-install.sh
+  rm graphviz-thumbnailer-install.sh
+fi
 
 # RAW pictures thumbnailer
-logger "graphical - RAW pictures thumbnailer"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer-install.sh
-chmod +x ./raw-thumbnailer-install.sh
-./raw-thumbnailer-install.sh
-rm raw-thumbnailer-install.sh
+if [ -f ./raw-thumbnailer-install.sh ]
+then
+  logger "graphical - RAW pictures thumbnailer"
+  chmod +x ./raw-thumbnailer-install.sh
+  ./raw-thumbnailer-install.sh
+  rm ./raw-thumbnailer-install.sh
+fi
 
 # Image convert extension
-logger "graphical - Image convert extension"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
-chmod +x ./image-convert-install.sh
-./image-convert-install.sh
-rm image-convert-install.sh
+if [ -f ./image-convert-install.sh ]
+then
+  logger "graphical - Image convert extension"
+  chmod +x ./image-convert-install.sh
+  ./image-convert-install.sh
+  rm ./image-convert-install.sh
+fi
 
 # scan2folder tool
-logger "graphical - scan2folder"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
-chmod +x ./scan2folder-install.sh
-./scan2folder-install.sh
-rm scan2folder-install.sh
+if [ -f ./scan2folder-install.sh ]
+then
+  logger "graphical - scan2folder"
+  chmod +x ./scan2folder-install.sh
+  ./scan2folder-install.sh
+  rm ./scan2folder-install.sh
+fi
 
 # file manager EXIF extensions
 logger "graphical - file manager EXIF extensions"
