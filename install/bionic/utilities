@@ -45,23 +45,32 @@ logger "utilities - alacarte"
 sudo apt -y install alacarte
 
 # keepassxc : electronic wallet
-logger "utilities - keepassxc"
-sudo apt -y install libykpers-1-1
 wget -O keepassxc.deb https://github.com/magkopian/keepassxc-debian/releases/download/2.3.1-1/keepassxc_2.3.1-1_amd64_stable_stretch.deb
-sudo gdebi --non-interactive keepassxc.deb
-sudo apt-get -y -f install
-rm ./keepassxc.deb
+if [ -f ./keepassxc.deb ]
+then
+  logger "utilities - keepassxc"
+  sudo apt -y install libykpers-1-1
+  sudo gdebi --non-interactive ./keepassxc.deb
+  sudo apt-get -y -f install
+  rm ./keepassxc.deb
+fi
 
 # photorec and qphotorec (recovery of files from SDCard)
-logger "utilities - photorec and qphotorec"
-sudo apt -y install testdisk
 wget -O qphotorec.deb https://datapacket.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
-sudo gdebi --non-interactive qphotorec.deb
-rm qphotorec.deb
+if [ -f ./qphotorec.deb ]
+then
+  logger "utilities - photorec and qphotorec"
+  sudo apt -y install testdisk
+  sudo gdebi --non-interactive ./qphotorec.deb
+  rm ./qphotorec.deb
+fi
 
 # dual monitor setup
-logger "utilities - dual monitor setup"
-#wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
-#chmod +x update-monitor-position-install.sh
-#./update-monitor-position-install.sh
-#rm ./update-monitor-position-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
+if [ -f ./update-monitor-position-install.sh ]
+then
+  logger "utilities - dual monitor setup"
+  #chmod +x ./update-monitor-position-install.sh
+  #./update-monitor-position-install.sh
+  rm ./update-monitor-position-install.sh
+fi
