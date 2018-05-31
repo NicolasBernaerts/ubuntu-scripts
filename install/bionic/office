@@ -28,8 +28,8 @@ PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.
 if [ -f ./master-pdf-editor.deb ]
 then
   logger "office - PDF editor"
-  sudo gdebi --n master-pdf-editor.deb
-  rm master-pdf-editor.deb
+  sudo gdebi --n ./master-pdf-editor.deb
+  rm ./master-pdf-editor.deb
 fi
 
 # declare office file association 
