@@ -87,6 +87,29 @@ sudo apt update
 sudo apt -y upgrade
 
 # ---------------------------------------------------
+# -------------  Distribution specific  -------------
+# ---------------------------------------------------
+
+case ${DISTRI_TYPE} in
+    "UBUNTU") 
+        # gnome session fallback
+        wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-fallback
+        chmod +x gnome-fallback
+        ./gnome-fallback
+        rm gnome-fallback
+        ;;
+    "UBUNTUGNOME") 
+        # gnomeshell
+        wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
+        chmod +x gnome-shell
+        ./gnome-shell
+        rm gnome-shell
+        ;;
+    *) 
+        ;;
+esac
+
+# ---------------------------------------------------
 # ----------------- Common Packages  ----------------
 # ---------------------------------------------------
 
@@ -191,29 +214,6 @@ then
     logger "hp printer - hplip"
     sudo apt -y install hplip-gui
 fi
-
-# ---------------------------------------------------
-# -------------  Distribution specific  -------------
-# ---------------------------------------------------
-
-case ${DISTRI_TYPE} in
-    "UBUNTU") 
-        # gnome session fallback
-        wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-fallback
-        chmod +x gnome-fallback
-        ./gnome-fallback
-        rm gnome-fallback
-        ;;
-    "UBUNTUGNOME") 
-        # gnomeshell
-        wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
-        chmod +x gnome-shell
-        ./gnome-shell
-        rm gnome-shell
-        ;;
-    *) 
-        ;;
-esac
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
