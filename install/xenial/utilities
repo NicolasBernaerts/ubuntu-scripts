@@ -71,6 +71,7 @@ sudo apt-add-repository ppa:george-edison55/nitroshare
 sudo apt update
 sudo apt install nitroshare
 sudo apt install nitroshare-nautilus
+gnomeshell-extension-manage --user --install --extension-id 615
 
 # dual monitor setup
 logger "utilities - dual monitor setup"
