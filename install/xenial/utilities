@@ -3,6 +3,7 @@
 # Script to install misc utilities & tools
 #
 # 20/12/2015, v1.0 - Migrated from Trusty
+# 20/05/2018, v1.1 - Add NitroShare
 # -------------------------------------------------------
 
 # yad editor (used by many scripts)
@@ -64,6 +65,12 @@ sudo apt -y install testdisk
 wget --header='Accept-Encoding:none' http://heanet.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
 sudo gdebi --non-interactive qphotorec_1.0_all.deb
 rm qphotorec_1.0_all.deb
+
+# nitroshare
+sudo apt-add-repository ppa:george-edison55/nitroshare
+sudo apt update
+sudo apt install nitroshare
+sudo apt install nitroshare-nautilus
 
 # dual monitor setup
 logger "utilities - dual monitor setup"
