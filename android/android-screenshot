@@ -7,7 +7,7 @@
 #   http://bernaerts.dyndns.org/...
 # Depends on :
 #   * adb
-#   * avconv
+#   * ffmpeg or avconv
 #   * yad
 # Revision history :
 #   05/04/2015, V1.0 - Creation by Nicolas Bernaerts
