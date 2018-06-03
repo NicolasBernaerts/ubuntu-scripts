@@ -13,10 +13,6 @@ sudo apt -y install curl
 logger "internet - nmap and snmp"
 sudo apt -y install nmap snmp snmp-mibs-downloader
 
-# thunderbird
-logger "internet - thunderbird"
-sudo apt -y install thunderbird-gnome-support
-
 # firefox extension manager
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/mozilla-extension-manager-install.sh
 if [ -f ./mozilla-extension-manager-install.sh ]
@@ -29,7 +25,7 @@ fi
 
 # firefox downloadhelper extension
 wget -O downloadhelper.deb https://github.com/mi-g/vdhcoapp/releases/download/v1.2.1/net.downloadhelper.coapp-1.2.1-1_amd64.deb
-if [ -f ./net.downloadhelper.coapp-1.2.1-1_amd64.deb ]
+if [ -f ./downloadhelper.deb ]
 then
   logger "internet - firefox downloadhelper extension"
   sudo dpkg -i ./downloadhelper.deb
@@ -54,19 +50,19 @@ sudo apt -y install chromium-browser filezilla
 #rm youtubedl-gui-install.sh
 
 # whatsapp client whatsie
-wget https://github.com/gsantner/whatsie/releases/download/v2.1.0/whatsie-2.1.0-linux-amd64.deb
-if [ -f ./whatsie-2.1.0-linux-amd64.deb ]
+wget -O whatsie.deb https://github.com/gsantner/whatsie/releases/download/v2.1.0/whatsie-2.1.0-linux-amd64.deb
+if [ -f ./whatsie.deb ]
 then
   logger "internet - whatsie"
-  sudo dpkg -i ./whatsie-2.1.0-linux-amd64.deb
-  sudo apt-get -y -f install
-  rm ./whatsie-2.1.0-linux-amd64.deb
+  sudo dpkg -i ./whatsie.deb
+  sudo apt -y -f install
+  rm ./whatsie.deb
 fi
 
 # telegram client
 sudo add-apt-repository -y ppa:atareao/telegram
 sudo apt update
-sudo apt install telegram
+sudo apt -y install telegram
 
 # Syncthing (release channel)
 logger "internet - Syncthing"
