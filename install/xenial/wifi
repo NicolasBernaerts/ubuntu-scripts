@@ -22,7 +22,7 @@ then
   # install compilation environment
   logger "wifi - RTL8723be & RTL8821ae"
   sudo apt-get install -y linux-headers-generic build-essential git
-  sudo apt-get libelf-dev
+  sudo apt-get install -y libelf-dev
   
   # create temporary directory
   TMP_DIR=$(mktemp -d)
