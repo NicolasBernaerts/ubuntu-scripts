@@ -45,7 +45,10 @@ fi
 
 # QtABD
 logger "android - QtABD"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/qtadb-install.sh
-chmod +x ./qtadb-install.sh
-./qtadb-install.sh
-rm qtadb-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/qtadb-install.sh
+if [ -f ./qtadb-install.sh ]
+then
+  chmod +x ./qtadb-install.sh
+  ./qtadb-install.sh
+  rm ./qtadb-install.sh
+fi
