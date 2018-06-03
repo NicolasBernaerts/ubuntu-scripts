@@ -1,0 +1,240 @@
+#!/bin/bash
+# ---------------------------------------------------------------------------------
+#  Ubuntu 18.04 LTS Post-installation script
+#
+#  This script will run some commands as sudo
+# 
+#  29/05/2018, V1.0 - Migrated from Xenial
+# ---------------------------------------------------------------------------------
+
+# ---------------------------------------------------
+# ------------- User defined variable ---------------
+# ---------------------------------------------------
+
+DISTRI_NAME="bonic"
+
+# ---------------------------------------------------
+# ------------ Distribution detection ---------------
+# ---------------------------------------------------
+
+RESULT=$(cat /etc/lsb-release | grep "DISTRIB_CODENAME" | cut -d'=' -f2-)
+[ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_NAME}"; exit 1; }
+
+# ---------------------------------------------------
+# ------------ Architecture detection ---------------
+# ---------------------------------------------------
+
+RESULT=$(uname -a | grep x86_64)
+[ "${RESULT}" != "" ] && ARCHI="amd64" || ARCHI="i386"
+[ "${ARCHI}" = "amd64" ] && X86ARCHI="64" || X86ARCHI="32"
+
+# ---------------------------------------------------
+# -------------- Parameters handling ----------------
+# ---------------------------------------------------
+
+# help message if no parameter
+if [ ${#} -eq 0 ];
+then
+    echo "Script to finalise Ubuntu ${DISTRI_NAME} installation."
+    echo "It will install some important packages not provided by default installation."
+    echo "Options are :"
+    echo "  --docky           Add docky launcher"
+    echo "  --wifi            Add some tweaks for problematic wifi cards"
+    echo "  --ssd             Add some tweaks for SSD disk"
+    echo "  --touchpad        Add some tweaks for trackpad"
+    echo "  --assistance      Add remote assistance tools"
+    echo "  --gopro           Add GoPro bug correction"
+    echo "  --hp-printer      Add HP printer GUI"
+    exit 1
+fi
+
+# iterate thru parameters
+while test ${#} -gt 0
+do
+    case $1 in
+        --docky) DOCKY="ok"; shift; ;;
+        --wifi) WIFI="ok"; shift; ;;
+        --ssd) SSD="ok"; shift; ;;
+        --touchpad) TOUCHPAD="ok"; shift; ;;
+        --assistance) ASSIST="ok"; shift; ;;
+        --gopro) GOPRO="ok"; shift; ;;
+        --hp-printer) HPPRINTER="ok"; shift; ;;
+        *) shift; ;;
+    esac
+done
+
+# ---------------------------------------------------
+# -------------- Disable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
+
+# ---------------------------------------------------
+# --------------- Full System Update ----------------
+# ---------------------------------------------------
+
+sudo apt update
+sudo apt -y upgrade
+
+# ---------------------------------------------------
+# ------------------  Gnome Shell  ------------------
+# ---------------------------------------------------
+
+# gnomeshell
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
+if [ -f ./gnome-shell ]
+then
+    chmod +x ./gnome-shell
+    ./gnome-shell
+    rm ./gnome-shell
+fi
+
+# ---------------------------------------------------
+# ----------------- Common Packages  ----------------
+# ---------------------------------------------------
+
+# utilities and tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
+if [ -f ./utilities ]
+then
+    chmod +x ./utilities
+    ./utilities
+    rm ./utilities
+fi
+
+# office tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
+if [ -f ./office ]
+then
+    chmod +x ./office
+    ./office
+    rm ./office
+fi
+
+# graphical tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
+if [ -f ./graphical ]
+then
+    chmod +x ./graphical
+    ./graphical
+    rm ./graphical
+fi
+
+# multimedia tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
+if [ -f ./multimedia ]
+then
+    chmod +x ./multimedia
+    ./multimedia
+    rm ./multimedia
+fi
+
+# internet tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
+if [ -f ./internet ]
+then
+    chmod +x ./internet
+    ./internet
+    rm ./internet
+fi
+
+# android tools
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
+if [ -f ./android ]
+then
+    chmod +x ./android
+    ./android
+    rm ./android
+fi
+
+# ---------------------------------------------------
+# -----------------  Common options  ----------------
+# ---------------------------------------------------
+
+# disable apport crash report
+sudo systemctl disable apport.service
+
+# wifi tweaks
+if [ "${WIFI}" = "ok" ]
+then
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
+    if [ -f ./wifi ]
+    then
+        chmod +x ./wifi
+        ./wifi
+        rm ./wifi
+    fi
+fi
+
+# SSD tweaks
+if [ "${SSD}" = "ok" ]
+then
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
+    if [ -f ./ssd ]
+    then
+        chmod +x ./ssd
+        ./ssd
+        rm ./ssd
+    fi
+fi
+
+# remote assistance
+if [ "${ASSIST}" = "ok" ]
+then
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
+    if [ -f ./assistance ]
+    then
+        chmod +x ./assistance
+        ./assistance
+        rm ./assistance
+    fi
+fi
+
+# docky : add desktop launcher
+if [ "${DOCKY}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/docky-install.sh
+    if [ -f ./docky-install.sh ]
+    then
+        chmod +x ./docky-install.sh
+        ./docky-install.sh
+        rm ./docky-install.sh
+    fi
+fi
+
+# correct GoPro USB mount under Xenial 
+if [ "${GOPRO}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-xenial-gopro-install.sh
+    if [ -f ./nautilus-xenial-gopro-install.sh ]
+    then
+        chmod +x ./nautilus-xenial-gopro-install.sh
+        ./nautilus-xenial-gopro-install.sh --install
+        rm ./nautilus-xenial-gopro-install.sh
+    fi
+fi
+
+# HP printer GUI 
+if [ "${HPPRINTER}" = "ok" ]
+then
+    logger "hp printer - hplip"
+    sudo apt -y install hplip-gui
+fi
+
+# ---------------------------------------------------
+# ------------------ Package cleanup ----------------
+# ---------------------------------------------------
+
+# packages
+sudo apt -y autoremove
+sudo apt -y autoclean
+
+# purge thumbnails cache
+[ -d $HOME/.thumbnails ] && rm -r $HOME/.thumbnails/*
+[ -d $HOME/.cache/thumbnails ] && rm -r $HOME/.cache/thumbnails/*
+
+# ---------------------------------------------------
+# -------------- Enable sudo timeout ---------------
+# ---------------------------------------------------
+
+sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
