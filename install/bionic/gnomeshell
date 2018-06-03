@@ -1,0 +1,46 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to configure GnomeShell environment for Bionic
+#
+# 02/06/2018, V1.0 - Migrate from Xnial
+# -------------------------------------------------------
+
+# install gnome shell extensions
+logger "gnome-shell - gnome shell extensions"
+sudo apt-get -y install gnome-shell-extensions 
+
+# install nautilus-action (from PPA as official package is missing)
+logger "gnome-shell - nautilus-action"
+sudo add-apt-repository -y ppa:daniel-marynicz/filemanager-actions
+sudo apt -y install filemanager-actions-nautilus-extension
+
+# gnome shell window bar icons
+logger "gnome-shell - gnome shell window bar icons"
+gsettings set org.gnome.desktop.wm.preferences button-layout :minimize,maximize,close
+
+# enable icons for buttons and for menus
+logger "gnome-shell - enable icons for buttons and for menus"
+gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
+
+# nautilus : remove nautilus action root menu
+logger "gnome-shell - remove nautilus action root menu"
+echo "items-create-root-menu=false" >> $HOME/.config/filemanager-actions/filemanager-actions.conf
+
+# nautilus : add new empty files right click menu
+logger "gnome-shell - add new empty files right click menu"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
+if [ -f ./nautilus-newfile-install.sh ]
+then 
+  chmod +x ./nautilus-newfile-install.sh
+  ./nautilus-newfile-install.sh
+  rm ./nautilus-newfile-install.sh
+fi
+
+# gnomeshell extensions - console management
+logger "gnome-shell - console management of gnomeshell extensions"
+sudo wget -O /usr/local/bin/gnomeshell-extension-manage https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-manage
+sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
+
+# gnomeshell extensions - default extensions
+logger "gnome-shell - default extensions"
+#gnomeshell-extension-manage --install --user --extension-id 442
