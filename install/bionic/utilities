@@ -65,7 +65,11 @@ then
   rm ./qphotorec.deb
 fi
 
-# dual monitor setup
+# nitroshare
+sudo apt -y install nitroshare nitroshare-nautilus
+gnomeshell-extension-manage --user --install --extension-id 615
+
+# dual monitor setup (to be tested)
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
 if [ -f ./update-monitor-position-install.sh ]
 then
