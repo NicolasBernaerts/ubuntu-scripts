@@ -11,6 +11,7 @@
 #   * yad
 # Revision history :
 #   05/04/2015, V1.0 - Creation by Nicolas Bernaerts
+#   02/06/2018, V1.1 - Accept ffmpeg or avconv for Bionic compatibility
 # ---------------------------------------------------
 
 # configuration file localisation
@@ -21,8 +22,13 @@ TITLE="Android Screenshot"
 
 # check tools availability
 command -v adb >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install adb [android-tools-adb]"; exit 1; }
-command -v avconv >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install avconv"; exit 1; }
 command -v yad >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install yad"; exit 1; }
+
+# check ffmpeg or avconv availability
+CONVERT_CMD="ffmpeg"
+command -v "${CONVERT_CMD}" >/dev/null 2>&1 || CONVERT_CMD="avconv"
+command -v "${CONVERT_CMD}" >/dev/null 2>&1 || { zenity --error --title="${TITLE}" --text="Please install ffmpeg or avconv"; exit 1; }
+
 
 # check configuration file
 [ -f "${FILE_CONF}" ] || { zenity --error --title="${TITLE}" --text="Please install configuration file"; exit 1; }
@@ -201,7 +207,7 @@ do
       for COLORSPACE in "${ARR_COLOR[@]}"
       do
         # convert it to png
-        avconv -vframes 1 -vcodec rawvideo -f image2 -pix_fmt ${COLORSPACE} -s ${DEVICE_SIZE} -i "${FILE}.raw" -filter lutrgb=a=255 "${FILE}-${COLORSPACE}.png"
+        "${CONVERT_CMD}" -vframes 1 -vcodec rawvideo -f image2 -pix_fmt ${COLORSPACE} -s ${DEVICE_SIZE} -i "${FILE}.raw" -filter lutrgb=a=255 "${FILE}-${COLORSPACE}.png"
       done
 
       # remove raw file
