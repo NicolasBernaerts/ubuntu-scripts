@@ -3,6 +3,7 @@
 
 # installation of packages
 sudo apt-get -y install libqtgui4 libqt4-network libqt4-declarative
+sudo apt-get -y install libcanberra-gtk-module libcanberra-gtk3-module
 
 # download of main program
 wget --header='Accept-Encoding:none' http://motyczko.pl/qtadb/QtADB_0.8.1_linux64.tar.gz
