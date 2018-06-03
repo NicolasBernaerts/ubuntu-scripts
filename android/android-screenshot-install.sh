@@ -2,7 +2,7 @@
 # Android device screenshot utility
 
 # install packages
-sudo apt-get -y install yad avconv android-tools-adb
+sudo apt-get -y install yad android-tools-adb
 
 # main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/android-screenshot https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/android-screenshot
