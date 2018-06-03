@@ -40,18 +40,6 @@ fi
 logger "internet - chromium & filezilla"
 sudo apt -y install chromium-browser filezilla
 
-# youtube-dl
-#logger "internet - youtube-dl "
-#sudo add-apt-repository -y ppa:nilarimogard/webupd8
-#sudo apt-get update
-#sudo apt-get -y install youtube-dl youtube-dlg
-
-# youtubedl-gui
-#logger "internet - youtubedl-gui"
-#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/youtubedl-gui-install.sh
-#chmod +x ./youtubedl-gui-install.sh
-#./youtubedl-gui-install.sh
-#rm youtubedl-gui-install.sh
 
 # whatsapp client whatsie
 wget -O whatsie.deb https://github.com/gsantner/whatsie/releases/download/v2.1.0/whatsie-2.1.0-linux-amd64.deb
