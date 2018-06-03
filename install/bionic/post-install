@@ -81,12 +81,12 @@ sudo apt -y upgrade
 # ---------------------------------------------------
 
 # gnomeshell
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnome-shell
-if [ -f ./gnome-shell ]
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnomeshell
+if [ -f ./gnomeshell ]
 then
-    chmod +x ./gnome-shell
-    ./gnome-shell
-    rm ./gnome-shell
+    chmod +x ./gnomeshell
+    ./gnomeshell
+    rm ./gnomeshell
 fi
 
 # ---------------------------------------------------
@@ -94,7 +94,7 @@ fi
 # ---------------------------------------------------
 
 # utilities and tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
 if [ -f ./utilities ]
 then
     chmod +x ./utilities
@@ -103,7 +103,7 @@ then
 fi
 
 # office tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
 if [ -f ./office ]
 then
     chmod +x ./office
@@ -112,7 +112,7 @@ then
 fi
 
 # graphical tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
 if [ -f ./graphical ]
 then
     chmod +x ./graphical
@@ -121,7 +121,7 @@ then
 fi
 
 # multimedia tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
 if [ -f ./multimedia ]
 then
     chmod +x ./multimedia
@@ -130,7 +130,7 @@ then
 fi
 
 # internet tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
 if [ -f ./internet ]
 then
     chmod +x ./internet
@@ -139,7 +139,7 @@ then
 fi
 
 # android tools
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
 if [ -f ./android ]
 then
     chmod +x ./android
@@ -157,7 +157,7 @@ sudo systemctl disable apport.service
 # wifi tweaks
 if [ "${WIFI}" = "ok" ]
 then
-    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
     if [ -f ./wifi ]
     then
         chmod +x ./wifi
@@ -169,7 +169,7 @@ fi
 # SSD tweaks
 if [ "${SSD}" = "ok" ]
 then
-    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
     if [ -f ./ssd ]
     then
         chmod +x ./ssd
@@ -181,7 +181,7 @@ fi
 # remote assistance
 if [ "${ASSIST}" = "ok" ]
 then
-    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/assistance
     if [ -f ./assistance ]
     then
         chmod +x ./assistance
