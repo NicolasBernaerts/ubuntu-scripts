@@ -22,6 +22,9 @@ then
   ./mozilla-extension-manager-install.sh
   rm ./mozilla-extension-manager-install.sh
 fi
+# firefox gnomeshell extensions integration
+mozilla-extension-manager --install --firefox --user https://addons.mozilla.org/firefox/downloads/file/898030/gnome_shell_integration-10.1-an+fx-linux.xpi
+sudo apt -y install chrome-gnome-shell
 
 # firefox downloadhelper extension
 wget -O downloadhelper.deb https://github.com/mi-g/vdhcoapp/releases/download/v1.2.1/net.downloadhelper.coapp-1.2.1-1_amd64.deb
