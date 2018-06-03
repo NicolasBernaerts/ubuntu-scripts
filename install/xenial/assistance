@@ -20,7 +20,10 @@ sed -i "/Exec=gitso/c\Exec=gitso --connect $SUPPORT_SITE" $HOME/.local/share/app
 
 # TeamViewer
 logger "assistance - TeamViewer"
-wget https://download.teamviewer.com/download/teamviewer_i386.deb
-sudo dpkg -i teamviewer_i386.deb
-sudo apt-get -y -f install
-rm teamviewer_i386.deb
+wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
+if [ -f ./teamviewer.deb ]
+then
+  sudo dpkg -i ./teamviewer.deb
+  sudo apt-get -y -f install
+  rm ./teamviewer.deb
+fi
