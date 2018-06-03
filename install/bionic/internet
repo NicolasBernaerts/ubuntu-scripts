@@ -40,7 +40,6 @@ fi
 logger "internet - chromium & filezilla"
 sudo apt -y install chromium-browser filezilla
 
-
 # whatsapp client whatsie
 wget -O whatsie.deb https://github.com/gsantner/whatsie/releases/download/v2.1.0/whatsie-2.1.0-linux-amd64.deb
 if [ -f ./whatsie.deb ]
