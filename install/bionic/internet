@@ -27,7 +27,8 @@ mozilla-extension-manager --install --firefox --user https://addons.mozilla.org/
 sudo apt -y install chrome-gnome-shell
 
 # firefox downloadhelper extension
-wget -O downloadhelper.deb https://github.com/mi-g/vdhcoapp/releases/download/v1.2.1/net.downloadhelper.coapp-1.2.1-1_amd64.deb
+HELPER_URL=$(wget -O - https://github.com/mi-g/vdhcoapp/releases | grep "vdhcoapp/releases/download/" | grep "amd64.deb" | head -n 1 | cut -d'"' -f2)
+wget -O downloadhelper.deb "https://github.com${HELPER_URL}"
 if [ -f ./downloadhelper.deb ]
 then
   logger "internet - firefox downloadhelper extension"
