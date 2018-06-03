@@ -1,0 +1,36 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to tweak wifi cards for Bionic
+#
+# 02/06/2018, V1.0 - Migrated from Xenial
+# -------------------------------------------------------
+
+# RTL8723be : Solves stability issue on HP Stream 13
+# RTL8821ae : Solves stability issues on Lenovo Ideapad 110
+HAS_RTL8723BE=$(lspci | grep "RTL8723BE")
+HAS_RTL8821AE=$(lspci | grep "RTL8821AE")
+
+if [ "${HAS_RTL8723BE}" != "" -o "${HAS_RTL8821AE}" != "" ]
+then
+  # install compilation environment
+  logger "wifi - RTL8723be & RTL8821ae"
+  sudo apt-get install -y linux-headers-generic build-essential git
+  sudo apt-get install -y libelf-dev
+  
+  # create temporary directory
+  TMP_DIR=$(mktemp -d)
+  
+  # clone git repository
+  pushd "${TMP_DIR}"
+  git clone http://github.com/lwfinger/rtlwifi_new.git
+
+  # compile driver from source
+  pushd rtlwifi_new
+  make
+  sudo make install
+  popd
+  
+  # remove temporary directory
+  popd
+  sudo rm -R ${TMP_DIR}
+fi
