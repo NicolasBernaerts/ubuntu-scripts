@@ -5,41 +5,43 @@
 # 02/06/201, V1.0 - Migrated from Xenial
 # -------------------------------------------------------
 
-# latest versions of adb and fastboot from Google
-logger "android - adb & fastboot"
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/android-tools-install.sh
-chmod +x ./android-tools-install.sh
-./android-tools-install.sh
-rm ./android-tools-install.sh
+# adb and fastboot
+sudo apt -y install android-tools-adb android-tools-fastboot
 
 # declare complementary devices
 logger "android - complementary devices"
-sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/51-android.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/51-android.rules
+sudo wget -O /etc/udev/rules.d/51-android.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/51-android.rules
 sudo chmod a+r /etc/udev/rules.d/51-android.rules
-sudo wget --header='Accept-Encoding:none' -O /etc/udev/rules.d/69-mtp.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/69-mtp.rules
+sudo wget -O /etc/udev/rules.d/69-mtp.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/69-mtp.rules
 sudo chmod a+r /etc/udev/rules.d/69-mtp.rules
 mkdir --parent ~/.android
-wget --header='Accept-Encoding:none' -O ~/.android/adb_usb.ini https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/adb_usb.ini
+wget -O ~/.android/adb_usb.ini https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/adb_usb.ini
 
 # APK thumbnailer
 logger "android - APK thumbnailer"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/apk/apk-thumbnailer-install.sh
-chmod +x ./apk-thumbnailer-install.sh
-./apk-thumbnailer-install.sh
-rm apk-thumbnailer-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/apk/apk-thumbnailer-install.sh
+if [ -f ./apk-thumbnailer-install.sh ]
+then
+  chmod +x ./apk-thumbnailer-install.sh
+  ./apk-thumbnailer-install.sh
+  rm ./apk-thumbnailer-install.sh
+fi
 
 # file manager APK extensions
 logger "android - file manager APK extensions"
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-columns.py
-wget --header='Accept-Encoding:none' -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-properties.py
+wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-columns.py
+wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-properties.py
 
 # android screenshot utility
 logger "android - screenshot utility"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/android-screenshot-install.sh
-chmod +x ./android-screenshot-install.sh
-./android-screenshot-install.sh
-rm android-screenshot-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/android-screenshot-install.sh
+if [ -f ./android-screenshot-install.sh ]
+then
+  chmod +x ./android-screenshot-install.sh
+  ./android-screenshot-install.sh
+  rm ./android-screenshot-install.sh
+fi
 
 # QtABD
 logger "android - QtABD"
