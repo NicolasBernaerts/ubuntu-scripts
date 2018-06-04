@@ -1,5 +1,5 @@
-Ubuntu post-installation scripts
-================================
+Ubuntu Xenial post-installation scripts
+=======================================
 
 Here are the scripts I use to automatise installation of an Ubuntu or Ubuntu Gnome workstation.
 
