@@ -44,11 +44,11 @@ sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
 # gnomeshell extensions - default extensions
 logger "gnome-shell - default extensions"
 # Extensions : enable/disable easily gnome shell extensions from a menu in the top panel
-gnomeshell-extension-manage --install --user --extension-id 1036
+gnomeshell-extension-manage --install --user --extension-id 1036 --version latest
 # OpenWeather : display weather information from https://openweathermap.org/
-gnomeshell-extension-manage --install --user --extension-id 750
+gnomeshell-extension-manage --install --user --extension-id 750 --version latest
 # Sound Input & Output Device Chooser : shows a list of sound output and input devices in the status menu below the volume slider
-gnomeshell-extension-manage --install --user --extension-id 906
+gnomeshell-extension-manage --install --user --extension-id 906 --version latest
 # Refresh Wifi Connections : adds a refresh button to the Wifi connection selection dialog
-gnomeshell-extension-manage --install --user --extension-id 905
+gnomeshell-extension-manage --install --user --extension-id 905 --version latest
 
