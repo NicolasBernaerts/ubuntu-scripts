@@ -3,7 +3,6 @@
 # Script to install misc utilities & tools on Bionic
 #
 # 27/04/2018, v1.0 - Migrated from Xenial
-# 02/06/2018, v1.1 - Add TeamViewer
 # -------------------------------------------------------
 
 # yad editor (used by many scripts)
@@ -17,6 +16,10 @@ sudo apt -y install xbacklight preload
 # package management tools
 logger "utilities - package management"
 sudo apt -y install ppa-purge synaptic gdebi deborphan
+
+# dconf editor
+logger "utilities - dconf"
+sudo apt -y install dconf-tools
 
 # filesystem clients
 logger "utilities - filesystem"
@@ -78,14 +81,4 @@ then
   #chmod +x ./update-monitor-position-install.sh
   #./update-monitor-position-install.sh
   rm ./update-monitor-position-install.sh
-fi
-
-# TeamViewer
-wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
-if [ -f ./teamviewer.deb ]
-then
-  logger "assistance - TeamViewer"
-  sudo dpkg -i ./teamviewer.deb
-  sudo apt -y -f install
-  rm ./teamviewer.deb
 fi
