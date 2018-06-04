@@ -43,4 +43,9 @@ sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
 
 # gnomeshell extensions - default extensions
 logger "gnome-shell - default extensions"
-#gnomeshell-extension-manage --install --user --extension-id 442
+# Extensions : Enable/disable easily gnome shell extensions from a menu in the top panel
+gnomeshell-extension-manage --install --user --extension-id 1036
+# OpenWeather : Display weather information from https://openweathermap.org/
+gnomeshell-extension-manage --install --user --extension-id 750
+# Sound Input & Output Device Chooser : Shows a list of sound output and input devices in the status menu below the volume slider
+gnomeshell-extension-manage --install --user --extension-id 906
