@@ -55,6 +55,16 @@ sudo add-apt-repository -y ppa:atareao/telegram
 sudo apt update
 sudo apt -y install telegram
 
+# TeamViewer
+wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
+if [ -f ./teamviewer.deb ]
+then
+  logger "assistance - TeamViewer"
+  sudo dpkg -i ./teamviewer.deb
+  sudo apt -y -f install
+  rm ./teamviewer.deb
+fi
+
 # Syncthing (release channel)
 logger "internet - Syncthing"
 curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
