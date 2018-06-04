@@ -2,7 +2,7 @@
 # -------------------------------------------------------
 # Script to configure GnomeShell environment for Bionic
 #
-# 02/06/2018, V1.0 - Migrate from Xnial
+# 02/06/2018, V1.0 - Migrate from Xenial
 # -------------------------------------------------------
 
 # install gnome shell extensions
@@ -43,9 +43,12 @@ sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
 
 # gnomeshell extensions - default extensions
 logger "gnome-shell - default extensions"
-# Extensions : Enable/disable easily gnome shell extensions from a menu in the top panel
+# Extensions : enable/disable easily gnome shell extensions from a menu in the top panel
 gnomeshell-extension-manage --install --user --extension-id 1036
-# OpenWeather : Display weather information from https://openweathermap.org/
+# OpenWeather : display weather information from https://openweathermap.org/
 gnomeshell-extension-manage --install --user --extension-id 750
-# Sound Input & Output Device Chooser : Shows a list of sound output and input devices in the status menu below the volume slider
+# Sound Input & Output Device Chooser : shows a list of sound output and input devices in the status menu below the volume slider
 gnomeshell-extension-manage --install --user --extension-id 906
+# Refresh Wifi Connections : adds a refresh button to the Wifi connection selection dialog
+gnomeshell-extension-manage --install --user --extension-id 905
+
