@@ -16,7 +16,7 @@ sudo apt -y install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter
 
 # CSS DVD decryption
 logger "multimedia - CSS DVD decryption"
-sudo sh /usr/share/doc/libdvdread4/install-css.sh
+sudo apt -y install libdvdcss2
 
 # misc audio tools
 logger "multimedia - audio tools"
