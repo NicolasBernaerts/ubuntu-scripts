@@ -1,0 +1,84 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to install multimedia tools for Bionic
+#
+# 04/06/2018, V1.0 - Migrated from Xenial
+# -------------------------------------------------------
+
+# auto-accept mscorefonts eula and install it
+logger "multimedia - auto-accept mscorefonts eula"
+sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
+sudo apt -y install ttf-mscorefonts-installer
+
+# restricted codecs and flash
+logger "multimedia - restricted codecs & flash"
+sudo apt -y --force-yes install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter-extra x264
+
+# CSS DVD decryption
+logger "multimedia - CSS DVD decryption"
+sudo sh /usr/share/doc/libdvdread4/install-css.sh
+
+# misc audio tools
+logger "multimedia - audio tools"
+sudo apt -y install pavucontrol soundconverter
+
+# mp3 tools
+logger "multimedia - mp3 tools"
+sudo apt -y install easymp3gain-gtk easytag id3v2 lame
+
+# audacity
+logger "multimedia - audacity"
+sudo apt -y install audacity
+
+# MKV toolnix
+logger "multimedia - MKV toolnix"
+wget -q -O - https://mkvtoolnix.download/gpg-pub-moritzbunkus.txt | sudo apt-key add -
+echo "deb http://mkvtoolnix.download/ubuntu/xenial/ ./" | sudo tee "/etc/apt/sources.list.d/bunkus.org.list"
+echo "deb-src http://mkvtoolnix.download/ubuntu/xenial/ ./" | sudo tee -a "/etc/apt/sources.list.d/bunkus.org.list"
+sudo apt update
+sudo apt -y install mkvtoolnix mkvtoolnix-gui
+
+# handbrake video transcoder
+logger "multimedia - handbrake"
+sudo apt -y install handbrake
+
+# kdenlive video editor
+logger "multimedia - kdenlive"
+sudo apt -y install kdenlive
+
+# vidcutter
+logger "multimedia - vidcutter"
+sudo add-apt-repository -y ppa:ozmartian/apps
+sudo apt-get update
+sudo apt -y install vidcutter
+
+# audio recorder
+logger "multimedia - audio recorder"
+sudo add-apt-repository -y ppa:audio-recorder/ppa
+sudo apt update
+sudo apt -y install audio-recorder
+
+# vlc and declare it as replacement for gnome player
+logger "multimedia - vlc"
+sudo apt -y install vlc
+sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
+
+# openshot
+logger "multimedia - openshot"
+sudo add-apt-repository -y ppa:openshot.developers/ppa
+sudo apt update
+sudo apt -y install openshot-qt
+
+# Convert video to MKV container and transcode audio to AAC
+logger "multimedia - convert video to MKV"
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkv-install.sh
+chmod +x ./video-convert2mkv-install.sh
+./video-convert2mkv-install.sh
+rm ./video-convert2mkv-install.sh
+
+# Video Stabilizer based on MLT and vid.stab
+logger "multimedia - video stabilizer"
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-install.sh
+chmod +x ./video-stabilize-install.sh
+./video-stabilize-install.sh
+rm ./video-stabilize-install.sh
