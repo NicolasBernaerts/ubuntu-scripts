@@ -12,7 +12,7 @@ sudo apt -y install ttf-mscorefonts-installer
 
 # restricted codecs and flash
 logger "multimedia - restricted codecs & flash"
-sudo apt -y --force-yes install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter-extra x264
+sudo apt -y install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter-extra x264
 
 # CSS DVD decryption
 logger "multimedia - CSS DVD decryption"
