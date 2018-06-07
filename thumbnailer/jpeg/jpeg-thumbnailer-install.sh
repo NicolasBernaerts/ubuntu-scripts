@@ -44,7 +44,7 @@ sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercont
 mkdir --parents $HOME/.local/share/icons
 ARR_ICON=( "canon eos 1000d.png" "canon eos 1100d.png" "canon powershot g7 x.png" "dmc-fz200.png" "dmc-tz5.png" )
 ARR_ICON=( "${ARR_ICON[@]}" "oneplus e1003.png" "oneplus a0001.png" "one a2003.png" "oneplus a3003.png" "oneplus a5000.png" "oneplus a6000.png" )
-ARR_ICON=( "${ARR_ICON[@]}" "hero.png" "hero4 session.png" )
+ARR_ICON=( "${ARR_ICON[@]}" "hero.png" "hero4 session.png" "lg-h870.png" )
 for ICON in "${ARR_ICON[@]}"
 do
   wget -O "$HOME/.local/share/icons/${ICON}" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}"
