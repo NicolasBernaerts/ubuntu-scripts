@@ -1,0 +1,22 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to tweak configuration for SSD disks for Bionic
+#
+# 06/06/2018, V1.0 - Migrated from Xenial
+# -------------------------------------------------------
+
+# add noatime parameters to partitions
+logger "ssd - noatime"
+sudo sed -i "s/errors=remount-ro/noatime,errors=remount-ro/g" /etc/fstab
+
+# set /tmp as tmpfs
+logger "ssd - tmpfs"
+echo "" | sudo tee -a /etc/fstab
+echo "# SSD tweak : temporary directories as tmpfs" | sudo tee -a /etc/fstab
+echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0" | sudo tee -a /etc/fstab
+
+# almost disable swapiness
+logger "ssd - swapiness"
+echo "" | sudo tee -a /etc/sysctl.conf
+echo "# minimize swap use to a minimum" | sudo tee -a /etc/sysctl.conf
+echo "vm.swappiness=1" | sudo tee -a /etc/sysctl.conf
