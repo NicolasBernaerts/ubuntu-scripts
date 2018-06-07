@@ -72,13 +72,3 @@ fi
 # nitroshare
 sudo apt -y install nitroshare nitroshare-nautilus
 gnomeshell-extension-manage --user --install --extension-id 615
-
-# dual monitor setup (to be tested)
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/update-monitor-position-install.sh
-if [ -f ./update-monitor-position-install.sh ]
-then
-  logger "utilities - dual monitor setup"
-  #chmod +x ./update-monitor-position-install.sh
-  #./update-monitor-position-install.sh
-  rm ./update-monitor-position-install.sh
-fi
