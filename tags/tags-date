@@ -57,7 +57,7 @@ done
 if [ "${SET_SHIFT}" = "ok" ]
 then
   # shift selection box
-  CHOICE=$(yad --title "Picture Creation Date time shift" --text "Select timeshift you want to apply to selected pictures" --center --window-icon "document-open-recent" --image "document-open-recent" --form --item-separator='|' --field="Days:NUM" "0|-30..30|1" --field="Hours:NUM" "0|-23..23|1" --field="Minutes:NUM" "0|-59..59|1" )
+  CHOICE=$(yad --title "Picture Creation Date time shift" --text "Select timeshift you want to apply to selected pictures" --center --window-icon "document-open-recent" --image "document-open-recent" --form --item-separator='|' --field="Days:NUM" "0" --field="Hours:NUM" "0|-23..23|1" --field="Minutes:NUM" "0|-59..59|1" )
 
   # exit if dialog canceled
   [ $? -eq 1 ] && exit  
