@@ -36,7 +36,7 @@ then
 	echo "  --remove          Remove installed extension"
 	echo "  --list            List installed extensions"
 	echo "  --system          Install/remove in system space (under /usr)"
-	echo "                    By default, installation is in user space (under $HOME)"
+	echo "  --user            By default, installation is in user space (under $HOME)"
 	echo "  --path <path>     Force extension installation path"
 	echo "  --uid <uid>       UID of extension"
 	echo "  --url <url>       URL of Mozilla add-on page (page where you get the download button)"
@@ -51,6 +51,7 @@ do
 		"--remove")       EXT_ACTION="remove"; shift; ;;
 		"--list")         EXT_ACTION="list"; shift; ;;
 		"--system")       EXT_TYPE="system"; shift; ;;
+		"--user")         EXT_TYPE="user"; shift; ;;
 		"--path")         shift; EXT_PATH="$1"; shift; ;;
 		"--uid")          shift; EXT_UID="$1"; shift; ;;
 		"--url")          shift; EXT_URL="$1"; shift; ;;
