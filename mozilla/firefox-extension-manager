@@ -1,5 +1,5 @@
 #!/bin/bash
-# ------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 #  Command line script to handle Firefox 60+ extensions
 #  Manage installation, upgrade and removal of system wide and user extensions
 #  
@@ -10,7 +10,7 @@
 #  17/07/2018  V1.0 - Complete rewrite of mozilla-extension-manager, thanks to Michael Courvoisier
 #                     For older Firefox versions, use mozilla-extension-manager
 #                     This script doesn't handle Thunderbird extensions anymore.
-# ------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 
 # -------------------------------------------------------
 #   Check tools availability
