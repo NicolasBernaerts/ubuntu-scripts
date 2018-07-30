@@ -1,0 +1,255 @@
+#!/bin/bash
+# ------------------------------------------------------------------------
+#  Command line script to handle Firefox 60+ extensions
+#  Manage installation, upgrade and removal of system wide and user extensions
+#  
+#  Depends on unzip and wget
+#
+#  Manual available at http://bernaerts.dyndns.org/linux/74-ubuntu/xxxx
+#
+#  17/07/2018  V1.0 - Complete rewrite of mozilla-extension-manager, thanks to Michael Courvoisier
+#                     For older Firefox versions, use mozilla-extension-manager
+#                     This script doesn't handle Thunderbird extensions anymore.
+# ------------------------------------------------------------------------
+
+# -------------------------------------------------------
+#   Check tools availability
+# -------------------------------------------------------
+
+command -v unzip >/dev/null 2>&1 || { echo "Please install unzip"; exit 1; }
+command -v wget >/dev/null 2>&1 || { echo "Please install wget"; exit 1; }
+
+# ---------------
+#   Parameters
+# ---------------
+
+# default value
+EXT_TYPE="user"
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+	echo "Tool to install or remove mozilla firefox or thunderbird extensions"
+	echo "Extensions can be installed in user mode or system mode (needs sudo)"
+	echo "Parameters are :"
+	echo "  --install         Install/update extension to latest version"
+	echo "  --remove          Remove installed extension"
+	echo "  --list            List installed extensions"
+	echo "  --system          Install/remove in system space (under /usr)"
+	echo "                    By default, installation is in user space (under $HOME)"
+	echo "  --path <path>     Force extension installation path"
+	echo "  --uid <uid>       UID of extension"
+	echo "  --url <url>       URL of Mozilla add-on page (page where you get the download button)"
+	exit 1
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+	case "$1" in
+		"--install")      EXT_ACTION="install"; shift; ;;
+		"--remove")       EXT_ACTION="remove"; shift; ;;
+		"--list")         EXT_ACTION="list"; shift; ;;
+		"--system")       EXT_TYPE="system"; shift; ;;
+		"--path")         shift; EXT_PATH="$1"; shift; ;;
+		"--uid")          shift; EXT_UID="$1"; shift; ;;
+		"--url")          shift; EXT_URL="$1"; shift; ;;
+		*)                echo "unknown parameter $1"; shift; ;;
+	esac
+done
+
+# check compulsory parameters
+[ "${EXT_ACTION}" = "" ] && { echo "[error] You must specify the action mode as --install or --remove"; exit 1; }
+
+# check extension URL or UID
+[ "${EXT_ACTION}" = "install" -a "${EXT_URL}" = "" ] && { echo "[error] You must specify the extension URL to install or update it"; exit 1; }
+[ "${EXT_ACTION}" = "remove" -a "${EXT_UID}" = "" -a "${EXT_URL}" = "" ] && { echo "[error] You must specify the extension UID or URL to remove it"; exit 1; }
+
+# -------------
+#   Variables
+# -------------
+
+# set temporary file
+TMP_DIR=$(mktemp -d "addon-XXXXXXXX")
+TMP_HTML="${TMP_DIR}/addon.html"
+TMP_XPI="${TMP_DIR}/addon.xpi"
+
+# ------------------------------------
+#   Set user mode environment
+# ------------------------------------
+
+# set user space installation path
+USER_HOME="$HOME/.mozilla/firefox"
+
+# get profile path
+USER_PROFILE=$(grep "Path=" "${USER_HOME}/profiles.ini" | head -n 1 | cut -d'=' -f2)
+ 
+# set user profile path
+[ "${USER_PROFILE}" != "" ] && USER_PATH="${USER_HOME}/${USER_PROFILE}/extensions"
+
+# if no profile, error message
+[ "${USER_PATH}" = "" ] && echo "[warning] User profile doesn't exist"
+
+# ------------------------------------
+#   Set system mode environment
+# ------------------------------------
+
+# detect architecture
+ARCHITECTURE=$(arch)
+
+# if system is debian based (Debian, Ubuntu, Fedora, ...)
+if [ -f /etc/debian_version ]
+then
+	SYSTEM_PATH="/usr/lib/firefox-addons/extensions"
+
+# else, if system is Fedora 64
+elif [ "${ARCHITECTURE}" = "x86_64" ]
+then
+	SYSTEM_PATH="/usr/lib64/firefox/extensions"
+
+# else set for Fedora 32 
+else
+	SYSTEM_PATH="/usr/lib/firefox/extensions"
+fi
+
+# ------------------------------------
+#   Set extension installation root
+# ------------------------------------
+
+# if needed, set extensions path according to user or system mode
+[ "${EXT_PATH}" = "" -a "${EXT_TYPE}" = "system" ] && EXT_PATH="${SYSTEM_PATH}"
+[ "${EXT_PATH}" = "" ] && EXT_PATH="${USER_PATH}"
+
+# exit if extensions path doesn't exist
+[ "${EXT_PATH}" = "" ] && MESSAGE="[error] Extensions path could not be determined"
+
+# -----------------------------------
+#   List installed extensions
+# -----------------------------------
+
+# if list of extensions
+if [ "${MESSAGE}" = "" -a "${EXT_ACTION}" = "list" ]
+then
+	# list installed XPI files
+	ARR_XPI=( $(ls ${EXT_PATH}/*.xpi) )
+
+	# display
+	echo "Detected ${EXT_TYPE} mode extensions are :"
+
+	# loop thru installed XPI
+	for FILE_XPI in "${ARR_XPI[@]}"
+	do
+		# extract XPI extension UID
+		EXT_UID=$(basename "${FILE_XPI}" | cut -d '.' -f1)
+
+		# extract XPI extension name
+		EXT_NAME=$(unzip -qq -p "${FILE_XPI}" manifest.json 2>/dev/null | grep "\"name\"" | head -n 1 | cut -d'"' -f4)
+
+		# extract XPI extension name
+		EXT_VERSION=$(unzip -qq -p "${FILE_XPI}" manifest.json 2>/dev/null | grep "\"version\"" | head -n 1 | cut -d'"' -f4)
+
+		# display information
+		echo " * ${EXT_NAME}, version=${EXT_VERSION}, uid ${EXT_UID}"
+	done
+
+	# display
+	MESSAGE="[list] ${#ARR_XPI[@]} extensions installed in ${EXT_TYPE} mode"
+fi
+
+# --------------------------
+#   Extract extension data
+# --------------------------
+
+# by UID of installed packet
+if [ "${MESSAGE}" = "" -a "${EXT_UID}" != "" ]
+then
+	# set XPI file from UID
+	EXT_TARGET="${EXT_PATH}/${EXT_UID}.xpi"
+
+	# extract XPI extension name
+	EXT_NAME=$(unzip -qq -p "${EXT_TARGET}" manifest.json 2>/dev/null | grep "\"name\"" | head -n 1 | cut -d'"' -f4)
+
+# by URL
+elif [ "${MESSAGE}" = "" -a "${EXT_URL}" != "" ]
+then
+	# download extension if not local (file:///)
+	wget --quiet -O "${TMP_HTML}" "${EXT_URL}"
+
+	# extract extension UID
+	EXT_UID=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"guid\"" | tail -n 1 | cut -d'"' -f4)
+
+	# extract extension name
+	EXT_NAME=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"name\"" | tail -n 1 | cut -d'"' -f4)
+
+	# extract extension name
+	EXT_VERSION=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"version\"" | cut -d'"' -f4)
+
+	# generate XPI target file path
+	EXT_XPI=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"url\"" | grep ".xpi" | head -n 1 | cut -d'"' -f4 | sed "s|u002F||g" | tr '\\' '/')
+
+	# download XPI extension
+	wget --quiet -O "${TMP_XPI}" "${EXT_XPI}"
+
+	# generate XPI target file path
+	EXT_TARGET="${EXT_PATH}/${EXT_UID}.xpi"
+fi
+
+# -------------------
+#   Detect problems
+# -------------------
+
+# if extension UID could not be determined, error
+[ "${EXT_UID}" = "" ] && MESSAGE="[error] Could not retrieve extension UID"
+
+# if extension UID could not be determined, error
+[ "${MESSAGE}" = "" -a "${EXT_NAME}" = "" ] && MESSAGE="[error] Could not retrieve extension name"
+
+# ---------------------
+#   Extension removal
+# ---------------------
+
+if [ "${MESSAGE}" = "" -a "${EXT_ACTION}" = "remove" ]
+then
+	# if extension is not installed
+	if [ ! -f "${EXT_TARGET}" ]
+	then
+		# warning message
+		MESSAGE="[warning] ${EXT_NAME} not installed in ${EXT_TYPE} mode, can't be removed, uid ${EXT_UID}"
+
+	# else, remove it
+	else
+		# remove user or system extension XPI file
+		[ "${EXT_TYPE}" = "user" ] && rm "${EXT_TARGET}" || sudo rm "${EXT_TARGET}"
+
+		# end message
+		MESSAGE="[success] ${EXT_NAME} removed in ${EXT_TYPE} mode, uid ${EXT_UID}"
+	fi
+
+# ----------------------------
+#   Extension install/update
+# ----------------------------
+
+elif [ "${MESSAGE}" = "" -a "${EXT_ACTION}" = "install" ]
+then
+	# if extension already installed
+	if [ -f "${EXT_TARGET}" ]
+	then
+		# update information message
+		echo "[info] ${EXT_NAME} alreday installed, will be updated in ${EXT_TYPE} mode, uid ${EXT_UID}"
+
+		# if any, remove previous extension version
+		[ "${EXT_TYPE}" = "user" ] && rm "${EXT_TARGET}" || sudo rm "${EXT_TARGET}"
+	fi
+
+	# copy .xpi to target path
+	[ "${EXT_TYPE}" = "user" ] && cp "${TMP_XPI}" "${EXT_TARGET}" || sudo cp "${TMP_XPI}" "${EXT_TARGET}"
+
+	# end message
+	MESSAGE="[success] ${EXT_NAME} installed/updated in ${EXT_TYPE} mode, version ${EXT_VERSION}, uid ${EXT_UID}"
+fi
+
+# display message
+echo "${MESSAGE}"
+
+# remove temporary files
+rm -R "${TMP_DIR}"
