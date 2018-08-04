@@ -24,7 +24,7 @@ sudo apt -y install pavucontrol soundconverter
 
 # mp3 tools
 logger "multimedia - mp3 tools"
-sudo apt -y install easymp3gain-gtk easytag id3v2 lame
+sudo apt -y install easytag id3v2 lame
 
 # audacity
 logger "multimedia - audacity"
