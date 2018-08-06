@@ -1,5 +1,7 @@
 #!/bin/sh
-# Very fast JPEG thumbnailer with camera and location tag display
+# Installation script for
+# very fast JPEG thumbnailer with camera and location tag display
+# based on epeg
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
