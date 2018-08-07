@@ -12,7 +12,7 @@ sudo apt-get -y install yad
 sudo apt-get -y install fdkaac aac-enc
 
 # install mediainfo, libav-tools (avconv), sox and mkvtoolnix (mkvmerge)
-sudo apt-get -y install mediainfo libav-tools sox mkvtoolnix
+sudo apt-get -y install mediainfo ffmpeg sox mkvtoolnix
 
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
