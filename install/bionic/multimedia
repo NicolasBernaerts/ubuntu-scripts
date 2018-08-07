@@ -41,8 +41,8 @@ sudo apt -y install audacity
 # MKV toolnix
 logger "multimedia - MKV toolnix"
 wget -q -O - https://mkvtoolnix.download/gpg-pub-moritzbunkus.txt | sudo apt-key add -
-echo "deb http://mkvtoolnix.download/ubuntu/xenial/ ./" | sudo tee "/etc/apt/sources.list.d/bunkus.org.list"
-echo "deb-src http://mkvtoolnix.download/ubuntu/xenial/ ./" | sudo tee -a "/etc/apt/sources.list.d/bunkus.org.list"
+echo "deb https://mkvtoolnix.download/ubuntu/ bionic main" | sudo tee "/etc/apt/sources.list.d/bunkus.org.list"
+echo "deb-src https://mkvtoolnix.download/ubuntu/ bionic main" | sudo tee -a "/etc/apt/sources.list.d/bunkus.org.list"
 sudo apt update
 sudo apt -y install mkvtoolnix mkvtoolnix-gui
 
