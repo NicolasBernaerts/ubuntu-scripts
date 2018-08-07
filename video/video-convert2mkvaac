@@ -8,7 +8,7 @@
 #  Depends on :
 #    * yad (from ppa:webupd8team/y-ppa-manager)
 #    * mediainfo
-#    * avconv (libav-tools)
+#    * ffmpeg
 #    * sox
 #    * fdkaac (from ppa:fdkaac-encoder)
 #    * mkvmerge (mkvtoolnix)
@@ -26,6 +26,7 @@
 #    18/12/2015, V2.4 - Correct nasty bug with PID < 10000
 #    03/06/2016, V2.5 - Remove any multi-threaded option to avoid audio time shift
 #    05/06/2016, V2.6 - Add audio tracks description
+#    05/08/2018, V2.7 - Switch to ffmpeg instead of avconv
 # -------------------------------------------------------
 
 IFS=$'\n'
@@ -34,10 +35,10 @@ IFS=$'\n'
 #  Check tools availability
 # -------------------------------------------------------
 
-# check mediainfo, mkvmerge, avconv and fdkaac
+# check mediainfo, mkvmerge, ffmpeg and fdkaac
 command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad [yad from ppa:webupd8team/y-ppa-manager]"; exit 1; }
 command -v mediainfo >/dev/null 2>&1 || { zenity --error --text="Please install mediainfo"; exit 1; }
-command -v avconv >/dev/null 2>&1 || { zenity --error --text="Please install avconv [libav-tools]"; exit 1; }
+command -v ffmpeg >/dev/null 2>&1 || { zenity --error --text="Please install ffmpeg"; exit 1; }
 command -v sox >/dev/null 2>&1 || { zenity --error --text="Please install sox"; exit 1; }
 command -v fdkaac >/dev/null 2>&1 || { zenity --error --text="Please install fdkaac [fdkaac-encoder from ppa:mc3man/fdkaac-encoder]"; exit 1; }
 command -v mkvmerge >/dev/null 2>&1 || { zenity --error --text="Please install mkvmerge [mkvtoolnix]"; exit 1; }
@@ -334,7 +335,7 @@ do
 
           # convert track to WAV format
           echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to WAV"
-          avconv -y -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
+          ffmpeg -y -i "${FILE_TMP_MKA}" "${FILE_TMP_WAV}"
 
           # determine encoding rate
           [ $TRACK_CHANNEL -ge 5 ] && TRACK_RATE=$RATE_MULTI || TRACK_RATE=$RATE_STEREO
@@ -364,7 +365,7 @@ do
 
         # convert WAV file to stereo
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to stereo WAV"
-        avconv -y -i "${FILE_TMP_MKA}" -ac 2 "${FILE_TMP_WAV}"
+        ffmpeg -y -i "${FILE_TMP_MKA}" -ac 2 "${FILE_TMP_WAV}"
 
         # apply night mode correction
         echo "# ${FILE_NAME} - Audio #${TRACK_ID} : Conversion to Midnight Mode"
