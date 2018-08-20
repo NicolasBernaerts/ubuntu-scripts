@@ -5,6 +5,10 @@
 # 28/04/2018, V1.0 - Migrated from Xenial
 # -------------------------------------------------------
 
+# screenshot apps
+logger "graphical - screenshot apps"
+sudo apt -y install flameshot
+
 # misc graphical apps
 logger "graphical - graphical apps"
 sudo apt -y install exiv2 imagemagick dcraw
