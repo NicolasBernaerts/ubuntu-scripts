@@ -50,10 +50,13 @@ then
   rm ./whatsie.deb
 fi
 
-# telegram client
+# telegram
 sudo add-apt-repository -y ppa:atareao/telegram
 sudo apt update
 sudo apt -y install telegram
+
+# skype
+flatpak -y install https://flathub.org/repo/appstream/com.skype.Client.flatpakref
 
 # TeamViewer
 wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
