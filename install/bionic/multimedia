@@ -74,11 +74,15 @@ sudo add-apt-repository -y ppa:audio-recorder/ppa
 sudo apt update
 sudo apt -y install audio-recorder
 
-# vlc and declare it as replacement for gnome player
+# vlc
 logger "multimedia - vlc"
-#sudo apt -y install vlc
 flatpak -y install https://flathub.org/repo/appstream/org.videolan.VLC.flatpakref
+#sudo apt -y install vlc
 #sudo sed -i 's/totem/vlc/g' /usr/share/applications/defaults.list
+
+# gnome mpv
+logger "multimedia - gnome mpv"
+flatpak -y install https://flathub.org/repo/appstream/io.github.GnomeMpv.flatpakref
 
 # Convert video to MKV container and transcode audio to AAC
 logger "multimedia - convert video to MKV"
