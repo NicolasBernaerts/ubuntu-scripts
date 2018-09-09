@@ -55,7 +55,8 @@ flatpak -y install https://flathub.org/repo/appstream/fr.handbrake.ghb.flatpakre
 
 # kdenlive video editor
 logger "multimedia - kdenlive"
-sudo apt -y install kdenlive
+flatpak -y install https://flathub.org/repo/appstream/org.kde.kdenlive.flatpakref
+#sudo apt -y install kdenlive
 
 # vidcutter
 logger "multimedia - vidcutter"
