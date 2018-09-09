@@ -3,6 +3,7 @@
 # Script to install graphical tools on Bionic
 #
 # 28/04/2018, V1.0 - Migrated from Xenial
+# 10/09/2018, V1.1 - Add darktable
 # -------------------------------------------------------
 
 # screenshot apps
@@ -22,6 +23,11 @@ logger "graphical - gimp"
 flatpak -y install https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
 #sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp-edge
 #sudo apt -y install gimp
+
+# darktable
+logger "graphical - darktable"
+sudo add-apt-repository -y ppa:pmjdebruijn/darktable-release
+sudo apt -y install darktable
 
 # Sweet Home 3D
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
