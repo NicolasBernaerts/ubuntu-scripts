@@ -3,6 +3,7 @@
 # Script to install multimedia tools for Bionic
 #
 # 04/06/2018, V1.0 - Migrated from Xenial
+# 10/08/2018, V1.1 - Add kdenlive and openshot
 # -------------------------------------------------------
 
 # auto-accept mscorefonts eula and install it
@@ -57,6 +58,9 @@ flatpak -y install https://flathub.org/repo/appstream/fr.handbrake.ghb.flatpakre
 logger "multimedia - kdenlive"
 flatpak -y install https://flathub.org/repo/appstream/org.kde.kdenlive.flatpakref
 #sudo apt -y install kdenlive
+
+# openshot video editor
+flatpak -y install https://flathub.org/repo/appstream/org.openshot.OpenShot.flatpakref
 
 # vidcutter
 logger "multimedia - vidcutter"
