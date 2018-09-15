@@ -86,14 +86,20 @@ USER_HOME="$HOME/.mozilla/firefox"
 # get profile path
 USER_PROFILE=$(grep "Path=" "${USER_HOME}/profiles.ini" | head -n 1 | cut -d'=' -f2)
  
-# set user profile path
-[ "${USER_PROFILE}" != "" ] && USER_PATH="${USER_HOME}/${USER_PROFILE}/extensions"
+# if user profile has been created,
+if [ "${USER_PROFILE}" != "" ]
+then
+	# set user profile path
+	USER_PATH="${USER_HOME}/${USER_PROFILE}/extensions"
 
-# if no profile, error message
-[ "${USER_PATH}" = "" ] && echo "[warning] User profile doesn't exist"
-
-# if needed, create user profile extension directory
-[ ! -d "${USER_PATH}" ] && mkdir --parents "${USER_PATH}"
+	# if needed, create user profile extension directory
+	[ ! -d "${USER_PATH}" ] && mkdir --parents "${USER_PATH}"
+	
+# else, profile doesn't exist
+else
+	# display warning message
+	echo "[warning] User profile doesn't exist"
+fi
 
 # ------------------------------------
 #   Set system mode environment
