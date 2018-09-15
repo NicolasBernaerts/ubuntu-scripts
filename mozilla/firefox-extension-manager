@@ -10,6 +10,7 @@
 #  17/07/2018  V1.0 - Complete rewrite of mozilla-extension-manager, thanks to Michael Courvoisier
 #                     For older Firefox versions, use mozilla-extension-manager
 #                     This script doesn't handle Thunderbird extensions anymore.
+#  15/09/2018  V1.1 - Automatic creation of user profile extension path, thanks to Michael Courvoisier
 # --------------------------------------------------------------------------------------------------
 
 # -------------------------------------------------------
@@ -90,6 +91,9 @@ USER_PROFILE=$(grep "Path=" "${USER_HOME}/profiles.ini" | head -n 1 | cut -d'=' 
 
 # if no profile, error message
 [ "${USER_PATH}" = "" ] && echo "[warning] User profile doesn't exist"
+
+# if needed, create user profile extension directory
+[ ! -d "${USER_PATH}" ] && mkdir --parents "${USER_PATH}"
 
 # ------------------------------------
 #   Set system mode environment
