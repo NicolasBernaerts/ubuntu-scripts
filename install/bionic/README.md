@@ -14,6 +14,7 @@ It takes few parameters according to the options you want.
 | **--ssd**          | Add some tweaks for SSD disk |
 | **--gopro**        | Add GoPro bug correction |
 | **--hp-printer**   | Add HP printers GUI |
+| **--no-junk**      | Remove junk package (Amazon launcher) |
 
 This script call various specialized script in charge of installing latest tools for :
   * utilities
