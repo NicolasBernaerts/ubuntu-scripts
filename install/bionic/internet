@@ -30,8 +30,7 @@ wget -O downloadhelper.deb "https://github.com${HELPER_URL}"
 if [ -f ./downloadhelper.deb ]
 then
   logger "internet - firefox downloadhelper extension"
-  sudo dpkg -i ./downloadhelper.deb
-  sudo apt -y --fix-broken install
+  sudo gdebi --n ./downloadhelper.deb
   rm ./downloadhelper.deb
 fi
 
@@ -52,8 +51,7 @@ wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer
 if [ -f ./teamviewer.deb ]
 then
   logger "internet - TeamViewer"
-  sudo dpkg -i ./teamviewer.deb
-  sudo apt -y --fix-broken install
+  sudo gdebi --n ./teamviewer.deb
   rm ./teamviewer.deb
 fi
 
