@@ -14,16 +14,16 @@ logger "internet - nmap and snmp"
 sudo apt -y install nmap snmp snmp-mibs-downloader
 
 # firefox extension manager
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/mozilla-extension-manager-install.sh
-if [ -f ./mozilla-extension-manager-install.sh ]
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
+if [ -f ./firefox-extension-manager-install.sh ]
 then
   logger "internet - firefox extension manager"
-  chmod +x ./mozilla-extension-manager-install.sh
-  ./mozilla-extension-manager-install.sh
-  rm ./mozilla-extension-manager-install.sh
+  chmod +x ./firefox-extension-manager-install.sh
+  ./firefox-extension-manager-install.sh
+  rm ./firefox-extension-manager-install.sh
 fi
 # firefox gnomeshell extensions integration
-mozilla-extension-manager --install --firefox --user https://addons.mozilla.org/firefox/downloads/file/898030/gnome_shell_integration-10.1-an+fx-linux.xpi
+firefox-extension-manager --install --user --url https://addons.mozilla.org/en-US/firefox/addon/gnome-shell-integration/
 sudo apt -y install chrome-gnome-shell
 
 # firefox downloadhelper extension
