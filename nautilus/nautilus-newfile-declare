@@ -8,6 +8,7 @@
 #   03/06/2016, V1.0 - Creation by N. Bernaerts
 #   13/08/2016, V1.1 - Add --install and --remove parameters
 #   12/05/2017, V1.2 - Add new file ... action menu
+#   30/09/2018, V1.3 - Create file mananger action directory if missing
 # -------------------------------------------------------------
 
 # -------------------------------------------------------
@@ -46,6 +47,7 @@ ACTION_SCRIPT=$(which "nautilus-newfile-action")
 
 # desktop action files directory
 ACTION_DIR="$HOME/.local/share/file-manager/actions"
+[ ! -d "${ACTION_DIR}" ] && mkdir --parents "${ACTION_DIR}"
 
 # configuration directory and file
 CONF_DIR="$HOME/.config/nautilus-actions"
