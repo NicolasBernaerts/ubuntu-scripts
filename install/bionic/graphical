@@ -21,13 +21,35 @@ sudo apt -y install hugin
 # gimp
 logger "graphical - gimp"
 flatpak -y install https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
-#sudo add-apt-repository -y ppa:otto-kesselgulasch/gimp-edge
-#sudo apt -y install gimp
+
+# GIMP XCF thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
+if [ -f ./gimp-tumbnailer-install.sh ]
+then
+  logger "graphical - GIMP XCF thumbnailer"
+  chmod +x ./gimp-tumbnailer-install.sh
+  ./gimp-tumbnailer-install.sh
+  rm ./gimp-tumbnailer-install.sh
+fi
 
 # darktable
 logger "graphical - darktable"
 sudo add-apt-repository -y ppa:pmjdebruijn/darktable-release
 sudo apt -y install darktable
+
+# graphviz
+logger "graphical - graphviz"
+sudo apt -y install graphviz
+
+# Graphviz DOT thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
+if [ -f ./graphviz-thumbnailer-install.sh ]
+then
+  logger "graphical - Graphviz DOT thumbnailer"
+  chmod +x ./graphviz-thumbnailer-install.sh
+  ./graphviz-thumbnailer-install.sh
+  rm graphviz-thumbnailer-install.sh
+fi
 
 # krita
 logger "graphical - krita"
@@ -51,26 +73,6 @@ then
   chmod +x ./jpeg-thumbnailer-install.sh
   ./jpeg-thumbnailer-install.sh
   rm ./jpeg-thumbnailer-install.sh
-fi
-
-# GIMP XCF thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
-if [ -f ./gimp-tumbnailer-install.sh ]
-then
-  logger "graphical - GIMP XCF thumbnailer"
-  chmod +x ./gimp-tumbnailer-install.sh
-  ./gimp-tumbnailer-install.sh
-  rm ./gimp-tumbnailer-install.sh
-fi
-
-# Graphviz DOT thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
-if [ -f ./graphviz-thumbnailer-install.sh ]
-then
-  logger "graphical - Graphviz DOT thumbnailer"
-  chmod +x ./graphviz-thumbnailer-install.sh
-  ./graphviz-thumbnailer-install.sh
-  rm graphviz-thumbnailer-install.sh
 fi
 
 # RAW pictures thumbnailer
