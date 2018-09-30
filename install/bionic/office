@@ -25,7 +25,10 @@ sudo apt -y install tesseract-ocr-fra aspell-fr
 
 # gramps (genealogy)
 logger "office - gramps"
-sudo apt -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0 gramps
+sudo apt -y install gir1.2-gexiv2-0.10 gir1.2-osmgpsmap-1.0
+wget -O gramps.deb https://github.com/gramps-project/gramps/releases/download/v5.0.0/gramps_5.0.0-1_all.deb
+sudo gdebi --n ./gramps.deb
+rm ./gramps.deb
 
 # PDF editor
 PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.deb" | cut -d'"' -f2)
