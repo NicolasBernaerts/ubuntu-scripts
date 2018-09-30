@@ -7,7 +7,7 @@
 # -------------------------------------------------------
 
 # curl
-logger "internet - curl"
+logger "utilities - curl"
 sudo apt -y install curl
 
 # flatpak
