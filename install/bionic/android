@@ -2,11 +2,17 @@
 # -------------------------------------------------------
 # Script to install android tools
 #
-# 02/06/201, V1.0 - Migrated and tested from Xenial
+# 02/06/2018, V1.0 - Migrated and tested from Xenial
+# 30/09/2018, V1.1 - Add GSConnect
 # -------------------------------------------------------
 
 # adb and fastboot
+logger "android - adb and fastboot"
 sudo apt -y install android-tools-adb android-tools-fastboot
+
+# install GSConnect Gnomeshell plugin
+logger "android - GSConnect"
+gnomeshell-extension-manage --install --user --extension-id 1319 --version latest
 
 # declare complementary devices
 logger "android - complementary devices"
