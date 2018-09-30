@@ -3,7 +3,7 @@ Type=Action
 Icon=rotate-right
 Name[C]=Rotate 90° right
 Tooltip[C]=Rotate 90° right
-MimeType=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
+MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
 Capabilities=Writable
 Profiles=rotate;
   
