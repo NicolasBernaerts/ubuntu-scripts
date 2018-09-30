@@ -10,6 +10,10 @@
 logger "gnome-shell - gnome shell extensions"
 sudo apt-get -y install gnome-shell-extensions 
 
+# dconf editor
+logger "gnome-shell - dconf"
+sudo apt -y install dconf-tools
+
 # install nautilus-action (from PPA as official package is missing)
 logger "gnome-shell - nautilus-action"
 sudo add-apt-repository -y ppa:daniel-marynicz/filemanager-actions
