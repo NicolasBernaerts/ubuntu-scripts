@@ -24,10 +24,6 @@ sudo apt -y install xbacklight preload
 logger "utilities - package management"
 sudo apt -y install ppa-purge synaptic gdebi deborphan
 
-# dconf editor
-logger "utilities - dconf"
-sudo apt -y install dconf-tools
-
 # filesystem clients
 logger "utilities - filesystem"
 sudo apt -y install cifs-utils autofs exfat-fuse
