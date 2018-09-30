@@ -19,6 +19,7 @@ then
   ./firefox-extension-manager-install.sh
   rm ./firefox-extension-manager-install.sh
 fi
+
 # firefox gnomeshell extensions integration
 firefox-extension-manager --install --user --url https://addons.mozilla.org/en-US/firefox/addon/gnome-shell-integration/
 sudo apt -y install chrome-gnome-shell
