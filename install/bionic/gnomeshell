@@ -3,8 +3,8 @@
 # Script to configure GnomeShell environment for Bionic
 #
 # 02/06/2018, V1.0 - Migrate from Xenial
-# 30/09/2018, V1.1 - Activate hot corner
-# 30/09/2018, V1.2 - Dash-to-dock options
+# 30/09/2018, V1.1 - Activate hot corner and Dash-to-dock options
+# 30/09/2018, V1.2 - Update document templates declaration
 # -------------------------------------------------------
 
 # install gnome shell extensions
@@ -49,14 +49,14 @@ gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/Butto
 logger "gnome-shell - remove nautilus action root menu"
 echo "items-create-root-menu=false" >> $HOME/.config/filemanager-actions/filemanager-actions.conf
 
-# nautilus : add new empty files right click menu
-logger "gnome-shell - add new empty files right click menu"
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-install.sh
-if [ -f ./nautilus-newfile-install.sh ]
+# nautilus : declare new document templates
+logger "gnome-shell - declare new document templates"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-template-install.sh
+if [ -f ./nautilus-template-install.sh ]
 then 
-  chmod +x ./nautilus-newfile-install.sh
-  ./nautilus-newfile-install.sh
-  rm ./nautilus-newfile-install.sh
+  chmod +x ./nautilus-template-install.sh
+  ./nautilus-template-install.sh
+  rm ./nautilus-template-install.sh
 fi
 
 # gnomeshell extensions - console management
