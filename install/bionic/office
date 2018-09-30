@@ -3,6 +3,7 @@
 # Script to install office tools on Bionic
 #
 # 26/04/2018, V1.0 - Migrated from Xenial
+# 30/09/2018, V1.1 - Update Grisbi from unstable
 # -------------------------------------------------------
 
 # libreoffice PPA
@@ -12,7 +13,11 @@ sudo apt -y upgrade
 
 # grisbi
 logger "office - grisbi"
-sudo apt -y install grisbi
+wget -O grisbi-common.deb https://netcologne.dl.sourceforge.net/project/grisbi/grisbi%20unstable/1.1.93/Ubuntu%2018.04/grisbi-common_1.1.93-1_all.deb
+wget -O grisbi.deb https://vorboss.dl.sourceforge.net/project/grisbi/grisbi%20unstable/1.1.93/Ubuntu%2018.04/grisbi_1.1.93-1_amd64.deb
+sudo gdebi --n ./grisbi-common.deb
+sudo gdebi --n ./grisbi.deb
+rm ./grisbi-common.deb ./grisbi.deb
 
 # tesseract-ocr client and french langage
 logger "office - tesseract-ocr"
