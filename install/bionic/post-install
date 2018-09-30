@@ -5,6 +5,7 @@
 #  This script will run some commands as sudo
 # 
 #  29/05/2018, V1.0 - Migrated from Xenial
+#  30/09/2018, V1.1 - Add --no-junk option
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------
@@ -42,6 +43,7 @@ then
     echo "  --wifi            Add some tweaks for problematic wifi cards"
     echo "  --ssd             Add some tweaks for SSD disk"
     echo "  --hp-printer      Add HP printer GUI"
+    echo "  --no-junk         Remove junk packages"
     exit 1
 fi
 
@@ -53,6 +55,7 @@ do
         --wifi) WIFI="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
         --hp-printer) HPPRINTER="ok"; shift; ;;
+        --no-junk) NOJUNK="ok"; shift; ;;
         *) shift; ;;
     esac
 done
@@ -190,6 +193,15 @@ then
     logger "hp printer - hplip"
     sudo apt -y install hplip-gui
 fi
+
+# Junk removal
+if [ "${NOJUNK}" = "ok" ]
+then
+    # remove Amazon web launcher
+    logger "no junk - amazon"
+    sudo apt -y purge ubuntu-web-launchers
+fi
+
 
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
