@@ -3,6 +3,4 @@ Type=Menu
 Icon=pdf-menu
 Name[C]=Rotate PDF ...
 Tooltip[C]=Tools to rotate PDF files
-MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
-Capabilities=Writable
 ItemsList=pdf-rotate-left-action;pdf-rotate-right-action;pdf-rotate-updown-action;
