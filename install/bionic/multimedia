@@ -18,7 +18,7 @@ sudo apt -y install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter
 
 # CSS DVD decryption
 logger "multimedia - CSS DVD decryption"
-sudo DEBIAN_FRONTEND=noninteractive apt-get -yq install libdvd-pkg
+sudo DEBIAN_FRONTEND=noninteractive apt -yq install libdvd-pkg
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure libdvd-pkg
 
 # misc audio tools
