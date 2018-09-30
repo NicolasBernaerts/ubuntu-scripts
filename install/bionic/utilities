@@ -6,6 +6,10 @@
 # 08/09/2018, v1.1 - Add flatpak
 # -------------------------------------------------------
 
+# curl
+logger "internet - curl"
+sudo apt -y install curl
+
 # flatpak
 logger "utilities - flatpak"
 sudo apt -y install flatpak
