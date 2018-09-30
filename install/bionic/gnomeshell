@@ -4,6 +4,7 @@
 #
 # 02/06/2018, V1.0 - Migrate from Xenial
 # 30/09/2018, V1.1 - Activate hot corner
+# 30/09/2018, V1.2 - Dash-to-dock options
 # -------------------------------------------------------
 
 # install gnome shell extensions
@@ -20,7 +21,18 @@ sudo add-apt-repository -y ppa:daniel-marynicz/filemanager-actions
 sudo apt -y install filemanager-actions-nautilus-extension
 
 # activate hot corner
+logger "gnome-shell - hot corner"
 gsettings set org.gnome.shell enable-hot-corners true
+
+# move dash to dock bottom and change look & feel
+logger "gnome-shell - dash-to-dock options"
+gsettings set org.gnome.shell.extensions.dash-to-dock dock-position BOTTOM
+gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
+gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 48
+gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
+gsettings set org.gnome.shell.extensions.dash-to-dock autohide-in-fullscreen true
+gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode FIXED
+gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 0
 
 # gnome shell window bar icons
 logger "gnome-shell - gnome shell window bar icons"
