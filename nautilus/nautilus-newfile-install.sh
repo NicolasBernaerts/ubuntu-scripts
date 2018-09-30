@@ -12,12 +12,6 @@ sudo apt-get -y install nautilus-actions
 sudo wget -O /usr/local/bin/read-ini-file https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/read-ini-file
 sudo chmod +x /usr/local/bin/read-ini-file
 
-# install newfile scripts
-sudo wget -O /usr/local/bin/nautilus-newfile-declare https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-declare
-sudo wget -O /usr/local/bin/nautilus-newfile-action https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-action
-sudo chmod +x /usr/local/bin/nautilus-newfile-declare
-sudo chmod +x /usr/local/bin/nautilus-newfile-action
-
 # install .ini configuration file and empty document models
 mkdir --parents $HOME/.config/nautilus-actions/nautilus-newfile
 wget -O "$HOME/.config/nautilus-actions/nautilus-newfile.ini" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile.ini
@@ -25,6 +19,11 @@ wget -O "$HOME/.config/nautilus-actions/nautilus-newfile/Calc Sheet.ods" https:/
 wget -O "$HOME/.config/nautilus-actions/nautilus-newfile/Writer Document.odt" https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/nautilus/nautilus-newfile-models/Writer%20Document.odt?raw=true
 wget -O "$HOME/.config/nautilus-actions/nautilus-newfile/Bash Script.sh" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-models/Bash%20Script.sh
 wget -O "$HOME/.config/nautilus-actions/nautilus-newfile/Text File.txt" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-models/Text%20File.txt
+
+# install newfile scripts
+sudo wget -O /usr/local/bin/nautilus-newfile-declare https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-declare
+sudo wget -O /usr/local/bin/nautilus-newfile-action https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-newfile-action
+sudo chmod +x /usr/local/bin/nautilus-newfile-declare /usr/local/bin/nautilus-newfile-action
 
 # declare new empty files
 /usr/local/bin/nautilus-newfile-declare --install
