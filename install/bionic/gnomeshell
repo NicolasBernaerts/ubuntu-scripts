@@ -3,6 +3,7 @@
 # Script to configure GnomeShell environment for Bionic
 #
 # 02/06/2018, V1.0 - Migrate from Xenial
+# 30/09/2018, V1.1 - Activate hot corner
 # -------------------------------------------------------
 
 # install gnome shell extensions
@@ -13,6 +14,9 @@ sudo apt-get -y install gnome-shell-extensions
 logger "gnome-shell - nautilus-action"
 sudo add-apt-repository -y ppa:daniel-marynicz/filemanager-actions
 sudo apt -y install filemanager-actions-nautilus-extension
+
+# activate hot corner
+gsettings set org.gnome.shell enable-hot-corners true
 
 # gnome shell window bar icons
 logger "gnome-shell - gnome shell window bar icons"
