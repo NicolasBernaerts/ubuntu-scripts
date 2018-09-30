@@ -21,7 +21,8 @@ sudo add-apt-repository -y ppa:daniel-marynicz/filemanager-actions
 sudo apt -y install filemanager-actions-nautilus-extension
 
 # activate hot corner
-logger "gnome-shell - hot corner"
+logger "gnome-shell - top bar and hot corner"
+gsettings set org.gnome.desktop.interface clock-show-date true
 gsettings set org.gnome.shell enable-hot-corners true
 
 # move dash to dock bottom and change look & feel
@@ -40,6 +41,8 @@ gsettings set org.gnome.desktop.wm.preferences button-layout :minimize,maximize,
 
 # enable icons for buttons and for menus
 logger "gnome-shell - enable icons for buttons and for menus"
+gsettings set org.gnome.desktop.interface buttons-have-icons true
+gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # nautilus : remove nautilus action root menu
