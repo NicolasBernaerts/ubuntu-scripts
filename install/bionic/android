@@ -2,7 +2,7 @@
 # -------------------------------------------------------
 # Script to install android tools
 #
-# 02/06/201, V1.0 - Migrated from Xenial
+# 02/06/201, V1.0 - Migrated and tested from Xenial
 # -------------------------------------------------------
 
 # adb and fastboot
