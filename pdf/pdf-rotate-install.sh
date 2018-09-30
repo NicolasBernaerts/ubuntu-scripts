@@ -1,11 +1,8 @@
 #!/bin/sh
 # Install PDF rotation nautilus extension
 
-# if nautilus present, install nautilus-actions
-command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
-
 # main packages installation
-sudo apt-get -y install texlive-extra-utils
+sudo apt -y install texlive-extra-utils
 
 # show icon in menus (command different according to gnome version)
 gsettings set org.gnome.desktop.interface menus-have-icons true
