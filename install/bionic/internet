@@ -40,16 +40,18 @@ logger "internet - chromium & filezilla"
 sudo apt -y install chromium-browser filezilla
 
 # telegram
+logger "internet - telegram"
 flatpak -y install https://flathub.org/repo/appstream/org.telegram.desktop.flatpakref
 
 # skype
+logger "internet - skype"
 flatpak -y install https://flathub.org/repo/appstream/com.skype.Client.flatpakref
 
 # TeamViewer
 wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
 if [ -f ./teamviewer.deb ]
 then
-  logger "assistance - TeamViewer"
+  logger "internet - TeamViewer"
   sudo dpkg -i ./teamviewer.deb
   sudo apt -y --fix-broken install
   rm ./teamviewer.deb
