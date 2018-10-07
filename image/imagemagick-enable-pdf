@@ -15,3 +15,6 @@ sudo sed -i '/\"PS\"/d' "${CONF_FILE}"
 sudo sed -i '/\"EPS\"/d' "${CONF_FILE}"
 sudo sed -i '/\"PDF\"/d' "${CONF_FILE}"
 sudo sed -i '/\"XPS\"/d' "${CONF_FILE}"
+
+# message
+echo "Remove PDF restriction in ImageMagick"
