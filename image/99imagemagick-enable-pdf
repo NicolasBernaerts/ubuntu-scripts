@@ -2,4 +2,4 @@
 ## to re-declare the patch after apt upgrade
  
 # Verify ImageMagisk PDF generation patch when dpkg has been executed (i.e. after apt upgrade)
-DPkg::Post-Invoke { "/usr/local/bin/imagemagisk-enable-pdf"; };
+DPkg::Post-Invoke { "/usr/local/bin/imagemagick-enable-pdf"; };
