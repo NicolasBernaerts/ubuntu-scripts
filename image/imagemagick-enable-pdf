@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------------------------------
-#  Modify ImageMagisk configuration file to allow PDF and PostScript generation
+#  Modify ImageMagick configuration file to allow PDF and PostScript generation
 #
 #  Revision history :
 #    06/10/2018, V1.0 - Creation by N. Bernaerts
