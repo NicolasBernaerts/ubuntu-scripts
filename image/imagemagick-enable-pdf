@@ -19,7 +19,7 @@ then
   sudo sed -i '/\"PDF\"/d' "${CONF_FILE}"
   sudo sed -i '/\"XPS\"/d' "${CONF_FILE}"
 
-  # message
+  # log and display
   logger "ImageMagick PDF and PostScript restriction removal"
   echo "ImageMagick PDF and PostScript restriction removal"
 fi
