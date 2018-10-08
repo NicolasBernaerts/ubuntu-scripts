@@ -20,5 +20,5 @@ then
   sudo sed -i '/\"XPS\"/d' "${CONF_FILE}"
 
   # message
-  echo "Removed PDF restriction in ImageMagick"
+  echo "Removed PDF and PostScript restriction in ImageMagick"
 fi
