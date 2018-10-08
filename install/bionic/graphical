@@ -4,6 +4,7 @@
 #
 # 28/04/2018, V1.0 - Migrated from Xenial
 # 10/09/2018, V1.1 - Add darktable and krita
+# 08/10/2018, V1.2 - ImageMagick PDF and PostScript restriction removal
 # -------------------------------------------------------
 
 # screenshot apps
@@ -13,6 +14,17 @@ sudo apt -y install flameshot
 # misc graphical apps
 logger "graphical - graphical apps"
 sudo apt -y install exiv2 imagemagick dcraw
+
+# imagemagick
+sudo apt -y install imagemagick
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
+if [ -f ./imagemagisk-enable-pdf-install.sh ]
+then
+  logger "graphical - ImageMagick PDF and PostScript restriction removal"
+  chmod +x ./imagemagisk-enable-pdf-install.sh
+  ./imagemagisk-enable-pdf-install.sh
+  rm ./imagemagisk-enable-pdf-install.sh
+fi
 
 # hugin panorama
 logger "graphical - hugin panorama"
