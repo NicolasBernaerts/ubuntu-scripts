@@ -8,11 +8,23 @@
 # 13/08/2016, V1.3 - Add raw-thumbnailer
 # 15/09/2016, V1.4 - Add EXIF nautilus extensions
 # 22/08/2017, V1.5 - Add RAW processing tools
+# 08/10/2018, V1.6 - ImageMagick PDF and PostScript restriction removal
 # -------------------------------------------------------
 
 # misc graphical apps
 logger "graphical - graphical apps"
-sudo apt-get -y install exiv2 gcolor2 imagemagick dcraw
+sudo apt-get -y install exiv2 gcolor2 dcraw
+
+# imagemagick
+sudo apt -y install imagemagick
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
+if [ -f ./imagemagisk-enable-pdf-install.sh ]
+then
+  logger "graphical - ImageMagick PDF and PostScript restriction removal"
+  chmod +x ./imagemagisk-enable-pdf-install.sh
+  ./imagemagisk-enable-pdf-install.sh
+  rm ./imagemagisk-enable-pdf-install.sh
+fi
 
 # eye of gnome viewer
 logger "graphical - eye of gnome viewer"
