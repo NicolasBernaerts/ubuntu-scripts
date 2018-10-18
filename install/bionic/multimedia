@@ -5,6 +5,7 @@
 # 04/06/2018, V1.0 - Migrated from Xenial
 # 10/08/2018, V1.1 - Add kdenlive and openshot
 # 30/09/2018, V1.2 - Update DVD decryption to libdvd-pkg
+# 17/10/2018, V1.3 - Add asunder CD ripping
 # -------------------------------------------------------
 
 # auto-accept mscorefonts eula and install it
@@ -25,9 +26,13 @@ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure libdvd-pkg
 logger "multimedia - audio tools"
 sudo apt -y install pavucontrol soundconverter
 
+# CD ripping
+logger "multimedia - cd ripping"
+sudo apt -y install asunder lame
+
 # mp3 tools
 logger "multimedia - mp3 tools"
-sudo apt -y install easytag id3v2 lame
+sudo apt -y install easytag id3v2
 
 # easymp3gain
 sudo add-apt-repository -y ppa:flexiondotorg/audio
