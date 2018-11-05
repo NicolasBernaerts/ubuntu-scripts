@@ -5,7 +5,7 @@
 command -v nautilus >/dev/null 2>&1 || { echo "Nautilus has not been detected. Please install it first."; exit 1; }
 
 # install python extension management for nautilus
-sudo apt-get install python-nautilus
+sudo apt-get install python-nautilus python3-gi gir1.2-gexiv2-0.10 python-geopy
 
 # if needed, create extensions directory
 mkdir --parents "$HOME/.local/share/nautilus-python/extensions"
