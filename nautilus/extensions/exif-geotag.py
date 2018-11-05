@@ -6,7 +6,7 @@
 #
 # Revision history :
 #   30/08/2016, V1.0 - Creation by N. Bernaerts
-#   04/11/2018, V1.1 - Add useragent to Nominatim
+#   05/11/2018, V1.1 - Add useragent to Nominatim
 # ---------------------------------------------------
 
 # import libraries
@@ -17,6 +17,7 @@ import re
 import pygtk
 import gi
 import codecs
+import exiftool
 gi.require_version("Nautilus", "3.0")
 from gi.repository import Nautilus, GObject, Gtk
 gi.require_version("GExiv2", "0.10")
@@ -82,26 +83,36 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
     mimetype = file.get_mime_type().split('/')
     if mimetype[0] in ('image'):
     
-      # read data from APK file
-      #filename = urllib.unquote(file.get_uri()[7:])
+      # get filename
       uri = file.get_uri()
       gvfs = Gio.Vfs.get_default()
       filename = gvfs.get_file_for_uri(uri).get_path()
 
-      # get metadata
-      self.tags = GExiv2.Metadata(filename)
-
-      # get GPS position from metadata
-      posGPS = self.tags.get_gps_info()
-      longitude = posGPS[0]
-      latitude = posGPS[1]
-      altitude = posGPS[2]
+      # get GPS position
+      with exiftool.ExifTool() as et:
+        # read GPS data
+        strLatitude = str(et.get_tag("EXIF:GPSLatitude", filename))
+        refLatitude = str(et.get_tag("EXIF:GPSLatitudeRef", filename))
+        strLongitude = str(et.get_tag("EXIF:GPSLongitude", filename))
+        refLongitude = str(et.get_tag("EXIF:GPSLongitudeRef", filename))
+        strAltitude = str(et.get_tag("EXIF:GPSAltitude", filename))
 
       # if no GPS data, return 
-      if latitude == 0 and longitude == 0: return
+      if strLatitude == "None": return
+      if strLongitude == "None": return
+
+      # trunk latitude to 6 digits and sign it
+      parts = strLatitude.split(".")
+      strLatitude = parts[0] + "." + parts[1][:6]
+      if refLatitude == "S": strLatitude = '-' + strLatitude
+
+      # trunk longitude to 6 digits and sign it
+      parts = strLongitude.split(".")
+      strLongitude = parts[0] + "." + parts[1][:6]
+      if refLongitude == "W": strLongitude = '-' + strLongitude
 
       # generate GPS position
-      strPosition = str(latitude) + ',' + str(longitude)
+      strPosition = strLatitude + ',' + strLongitude
 
       # generate Google Maps links
       urlMaps = 'https://www.google.com/maps/place/' + strPosition + '/@' + strPosition + ',' + zoomMap + 'z/'
@@ -110,11 +121,22 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       # generate cache filenames
       dirHomeCache = os.environ['HOME'] + '/.cache'
       dirGeotagCache = os.getenv('XDG_CACHE_HOME', dirHomeCache) + '/geotag'
-      fileMap = dirGeotagCache + '/map_' + str(longitude) + '_' + str(latitude) + '_' + sizeMap + '.png'
-      fileDesc = dirGeotagCache + '/map_' + str(longitude) + '_' + str(latitude) + '.txt'
 
       # if cache directory doesn't exist, create it
-      if not os.path.exists(dirGeotagCache): os.makedirs(dirGeotagCache)
+      if not os.path.exists(dirGeotagCache):
+        os.makedirs(dirGeotagCache)
+
+      # generate cache file names
+      fileMap = dirGeotagCache + '/map_' + strLatitude + '_' + strLongitude + '_' + sizeMap + '.png'
+      fileDesc = dirGeotagCache + '/map_' + strLatitude + '_' + strLongitude + '.txt'
+      fileLog = dirGeotagCache + '/map_' + strLatitude + '_' + strLongitude + '.log'
+
+      # write log
+      file = codecs.open(fileLog, "w", "utf-8")
+      file.write(urlMaps)
+      file.write(" ")
+      file.write(urlJpeg)
+      file.close()
 
       # if description is not in the cache, retrieve it from Nominatim
       if not os.path.exists(fileDesc):
@@ -135,7 +157,8 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
         file.close()
 
       # if map is not in the cache, retrieve it from Google Maps
-      if not os.path.exists(fileMap): urllib.urlretrieve(urlJpeg, fileMap)
+      if not os.path.exists(fileMap): 
+        urllib.urlretrieve(urlJpeg, fileMap)
 
       # create table
       self.table = Gtk.Table(4, 3)
@@ -154,9 +177,9 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       self.SetLabel("<b>Longitude</b>", 0, 0, 1, "center")
       self.SetLabel("<b>Latitude</b>", 0, 1, 1, "center")
       self.SetLabel("<b>Altitude</b>", 0, 2, 1, "center")
-      self.SetLabel(str(longitude), 1, 0, 1, "center")
-      self.SetLabel(str(latitude), 1, 1, 1, "center")
-      self.SetLabel(str(altitude), 1, 2, 1, "center")
+      self.SetLabel(strLongitude, 1, 0, 1, "center")
+      self.SetLabel(strLatitude, 1, 1, 1, "center")
+      self.SetLabel(strAltitude, 1, 2, 1, "center")
       self.SetImage(fileMap, 2, 0, 3, "center")
       self.SetLabel("<a href='" + urlMaps + "'>" + strDescription + "</a>", 3, 0, 3, "center")
  
