@@ -70,12 +70,12 @@ then
 fi
 
 # nautilus : EXIF tags extensions
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/nautilus-tags-install.sh
-if [ -f ./nautilus-tags-install.sh ]
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/nautilus-exif-install.sh
+if [ -f ./nautilus-exif-install.sh ]
 then 
-  chmod +x ./nautilus-tags-install.sh
-  ./nautilus-tags-install.sh
-  rm ./nautilus-tags-install.sh
+  chmod +x ./nautilus-exif-install.sh
+  ./nautilus-exif-install.sh
+  rm ./nautilus-exif-install.sh
 fi
 
 # gnomeshell extensions - console management
