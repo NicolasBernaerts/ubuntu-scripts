@@ -5,6 +5,7 @@
 # 02/06/2018, V1.0 - Migrate from Xenial
 # 30/09/2018, V1.1 - Activate hot corner and Dash-to-dock options
 # 30/09/2018, V1.2 - Update document templates declaration
+# 05/11/2018, V1.3 - Add Nautilus APK and Exif extensions
 # -------------------------------------------------------
 
 # install gnome shell extensions
@@ -59,6 +60,24 @@ then
   rm ./nautilus-template-install.sh
 fi
 
+# nautilus : APK extensions
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/nautilus-apk-install.sh
+if [ -f ./nautilus-apk-install.sh ]
+then 
+  chmod +x ./nautilus-apk-install.sh
+  ./nautilus-apk-install.sh
+  rm ./nautilus-apk-install.sh
+fi
+
+# nautilus : EXIF tags extensions
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/nautilus-tags-install.sh
+if [ -f ./nautilus-tags-install.sh ]
+then 
+  chmod +x ./nautilus-tags-install.sh
+  ./nautilus-tags-install.sh
+  rm ./nautilus-tags-install.sh
+fi
+
 # gnomeshell extensions - console management
 logger "gnome-shell - console management of gnomeshell extensions"
 sudo wget -O /usr/local/bin/gnomeshell-extension-manage https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-manage
@@ -74,4 +93,3 @@ gnomeshell-extension-manage --install --user --extension-id 750 --version latest
 gnomeshell-extension-manage --install --user --extension-id 906 --version latest
 # Refresh Wifi Connections : adds a refresh button to the Wifi connection selection dialog
 gnomeshell-extension-manage --install --user --extension-id 905 --version latest
-
