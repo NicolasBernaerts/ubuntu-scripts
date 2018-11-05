@@ -6,6 +6,7 @@
 #
 # Revision history :
 #   30/08/2016, V1.0 - Creation by N. Bernaerts
+#   04/11/2018, V1.1 - Add useragent to Nominatim
 # ---------------------------------------------------
 
 # import libraries
@@ -118,7 +119,7 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       # if description is not in the cache, retrieve it from Nominatim
       if not os.path.exists(fileDesc):
         # retrieve place description
-        geolocator = Nominatim()
+        geolocator = Nominatim(user_agent="nautilus-exif-geotag")
         location = geolocator.reverse(strPosition)
         strDescription = location.address
         strDescription = strDescription[:90]
