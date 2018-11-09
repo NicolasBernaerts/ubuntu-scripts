@@ -26,6 +26,10 @@ logger "gnome-shell - top bar and hot corner"
 gsettings set org.gnome.desktop.interface clock-show-date true
 gsettings set org.gnome.shell enable-hot-corners true
 
+# hide hidden files by defult
+logger "gnome-shell - hidden files"
+gsettings set org.gtk.Settings.FileChooser show-hidden false
+
 # move dash to dock bottom and change look & feel
 logger "gnome-shell - dash-to-dock options"
 gsettings set org.gnome.shell.extensions.dash-to-dock dock-position BOTTOM
