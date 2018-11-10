@@ -10,7 +10,8 @@
 #  17/07/2018  V1.0 - Complete rewrite of mozilla-extension-manager, thanks to Michael Courvoisier
 #                     For older Firefox versions, use mozilla-extension-manager
 #                     This script doesn't handle Thunderbird extensions anymore.
-#  15/09/2018  V1.1 - Automatic creation of user profile extension path, thanks to Michael Courvoisier
+#  15/09/2018  V1.1 - Automatic creation of user profile extension path (thanks to Michael Courvoisier)
+#  15/09/2018  V1.2 - Add --allow-create to create user profile (idea from Michael Courvoisier)
 # --------------------------------------------------------------------------------------------------
 
 # -------------------------------------------------------
@@ -38,6 +39,7 @@ then
 	echo "  --list            List installed extensions"
 	echo "  --system          Install/remove in system space (under /usr)"
 	echo "  --user            By default, installation is in user space (under $HOME)"
+	echo "  --allow-create    If needed, allow creation of user profile with a first Firefox launch"
 	echo "  --path <path>     Force extension installation path"
 	echo "  --uid <uid>       UID of extension"
 	echo "  --url <url>       URL of Mozilla add-on page (page where you get the download button)"
@@ -48,15 +50,16 @@ fi
 while test $# -gt 0
 do
 	case "$1" in
-		"--install")      EXT_ACTION="install"; shift; ;;
-		"--remove")       EXT_ACTION="remove"; shift; ;;
-		"--list")         EXT_ACTION="list"; shift; ;;
-		"--system")       EXT_TYPE="system"; shift; ;;
-		"--user")         EXT_TYPE="user"; shift; ;;
-		"--path")         shift; EXT_PATH="$1"; shift; ;;
-		"--uid")          shift; EXT_UID="$1"; shift; ;;
-		"--url")          shift; EXT_URL="$1"; shift; ;;
-		*)                echo "unknown parameter $1"; shift; ;;
+		"--install")        EXT_ACTION="install"; shift; ;;
+		"--remove")         EXT_ACTION="remove"; shift; ;;
+		"--list")           EXT_ACTION="list"; shift; ;;
+		"--system")         EXT_TYPE="system"; shift; ;;
+		"--user")           EXT_TYPE="user"; shift; ;;
+		"--allow-create")   ALLOW="create"; shift; ;;
+		"--path")           shift; EXT_PATH="$1"; shift; ;;
+		"--uid")            shift; EXT_UID="$1"; shift; ;;
+		"--url")            shift; EXT_URL="$1"; shift; ;;
+		*)                  echo "unknown parameter $1"; shift; ;;
 	esac
 done
 
@@ -83,10 +86,23 @@ TMP_XPI="${TMP_DIR}/addon.xpi"
 # set user space installation path
 USER_HOME="$HOME/.mozilla/firefox"
 
+# if user home environment absent, launch firefox for the first time to create it (if allowed)
+if [ ! -d "${USER_HOME}" -a "${ALLOW}" = "create" ]
+then
+	# launch firefox
+	firefox &
+	
+	# wait for 5 seconds to allow profile initialisation
+	sleep 5
+	
+	# kill firefox
+	killall firefox
+fi
+
 # get profile path
 USER_PROFILE=$(grep "Path=" "${USER_HOME}/profiles.ini" | head -n 1 | cut -d'=' -f2)
- 
-# if user profile has been created,
+
+# if user profile is found
 if [ "${USER_PROFILE}" != "" ]
 then
 	# set user profile path
