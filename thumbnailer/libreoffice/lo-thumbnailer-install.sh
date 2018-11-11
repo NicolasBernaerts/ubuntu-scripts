@@ -24,7 +24,17 @@ sudo chmod +rx /usr/local/sbin/lo-thumbnailer
 sudo wget -O /usr/share/thumbnailers/lo.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo.thumbnailer
 
 # if present, disable gsf-office.thumbnailer (used in UbuntuGnome 16.04)
-[ -f /usr/share/thumbnailers/gsf-office.thumbnailer ] && sudo mv /usr/share/thumbnailers/gsf-office.thumbnailer /usr/share/thumbnailers/gsf-office.thumbnailer.org
+[ -f "/usr/share/thumbnailers/gsf-office.thumbnailer" ] && sudo mv /usr/share/thumbnailers/gsf-office.thumbnailer /usr/share/thumbnailers/gsf-office.thumbnailer.org
+
+# if apparmor installed,
+if [ -d "/etc/apparmor.d" ]
+then
+  # declare the profile
+  sudo wget -O /etc/apparmor.d/usr.local.sbin.lo-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/usr.local.sbin.lo-thumbnailer
+
+  # reload apparmor profiles
+  sudo service apparmor reload
+fi
 
 # stop nautilus
 nautilus -q
