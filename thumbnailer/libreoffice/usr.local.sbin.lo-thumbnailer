@@ -25,6 +25,7 @@
   /etc/magic r,
   /tmp/** rw,
   /usr/bin/* mixr,
+  /usr/bin/gio Uxr,
   /usr/bin/gvfs-copy Uxr,
   /usr/bin/mimetype Uxr,
   /usr/bin/unzip Uxr,
