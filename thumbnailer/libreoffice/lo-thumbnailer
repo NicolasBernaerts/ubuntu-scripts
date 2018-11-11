@@ -5,8 +5,8 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
 # Depends on :
-#   * gvfs-copy (gvfs-bin package)
-#   * libreoffice
+#   * gio or gvfs-copy (gvfs-bin package)
+#   * libreoffice or soffice
 #   * mimetype
 #   * unzip
 #   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
@@ -20,6 +20,7 @@
 # 07/10/2017, V2.1 - Speedup with netpbm tools
 # 09/03/2018, V3.0 - Add flat XML files support
 # 12/03/2018, V3.1 - Handle libreoffice and soffice binaries
+# 08/11/2018, V3.2 - Handle gio and gvfs-copy tools
 # ---------------------------------------------------
 
 # check libreoffice availability
@@ -27,8 +28,12 @@ CMD_OFFICE="libreoffice"
 command -v "${CMD_OFFICE}" >/dev/null 2>&1 || CMD_OFFICE="soffice"
 command -v "${CMD_OFFICE}" >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
 
+# check gio availability
+CMD_COPY="gio"
+command -v "${CMD_COPY}" >/dev/null 2>&1 || CMD_COPY="gvfs-copy"
+command -v "${CMD_COPY}" >/dev/null 2>&1 || { echo "[error] gio or gvfs-copy missing"; exit 1; }
+
 # check tools availability
-command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
 command -v mimetype >/dev/null 2>&1 || { echo "[error] mimetype missing"; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "[error] unzip missing"; exit 1; }
 command -v pbmmake >/dev/null 2>&1 || { echo "[error] pbmmake missing"; exit 1; }
@@ -42,6 +47,8 @@ SCRIPT_NAME=$(basename $0)
 FILE_URI="$1"
 FILE_THUMB="$2"
 SIZE="$3"
+
+echo "$FILE_THUMB" > /tmp/thumb.log
 
 # get filename extension
 FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
@@ -63,12 +70,14 @@ PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
 URI_TYPE="${FILE_URI:0:4}"
 if [ "${URI_TYPE}" = "file" ]
 then
-	# convert URI to local path and extract local path
+	# convert URI to local path
 	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
+
+	# extract local path
 	FILE_LOCAL="${FILE_PATH:7}"
 else
 	# copy input file to temporary local file
-	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
+	[ "${CMD_COPY}" = "gio" ] && "${CMD_COPY}" copy "${FILE_URI}" "${TMP_LOCAL}" || "${CMD_COPY}" "${FILE_URI}" "${TMP_LOCAL}"
 	FILE_LOCAL="${TMP_LOCAL}"	
 fi
 
