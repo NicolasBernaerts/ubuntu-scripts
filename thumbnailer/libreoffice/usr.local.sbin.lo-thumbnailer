@@ -1,0 +1,64 @@
+# syntax=apparmor
+# Author: Nicolas Bernaerts <nicolas.bernaerts@laposte.net>
+
+#include <tunables/global>
+
+/usr/local/sbin/lo-thumbnailer {
+  #include <abstractions/base>
+  #include <abstractions/bash>
+  #include <abstractions/perl>
+  #include <abstractions/dbus>
+  #include <abstractions/dbus-session>
+  #include <abstractions/dbus-accessibility>
+  #include <abstractions/ibus>
+  #include <abstractions/nameservice>
+
+  # TCP/UDP network access for NFS
+  network inet  stream,
+  network inet6 stream,
+  network inet  dgram,
+  network inet6 dgram,
+
+  # thumbnailer tools
+  /bin/* mixr,
+  /dev/tty rw,
+  /etc/magic r,
+  /tmp/** rw,
+  /usr/bin/* mixr,
+  /usr/bin/gvfs-copy Uxr,
+  /usr/bin/mimetype Uxr,
+  /usr/bin/unzip Uxr,
+  /usr/bin/pbmmake Uxr,
+  /usr/bin/pngtopnm Uxr,
+  /usr/bin/pnmscalefixed Uxr,
+  /usr/bin/pnmcomp Uxr,
+  /usr/bin/pnmtopng Uxr,
+  /usr/bin/libreoffice Uxr,
+  /usr/bin/soffice Uxr,
+  /usr/lib{,32,64}/** mr,
+  /usr/lib/libreoffice/program/* Uxr,
+  /usr/local/sbin/lo-thumbnailer ixr,
+  /usr/local/sbin/lo-thumbnailer.res/* r,
+  /usr/share/** r,
+
+  # home cache and shared objects
+  @{HOME}/.cache/** ixrw,
+  @{HOME}/.local/share/** r,
+
+  # all supported file formats
+  /**.[oO][dD][tT]       r,
+  /**.[oO][tT][tT]       r,
+  /**.[oO][dD][mM]       r,
+  /**.[oO][tT][hH]       r,
+  /**.[oO][dD][sS]       r,
+  /**.[oO][tT][sS]       r,
+  /**.[oO][dD][gG]       r,
+  /**.[oO][tT][gG]       r,
+  /**.[oO][dD][pP]       r,
+  /**.[oO][tT][pP]       r,
+  /**.[fF][oO][dD][tT]   r,
+  /**.[fF][oO][dD][sS]   r,
+  /**.[fF][oO][dD][gG]   r,
+  /**.[fF][oO][dD][pP]   r,
+
+}
