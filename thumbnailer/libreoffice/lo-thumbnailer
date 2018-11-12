@@ -48,8 +48,6 @@ FILE_URI="$1"
 FILE_THUMB="$2"
 SIZE="$3"
 
-echo "$FILE_THUMB" > /tmp/thumb.log
-
 # get filename extension
 FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
 [ "${FILE_EXT}" = "${FILE_URI}" ] && FILE_EXT="none"
