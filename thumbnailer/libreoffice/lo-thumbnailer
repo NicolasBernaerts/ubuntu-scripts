@@ -52,7 +52,7 @@ SIZE="$3"
 
 echo "$1 $2 $3" >> /tmp/lo.txt
 
-# script nme
+# script name
 SCRIPT_NAME=$(basename $0)
 
 # system ressources
@@ -71,7 +71,6 @@ FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
 TMP_DIR=$(mktemp -t -d "thumb-lo-XXXXXXXX")
 TMP_LOCAL="${TMP_DIR}/thumbnail.${FILE_EXT}"
 TMP_PNM="${TMP_DIR}/thumbnail.pnm"
-
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
