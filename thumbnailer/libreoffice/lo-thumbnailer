@@ -42,11 +42,26 @@ command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missin
 command -v pnmcomp >/dev/null 2>&1 || { echo "[error] pnmcomp missing"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 
+# check params
+[ "$3" = "" ] && { echo "[error] 3 params are needed : file-uri file-thumb thumb-size"; exit 1; }
+
 # get parameters
-SCRIPT_NAME=$(basename $0)
 FILE_URI="$1"
 FILE_THUMB="$2"
 SIZE="$3"
+
+echo "$1 $2 $3" >> /tmp/lo.txt
+
+# script nme
+SCRIPT_NAME=$(basename $0)
+
+# system ressources
+PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
+[ ! -d "${PATH_SYSTEM}" ] && { echo "[error] directory ${PATH_SYSTEM} missing"; exit 1; }
+
+# cache directory
+PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
+[ ! -d "${PATH_CACHE}" ] && mkdir --parent "${PATH_CACHE}"
 
 # get filename extension
 FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
@@ -57,12 +72,6 @@ TMP_DIR=$(mktemp -t -d "thumb-lo-XXXXXXXX")
 TMP_LOCAL="${TMP_DIR}/thumbnail.${FILE_EXT}"
 TMP_PNM="${TMP_DIR}/thumbnail.pnm"
 
-# set working path
-PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
-PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
-
-# if needed, create cache directory
-[ ! -d "${PATH_CACHE}" ] && mkdir --parent "${PATH_CACHE}"
 
 # if file is a remote one
 URI_TYPE="${FILE_URI:0:4}"
