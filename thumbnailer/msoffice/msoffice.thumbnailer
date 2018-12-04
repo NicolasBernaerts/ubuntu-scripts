@@ -1,4 +1,3 @@
 [Thumbnailer Entry]
-TryExec=/usr/local/sbin/msoffice-thumbnailer
-Exec=/usr/local/sbin/msoffice-thumbnailer %u %o %s
+Exec=/bin/bash /usr/local/sbin/msoffice-thumbnailer %u %o %s
 MimeType=application/msword;application/vnd.ms-word;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.openxmlformats-officedocument.spreadsheetml.template;application/vnd.ms-powerpoint;application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.openxmlformats-officedocument.presentationml.template;application/vnd.openxmlformats-officedocument.presentationml.slideshow;application/ms-office;
