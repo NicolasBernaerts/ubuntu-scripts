@@ -5,7 +5,6 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
 # Depends on :
-#   * gio or gvfs-copy (gvfs-bin package)
 #   * libreoffice or soffice
 #   * mimetype
 #   * unzip
@@ -45,9 +44,6 @@ command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1
 FILE_LOCAL="$1"
 FILE_THUMB="$2"
 SIZE="$3"
-
-# script name
-SCRIPT_NAME=$(basename $0)
 
 # system ressources
 PATH_SYSTEM="/usr/local/sbin/lo-thumbnailer.res"
