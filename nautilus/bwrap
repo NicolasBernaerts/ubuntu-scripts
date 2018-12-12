@@ -1,0 +1,22 @@
+#!/bin/bash
+# bwrap wrapper to correct nautilus 3.26.4+ bug for external thumbnailers under debian based distros
+# replaces --symlink calls with equivalent --ro-bind calls
+
+# initialize params array
+ARR_PARAM=( )
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+	case "$1" in
+		# --symlink : convert to --ro-bind
+		"--symlink") shift; shift; ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "$1" "$1" ); shift; ;;
+		# --seccomp : remove
+		# "--seccomp") shift; shift; ;;
+		# other : add param
+		*) ARR_PARAM=( "${ARR_PARAM[@]}" "$1" ); shift; ;;
+	esac
+done
+
+# call bubblewrap
+/usr/bin/bwrap "${ARR_PARAM[@]}"
