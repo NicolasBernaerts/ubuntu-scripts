@@ -5,7 +5,6 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/325-gnome-shell-generate-msoffice-thumbnail-nautilus
 # Depends on :
-#   * gvfs-copy (gvfs-bin package)
 #   * libreoffice
 #   * mimetype (libfile-mimeinfo-perl package)
 #   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
@@ -19,22 +18,16 @@
 # 31/07/2015, V2.1 - More robust unoconv command line (thanks to Vaderqk)
 # 07/10/2017, V2.2 - Speedup with netpbm tools
 # 10/03/2018, V3.0 - Switch from unoconv to libreoffice in headless mode
-# 06/11/2018, V3.1 - Handle libreoffice and soffice binaries
-# 08/11/2018, V3.2 - Handle gio and gvfs-copy tools
+# 15/03/2018, V3.1 - Handle libreoffice and soffice binaries
+# 09/12/2018, V3.2 - Rework for bubblewrap compatibility (thanks to Li Chong)
 # ---------------------------------------------------
 
-# check libreoffice availability
+# check libreoffice availability (binary can be either libreoffice or soffice)
 CMD_OFFICE="libreoffice"
 command -v "${CMD_OFFICE}" >/dev/null 2>&1 || CMD_OFFICE="soffice"
 command -v "${CMD_OFFICE}" >/dev/null 2>&1 || { echo "[error] libreoffice missing"; exit 1; }
 
-# check gio availability
-CMD_COPY="gio"
-command -v "${CMD_COPY}" >/dev/null 2>&1 || CMD_COPY="gvfs-copy"
-command -v "${CMD_COPY}" >/dev/null 2>&1 || { echo "[error] gio or gvfs-copy missing"; exit 1; }
-
 # check tools availability
-command -v mimetype >/dev/null 2>&1 || { echo "[error] mimetype missing"; exit 1; }
 command -v pbmmake >/dev/null 2>&1 || { echo "[error] pbmmake missing"; exit 1; }
 command -v pngtopnm >/dev/null 2>&1 || { echo "[error] pngtopnm missing"; exit 1; }
 command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
@@ -42,47 +35,21 @@ command -v pnmcomp >/dev/null 2>&1 || { echo "[error] pnmcomp missing"; exit 1; 
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 
 # check params
-[ "$3" = "" ] && { echo "[error] 3 params are needed : file-uri file-thumb thumb-size"; exit 1; }
+[ "$3" = "" ] && { echo "[error] 3 params are needed : file file-thumb thumb-size"; exit 1; }
 
 # get parameters
-FILE_URI="$1"
+FILE_LOCAL="$1"
 FILE_THUMB="$2"
 SIZE="$3"
 
-# script name
-SCRIPT_NAME=$(basename $0)
-
-# system ressources
-PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
+# set working path
+PATH_SYSTEM="/usr/local/sbin/msoffice-thumbnailer.res"
 [ ! -d "${PATH_SYSTEM}" ] && { echo "[error] directory ${PATH_SYSTEM} missing"; exit 1; }
-
-# cache directory
-PATH_CACHE="$HOME/.cache/${SCRIPT_NAME}"
-[ ! -d "${PATH_CACHE}" ] && mkdir --parent "${PATH_CACHE}"
-
-# get filename extension
-FILE_EXT=$(echo "${FILE_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
-[ "${FILE_EXT}" = "${FILE_URI}" ] && FILE_EXT="none"
 
 # generate temporary files and directory
 TMP_DIR=$(mktemp -t -d "thumb-ms-XXXXXXXX")
-TMP_LOCAL="${TMP_DIR}/thumbnail.${FILE_EXT}"
-TMP_PNM="${TMP_DIR}/thumbnail.pnm"
-
-# if file is a remote one
-URI_TYPE="${FILE_URI:0:4}"
-if [ "${URI_TYPE}" = "file" ]
-then
-	# convert URI to local path
-	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
-
-	# extract local path
-	FILE_LOCAL="${FILE_PATH:7}"
-else
-	# copy input file to temporary local file
-	[ "${CMD_COPY}" = "gio" ] && "${CMD_COPY}" copy "${FILE_URI}" "${TMP_LOCAL}" || "${CMD_COPY}" "${FILE_URI}" "${TMP_LOCAL}"
-	FILE_LOCAL="${TMP_LOCAL}"	
-fi
+TMP_PNM="${TMP_DIR}/original.pnm"
+TMP_THUMB="${TMP_DIR}/thumbnail.pnm"
 
 # get the file mime type (application/msword, ...)
 MIMETYPE=$(mimetype -b "${FILE_LOCAL}")
@@ -94,14 +61,14 @@ case ${MIMETYPE} in
 	"application/msword" | \
 	"application/vnd.ms-word" | \
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document" )
-	LIBREOFFICE_TYPE="odt"
+	DOC_TYPE="odt"
 	;;
 
 	# spreadsheet
 	"application/vnd.ms-excel" | \
 	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" | \
 	"application/vnd.openxmlformats-officedocument.spreadsheetml.template" )
-	LIBREOFFICE_TYPE="ods"
+	DOC_TYPE="ods"
 	;;
 
 	# presentation
@@ -109,29 +76,30 @@ case ${MIMETYPE} in
 	"application/vnd.openxmlformats-officedocument.presentationml.presentation" | \
 	"application/vnd.openxmlformats-officedocument.presentationml.template" | \
 	"application/vnd.openxmlformats-officedocument.presentationml.slideshow" )
-	LIBREOFFICE_TYPE="odp"
+	DOC_TYPE="odp"
 	;;
 
 	* )
 	;;
 esac
 
-# if needed, create tag and mask of document type
-DOC_TAG="${PATH_CACHE}/${LIBREOFFICE_TYPE}.pnm"
-DOC_ALPHA="${PATH_CACHE}/${LIBREOFFICE_TYPE}-alpha.pnm"
-[ ! -f "${DOC_TAG}" ] && pngtopnm "${PATH_SYSTEM}/msoffice-${LIBREOFFICE_TYPE}.png" > "${DOC_TAG}"
-[ ! -f "${DOC_ALPHA}" ] && pngtopnm -alpha "${PATH_SYSTEM}/msoffice-${LIBREOFFICE_TYPE}.png" > "${DOC_ALPHA}"
+# get document tag and mask
+DOC_TAG="${PATH_SYSTEM}/msoffice-${DOC_TYPE}.pnm"
+DOC_ALPHA="${PATH_SYSTEM}/msoffice-${DOC_TYPE}-alpha.pnm"
 
 # convert first page to PNG
-"${CMD_OFFICE}" "-env:UserInstallation=file://${TMP_DIR}" --headless --convert-to png --outdir "${TMP_DIR}" "${FILE_LOCAL}"
+${CMD_OFFICE} "-env:UserInstallation=file://${TMP_DIR}" --headless --convert-to png --outdir "${TMP_DIR}" "${FILE_LOCAL}"
 
 # convert PNG to PNM
 FILE_NAME=$(basename "${FILE_LOCAL}")
 FILE_NAME="${FILE_NAME%.*}"
 pngtopnm "${TMP_DIR}/${FILE_NAME}.png" | pnmscalefixed -xysize 256 256 - > "${TMP_PNM}"
 
-# generate thumbnail
-pbmmake -white 188 256 | pnmcomp -xoff 2 -yoff=52 "${TMP_PNM}" - | pnmcomp -align left -valign top -alpha "${DOC_ALPHA}" "${DOC_TAG}" - | pnmscalefixed -xysize ${SIZE} ${SIZE} - | pnmtopng -downscale - > "${FILE_THUMB}"
+# generate 256x256 thumbnail with masks
+pbmmake -white 188 256 | pnmcomp -xoff 2 -yoff=52 "${TMP_PNM}" - | pnmcomp -align left -valign top -alpha "${DOC_ALPHA}" "${DOC_TAG}" - > "${TMP_THUMB}"
+
+# downscale to final size and convert to png
+pnmscalefixed -xysize ${SIZE} ${SIZE} "${TMP_THUMB}" | pnmtopng -downscale - > "${FILE_THUMB}"
 
 # remove temporary directory
 rm -r "${TMP_DIR}"
