@@ -1,5 +1,5 @@
-#!/bin/sh
-# Ms Office thumbnailer
+#!/bin/bash
+# Ms Office thumbnailer installation script
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
@@ -8,11 +8,27 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 # install tools
 sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin netpbm
 
+# install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
+sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
+sudo chmod +rx /usr/local/bin/bwrap
+
+# create icons ressource directory
+ROOT_DOCTYPE="/usr/local/sbin/msoffice-thumbnailer.res"
+sudo mkdir "${ROOT_DOCTYPE}"
+
 # install thumbnailer icons
-sudo mkdir /usr/local/sbin/msoffice-thumbnailer.res
-sudo wget -O /usr/local/sbin/msoffice-thumbnailer.res/msoffice-odt.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-odt.png
-sudo wget -O /usr/local/sbin/msoffice-thumbnailer.res/msoffice-ods.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-ods.png
-sudo wget -O /usr/local/sbin/msoffice-thumbnailer.res/msoffice-odp.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-odp.png
+ARR_DOCTYPE=( "odt" "ods" "odp" )
+for DOCTYPE in "${ARR_DOCTYPE[@]}"
+do
+	# download document type icon
+	sudo wget -O "${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.png" "https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-${DOCTYPE}.png"
+
+	# generate mask
+	sudo bash -c "pngtopnm ${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.png | pnmscalefixed -xysize 256 256 - > ${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.pnm" 
+
+	# generate alpha mask
+	sudo bash -c "pngtopnm -alpha ${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.png | pnmscalefixed -xysize 256 256 - > ${ROOT_DOCTYPE}/msoffice-${DOCTYPE}-alpha.pnm" 
+done
 
 # install main script
 sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
@@ -30,4 +46,3 @@ nautilus -q
 # remove previously cached files (thumbnails and masks)
 [ -d "$HOME/.cache/thumbnails" ] && rm --recursive --force $HOME/.cache/thumbnails/*
 [ -d "$HOME/.thumbnails" ] && rm --recursive --force $HOME/.thumbnails/*
-[ -d "$HOME/.cache/msoffice-thumbnailer" ] && rm --recursive --force $HOME/.cache/msoffice-thumbnailer
