@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Installation script for very fast JPEG thumbnailer with camera and location tag display
 # Based on epeg
 
@@ -27,24 +27,35 @@ sudo chmod +rx /usr/local/sbin/jpeg-thumbnailer
 sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg.thumbnailer
 
 # create icons ressource directory
-ROOT_DOCTYPE="/usr/local/sbin/jpeg-thumbnailer.res"
-sudo mkdir "${ROOT_DOCTYPE}"
+ROOT_ICON="/usr/local/sbin/jpeg-thumbnailer.res"
+[ ! -d "${ROOT_ICON}" ] && sudo mkdir "${ROOT_ICON}"
 
-# tag and camera icons
-ARR_ICON=( "none" "gps" )
-ARR_ICON=( "${ARR_ICON[@]}" "canon eos m3" "canon eos 1000d" "canon eos 1100d" "canon powershot g7 x" "dmc-fz200" "dmc-tz5" )
+# download transparent icon and generate alpha
+sudo wget -O "${ROOT_ICON}/none.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/none.png"
+sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/none.png' | pnmscalefixed -xsize 256 - > '${ROOT_ICON}/none-alpha.pnm'" 
+
+# download gps icon and generate mask / alpha
+sudo wget -O "${ROOT_ICON}/gps.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/gps.png"
+sudo bash -c "pngtopnm '${ROOT_ICON}/gps.png' | pnmscalefixed -xsize 64 - > '${ROOT_ICON}/gps.pnm'" 
+sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/gps.png' | pnmscalefixed -xsize 64 - > '${ROOT_ICON}/gps-alpha.pnm'" 
+
+
+# list of supported cameras
+ARR_ICON=( "canon eos m3" "canon eos 1000d" "canon eos 1100d" "canon powershot g7 x" "dmc-fz200" "dmc-tz5" )
 ARR_ICON=( "${ARR_ICON[@]}" "oneplus e1003" "oneplus a0001" "one a2003" "oneplus a3003" "oneplus a5000" "oneplus a6000" "oneplus a6003" )
 ARR_ICON=( "${ARR_ICON[@]}" "pixel 2 xl" "hero" "hero4 session" "lg-h870" )
+
+# loop to install icons, masks and alpha masks
 for ICON in "${ARR_ICON[@]}"
 do
 	# download document type icon
-	sudo wget -O "${ROOT_DOCTYPE}/${ICON}.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}.png"
+	sudo wget -O "${ROOT_ICON}/${ICON}.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}.png"
 
 	# generate mask
-	sudo bash -c "pngtopnm ${ROOT_DOCTYPE}/${ICON}.png | pnmscalefixed -xysize 256 256 - > ${ROOT_DOCTYPE}/${ICON}.pnm" 
+	sudo bash -c "pngtopnm '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -xsize 86 - > '${ROOT_ICON}/${ICON}.pnm'" 
 
 	# generate alpha mask
-	sudo bash -c "pngtopnm -alpha ${ROOT_DOCTYPE}/${ICON}.png | pnmscalefixed -xysize 256 256 - > ${ROOT_DOCTYPE}/${ICON}-alpha.pnm" 
+	sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -xsize 86 - > '${ROOT_ICON}/${ICON}-alpha.pnm'" 
 done
 
 # compile and install epeg
