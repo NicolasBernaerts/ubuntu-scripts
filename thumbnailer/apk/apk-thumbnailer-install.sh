@@ -1,5 +1,5 @@
 #!/bin/sh
-# APK thumbnailer
+# APK thumbnailer installation script
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
