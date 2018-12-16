@@ -32,7 +32,7 @@ ROOT_ICON="/usr/local/sbin/jpeg-thumbnailer.res"
 
 # download transparent icon and generate alpha
 sudo wget -O "${ROOT_ICON}/none.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/none.png"
-sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/none.png' | pnmscalefixed -xsize 64 - > '${ROOT_ICON}/none-alpha.pnm'" 
+sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/none.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/none-alpha.pnm'" 
 
 # download gps icon and generate mask / alpha
 sudo wget -O "${ROOT_ICON}/gps.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/gps.png"
