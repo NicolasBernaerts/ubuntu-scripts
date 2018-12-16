@@ -6,10 +6,9 @@
 #   * dcraw
 #   * djpeg (libjpeg-turbo-progs package)
 #   * pnmtopng and pnmscalefixed (netpbm package)
-#   * gvfs-copy (gvfs-bin package)
 #
 # Parameters :
-#   $1 - URI of RAW file
+#   $1 - path of RAW file
 #   $2 - full path of generated thumbnail
 #   $3 - height of thumbnail in pixels
 #
