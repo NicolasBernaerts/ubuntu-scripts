@@ -9,7 +9,7 @@
 #
 # Parameters :
 #   $1 - path of RAW file
-#   $2 - full path of generated thumbnail
+#   $2 - path of generated thumbnail
 #   $3 - height of thumbnail in pixels
 #
 # Revision history :
@@ -23,6 +23,9 @@ command -v dcraw >/dev/null 2>&1 || { echo "[error] dcraw missing"; exit 1; }
 command -v djpeg >/dev/null 2>&1 || { echo "[error] djpeg missing"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
+
+# check params
+[ "$3" = "" ] && { echo "[error] 3 params are needed : file file-thumb thumb-size"; exit 1; }
 
 # get parameters
 FILE_LOCAL="$1"
