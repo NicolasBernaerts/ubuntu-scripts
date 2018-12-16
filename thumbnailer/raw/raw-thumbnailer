@@ -16,42 +16,24 @@
 # Revision history :
 #   12/08/2016, V1.0 - Creation by N. Bernaerts
 #   07/10/2017, V1.1 - Conversion to URI and speedup with netpbm
+#   15/12/2018, V1.2 - Rework for bubblewrap compatibility
 # ---------------------------------------------------
 
 # check tools availability 
-command -v gvfs-copy >/dev/null 2>&1 || { echo "[error] gvfs-copy missing"; exit 1; }
 command -v dcraw >/dev/null 2>&1 || { echo "[error] dcraw missing"; exit 1; }
 command -v djpeg >/dev/null 2>&1 || { echo "[error] djpeg missing"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
 
 # get parameters
-FILE_URI="$1"
+FILE_LOCAL="$1"
 FILE_THUMB="$2"
 SIZE="$3"
 
-# get filename extension
-FILE_EXT=$(echo "${FILE_URI}" | sed "s/^.*\.\(.*\)/\1/")
-
-# generate temporary local filename
-TMP_LOCAL=$(mktemp -t "thumb-raw-XXXXXXXX.${FILE_EXT}")
-TMP_THUMB=$(mktemp -t "thumb-raw-XXXXXXXX.thumb")
-TMP_PNM=$(mktemp -t "thumb-raw-XXXXXXXX.pnm")
-
-# if file is a remote one
-URI_TYPE="${FILE_URI:0:4}"
-if [ "${URI_TYPE}" = "file" ]
-then
-	# convert URI to local path
-	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
-
-	# extract local path
-	FILE_LOCAL="${FILE_PATH:7}"
-else
-	# copy input file to temporary local file
-	gvfs-copy "${FILE_URI}" "${TMP_LOCAL}"
-	FILE_LOCAL="${TMP_LOCAL}"	
-fi
+# generate temporary files and directory
+TMP_DIR=$(mktemp -t -d "thumb-raw-XXXXXXXX")
+TMP_PNM="${TMP_DIR}/original.pnm"
+TMP_THUMB="${TMP_DIR}/thumbnail.pnm"
 
 # try to extract JPG thumbnail embeded in RAW file
 dcraw -c -e "${FILE_LOCAL}" > "${TMP_THUMB}"
@@ -73,5 +55,5 @@ fi
 # convert PNM thumbnail to final thumbnail
 pnmscalefixed -xysize ${SIZE} ${SIZE} "${TMP_PNM}" | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
 
-# remove temporary  files
-rm -f "${TMP_LOCAL}" "${TMP_THUMB}" "${TMP_PNM}"
+# remove temporary directory
+rm -r "${TMP_DIR}"
