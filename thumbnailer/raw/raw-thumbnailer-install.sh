@@ -1,5 +1,5 @@
 #!/bin/sh
-# RAW files thumbnailer
+# RAW files thumbnailer installation script
 
 # install tools
 sudo apt-get -y install dcraw libjpeg-turbo-progs netpbm
