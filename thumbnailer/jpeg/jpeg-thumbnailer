@@ -73,7 +73,12 @@ NONE_ALPHA="${PATH_SYSTEM}/none-alpha.pnm"
 exiftool -b -ThumbnailImage "${FILE_LOCAL}" > "${TMP_EXTRACT}"
 
 # if thumbnail extracted, apply rotation, else generate thumbnail from picture
-[ -s "${TMP_EXTRACT}" ] && exiftool -overwrite_original -Orientation=${EXIF_ROTATE} -n "${TMP_EXTRACT}" || epeg --max=256 "${FILE_LOCAL}" "${TMP_EXTRACT}"
+[ -s "${TMP_EXTRACT}" ] && exiftool -overwrite_original -Orientation=${EXIF_ROTATE} -n "${TMP_EXTRACT}" \
+			|| epeg --max=256 "${FILE_LOCAL}" "${TMP_EXTRACT}"
+
+# generate PNM with proper orientation and size
+convert -auto-orient "${TMP_EXTRACT}" "${TMP_PNG}" 
+pngtopnm "${TMP_PNG}" | pnmscalefixed -xysize 256 256 - > "${TMP_PNM}"
 
 # -----------
 #   GPS tag
@@ -124,9 +129,6 @@ fi
 # ------------------
 #  Final thumbnail
 # ------------------
-
-# generate PNM with proper orientation
-convert -auto-orient "${TMP_EXTRACT}" "${TMP_PNM}" 
 
 # generate final thumbnail
 pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PNM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - > "${TMP_THUMB}"
