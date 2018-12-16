@@ -19,6 +19,34 @@ sudo apt -y install libjpeg-turbo8-dev libexif-dev
 sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
 sudo chmod +rx /usr/local/bin/bwrap
 
+# install main thumbnailer script
+sudo wget -O /usr/local/sbin/jpeg-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer
+sudo chmod +rx /usr/local/sbin/jpeg-thumbnailer
+
+# thumbnailer integration
+sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg.thumbnailer
+
+# create icons ressource directory
+ROOT_DOCTYPE="/usr/local/sbin/jpeg-thumbnailer.res"
+sudo mkdir "${ROOT_DOCTYPE}"
+
+# tag and camera icons
+ARR_ICON=( "none" "gps" )
+ARR_ICON=( "${ARR_ICON[@]}" "canon eos m3" "canon eos 1000d" "canon eos 1100d" "canon powershot g7 x" "dmc-fz200" "dmc-tz5" )
+ARR_ICON=( "${ARR_ICON[@]}" "oneplus e1003" "oneplus a0001" "one a2003" "oneplus a3003" "oneplus a5000" "oneplus a6000" "oneplus a6003" )
+ARR_ICON=( "${ARR_ICON[@]}" "pixel 2 xl" "hero" "hero4 session" "lg-h870" )
+for ICON in "${ARR_ICON[@]}"
+do
+	# download document type icon
+	sudo wget -O "${ROOT_DOCTYPE}/${ICON}.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}.png"
+
+	# generate mask
+	sudo bash -c "pngtopnm ${ROOT_DOCTYPE}/${ICON}.png | pnmscalefixed -xysize 256 256 - > ${ROOT_DOCTYPE}/${ICON}.pnm" 
+
+	# generate alpha mask
+	sudo bash -c "pngtopnm -alpha ${ROOT_DOCTYPE}/${ICON}.png | pnmscalefixed -xysize 256 256 - > ${ROOT_DOCTYPE}/${ICON}-alpha.pnm" 
+done
+
 # compile and install epeg
 mkdir ~/sources
 cd ~/sources
@@ -33,31 +61,8 @@ sudo make install
 # update local libraries
 sudo ldconfig
 
-# install thumbnailer icons
-sudo mkdir /usr/local/sbin/jpeg-thumbnailer.res
-sudo wget -O /usr/local/sbin/jpeg-thumbnailer.res/gps.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/gps.png
-sudo wget -O /usr/local/sbin/jpeg-thumbnailer.res/none.png https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/none.png
-
-# install main thumbnailer script
-sudo wget -O /usr/local/sbin/jpeg-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer
-sudo chmod +rx /usr/local/sbin/jpeg-thumbnailer
-
-# thumbnailer integration
-sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg.thumbnailer
-
-# camera icons
-mkdir --parents $HOME/.local/share/icons
-ARR_ICON=( "canon eos m3.png" "canon eos 1000d.png" "canon eos 1100d.png" "canon powershot g7 x.png" "dmc-fz200.png" "dmc-tz5.png" )
-ARR_ICON=( "${ARR_ICON[@]}" "oneplus e1003.png" "oneplus a0001.png" "one a2003.png" "oneplus a3003.png" "oneplus a5000.png" "oneplus a6000.png" "oneplus a6003.png" )
-ARR_ICON=( "${ARR_ICON[@]}" "pixel 2 xl.png" "hero.png" "hero4 session.png" "lg-h870.png" )
-for ICON in "${ARR_ICON[@]}"
-do
-  wget -O "$HOME/.local/share/icons/${ICON}" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}"
-done 
-
 # stop nautilus
 nautilus -q
 
 # remove previously cached files (thumbnails and masks)
 [ -d "$HOME/.cache/thumbnails" ] && rm --recursive --force $HOME/.cache/thumbnails/*
-[ -d "$HOME/.cache/jpeg-thumbnailer" ] && rm --recursive --force $HOME/.cache/jpeg-thumbnailer/*
