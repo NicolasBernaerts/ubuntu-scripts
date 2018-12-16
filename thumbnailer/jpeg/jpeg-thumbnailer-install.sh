@@ -1,7 +1,6 @@
 #!/bin/sh
-# Installation script for
-# very fast JPEG thumbnailer with camera and location tag display
-# based on epeg
+# Installation script for very fast JPEG thumbnailer with camera and location tag display
+# Based on epeg
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
@@ -15,6 +14,10 @@ sudo apt -y install build-essential cmake nasm git autoconf libtool
 
 # install development libraries
 sudo apt -y install libjpeg-turbo8-dev libexif-dev
+
+# install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
+sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
+sudo chmod +rx /usr/local/bin/bwrap
 
 # compile and install epeg
 mkdir ~/sources
