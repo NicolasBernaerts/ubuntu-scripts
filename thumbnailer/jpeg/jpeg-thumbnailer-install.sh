@@ -52,10 +52,10 @@ do
 	sudo wget -O "${ROOT_ICON}/${ICON}.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}.png"
 
 	# generate mask
-	sudo bash -c "pngtopnm '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -xsize 86 - > '${ROOT_ICON}/${ICON}.pnm'" 
+	sudo bash -c "pngtopnm '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/${ICON}.pnm'" 
 
 	# generate alpha mask
-	sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -xsize 86 - > '${ROOT_ICON}/${ICON}-alpha.pnm'" 
+	sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/${ICON}-alpha.pnm'" 
 done
 
 # compile and install epeg
