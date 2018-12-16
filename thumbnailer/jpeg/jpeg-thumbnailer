@@ -9,17 +9,17 @@
 #   * epeg (compiled)
 #   * convert (imagemagick package)
 #   * pnmcomp and pnmtopng  (netpbm package)
-#   * gvfs-copy (gvfs-bin package)
 # Parameters :
 #   $1 - full path of JPEG image
 #   $2 - full path of generated thumbnail
 #   $3 - height of thumbnail in pixels
 # Revision history :
-# 29/09/2017, V1.0 - Creation by N. Bernaerts
-# 02/10/2017, V1.1 - Speedup with epeg and jpegtran
-# 07/10/2017, V1.2 - Speedup with thumbnail extraction if available
-# 01/03/2018, V1.3 - Correct Jpeg rotation bug
-# 28/04/2018, V1.4 - Handle gio or gvfs-copy
+#   29/09/2017, V1.0 - Creation by N. Bernaerts
+#   02/10/2017, V1.1 - Speedup with epeg and jpegtran
+#   07/10/2017, V1.2 - Speedup with thumbnail extraction if available
+#   01/03/2018, V1.3 - Correct Jpeg rotation bug
+#   28/04/2018, V1.4 - Handle gio or gvfs-copy
+#   15/12/2018, V1.5 - Rework for bubblewrap compatibility
 # --------------------------------------------------------------
 
 # export local library for epeg
@@ -37,41 +37,20 @@ command -v pbmtextps >/dev/null 2>&1 || { echo "[error] pbmtextps missing"; exit
 command -v pnmcrop >/dev/null 2>&1 || { echo "[error] pnmcrop missing"; exit 1; }
 command -v pnmpad >/dev/null 2>&1 || { echo "[error] pnmpad missing"; exit 1; }
 
-# check gvfs or gio availability
-command -v gvfs-copy >/dev/null 2>&1 && ARR_COPY=( "gvfs-copy" )
-command -v gio >/dev/null 2>&1 && ARR_COPY=( "gio" "copy" )
-[ ${#ARR_COPY[@]} -eq 0 ] && { echo "[error] gio or gvfs-copy missing"; exit 1; }
-
 # check parameters
 [ "$#" -ne 3 ] && { echo "[error] waiting for 3 parameters"; exit 1; }
 
 # get parameters
-SCRIPT_NAME=$(basename $0)
-FILE_URI="$1"
+FILE_LOCAL="$1"
 FILE_THUMB="$2"
 SIZE="$3"
 
 # generate temporary local filename
 TMP_DIR=$(mktemp -t -d "thumb-jpeg-XXXXXXXX")
-TMP_LOCAL="${TMP_DIR}/local.jpg"
+TMP_EXTRACT="${TMP_DIR}/extract.jpg"
 TMP_THUMB="${TMP_DIR}/thumb.jpg"
 TMP_PNM="${TMP_DIR}/thumb.pnm"
 TMP_PNG="${TMP_DIR}/thumb.png"
-
-# if file is a remote one
-URI_TYPE="${FILE_URI:0:4}"
-if [ "${URI_TYPE}" = "file" ]
-then
-	# convert URI to local path
-	FILE_PATH=$(printf '%b' "${FILE_URI//%/\\x}")
-
-	# extract local path
-	FILE_LOCAL="${FILE_PATH:7}"
-else
-	# copy input file to temporary local file
-	"${ARR_COPY[@]}" "${FILE_URI}" "${TMP_LOCAL}"
-	FILE_LOCAL="${TMP_LOCAL}"	
-fi
 
 # read exif data
 EXIF_DATA=$(exiftool -args -orientation -n -model -gpslatitude "${FILE_LOCAL}")
@@ -79,24 +58,9 @@ EXIF_ROTATE=$(echo "${EXIF_DATA}" | grep "Orientation=" | cut -d'=' -f2)
 EXIF_MODEL=$(echo "${EXIF_DATA}" | grep -i "Model=" | cut -d'=' -f2- | tr '[:upper:]' '[:lower:]')
 EXIF_GPS=$(echo "${EXIF_DATA}" | grep -i "GPSLatitude=" | cut -d'=' -f2-)
 
-# calculate tags width
-CAMERA_WIDTH=$((${SIZE} / 3))
-GPS_WIDTH=$((${SIZE} / 4))
-
 # icon in system path
-PATH_SYSTEM="/usr/local/sbin/${SCRIPT_NAME}.res"
-NONE_ICON="${PATH_SYSTEM}/none.png"
-GPS_ICON="${PATH_SYSTEM}/gps.png"
-
-# icon in user path
-PATH_USER="$HOME/.local/share/icons"
-CAMERA_ICON="${PATH_USER}/${EXIF_MODEL}.png"
-
-# tag cache files
-CACHE_PATH="$HOME/.cache/${SCRIPT_NAME}"
-NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
-[ ! -d "${CACHE_PATH}" ] && mkdir --parent "${CACHE_PATH}"
-[ ! -f "${NONE_ALPHA}" ] && pngtopnm -alpha "${NONE_ICON}" | pnmscalefixed -xsize ${SIZE} - > "${NONE_ALPHA}"
+PATH_SYSTEM="/usr/local/sbin/jpeg-thumbnailer.res"
+NONE_ALPHA="${PATH_SYSTEM}/none-alpha.pnm"
 
 # -------------
 #   Thumbnail
@@ -106,10 +70,10 @@ NONE_ALPHA="${CACHE_PATH}/${SIZE}-none-alpha.pnm"
 [ "${EXIF_ROTATE}" = "" ] && EXIF_ROTATE="1"
 
 # extract embedded thumbnail
-exiftool -b -ThumbnailImage "${FILE_LOCAL}" > "${TMP_THUMB}"
+exiftool -b -ThumbnailImage "${FILE_LOCAL}" > "${TMP_EXTRACT}"
 
 # if thumbnail extracted, apply rotation, else generate thumbnail from picture
-[ -s "${TMP_THUMB}" ] && exiftool -overwrite_original -Orientation=${EXIF_ROTATE} -n "${TMP_THUMB}" || epeg --max=${SIZE} "${FILE_LOCAL}" "${TMP_THUMB}"
+[ -s "${TMP_EXTRACT}" ] && exiftool -overwrite_original -Orientation=${EXIF_ROTATE} -n "${TMP_EXTRACT}" || epeg --max=256 "${FILE_LOCAL}" "${TMP_EXTRACT}"
 
 # -----------
 #   GPS tag
@@ -117,17 +81,13 @@ exiftool -b -ThumbnailImage "${FILE_LOCAL}" > "${TMP_THUMB}"
 
 if [ "${EXIF_GPS}" != "" ]
 then
-	# declare tags
-	GPS_TAG="${CACHE_PATH}/${SIZE}-gps-tag.pnm"
-	GPS_ALPHA="${CACHE_PATH}/${SIZE}-gps-alpha.pnm"
-
-	# if needed, create them
-	[ ! -f "${GPS_TAG}" ] && pngtopnm "${GPS_ICON}" | pnmscalefixed -xsize ${GPS_WIDTH} - > "${GPS_TAG}"
-	[ ! -f "${GPS_ALPHA}" ] && pngtopnm -alpha "${GPS_ICON}" | pnmscalefixed -xsize ${GPS_WIDTH} - > "${GPS_ALPHA}"
-else
 	# set to transparent tags
 	GPS_TAG="${NONE_ALPHA}"
 	GPS_ALPHA="${NONE_ALPHA}"
+else
+	# declare tags
+	GPS_TAG="${PATH_SYSTEM}/gps.pnm"
+	GPS_ALPHA="${PATH_SYSTEM}/gps-alpha.pnm"
 fi
 
 # -------------------
@@ -135,48 +95,30 @@ fi
 # -------------------
 
 # if model exif is defined,
-if [ "${EXIF_MODEL}" != "" ]
+if [ "${EXIF_MODEL}" = "" ]
 then
-	# if camera icon is available, generate icon tags
-	if [ -f "${CAMERA_ICON}" ]
-	then
-		# set camera tags
-		CAMERA_TAG="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-icon.pnm"
-		CAMERA_ALPHA="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-icon-alpha.pnm"
-
-		# if needed, create cache files
-		if [ ! -f "${CAMERA_TAG}" -o ! -f "${CAMERA_ALPHA}" ]
-		then
-			pngtopnm "${CAMERA_ICON}" | pnmscalefixed -xsize ${CAMERA_WIDTH} - > "${CAMERA_TAG}"
-			pngtopnm -alpha "${CAMERA_ICON}" | pnmscalefixed -xsize ${CAMERA_WIDTH} - > "${CAMERA_ALPHA}"
-		fi
-
-	# else, generate text tags
-	else
-		# set camera tags
-		CAMERA_TAG="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-text.pnm"
-		CAMERA_ALPHA="${CACHE_PATH}/${SIZE}-${EXIF_MODEL}-text-alpha.pnm"
-
-		# if needed, create cache files
-		if [ ! -f "${CAMERA_TAG}" -o ! -f "${CAMERA_ALPHA}" ]
-		then
-			# calculate optimum font size
-			FONT_SIZE=$((${SIZE} / 20))
-
-			# generate version image
-			pbmtextps -fontsize ${FONT_SIZE} "${EXIF_MODEL}" | pnmcrop - | pnmpad -white -left 4 -right 4 -top 4 -bottom 4 - | pnmpad -black -left 2 -right 2 -top 2 -bottom 2 - | pnmtopng - > "${TMP_PNG}"
-
-			# generate tags
-			pngtopnm "${TMP_PNG}" > "${CAMERA_TAG}"
-			pngtopnm -alpha "${TMP_PNG}" > "${CAMERA_ALPHA}"
-		fi
-	fi
-
-# else, no exif model
-else
 	# set transparent camera tags
 	CAMERA_TAG="${NONE_ALPHA}"
 	CAMERA_ALPHA="${NONE_ALPHA}"
+else
+	# set camera tags
+	CAMERA_TAG="${PATH_SYSTEM}/${EXIF_MODEL}.pnm"
+	CAMERA_ALPHA="${PATH_SYSTEM}/${EXIF_MODEL}-alpha.pnm"
+
+	# if camera icon is available, generate icon tags
+	if [ ! -f "${CAMERA_TAG}" -o ! -f "${CAMERA_ALPHA}" ]
+	then
+		# set camera tags
+		CAMERA_TAG="${TMP_DIR}/camera.pnm"
+		CAMERA_ALPHA="${TMP_DIR}/camera-alpha.pnm"
+
+		# generate version image
+		pbmtextps -fontsize 13 "${EXIF_MODEL}" | pnmcrop - | pnmpad -white -left 4 -right 4 -top 4 -bottom 4 - | pnmpad -black -left 2 -right 2 -top 2 -bottom 2 - | pnmtopng - > "${TMP_PNG}"
+
+		# generate tags
+		pngtopnm "${TMP_PNG}" > "${CAMERA_TAG}"
+		pngtopnm -alpha "${TMP_PNG}" > "${CAMERA_ALPHA}"
+	fi
 fi
 
 # ------------------
@@ -184,10 +126,20 @@ fi
 # ------------------
 
 # generate PNM with proper orientation
-convert -auto-orient "${TMP_THUMB}" "${TMP_PNM}" 
+convert -auto-orient "${TMP_EXTRACT}" "${TMP_PNM}" 
+
+echo "gps-alpha : ${GPS_ALPHA}"
+echo "gps-tag : ${GPS_TAG}"
+echo "camera-alpha : ${CAMERA_ALPHA}"
+echo "camera-tag : ${CAMERA_TAG}"
+echo "tmp-pnm : ${TMP_PNM}"
+echo "tmp-thumb : ${TMP_THUMB}"
 
 # generate final thumbnail
-pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PNM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - | pnmtopng -downscale -compression 0 > "${FILE_THUMB}"
+pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PNM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - > "${TMP_THUMB}"
+
+# downscale to final size and convert to png
+pnmscalefixed -xysize ${SIZE} ${SIZE} "${TMP_THUMB}" | pnmtopng -downscale - > "${FILE_THUMB}"
 
 # remove temporary file
 rm --recursive --force "${TMP_DIR}"
