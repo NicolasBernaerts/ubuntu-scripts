@@ -1,3 +1,3 @@
 [Thumbnailer Entry]
-Exec=/bin/bash /usr/local/sbin/graphviz-thumbnailer %u %o %s
+Exec=/bin/bash /usr/local/sbin/graphviz-thumbnailer %i %o %s
 MimeType=text/vnd.graphviz;
