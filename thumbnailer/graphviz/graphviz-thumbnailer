@@ -24,6 +24,9 @@ command -v pngtopnm >/dev/null 2>&1 || { echo "[error] pngtopnm missing"; exit 1
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
 
+# check params
+[ "$3" = "" ] && { echo "[error] 3 params are needed : file file-thumb thumb-size"; exit 1; }
+
 # get parameters
 FILE_LOCAL="$1"
 FILE_THUMB="$2"
