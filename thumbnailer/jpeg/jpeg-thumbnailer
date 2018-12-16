@@ -128,13 +128,6 @@ fi
 # generate PNM with proper orientation
 convert -auto-orient "${TMP_EXTRACT}" "${TMP_PNM}" 
 
-echo "gps-alpha : ${GPS_ALPHA}"
-echo "gps-tag : ${GPS_TAG}"
-echo "camera-alpha : ${CAMERA_ALPHA}"
-echo "camera-tag : ${CAMERA_TAG}"
-echo "tmp-pnm : ${TMP_PNM}"
-echo "tmp-thumb : ${TMP_THUMB}"
-
 # generate final thumbnail
 pnmcomp -align right -valign bottom -alpha "${GPS_ALPHA}" "${GPS_TAG}" "${TMP_PNM}" | pnmcomp -align left -valign bottom -alpha "${CAMERA_ALPHA}" "${CAMERA_TAG}" - > "${TMP_THUMB}"
 
