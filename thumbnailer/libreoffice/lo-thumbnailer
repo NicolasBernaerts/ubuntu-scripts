@@ -10,8 +10,8 @@
 #   * unzip
 #   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
 # Parameters :
-#   $1 - URI of office file
-#   $2 - full path of generated thumbnail
+#   $1 - path of office file
+#   $2 - path of generated thumbnail
 #   $3 - height of thumbnail in pixels
 # Revision history :
 # 04/08/2013, V1.0 - Creation by N. Bernaerts
