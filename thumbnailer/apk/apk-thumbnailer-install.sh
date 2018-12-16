@@ -8,6 +8,10 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 # install tools
 sudo apt-get -y install gvfs-bin aapt unzip netpbm
 
+# install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
+sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
+sudo chmod +rx /usr/local/bin/bwrap
+
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/apk-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/apk/apk-thumbnailer
 sudo chmod +x /usr/local/sbin/apk-thumbnailer
