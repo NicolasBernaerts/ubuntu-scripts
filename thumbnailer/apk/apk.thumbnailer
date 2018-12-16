@@ -1,3 +1,3 @@
 [Thumbnailer Entry]
-Exec=/bin/bash /usr/local/sbin/apk-thumbnailer %u %o %s
+Exec=/bin/bash /usr/local/sbin/apk-thumbnailer %i %o %s
 MimeType=application/vnd.android.package-archive;
