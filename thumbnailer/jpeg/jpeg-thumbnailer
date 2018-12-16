@@ -84,7 +84,7 @@ pngtopnm "${TMP_PNG}" | pnmscalefixed -xysize 256 256 - > "${TMP_PNM}"
 #   GPS tag
 # -----------
 
-if [ "${EXIF_GPS}" != "" ]
+if [ "${EXIF_GPS}" = "" ]
 then
 	# set to transparent tags
 	GPS_TAG="${NONE_ALPHA}"
