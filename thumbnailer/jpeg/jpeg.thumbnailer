@@ -1,3 +1,3 @@
 [Thumbnailer Entry]
-Exec=/bin/bash /usr/local/sbin/jpeg-thumbnailer %u %o %s
+Exec=/bin/bash /usr/local/sbin/jpeg-thumbnailer %i %o %s
 MimeType=image/jpeg;
