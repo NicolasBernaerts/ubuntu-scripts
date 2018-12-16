@@ -34,6 +34,9 @@ command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missin
 command -v pnmcomp >/dev/null 2>&1 || { echo "[error] pnmcomp missing"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 
+# check params
+[ "$3" = "" ] && { echo "[error] 3 params are needed : file file-thumb thumb-size"; exit 1; }
+
 # set to no to remove version number on the icon
 DISPLAY_VERSION="yes"
 
