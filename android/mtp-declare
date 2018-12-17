@@ -14,6 +14,8 @@
 #    22/03/2013, V2.1 - Add fuse.conf test (thanks to Stefan Schanz)
 #    31/05/2014, V2.2 - Add support for xhci & ohci usb ports (thanks to Viktor Aksionov)
 #    24/01/2015, V2.3 - Check tools availability
+#    16/12/2018, V2.4 - Added uhci USB support (issue from LinArcX)
+#    Please note that I don't use or maintain this script anymore
 # ---------------------------------------------------
 
 # check tools availability
@@ -89,10 +91,11 @@ then
   MTP_MODEL=$(udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL=" | sed 's/^.*=.\(.*\).$/\1/g')
   MTP_MODEL_ID=$(udevadm info --export --query=property --path="$MTP_PATH" | grep "ID_MODEL_ID=" | sed 's/^.*=.\(.*\).$/\1/g')
   
-  # determine USB port type (ehci, ohci or xhci)
+  # determine USB port type (ehci, ohci, xhci or uhci)
   if [ -e "/sys/bus/pci/drivers/ehci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="ehci_hcd"
   elif [ -e "/sys/bus/pci/drivers/ohci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="ohci_hcd"
   elif [ -e "/sys/bus/pci/drivers/xhci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="xhci_hcd"
+  elif [ -e "/sys/bus/pci/drivers/uhci_hcd/$MTP_USBID" ] ; then MTP_USBTYPE="uhci_hcd"
   else MTP_ERROR="USB port is of unknown type. Try to use another USB port."
   fi
 fi
