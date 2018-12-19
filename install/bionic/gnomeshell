@@ -26,7 +26,7 @@ logger "gnome-shell - top bar and hot corner"
 gsettings set org.gnome.desktop.interface clock-show-date true
 gsettings set org.gnome.shell enable-hot-corners true
 
-# hide hidden files by defult
+# hide hidden files by default
 logger "gnome-shell - hidden files"
 gsettings set org.gtk.Settings.FileChooser show-hidden false
 
