@@ -14,7 +14,7 @@ do
 		# convert --symlink to --ro-bind
 		"--symlink") shift; shift; ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "$1" "$1" ); shift; ;;
 		# keep --ro-bind only if source file or directory exists (solve 32bits distro bug where /lib64 is absent) 
-		"--ro-bind") shift; SOURCE="$1"; shift;	[ -e "${SOURCE}" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "${SOURCE}" "$1" ); shift;  ;;
+		"--ro-bind") shift; SOURCE="$1"; shift;	[ -e "${SOURCE}" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "${SOURCE}" "$1" ); shift; ;;
 		# add other parameters
 		*) ARR_PARAM=( "${ARR_PARAM[@]}" "$1" ); shift; ;;
 	esac
