@@ -3,7 +3,7 @@
 #  * replaces --symlink calls with equivalent --ro-bind calls
 #  * add --ro-bind needed by imagemagick tools
 
-# intialise parameters array with both binds needed by thumbnailers using imagemagick tools
+# intialise parameters array with both --ro-bind needed by thumbnailers using imagemagick tools
 ARR_PARAM=( "--ro-bind" "/etc/alternatives" "/etc/alternatives" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
 
 # loop thru original parameters
