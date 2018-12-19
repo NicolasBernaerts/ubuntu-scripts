@@ -1,7 +1,7 @@
 #!/bin/bash
 # bwrap wrapper to correct nautilus 3.26.4+ bug for external thumbnailers under debian based distros
 #  * replaces --symlink calls with equivalent --ro-bind calls
-#  * add binds needed by imagemagick tools
+#  * add --ro-bind needed by imagemagick tools
 
 # intialise parameters array with both binds needed by thumbnailers using imagemagick tools
 ARR_PARAM=( "--ro-bind" "/etc/alternatives" "/etc/alternatives" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
