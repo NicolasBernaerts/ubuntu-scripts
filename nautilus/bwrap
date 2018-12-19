@@ -3,8 +3,8 @@
 #  * replaces --symlink calls with equivalent --ro-bind calls
 #  * add --ro-bind needed by imagemagick tools
 
-# intialise parameters array with both --ro-bind needed by thumbnailers using imagemagick tools
-ARR_PARAM=( "--ro-bind" "/etc/alternatives" "/etc/alternatives" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
+# intialise parameters array
+ARR_PARAM=( )
 
 # loop thru original parameters
 while test $# -gt 0
@@ -16,6 +16,9 @@ do
 		*) ARR_PARAM=( "${ARR_PARAM[@]}" "$1" ); shift; ;;
 	esac
 done
+
+# add both --ro-bind needed by thumbnailers using imagemagick tools
+ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
 
 # call original bwrap
 /usr/bin/bwrap "${ARR_PARAM[@]}"
