@@ -1,7 +1,6 @@
 #!/bin/bash
 # bwrap wrapper to correct nautilus 3.26.4+ bug for external thumbnailers under debian based distros
 #  * replaces --symlink calls with equivalent --ro-bind calls
-#  * supress --ro-bind if source directory is absent (/lib64 on 32bits distro)
 #  * add --ro-bind needed by imagemagick tools
 
 # intialise parameters array
@@ -11,18 +10,15 @@ ARR_PARAM=( )
 while test $# -gt 0
 do
 	case "$1" in
-		# convert --symlink to --ro-bind
+		# --symlink : convert to --ro-bind
 		"--symlink") shift; shift; ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "$1" "$1" ); shift; ;;
-		# keep --ro-bind only if source file or directory exists (solve 32bits distro bug where /lib64 is absent) 
-		"--ro-bind") shift; SOURCE="$1"; shift;	[ -e "${SOURCE}" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "${SOURCE}" "$1" ); shift; ;;
-		# add other parameters
+		# others : add parameter
 		*) ARR_PARAM=( "${ARR_PARAM[@]}" "$1" ); shift; ;;
 	esac
 done
 
 # add both --ro-bind needed by thumbnailers using imagemagick tools
-[ -e "/etc/alternatives" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" )
-[ -e "/var/cache/fontconfig" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
+ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
 
 # call original bwrap
 /usr/bin/bwrap "${ARR_PARAM[@]}"
