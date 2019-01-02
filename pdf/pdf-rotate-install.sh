@@ -20,7 +20,7 @@ wget -O $HOME/.local/share/icons/revert-updown.png https://github.com/NicolasBer
 
 # nautilus action integration
 mkdir --parents $HOME/.local/share/file-manager/actions
-wget $HOME/.local/share/file-manager/actions/pdf-rotate-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-menu.desktop
-wget $HOME/.local/share/file-manager/actions/pdf-rotate-left-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-left-action.desktop
-wget $HOME/.local/share/file-manager/actions/pdf-rotate-right-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-right-action.desktop
-wget $HOME/.local/share/file-manager/actions/pdf-rotate-updown-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-updown-action.desktop
+wget -O $HOME/.local/share/file-manager/actions/pdf-rotate-menu.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-menu.desktop
+wget -O $HOME/.local/share/file-manager/actions/pdf-rotate-left-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-left-action.desktop
+wget -O $HOME/.local/share/file-manager/actions/pdf-rotate-right-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-right-action.desktop
+wget -O $HOME/.local/share/file-manager/actions/pdf-rotate-updown-action.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-updown-action.desktop
