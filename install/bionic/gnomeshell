@@ -40,6 +40,9 @@ gsettings set org.gnome.shell.extensions.dash-to-dock autohide-in-fullscreen tru
 gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode FIXED
 gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 0
 
+# enable middle and right click on lower area
+gsettings set org.gnome.desktop.peripherals.touchpad click-method 'areas'
+
 # gnome shell window bar icons
 logger "gnome-shell - gnome shell window bar icons"
 gsettings set org.gnome.desktop.wm.preferences button-layout :minimize,maximize,close
