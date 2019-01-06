@@ -59,15 +59,9 @@ logger "utilities - alacarte"
 sudo apt -y install alacarte
 
 # keepassxc : electronic wallet
-wget -O keepassxc.deb https://github.com/magkopian/keepassxc-debian/releases/download/2.3.1-1/keepassxc_2.3.1-1_amd64_stable_stretch.deb
-if [ -f ./keepassxc.deb ]
-then
-  logger "utilities - keepassxc"
-  sudo apt -y install libykpers-1-1
-  sudo gdebi --non-interactive ./keepassxc.deb
-  sudo apt-get -y -f install
-  rm ./keepassxc.deb
-fi
+sudo add-apt-repository -y ppa:phoerious/keepassxc
+sudo apt update
+sudo apt -y install keepassxc
 
 # photorec and qphotorec (recovery of files from SDCard)
 wget -O qphotorec.deb https://datapacket.dl.sourceforge.net/project/crunchyiconthem/QPhotoRec/qphotorec_1.0_all.deb
