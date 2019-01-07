@@ -4,6 +4,7 @@
 #
 # 30/05/2018, V1.0 - Migrated from Xenial
 # 30/09/2018, V1.1 - Switch Skype and Telegram to flatpak
+# 07/01/2019, V1.2 - Switch back Skype to official repo (flatpak doesn't work)
 # ----------------------------------------------------------------
 
 # network tools
