@@ -35,6 +35,10 @@ then
   rm ./downloadhelper.deb
 fi
 
+# thunderbird lightning calendar
+logger "internet - thunderbird lightning"
+sudo apt -y install xul-ext-lightning
+
 # chromium and filezilla
 logger "internet - chromium & filezilla"
 sudo apt -y install chromium-browser filezilla
