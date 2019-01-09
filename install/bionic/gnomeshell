@@ -55,7 +55,7 @@ gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/Butto
 
 # nautilus : remove nautilus action root menu
 logger "gnome-shell - remove nautilus action root menu"
-echo "items-create-root-menu=false" >> $HOME/.config/filemanager-actions/filemanager-actions.conf
+sed -i "/items-create-root-menu=/c\items-create-root-menu=false" $HOME/.config/filemanager-actions/filemanager-actions.conf
 
 # nautilus : declare new document templates
 logger "gnome-shell - declare new document templates"
