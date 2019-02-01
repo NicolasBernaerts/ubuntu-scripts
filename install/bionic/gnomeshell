@@ -10,7 +10,7 @@
 
 # install gnome shell extensions
 logger "gnome-shell - gnome shell extensions"
-sudo apt-get -y install gnome-shell-extensions 
+sudo apt -y install gnome-shell-extensions 
 
 # dconf editor
 logger "gnome-shell - dconf"
