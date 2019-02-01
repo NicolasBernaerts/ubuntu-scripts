@@ -5,8 +5,8 @@
 command -v nautilus >/dev/null 2>&1 || { echo "Nautilus has not been detected. Please install it first."; exit 1; }
 
 # install nautilus-actions
-sudo apt-get update
-sudo apt-get -y install nautilus-actions
+sudo apt update
+sudo apt -y install nautilus-actions
 
 # install functions to read INI files
 sudo wget -O /usr/local/bin/read-ini-file https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/read-ini-file
