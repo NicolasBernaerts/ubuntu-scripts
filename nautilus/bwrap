@@ -6,9 +6,11 @@
 # intialise parameters array
 ARR_PARAM=( )
 
-# add both --ro-bind needed by thumbnailers using imagemagick tools
+# add --ro-bind needed by thumbnailers using imagemagick tools
 [ -d "/etc/alternatives" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" )
 [ -d "/var/cache/fontconfig" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
+# if you need to have PHP or something that uses /etc in your thumbnailer, you should add
+#[ -d "/etc" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc" )
 
 # loop thru original parameters
 while test $# -gt 0
