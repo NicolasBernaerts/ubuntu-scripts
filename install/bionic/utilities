@@ -49,10 +49,10 @@ flatpak -y install https://flathub.org/repo/appstream/com.github.muriloventuroso
 
 # etcher
 logger "utilities - etcher"
-echo "deb https://dl.bintray.com/resin-io/debian stable etcher" | sudo tee '/etc/apt/sources.list.d/etcher.list'
-sudo apt-key adv --keyserver hkp://pgp.mit.edu:80 --recv-keys 379CE192D401AB61
+echo "deb https://deb.etcher.io stable etcher" | sudo tee /etc/apt/sources.list.d/balena-etcher.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 379CE192D401AB61
 sudo apt update
-sudo apt -y install etcher-electron
+sudo apt -y install balena-etcher-electron
 
 # alacarte : menu editor
 logger "utilities - alacarte"
