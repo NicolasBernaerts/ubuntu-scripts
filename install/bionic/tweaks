@@ -1,15 +1,17 @@
 #!/bin/bash
 # -------------------------------------------------------
-# Script to tweak wifi cards for Bionic
+# Script to apply different tweaks for Bionic
+#  - wifi
+#  - touchpad
 #
 # 02/06/2018, V1.0 - Migrated from Xenial
+# 15/04/2019, V1.1 - Add synaptics touchpad
 # -------------------------------------------------------
 
 # RTL8723be : Solves stability issue on HP Stream 13
 # RTL8821ae : Solves stability issues on Lenovo Ideapad 110
 HAS_RTL8723BE=$(lspci | grep "RTL8723BE")
 HAS_RTL8821AE=$(lspci | grep "RTL8821AE")
-
 if [ "${HAS_RTL8723BE}" != "" -o "${HAS_RTL8821AE}" != "" ]
 then
   # install compilation environment
@@ -34,3 +36,21 @@ then
   popd
   sudo rm -R ${TMP_DIR}
 fi
+
+# Synaptics touchpad not recognised on Acer Swift 7
+HAS_SYNAPTICS=$(dmesg | grep "psmouse" | grep "synaptics" | grep "intertouch")
+if [ "${HAS_SYNAPTICS}" != "" ]
+then
+  # create rc.local if needed
+  [ ! -f /etc/rc.local ] && echo "#!/bin/sh -e" | sudo tee /etc/rc.local
+  
+  # load touchpad driver with proper option
+  echo "" | sudo tee -a /etc/rc.local
+  echo "# synaptics touchpad" | sudo tee -a /etc/rc.local
+  echo "modprobe -r psmouse" | sudo tee -a /etc/rc.local
+  echo "modprobe psmouse synaptics_intertouch=1" | sudo tee -a /etc/rc.local
+  
+  # make /etc/rc.local executable
+  sudo chmod +x /etc/rc.local
+fi
+
