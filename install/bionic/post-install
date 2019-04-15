@@ -6,6 +6,7 @@
 # 
 #  29/05/2018, V1.0 - Migrated from Xenial
 #  30/09/2018, V1.1 - Add --no-junk option
+#  15/04/2019, V1.2 - Change --wifi to --tweaks
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------
@@ -40,7 +41,7 @@ then
     echo "It will install some important packages not provided by default installation."
     echo "Options are :"
     echo "  --docky           Add docky launcher"
-    echo "  --wifi            Add some tweaks for problematic wifi cards"
+    echo "  --tweaks          Add some tweaks for problematic hardware"
     echo "  --ssd             Add some tweaks for SSD disk"
     echo "  --hp-printer      Add HP printer GUI"
     echo "  --no-junk         Remove junk packages"
@@ -52,7 +53,7 @@ while test ${#} -gt 0
 do
     case $1 in
         --docky) DOCKY="ok"; shift; ;;
-        --wifi) WIFI="ok"; shift; ;;
+        --tweaks) TWEAKS="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
         --hp-printer) HPPRINTER="ok"; shift; ;;
         --no-junk) NOJUNK="ok"; shift; ;;
@@ -151,15 +152,15 @@ fi
 # disable apport crash report
 sudo systemctl disable apport.service
 
-# wifi tweaks
-if [ "${WIFI}" = "ok" ]
+# tweaks
+if [ "${TWEAKS}" = "ok" ]
 then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/wifi
-    if [ -f ./wifi ]
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/tweaks
+    if [ -f ./tweaks ]
     then
-        chmod +x ./wifi
-        ./wifi
-        rm ./wifi
+        chmod +x ./tweaks
+        ./tweaks
+        rm ./tweaks
     fi
 fi
 
