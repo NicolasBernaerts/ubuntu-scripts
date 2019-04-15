@@ -41,6 +41,9 @@ fi
 HAS_SYNAPTICS=$(dmesg | grep "psmouse" | grep "synaptics" | grep "intertouch")
 if [ "${HAS_SYNAPTICS}" != "" ]
 then
+  # un-blacklist i2c_i801 module
+  sudo sed -i "s/blacklist i2c_i801/#blacklist i2c_i801/g" /etc/modprobe.d/blacklist.conf
+  
   # create rc.local if needed
   [ ! -f /etc/rc.local ] && echo "#!/bin/sh -e" | sudo tee /etc/rc.local
   
