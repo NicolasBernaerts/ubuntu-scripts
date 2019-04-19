@@ -7,6 +7,7 @@
 #  29/05/2018, V1.0 - Migrated from Xenial
 #  30/09/2018, V1.1 - Add --no-junk option
 #  15/04/2019, V1.2 - Change --wifi to --tweaks
+#  16/04/2019, V1.3 - Add --arduino
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------
@@ -42,6 +43,7 @@ then
     echo "Options are :"
     echo "  --docky           Add docky launcher"
     echo "  --tweaks          Add some tweaks for problematic hardware"
+    echo "  --arduino         Install Arduino environment (with Tasmota)"
     echo "  --ssd             Add some tweaks for SSD disk"
     echo "  --hp-printer      Add HP printer GUI"
     echo "  --no-junk         Remove junk packages"
@@ -54,6 +56,7 @@ do
     case $1 in
         --docky) DOCKY="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
+        --arduino) ARDUINO="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
         --hp-printer) HPPRINTER="ok"; shift; ;;
         --no-junk) NOJUNK="ok"; shift; ;;
@@ -185,6 +188,18 @@ then
         chmod +x ./docky-install.sh
         ./docky-install.sh
         rm ./docky-install.sh
+    fi
+fi
+
+# arduino
+if [ "${ARDUINO}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/arduino
+    if [ -f ./arduino ]
+    then
+        chmod +x ./arduino
+        ./arduino
+        rm ./arduino
     fi
 fi
 
