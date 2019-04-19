@@ -1,0 +1,33 @@
+#!/bin/bash
+# -------------------------------------------------------
+# Script to install arduino environment
+#
+# 15/04/2019, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# create sources directory
+[ ! -d "$HOME/sources" ] && mkdir "$HOME/sources"
+[ ! -d "$HOME/Arduino" ] && mkdir "$HOME/Arduino"
+
+# download and extract arduino package
+logger "arduino - install"
+pushd "$HOME/sources"
+wget -O arduino.tar.xz https://downloads.arduino.cc/arduino-1.8.8-linux64.tar.xz
+tar xf arduino.tar.xz
+rm arduino.tar.xz
+popd
+
+# install arduino
+pushd "$HOME/sources/arduino-1.8.8"
+./install.sh
+popd
+
+# download and install tasmota firmware
+pushd "$HOME/sources"
+wget -O tasmota.zip https://github.com/arendst/Sonoff-Tasmota/archive/v6.5.0.zip
+unzip tasmota.zip
+rm tasmota.zip
+cp -R $HOME/sources/Sonoff-Tasmota-6.5.0/lib/* $HOME/Arduino/libraries
+cp -R $HOME/sources/Sonoff-Tasmota-6.5.0/sonoff $HOME/Arduino
+popd
+
