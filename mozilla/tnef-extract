@@ -1,0 +1,34 @@
+#!/bin/bash
+# --------------------------------------------
+# Script to extract TNEF attachments
+# in a temporary directory and
+# to open a Nautilus window
+# Depends on tnef package
+#
+# Parameter :
+# $1 - full path to tnef attachment file
+#
+# Revision history :
+# 17/07/2013 - Creation by N. Bernaerts
+# -------------------------------------------
+
+# set working directory
+WORK_DIR="/tmp/attachment-winmail"
+
+# remove any existing directory
+rm --recursive "$WORK_DIR"
+
+# create temporary directory
+mkdir -p "$WORK_DIR"
+
+# extract attachment
+tnef --directory="$WORK_DIR" --file="$1"
+
+# convert filenames to UTF-8
+convmv -f gbk -t utf8 --notest $WORK_DIR/*
+
+# remove temporary attachment
+rm "$1"
+
+# open nautilus windows in the extracted directory
+nautilus "$WORK_DIR"
