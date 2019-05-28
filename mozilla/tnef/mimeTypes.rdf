@@ -1,21 +1,20 @@
 <RDF:RDF>
-<RDF:Seq RDF:about="urn:schemes:root">
-</RDF:Seq>
-<RDF:Description RDF:about="urn:schemes">
-<NC:Protocol-Schemes RDF:resource="urn:schemes:root"/>
-</RDF:Description>
-<RDF:Description RDF:about="urn:mimetypes">
-<NC:MIME-types RDF:resource="urn:mimetypes:root"/>
-</RDF:Description>
-<RDF:Description RDF:about="urn:mimetype:application/ms-tnef" NC:value="application/ms-tnef" NC:editable="true" NC:fileExtensions="dat" NC:description="TNEF attachment">
-<NC:handlerProp RDF:resource="urn:mimetype:handler:application/ms-tnef"/>
-</RDF:Description>
-<RDF:Description RDF:about="urn:mimetype:handler:application/ms-tnef" NC:alwaysAsk="false" NC:saveToDisk="false" NC:useSystemDefault="false" NC:handleInternal="false">
-<NC:externalApplication RDF:resource="urn:mimetype:externalApplication:application/ms-tnef"/>
-</RDF:Description>
-<RDF:Description RDF:about="urn:mimetype:externalApplication:application/ms-tnef" NC:prettyName="tnef-extract" NC:path="/usr/local/sbin/tnef-extract"/>
-<RDF:Description RDF:about="urn:handler:local:/usr/local/sbin/tnef-extract" NC:prettyName="tnef-extract" NC:path="/usr/local/sbin/tnef-extract"/>
-<RDF:Seq RDF:about="urn:mimetypes:root">
-<RDF:li RDF:resource="urn:mimetype:application/ms-tnef"/>
-</RDF:Seq>
+ <RDF:Seq RDF:about="urn:schemes:root"></RDF:Seq>
+ <RDF:Description RDF:about="urn:schemes">
+  <NC:Protocol-Schemes RDF:resource="urn:schemes:root"/>
+ </RDF:Description>
+ <RDF:Description RDF:about="urn:mimetypes">
+  <NC:MIME-types RDF:resource="urn:mimetypes:root"/>
+ </RDF:Description>
+ <RDF:Description RDF:about="urn:mimetype:application/ms-tnef" NC:value="application/ms-tnef" NC:editable="true" NC:fileExtensions="dat" NC:description="TNEF attachment">
+  <NC:handlerProp RDF:resource="urn:mimetype:handler:application/ms-tnef"/>
+ </RDF:Description>
+ <RDF:Description RDF:about="urn:mimetype:handler:application/ms-tnef" NC:alwaysAsk="false" NC:saveToDisk="false" NC:useSystemDefault="false" NC:handleInternal="false">
+  <NC:externalApplication RDF:resource="urn:mimetype:externalApplication:application/ms-tnef"/>
+ </RDF:Description>
+ <RDF:Description RDF:about="urn:mimetype:externalApplication:application/ms-tnef" NC:prettyName="tnef-extract" NC:path="/usr/local/sbin/tnef-extract"/>
+ <RDF:Description RDF:about="urn:handler:local:/usr/local/sbin/tnef-extract" NC:prettyName="tnef-extract" NC:path="/usr/local/sbin/tnef-extract"/>
+ <RDF:Seq RDF:about="urn:mimetypes:root">
+  <RDF:li RDF:resource="urn:mimetype:application/ms-tnef"/>
+ </RDF:Seq>
 </RDF:RDF>
