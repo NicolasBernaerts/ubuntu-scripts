@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/local/sbin/tnef-extract
+Name=TNEF attachment extraction
+Icon=/usr/share/icons/gnome/48x48/actions/document-open.png
