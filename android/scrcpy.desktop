@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Exec=scrcpy
+Hidden=false
+NoDisplay=false
+Icon=phone
+Keywords=android;phone;display;
+X-GNOME-Autostart-enabled=true
+Name[en_US]=Remote Android Display
+Name[fr_FR]=Déport d'écran Android
+Comment=Tool to manage your Android phone display straight from your computer.
+Comment[en_US]=Tool to manage your Android phone display straight from your computer.
+Comment[fr_FR]=Visualisation et intéraction avec votre téléphone depuis une fenêtre.
+MimeType=
+Categories=GNOME;GTK;Viewer;Graphics;Utility;
