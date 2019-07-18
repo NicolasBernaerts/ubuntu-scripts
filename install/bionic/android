@@ -42,6 +42,7 @@ wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://
 # android scrcpy utility
 logger "android - scrcpy utility"
 sudo snap install scrcpy
+sudo wget -O /usr/share/applications/scrcpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/scrcpy.desktop
 
 # android screenshot utility
 logger "android - screenshot utility"
