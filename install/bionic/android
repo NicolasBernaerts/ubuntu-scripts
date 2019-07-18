@@ -39,6 +39,10 @@ mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget -O $HOME/.local/share/nautilus-python/extensions/apk-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-columns.py
 wget -O $HOME/.local/share/nautilus-python/extensions/apk-properties.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-properties.py
 
+# android scrcpy utility
+logger "android - scrcpy utility"
+sudo snap install scrcpy
+
 # android screenshot utility
 logger "android - screenshot utility"
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/android-screenshot-install.sh
