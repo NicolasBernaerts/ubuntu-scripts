@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------
 #  Tool to write main IPTC tags to image files
 #  Depends on :

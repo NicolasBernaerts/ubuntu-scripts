@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------------------
 # Common parameters for Toshiba Flashair SD Card synchronisation 
 # -------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --------------------------------------------------------------------------------------------------
 #  Command line script to handle Firefox 60+ extensions
 #  Manage installation, upgrade and removal of system wide and user extensions

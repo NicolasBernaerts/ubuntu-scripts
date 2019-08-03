@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --------------------------------------------
 # Script to extract TNEF attachments
 # in a temporary directory and

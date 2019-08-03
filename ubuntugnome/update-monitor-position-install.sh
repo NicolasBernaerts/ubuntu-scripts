@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Install Update Monitor Position script
 
 # test Ubuntu or Linux Minty distribution

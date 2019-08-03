@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Convert any video file to MKV with AAC audio and add midnight mode tracks
 
 # test Ubuntu or Linux Minty distribution

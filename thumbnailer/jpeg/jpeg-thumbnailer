@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------------------
 # Thumbnailer for JPEG files including camera and location tags
 #

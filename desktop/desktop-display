@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Command to display dialog box on latest desktop session
 # If called from an interactive session, 
 #   it runs the display command whithout specific behaviour

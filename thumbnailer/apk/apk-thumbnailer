@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------
 # Thumbnailer for APK archives files
 # Display embedded icon and version number (option)

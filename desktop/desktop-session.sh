@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Dump latest display environment variables to /tmp/.latest-desktop-session.ini
 # Variables are :
 #  - USER

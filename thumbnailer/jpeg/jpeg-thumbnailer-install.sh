@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Installation script for very fast JPEG thumbnailer with camera and location tag display
 # Based on epeg
 

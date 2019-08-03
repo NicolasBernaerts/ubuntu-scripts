@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --------------------------------------------
 #
 # Detect ext4 devices and start trim for SSD

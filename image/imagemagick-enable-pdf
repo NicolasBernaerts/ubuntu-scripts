@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------------------------------
 #  Modify ImageMagick configuration file to allow PDF and PostScript generation
 #

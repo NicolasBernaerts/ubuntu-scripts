@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ------------------------------------------------------------------------
 #  Command line script to handle Firefox and Thunderbird extensions
 #  Manage installation, upgrade and removal of system wide and user extensions

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------------
 # Imposition of a document to generate a PDF booklet
 # target format is selectable (A5, A4, ...) and default format is A4
