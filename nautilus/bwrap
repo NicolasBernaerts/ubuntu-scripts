@@ -6,6 +6,9 @@
 # intialise parameters array
 ARR_PARAM=( )
 
+# since editing /usr/local/bin requires root privilege, we can trust it
+[ -d "/usr/local/bin" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/usr/local/bin" "/usr/local/bin" )
+
 # add both --ro-bind needed by thumbnailers using imagemagick tools
 [ -d "/etc/alternatives" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" )
 [ -d "/var/cache/fontconfig" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
