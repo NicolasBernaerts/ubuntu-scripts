@@ -8,6 +8,7 @@ ARR_PARAM=( )
 
 # add both --ro-bind needed by thumbnailers using imagemagick tools
 [ -d "/etc/alternatives" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" )
+[ -d "/etc/ImageMagick-6" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/ImageMagick-6" "/etc/ImageMagick-6" )
 [ -d "/var/cache/fontconfig" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
 
 # enable $TMPDIR
