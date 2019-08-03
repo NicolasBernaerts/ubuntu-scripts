@@ -10,6 +10,9 @@ ARR_PARAM=( )
 [ -d "/etc/alternatives" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" )
 [ -d "/var/cache/fontconfig" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
 
+# enable $TMPDIR
+! [ -z "${TMPDIR}" ] && [ -d "${TMPDIR}" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--bind" "${TMPDIR}" "${TMPDIR}" )
+
 # loop thru original parameters
 while test $# -gt 0
 do
