@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --------------------------------------------
 # Optimize image to extend level histogram 
 # over the full range from black to white 

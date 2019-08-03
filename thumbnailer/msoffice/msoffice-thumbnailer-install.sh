@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Ms Office thumbnailer installation script
 
 # test Ubuntu distribution

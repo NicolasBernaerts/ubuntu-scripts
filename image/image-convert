@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------------------------------
 #  Convert image files to a list of formats described in ~/.image-convert.conf
 #

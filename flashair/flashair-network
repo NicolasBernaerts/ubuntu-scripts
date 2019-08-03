@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------
 #  Flashair SD Card wifi network detection
 # 

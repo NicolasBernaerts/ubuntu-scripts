@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --------------------------------------------
 #  Generate a PDF document from a given list of documents
 #  Documents are added in final document following

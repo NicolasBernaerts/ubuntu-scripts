@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------
 # Thumbnailer for GIMP XCF files
 #

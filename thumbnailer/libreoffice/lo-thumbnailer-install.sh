@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # LibreOffice thumbnailer installation script
 
 # test Ubuntu distribution

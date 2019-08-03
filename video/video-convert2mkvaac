@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------
 #  Convert video to MKV container and
 #   transcode audio to AAC with optionnal midnight mode audio track

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------
 #  Setup realtime backup environment 
 #  for local directories on a remote SSH server

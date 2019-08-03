@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ----------------------------------------------
 # Utility to Scan documents from HP AIO printer/scanner
 #  straight to a folder

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------------------------------------
 #  Ubuntu 16.04 LTS Post-installation script
 #

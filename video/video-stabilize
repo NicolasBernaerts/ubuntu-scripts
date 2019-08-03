@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------
 #  Video Stabilizer based on MLT and vid.stab
 #  For installation instructions, please check

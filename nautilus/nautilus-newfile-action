@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ---------------------------------------------------
 # Handle nautilus action to create an empty file from a model
 #

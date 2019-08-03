@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------
 #  Get monitors configuration from monitor.xml and apply it for current user session.
 #  In case of multiple definitions in monitor.xml only first one is used.

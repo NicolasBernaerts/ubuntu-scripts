@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # -------------------------------------------------------------------
 # Tool to synchronise Toshiba Flashair SD Card
 # It synchronise either :
