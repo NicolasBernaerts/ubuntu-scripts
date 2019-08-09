@@ -14,8 +14,8 @@ ARR_PARAM=( )
 [ -d "/etc/ImageMagick-6" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/ImageMagick-6" "/etc/ImageMagick-6" )
 [ -d "/var/cache/fontconfig" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
 
-# enable $TMPDIR
-! [ -z "${TMPDIR}" ] && [ -d "${TMPDIR}" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--bind" "${TMPDIR}" "${TMPDIR}" )
+# if exists, enable $TMPDIR
+[ -n "${TMPDIR}" ] && [ -d "${TMPDIR}" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--bind" "${TMPDIR}" "${TMPDIR}" )
 
 # loop thru original parameters
 while test $# -gt 0
