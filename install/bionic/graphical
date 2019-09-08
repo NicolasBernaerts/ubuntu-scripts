@@ -32,7 +32,7 @@ sudo apt -y install hugin
 
 # gimp
 logger "graphical - gimp"
-flatpak -y install https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
+sudo apt -y install gimp
 
 # GIMP XCF thumbnailer
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
