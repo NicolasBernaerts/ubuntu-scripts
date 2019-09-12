@@ -5,6 +5,7 @@
 # 30/05/2018, V1.0 - Migrated from Xenial
 # 30/09/2018, V1.1 - Switch Skype and Telegram to flatpak
 # 07/01/2019, V1.2 - Switch back Skype to official repo (flatpak doesn't work)
+# 12/09/2019, V1.3 - Add Open Drive Gdrive sync client
 # ----------------------------------------------------------------
 
 # network tools
@@ -64,6 +65,9 @@ then
   sudo gdebi --n ./teamviewer.deb
   rm ./teamviewer.deb
 fi
+
+# Open Drive (grive sync)
+sudo snap install odrive-unofficial
 
 # Syncthing (release channel)
 logger "internet - Syncthing"
