@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/local/bin/sshfs-mount NAME
+Name=LABEL
+Categories=Utility
+MimeType=
+Icon=ICON
