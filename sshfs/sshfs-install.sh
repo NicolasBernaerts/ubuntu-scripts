@@ -31,14 +31,14 @@ cat "${CONFIG_FILE}" > "${SSHFS_CONFIG}"
 
 # download and install script
 echo "install script"
-# wget ...
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/sshfs/sshfs-mount
 chmod +x ./sshfs-mount
 sudo cp ./sshfs-mount /usr/local/bin/sshfs-mount
 
 # download and install desktop file
 echo "install launcher for ${NAME}"
 SSHFS_LAUNCHER="$HOME/.local/share/applications/sshfs-${NAME}.desktop"
-# wget ...
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/sshfs/sshfs-mount.desktop
 cat ./sshfs-mount.desktop | sed "s|NAME|${NAME}|g" | sed "s|LABEL|${LABEL}|g" | sed "s|ICON|${ICON}|g" > "${SSHFS_LAUNCHER}"
 chmod +x "${SSHFS_LAUNCHER}"
 
