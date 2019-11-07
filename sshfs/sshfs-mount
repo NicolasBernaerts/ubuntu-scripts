@@ -92,7 +92,7 @@ then
 	${FILE_MANAGER} "${MOUNT_POINT}"
 
 	# sucess notification
-	TEXT="${SSHFS_LABEL} is now accessible thru ${SERVER_LABEL}.\nIcon is on the desktop.\n"
+	TEXT="${SSHFS_LABEL} is now accessible thru ${SERVER_LABEL}."
 	TITLE="${SSHFS_LABEL} mounted"
 	ICON=$(grep "^icon=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
 
