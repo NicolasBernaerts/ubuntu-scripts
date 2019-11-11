@@ -89,7 +89,7 @@ then
 	# open file manager windows on the drive
 	echo "80"
 	echo "# Launch file manager ..."
-	${FILE_MANAGER} "${MOUNT_POINT}"
+	${FILE_MANAGER} "${MOUNT_POINT}" &
 
 	# sucess notification
 	TEXT="${SSHFS_LABEL} is now accessible thru ${SERVER_LABEL}."
