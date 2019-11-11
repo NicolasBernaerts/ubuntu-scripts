@@ -49,10 +49,16 @@ wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ss
 cat ./sshfs-mount.desktop | sed "s|NAME|${NAME}|g" | sed "s|LABEL|${LABEL}|g" | sed "s|ICON|${ICON}|g" > "${SSHFS_LAUNCHER}"
 chmod +x "${SSHFS_LAUNCHER}"
 
-# if needed, add ServerAliveInterval to SSH config
+# setup SSH config for SSHFS auto-mmount
 echo "set SSH config"
 INTERVAL=$(grep "ServerAliveInterval" "$HOME/.ssh/config")
 [ "${INTERVAL}" = "" ] && echo "ServerAliveInterval 15" >> "$HOME/.ssh/config"
+AUTHKEY=$(grep "PubkeyAuthentication" "$HOME/.ssh/config")
+[ "${AUTHKEY}" = "" ] && echo "PubkeyAuthentication yes" >> "$HOME/.ssh/config"
+PubkeyAuthentication yes
+
+
+chmod 600 "$HOME/.ssh/config"
 
 # if needed, generate keys
 echo "generate SSH keys"
