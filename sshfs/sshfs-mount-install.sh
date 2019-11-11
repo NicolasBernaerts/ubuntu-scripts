@@ -5,13 +5,10 @@
 CONFIG_FILE="$1"
 CONFIG_INDEX="$2"
 
-# test parameters
-[ ! -f "${CONFIG_FILE}" ] && { echo "${CONFIG_FILE} doesn't exist"; exit 1; }
+# check parameters
+[ "${CONFIG_FILE}" = "" ] && { echo "Configuration file not provided"; exit 1; }
 [ "${CONFIG_INDEX}" = "" ] && { echo "Configuration index not provided"; exit 1; }
-
-# install sshfs
-echo "install packages"
-sudo apt-get -y install sshfs
+[ ! -f "${CONFIG_FILE}" ] && { echo "${CONFIG_FILE} doesn't exist"; exit 1; }
 
 # read configuration
 NAME=$(grep "^name=" "${CONFIG_FILE}" | cut -d'=' -f2)
@@ -23,6 +20,16 @@ SERVER_ADDRESS=$(grep "^${CONFIG_INDEX}-address=" "${CONFIG_FILE}" | cut -d'=' -
 SERVER_PORT=$(grep "^${CONFIG_INDEX}-port=" "${CONFIG_FILE}" | cut -d'=' -f2)
 
 # check configuration data
+[ "${ICON}" = "" ] && ICON="network-server"
+[ "${SERVER_PORT}" = "" ] && SERVER_PORT=22
+[ "${NAME}" = "" ] && { echo "Ressource name not defined in ${CONFIG_FILE}"; exit 1; }
+[ "${LABEL}" = "" ] && { echo "Ressource label not defined in ${CONFIG_FILE}"; exit 1; }
+[ "${SERVER_ACCOUNT}" = "" ] && { echo "Server account not defined in ${CONFIG_FILE}"; exit 1; }
+[ "${SERVER_ADDRESS}" = "" ] && { echo "Server URL not defined for index ${CONFIG_INDEX}"; exit 1; }
+
+# install sshfs
+echo "install packages"
+sudo apt-get -y install sshfs
 
 # set configuration file
 echo "set configuration file"
