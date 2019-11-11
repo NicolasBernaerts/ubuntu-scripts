@@ -5,6 +5,7 @@
 # 28/04/2018, V1.0 - Migrated from Xenial
 # 10/09/2018, V1.1 - Add darktable and krita
 # 08/10/2018, V1.2 - ImageMagick PDF and PostScript restriction removal
+# 11/11/2019, V1.3 - Split graphical and design tools
 # -------------------------------------------------------
 
 # screenshot apps
@@ -26,10 +27,6 @@ then
   rm ./imagemagisk-enable-pdf-install.sh
 fi
 
-# hugin panorama
-logger "graphical - hugin panorama"
-sudo apt -y install hugin
-
 # gimp
 logger "graphical - gimp"
 sudo apt -y install gimp
@@ -44,11 +41,6 @@ then
   rm ./gimp-tumbnailer-install.sh
 fi
 
-# darktable
-logger "graphical - darktable"
-sudo add-apt-repository -y ppa:pmjdebruijn/darktable-release
-sudo apt -y install darktable
-
 # graphviz
 logger "graphical - graphviz"
 sudo apt -y install graphviz
@@ -61,20 +53,6 @@ then
   chmod +x ./graphviz-thumbnailer-install.sh
   ./graphviz-thumbnailer-install.sh
   rm graphviz-thumbnailer-install.sh
-fi
-
-# krita
-logger "graphical - krita"
-flatpak -y install https://flathub.org/repo/appstream/org.kde.krita.flatpakref
-
-# Sweet Home 3D
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
-if [ -f ./sweethome3d-install.sh ]
-then
-  logger "graphical - Sweet Home 3D"
-  chmod +x ./sweethome3d-install.sh
-  ./sweethome3d-install.sh
-  rm ./sweethome3d-install.sh
 fi
 
 # JPEG fast thumbnailer
@@ -124,7 +102,3 @@ mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget -O $HOME/.local/share/nautilus-python/extensions/exif-columns.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-columns.py
 wget -O $HOME/.local/share/nautilus-python/extensions/exif-alltags.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-alltags.py
 wget -O $HOME/.local/share/nautilus-python/extensions/exif-geotag.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/exif-geotag.py
-
-# Luminance HDR and RAW Therapee
-logger "graphical - Luminance HDR & RAW Therapee"
-sudo apt -y install luminance-hdr rawtherapee
