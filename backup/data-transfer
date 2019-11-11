@@ -31,7 +31,8 @@ command -v gconftool-2 >/dev/null 2>&1 || { echo "Please install gconftool-2 uti
 command -v tar >/dev/null 2>&1 || { echo "Please install tar utility"; exit 1; }
 
 # check configuration file
-[ -f "${CONF_INI}" ] || { echo "Configuration file ${CONF_INI} is missing"; exit 1; }
+[ ! -f "${CONF_INI}" ] && wget -O "${CONF_INI}" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/backup/data-transfer.ini
+[ ! -f "${CONF_INI}" ] && { echo "Configuration file ${CONF_INI} is not available"; exit 1; }
 
 # load sections
 ARR_SECTION=( $(grep "^\[" "${CONF_INI}" | tr -d "[]") )
