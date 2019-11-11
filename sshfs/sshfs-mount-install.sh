@@ -55,9 +55,6 @@ INTERVAL=$(grep "ServerAliveInterval" "$HOME/.ssh/config")
 [ "${INTERVAL}" = "" ] && echo "ServerAliveInterval 15" >> "$HOME/.ssh/config"
 AUTHKEY=$(grep "PubkeyAuthentication" "$HOME/.ssh/config")
 [ "${AUTHKEY}" = "" ] && echo "PubkeyAuthentication yes" >> "$HOME/.ssh/config"
-PubkeyAuthentication yes
-
-
 chmod 600 "$HOME/.ssh/config"
 
 # if needed, generate keys
