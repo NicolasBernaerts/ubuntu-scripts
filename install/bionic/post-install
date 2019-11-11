@@ -8,6 +8,7 @@
 #  30/09/2018, V1.1 - Add --no-junk option
 #  15/04/2019, V1.2 - Change --wifi to --tweaks
 #  16/04/2019, V1.3 - Add --arduino
+#  11/11/2019, V1.4 - Add --design
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------
@@ -41,12 +42,13 @@ then
     echo "Script to finalise Ubuntu ${DISTRI_NAME} installation."
     echo "It will install some important packages not provided by default installation."
     echo "Options are :"
+    echo "  --no-junk         Remove junk packages"
+    echo "  --design          Install design apps"
     echo "  --docky           Add docky launcher"
-    echo "  --tweaks          Add some tweaks for problematic hardware"
     echo "  --arduino         Install Arduino environment (with Tasmota)"
+    echo "  --tweaks          Add some tweaks for problematic hardware"
     echo "  --ssd             Add some tweaks for SSD disk"
     echo "  --hp-printer      Add HP printer GUI"
-    echo "  --no-junk         Remove junk packages"
     exit 1
 fi
 
@@ -54,12 +56,13 @@ fi
 while test ${#} -gt 0
 do
     case $1 in
+        --no-junk) NOJUNK="ok"; shift; ;;
+        --design) DESIGN="ok"; shift; ;;
         --docky) DOCKY="ok"; shift; ;;
-        --tweaks) TWEAKS="ok"; shift; ;;
         --arduino) ARDUINO="ok"; shift; ;;
+        --tweaks) TWEAKS="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
         --hp-printer) HPPRINTER="ok"; shift; ;;
-        --no-junk) NOJUNK="ok"; shift; ;;
         *) shift; ;;
     esac
 done
@@ -154,6 +157,18 @@ fi
 
 # disable apport crash report
 sudo systemctl disable apport.service
+
+# design apps
+if [ "${DESIGN}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/design
+    if [ -f ./design ]
+    then
+        chmod +x ./design
+        ./design
+        rm ./design
+    fi
+fi
 
 # tweaks
 if [ "${TWEAKS}" = "ok" ]
