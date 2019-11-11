@@ -44,16 +44,14 @@ then
   # un-blacklist i2c_i801 module
   sudo sed -i "s/blacklist i2c_i801/#blacklist i2c_i801/g" /etc/modprobe.d/blacklist.conf
   
-  # create rc.local if needed
-  [ ! -f /etc/rc.local ] && echo "#!/bin/sh -e" | sudo tee /etc/rc.local
+  # create rc.local if needed and make it executable
+  [ ! -f /etc/rc.local ] && echo '#!/bin/sh -e' | sudo tee /etc/rc.local
+  sudo chmod +x /etc/rc.local
   
   # load touchpad driver with proper option
   echo "" | sudo tee -a /etc/rc.local
   echo "# synaptics touchpad" | sudo tee -a /etc/rc.local
   echo "modprobe -r psmouse" | sudo tee -a /etc/rc.local
   echo "modprobe psmouse synaptics_intertouch=1" | sudo tee -a /etc/rc.local
-  
-  # make /etc/rc.local executable
-  sudo chmod +x /etc/rc.local
 fi
 
