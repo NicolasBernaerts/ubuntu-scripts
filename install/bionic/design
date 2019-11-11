@@ -5,91 +5,27 @@
 # 11/11/2019, V1.0 - Split graphical and design apps
 # -------------------------------------------------------
 
-# screenshot apps
-logger "graphical - screenshot apps"
-sudo apt -y install flameshot
+# hugin panorama
+logger "graphical - hugin panorama"
+sudo apt -y install hugin
 
-# misc graphical apps
-logger "graphical - graphical apps"
-sudo apt -y install exiv2 imagemagick dcraw
+# darktable
+logger "graphical - darktable"
+sudo add-apt-repository -y ppa:pmjdebruijn/darktable-release
+sudo apt -y install darktable
 
-# imagemagick
-sudo apt -y install imagemagick
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
-if [ -f ./imagemagisk-enable-pdf-install.sh ]
+# krita
+logger "graphical - krita"
+flatpak -y install https://flathub.org/repo/appstream/org.kde.krita.flatpakref
+
+# Sweet Home 3D
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
+if [ -f ./sweethome3d-install.sh ]
 then
-  logger "graphical - ImageMagick PDF and PostScript restriction removal"
-  chmod +x ./imagemagisk-enable-pdf-install.sh
-  ./imagemagisk-enable-pdf-install.sh
-  rm ./imagemagisk-enable-pdf-install.sh
-fi
-
-# gimp
-logger "graphical - gimp"
-sudo apt -y install gimp
-
-# GIMP XCF thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
-if [ -f ./gimp-tumbnailer-install.sh ]
-then
-  logger "graphical - GIMP XCF thumbnailer"
-  chmod +x ./gimp-tumbnailer-install.sh
-  ./gimp-tumbnailer-install.sh
-  rm ./gimp-tumbnailer-install.sh
-fi
-
-# graphviz
-logger "graphical - graphviz"
-sudo apt -y install graphviz
-
-# Graphviz DOT thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
-if [ -f ./graphviz-thumbnailer-install.sh ]
-then
-  logger "graphical - Graphviz DOT thumbnailer"
-  chmod +x ./graphviz-thumbnailer-install.sh
-  ./graphviz-thumbnailer-install.sh
-  rm graphviz-thumbnailer-install.sh
-fi
-
-# JPEG fast thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
-if [ -f ./jpeg-thumbnailer-install.sh ]
-then
-  logger "graphical - JPEG fast thumbnailer"
-  chmod +x ./jpeg-thumbnailer-install.sh
-  ./jpeg-thumbnailer-install.sh
-  rm ./jpeg-thumbnailer-install.sh
-fi
-
-# RAW pictures thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer-install.sh
-if [ -f ./raw-thumbnailer-install.sh ]
-then
-  logger "graphical - RAW pictures thumbnailer"
-  chmod +x ./raw-thumbnailer-install.sh
-  ./raw-thumbnailer-install.sh
-  rm ./raw-thumbnailer-install.sh
-fi
-
-# Image convert extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
-if [ -f ./image-convert-install.sh ]
-then
-  logger "graphical - Image convert extension"
-  chmod +x ./image-convert-install.sh
-  ./image-convert-install.sh
-  rm ./image-convert-install.sh
-fi
-
-# scan2folder tool
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
-if [ -f ./scan2folder-install.sh ]
-then
-  logger "graphical - scan2folder"
-  chmod +x ./scan2folder-install.sh
-  ./scan2folder-install.sh
-  rm ./scan2folder-install.sh
+  logger "graphical - Sweet Home 3D"
+  chmod +x ./sweethome3d-install.sh
+  ./sweethome3d-install.sh
+  rm ./sweethome3d-install.sh
 fi
 
 # Luminance HDR and RAW Therapee
