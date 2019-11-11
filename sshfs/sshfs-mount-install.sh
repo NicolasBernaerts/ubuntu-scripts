@@ -20,7 +20,7 @@ SERVER_ADDRESS=$(grep "^${CONFIG_INDEX}-address=" "${CONFIG_FILE}" | cut -d'=' -
 SERVER_PORT=$(grep "^${CONFIG_INDEX}-port=" "${CONFIG_FILE}" | cut -d'=' -f2)
 
 # check configuration data
-[ "${ICON}" = "" ] && ICON="network-server"
+[ "${ICON}" = "" ] && ICON="server"
 [ "${SERVER_PORT}" = "" ] && SERVER_PORT=22
 [ "${NAME}" = "" ] && { echo "Ressource name not defined in ${CONFIG_FILE}"; exit 1; }
 [ "${LABEL}" = "" ] && { echo "Ressource label not defined in ${CONFIG_FILE}"; exit 1; }
