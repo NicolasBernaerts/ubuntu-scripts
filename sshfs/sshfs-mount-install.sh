@@ -73,6 +73,7 @@ do
 		echo "Port ${SERVER_PORT}" >> "${SSH_CONFIG}"
 		echo "User ${ACCOUNT}" >> "${SSH_CONFIG}"
 		echo "ServerAliveInterval 15" >> "${SSH_CONFIG}"
+		echo "ServerAliveCountMax 3" >> "${SSH_CONFIG}"
 		echo "PubkeyAuthentication yes" >> "${SSH_CONFIG}"
 		echo "StrictHostKeyChecking no" >> "${SSH_CONFIG}"
 		echo "Compression yes" >> "${SSH_CONFIG}"
