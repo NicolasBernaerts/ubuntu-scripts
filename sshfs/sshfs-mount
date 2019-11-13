@@ -35,17 +35,16 @@ MOUNT_POINT="$HOME/${MOUNT_POINT}"
 [ ! -d "${MOUNT_POINT}" ] && mkdir --parents "${MOUNT_POINT}"
 
 # loop initialisation
-SERVER_INDEX=1
-SERVER_REACHED=""
-
+INDEX=1
+SERVER_INDEX=0
 # loop to mount ressource
-while [ ${SERVER_INDEX} -gt 0 -a "${SERVER_REACHED}" = "" ]
+while [ ${INDEX} -gt 0 -a ${SERVER_INDEX} -eq 0 ]
 do
 	# read server config
-	SERVER_LABEL=$(grep "^${SERVER_INDEX}-label=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-	SERVER_ADDRESS=$(grep "^${SERVER_INDEX}-address=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-	SERVER_PORT=$(grep "^${SERVER_INDEX}-port=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-	SERVER_PROTOCOL=$(grep "^${SERVER_INDEX}-protocol=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
+	SERVER_LABEL=$(grep "^${INDEX}-label=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
+	SERVER_ADDRESS=$(grep "^${INDEX}-address=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
+	SERVER_PORT=$(grep "^${INDEX}-port=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
+	SERVER_PROTOCOL=$(grep "^${INDEX}-protocol=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
 
 	# if server address is defined, test server
 	if [ "${SERVER_ADDRESS}" != "" ]
@@ -58,16 +57,22 @@ do
 		[ "${SERVER_PROTOCOL}" != "" ] && SERVER_REACHED=$(echo "${SERVER_REACHED}" | grep "${SERVER_PROTOCOL}")
 
 		# if server reached, end of quest
-		[ "${SERVER_REACHED}" != "" ] && SERVER_INDEX=0 || SERVER_INDEX=$(echo $((SERVER_INDEX + 1)))
+		if [ "${SERVER_REACHED}" != "" ]
+		then
+			SERVER_INDEX=${INDEX}
+			INDEX=0
+		else
+			INDEX=$((INDEX + 1))
+		fi
 	# else
 	else
 		# end of quest
-		SERVER_INDEX=0
+		INDEX=0
 	fi
 done
 
 # if server is accessible
-if [ "${SERVER_REACHED}" != "" ]
+if [ ${SERVER_INDEX} -gt 0 ]
 then
 	# unmount ressource if any
 	echo "50"
@@ -77,14 +82,14 @@ then
 	# mount ressource
 	echo "60"
 	echo "# Connection thru ${SERVER_LABEL} ..."
-	sshfs -o "reconnect,compression=no,port=${SERVER_PORT},uid=${USER_UID},gid=${USER_GID}" "${SSHFS_ACCOUNT}@${SERVER_ADDRESS}:" "${MOUNT_POINT}"
+	sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" "${SSHFS_NAME}_${SERVER_INDEX}:" "${MOUNT_POINT}"
 
 	# check ressource
 	SERVER_REACHED=$(mount | grep "sshfs" | grep "${MOUNT_POINT}") 
 fi
 
 # if ressource has been mounted
-if [ "${SERVER_REACHED}" != "" ]
+if [ ${SERVER_INDEX} -gt 0 ]
 then
 	# open file manager windows on the drive
 	echo "80"
