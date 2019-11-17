@@ -46,7 +46,7 @@ sudo apt -y install chromium-browser filezilla
 
 # telegram
 logger "internet - telegram"
-flatpak -y install flathub org.telegram.desktop
+sudo apt -y install telegram-desktop
 
 # skype
 wget https://repo.skype.com/latest/skypeforlinux-64.deb
