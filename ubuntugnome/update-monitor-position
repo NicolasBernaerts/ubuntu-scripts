@@ -21,20 +21,22 @@
 # monitor.xml path
 MONITOR_XML="$HOME/.config/monitors.xml"
 
+
 # get number of declared monitors
-NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/output)' $MONITOR_XML)
+NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/logicalmonitor)' $MONITOR_XML)
 
 # loop thru declared monitors to create the command line parameters
 for (( i=1; i<=$NUM; i++)); do
   # get attributes of current monitor (name and x & y positions)
-  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/output['$i']/@name)' $MONITOR_XML 2>/dev/null)
-  POS_X=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/x/text()' $MONITOR_XML 2>/dev/null)
-  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/y/text()' $MONITOR_XML 2>/dev/null)
-  ROTATE=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/rotation/text()' $MONITOR_XML 2>/dev/null)
-  WIDTH=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/width/text()' $MONITOR_XML 2>/dev/null)
-  HEIGHT=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/height/text()' $MONITOR_XML 2>/dev/null)
-  RATE=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/rate/text()' $MONITOR_XML 2>/dev/null)
-  PRIMARY=$(xmllint --xpath '//monitors/configuration['1']/output['$i']/primary/text()' $MONITOR_XML 2>/dev/null)
+  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/logicalmonitor['$i']/monitor/monitorspec/connector/text())' $MONITOR_XML 2>/dev/null)
+  POS_X=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/x/text()' $MONITOR_XML 2>/dev/null)
+  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/y/text()' $MONITOR_XML 2>/dev/null)
+  ROTATE=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/rotation/text()' $MONITOR_XML 2>/dev/null)
+  WIDTH=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/width/text()' $MONITOR_XML 2>/dev/null)
+  HEIGHT=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/height/text()' $MONITOR_XML 2>/dev/null)
+  RATE=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/rate/text()' $MONITOR_XML 2>/dev/null)
+  PRIMARY=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/primary/text()' $MONITOR_XML 2>/dev/null)
+
 
   # if position is defined for current monitor, add its position and orientation to command line parameters
   [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}" "--fbmm" "${WIDTH}x${HEIGHT}" "--rate" "$RATE" "--rotate" "$ROTATE")
