@@ -6,4 +6,5 @@ This project explains all the steps needed to configure Nautilus to display grap
 
 --- Description & Installation ---
 
-Complete description and full installation procedure are available at http://bernaerts.dyndns.org/linux/74-ubuntu/287-ubuntu-graphviz-viewer-gnome-thumbnailer
+Complete description and full installation procedure are available at
+http://www.bernaerts-nicolas.fr/linux/74-ubuntu/287-ubuntu-graphviz-viewer-gnome-thumbnailer
