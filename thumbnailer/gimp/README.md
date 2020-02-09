@@ -12,4 +12,4 @@ But till date it is broken. So I decided to write a small ans simple thumbnailer
 
 Complete description and full installation procedure are available at
 
-http://bernaerts.dyndns.org/linux/76-gnome/xxx
+http://www.bernaerts-nicolas.fr/linux/76-gnome/xxx
