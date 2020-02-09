@@ -8,4 +8,5 @@ This thumbnailer analyse EXIF tags and generate Nautilus thumbnail including :
 
 --- Description & Installation ---
 
-Complete description and full installation procedure are available at http://bernaerts.dyndns.org/linux/...
+Complete description and full installation procedure are available at
+http://www.bernaerts-nicolas.fr/linux/...
