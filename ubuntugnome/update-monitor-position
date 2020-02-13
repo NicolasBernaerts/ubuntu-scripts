@@ -18,41 +18,39 @@
 #    08/12/2014, V1.5 - Waiting time in seconds becomes a parameter
 # -------------------------------------------------
 
-esc() {
-    printf "%s\n" "$1" | sed -e "s/'/'\"'\"'/g" -e "1s/^/'/" -e "\$s/\$/'/"
-}
+esc() { printf "%s\n" "$1" | sed -e "s/'/'\"'\"'/g" -e "1s/^/'/" -e "\$s/\$/'/" }
 
 # monitor.xml path
 MONITOR_XML="$HOME/Documents/monitors.xml"
 
 # get number of declared monitors
-NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/logicalmonitor)' $MONITOR_XML)
+NUM=$(xmllint --xpath 'count(//monitors/configuration['1']/logicalmonitor)' "${MONITOR_XML}")
 
 # loop thru declared monitors to create the command line parameters
 for (( i=1; i<=$NUM; i++)); do
   # get attributes of current monitor (name and x & y positions)
-  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/logicalmonitor['$i']/monitor/monitorspec/connector/text())' $MONITOR_XML 2>/dev/null)
-  POS_X=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/x/text()' $MONITOR_XML 2>/dev/null)
-  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/y/text()' $MONITOR_XML 2>/dev/null)
+  NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/logicalmonitor['$i']/monitor/monitorspec/connector/text())' "${MONITOR_XML}" 2>/dev/null)
+  POS_X=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/x/text()' "${MONITOR_XML}" 2>/dev/null)
+  POS_Y=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/y/text()' "${MONITOR_XML}" 2>/dev/null)
 #   ROTATE=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/rotation/text()' $MONITOR_XML 2>/dev/null)
-  WIDTH=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/width/text()' $MONITOR_XML 2>/dev/null)
-  HEIGHT=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/height/text()' $MONITOR_XML 2>/dev/null)
-  RATE=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/rate/text()' $MONITOR_XML 2>/dev/null)
-  PRIMARY=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/primary/text()' $MONITOR_XML 2>/dev/null)
+  WIDTH=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/width/text()' "${MONITOR_XML}" 2>/dev/null)
+  HEIGHT=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/height/text()' "${MONITOR_XML}" 2>/dev/null)
+  RATE=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/rate/text()' "${MONITOR_XML}" 2>/dev/null)
+  PRIMARY=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/primary/text()' "${MONITOR_XML}" 2>/dev/null)
 
-  RES="$WIDTH $HEIGHT" 
-  MODELINE=$(cvt $(echo $RES) | grep -e "Modeline [^(]" | sed -r 's/.*Modeline (.*)/\1/')
-  MODERES=$(echo $MODELINE | grep -o -P '(?<=").*(?=")')
+  RES="${WIDTH} ${HEIGHT}" 
+  MODELINE=$(cvt $(echo "${RES}") | grep -e "Modeline [^(]" | sed -r 's/.*Modeline (.*)/\1/')
+  MODERES=$(echo "${MODELINE}" | grep -o -P '(?<=").*(?=")')
 
   # if position is defined for current monitor, add its position and orientation to command line parameters
-  [ -n "$POS_X" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "$NAME" "--pos" "${POS_X}x${POS_Y}" "--mode" "$MODERES" "--rate" "$RATE")
+  [ -n "${POS_X}" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "${NAME}" "--pos" "${POS_X}x${POS_Y}" "--mode" "${MODERES}" "--rate" "${RATE}")
 
   # addmodes before so they can set
-
-eval "xrandr" "--newmode ${MODELINE[@]}"
-  xrandr "--addmode" "$NAME" "$MODERES"
+  eval "xrandr" "--newmode ${MODELINE[@]}"
+  xrandr "--addmode" "${NAME}" "${MODERES}"
+  
   # if monitor is defined as primary, adds it to command line parameters
-  [ "$PRIMARY" = "yes" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--primary")
+  [ "${PRIMARY}" = "yes" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--primary")
 done
 
 # if needed, wait for some seconds (for X to finish initialisation)
