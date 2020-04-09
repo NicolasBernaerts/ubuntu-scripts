@@ -6,6 +6,7 @@
 # 10/08/2018, V1.1 - Add kdenlive and openshot
 # 30/09/2018, V1.2 - Update DVD decryption to libdvd-pkg
 # 17/10/2018, V1.3 - Add asunder CD ripping
+# 05/04/2020, V1.4 - Switch to Openshot PPA
 # -------------------------------------------------------
 
 # auto-accept mscorefonts eula and install it
@@ -63,12 +64,14 @@ logger "multimedia - kdenlive"
 flatpak -y install https://flathub.org/repo/appstream/org.kde.kdenlive.flatpakref
 
 # openshot video editor
-flatpak -y install https://flathub.org/repo/appstream/org.openshot.OpenShot.flatpakref
+sudo add-apt-repository ppa:openshot.developers/ppa
+sudo apt update
+sudo apt install openshot-qt 
 
 # vidcutter
 logger "multimedia - vidcutter"
 sudo add-apt-repository -y ppa:ozmartian/apps
-sudo apt-get update
+sudo apt update
 sudo apt -y install vidcutter
 
 # audio recorder
