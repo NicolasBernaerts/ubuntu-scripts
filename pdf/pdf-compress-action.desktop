@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Action
+Icon=pdf-compress
+Name[en_US]=Compress PDF
+Name[en]=Compress PDF
+Name[C]=Compress PDF
+Name[fr_FR]=Compresser un fichier PDF
+Tooltip[en_US]=Use Imagemagick to compress PDF files
+Tooltip[en]=Use Imagemagick to compress PDF files
+Tooltip[C]=Use Imagemagick to compress PDF files
+Tooltip[fr_FR]=utilise Imagemagick pour compresser un fichier PDF
+Profiles=compress_pdf;
+
+[X-Action-Profile compress_pdf]
+Exec=pdf-compress %u
+MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;
+Name[en_US]=Default profile
+Name[en]=Default profile
+Name[C]=Default profile

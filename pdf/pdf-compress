@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------
+# Compress PDF file using convert (imagemagick)
+#
+# Depends on :
+#   * convert (imagemagick)
+#
+# Parameter :
+#   $1 - URI of original PDF
+#
+# Revision history :
+#   20/04/2020, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# check tools availability
+command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
+
+# if no file selected, exit
+DOC_URI="$1"
+[ "$DOC_URI" = "" ] && exit 1
+
+# extract document name and extension
+DOC_BASE=$(echo "${DOC_URI}" | sed 's/^\(.*\)\.[a-zA-Z0-9]*$/\1/')
+DOC_EXT=$(echo "${DOC_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
+
+# set PDF extension for files without extension
+[ "${DOC_BASE}" = "${DOC_EXT}" ] && DOC_EXT="pdf"
+
+# generate temporary files and directory
+TMP_DIR=$(mktemp -t -d "pdf-repair-XXXXXXXX")
+TMP_ORIGINAL="${TMP_DIR}/original.pdf"
+TMP_COMPRESS="${TMP_DIR}/compress.pdf"
+
+# copy input file to temporary local file
+gio copy "${DOC_URI}" "${TMP_ORIGINAL}"
+
+# -----------------------
+# Repair with GhostScript
+# -----------------------
+
+# generate repaired PDF
+convert -density 180x180 -quality 40 -compress jpeg "${TMP_ORIGINAL}" "${TMP_COMPRESS}"
+
+# place corrected file side to original 
+gio copy "${TMP_COMPRESS}" "${DOC_BASE}-compressed.${DOC_EXT}"
+
+# ------------
+#   Cleanup
+# ------------
+
+# remove temporary directory
+rm -r "${TMP_DIR}"
+
