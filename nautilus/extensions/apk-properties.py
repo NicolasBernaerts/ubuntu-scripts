@@ -2,6 +2,9 @@
 # Adds a specific tab in Nautilus file properties
 # for Android APK files
 #
+# Needs aapt to be installed
+#
+# History
 #   02/03/2014, v1.0 - creation
 #   24/04/2020, v2.0 - rewrite for python3 compatibility
 
