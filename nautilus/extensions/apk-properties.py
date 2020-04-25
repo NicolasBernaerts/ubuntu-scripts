@@ -1,49 +1,64 @@
-# Nautilus APK information display 
-# Adds a specific tab in Nautilus file properties
+#!/usr/bin/env python3
+# ---------------------------------------------------------
+# Nautilus extension to display properties tab
 # for Android APK files
+# Dependencies :
+#   - aapt
+# Procedure :
+#   http://bernaerts.dyndns.org/linux/...
 #
-# Needs aapt to be installed
-#
-# History
-#   02/03/2014, v1.0 - creation
+# Revision history :
+#   02/03/2014, v1.0 - creation by N. Bernaerts
 #   24/04/2020, v2.0 - rewrite for python3 compatibility
+# ---------------------------------------------------
+
+# -------------------
+#  Import libraries
+# -------------------
 
 import io
 import subprocess
-import os
 import re
 import pipes
-
 from urllib.parse import unquote
 from gi.repository import Nautilus, Gtk, GObject
 
+# --------------------
+#   Class definition
+# --------------------
+
 class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
-  def __init__(self):
-    pass
+  def __init__(self): pass
     
-  # method to display one property
-  def dislayLabel(self, title, value, x, y, height):
+  # --------------------
+  #   Display one item
+  # --------------------
+  def dislayItem(self, title, value, x, y):
 
     # dislay title
     gtk_label = Gtk.Label()
     gtk_label.set_markup("<b>" + title + "</b>")
     gtk_label.set_alignment(1.0, 0)
-    gtk_label.set_padding(10, 5)
+    gtk_label.set_padding(10, 3)
     gtk_label.show()
-    self.grid.attach(gtk_label, x, y, 1, height)
+    self.grid.attach(gtk_label, x, y, 1, 1)
 
     # dislay value
-    gtk_label = Gtk.Label(value)
+    gtk_label = Gtk.Label()
+    gtk_label.set_markup(value)
     gtk_label.set_alignment(0.0, 0)
-    gtk_label.set_padding(10, 5)
+    gtk_label.set_padding(10, 3)
     gtk_label.show()
-    self.grid.attach(gtk_label, x + 1, y, 1, height)
+    self.grid.attach(gtk_label, x + 1, y, 1, 1)
     
     return
 
+  # -------------------------
+  #   Display property tab
+  # -------------------------
   def get_property_pages(self, files):
 
-    # test file parameter
+    # test file type
     if len(files) != 1: return
     file = files[0]
     if file.get_uri_scheme() != 'file': return
@@ -58,8 +73,12 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       self.property_label = Gtk.Label('APK')
       self.property_label.show()
       self.grid = Gtk.Grid()
+      self.grid.set_margin_start(10)
+      self.grid.set_margin_end(10)
+      self.grid.set_margin_top(5)
+      self.grid.set_margin_bottom(5)
       self.grid.show()
-
+      
       # aapt command, using pipes to handle filenames including '(', ')', ...
       command_line = "aapt d badging " + pipes.quote(filename)
       proc = subprocess.Popen(command_line , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -87,11 +106,11 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             handled = True
             found_package == True
             value = re.compile('^.*name=.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
-            self.dislayLabel("Name", value, 0, 1, 1)
-            value = re.compile('^.*versionCode=.([^ \']*).*$').sub('\g<1>',line).rstrip('\n')
-            self.dislayLabel("Version code", value, 0, 2, 1)
+            self.dislayItem("Name", value, 0, 1)
             value = re.compile('^.*versionName=.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
-            self.dislayLabel("Version name", value, 0, 3, 1)
+            self.dislayItem("Version name", value, 0, 2)
+            value = re.compile('^.*versionCode=.([^ \']*).*$').sub('\g<1>',line).rstrip('\n')
+            self.dislayItem("Version code", value, 0, 3)
 
         # line application:
         if handled == False and found_application == False:
@@ -99,7 +118,7 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             handled = True
             found_application = True
             value = re.compile('^.*label=.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
-            self.dislayLabel("Label", value, 0, 0, 1)
+            self.dislayItem("Label", value, 0, 0)
 
 
         # line sdkVersion:
@@ -108,7 +127,7 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             handled = True
             found_sdkversion = True
             value = re.compile('^sdkVersion:.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
-            self.dislayLabel("SDK version", value, 0, 4, 1)
+            self.dislayItem("SDK version", value, 0, 4)
 
         # line targetSdkVersion:
         if handled == False and found_targetsdk == False:
@@ -116,7 +135,7 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             handled = True
             found_targetsdk = True
             value = re.compile('^targetSdkVersion:.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
-            self.dislayLabel("Target SDK version", value, 0, 5, 1)
+            self.dislayItem("Target SDK version", value, 0, 5)
 
         # line native-code:
         if handled == False and found_code == False:
@@ -126,7 +145,7 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             value = re.compile('^native-code:.(.*)$').sub('\g<1>', line)
             value = re.compile(' ').sub('\n', value)
             value = re.compile('\'').sub('', value).rstrip('\n')
-            self.dislayLabel("Code", value, 0, 6, 1)
+            self.dislayItem("Code", value, 0, 6)
 
         # line supports-screens:
         if handled == False and found_screens == False:
@@ -136,7 +155,7 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             value = re.compile('^supports-screens:.(.*)$').sub('\g<1>', line)
             value = re.compile(' ').sub('\n', value)
             value = re.compile('\'').sub('', value).rstrip('\n')
-            self.dislayLabel("Supported\nscreens", value, 0, 7, 1)
+            self.dislayItem("Supported screens", value, 0, 7)
 
         # line densities:
         if handled == False and found_densities == False:
@@ -146,7 +165,7 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             value = re.compile('^densities:.(.*)$').sub('\g<1>', line)
             value = re.compile(' ').sub('\n', value)
             value = re.compile('\'').sub('', value).rstrip('\n')
-            self.dislayLabel("Supported\ndensities", value, 0, 8, 1)
+            self.dislayItem("Supported densities", value, 0, 8)
 
         # line uses-feature:
         if handled == False:
@@ -161,10 +180,13 @@ class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
             apk_permissions += re.compile('^uses-permission: name=.(.*).$').sub('\g<1>', line)
 
       # dislay features and permissions
-      self.dislayLabel("Used\nfeatures", apk_features.rstrip('\n'), 2, 0, 4)
-      self.dislayLabel("Used\npermissions", apk_permissions.rstrip('\n'), 2, 4, 5)
+      self.dislayItem("Used features", apk_features.rstrip('\n'), 0, 9)
+      self.dislayItem("Used permissions", apk_permissions.rstrip('\n'), 0, 10)
+
+      # declare main scrolled window
+      self.window = Gtk.ScrolledWindow()
+      self.window.add_with_viewport(self.grid)
+      self.window.show_all()
 
       # return result
-      return Nautilus.PropertyPage(name="NautilusPython::apk_info",
-                                     label=self.property_label, 
-                                     page=self.grid),
+      return Nautilus.PropertyPage(name="NautilusPython::apk_info", label=self.property_label, page=self.window),

@@ -1,97 +1,124 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------------
 # Nautilus extension to display EXIF properties tab
+# Dependencies :
+#   - gir1.2-gexiv2-0.10
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/...
 #
 # Revision history :
 #   02/09/2016, V1.0 - Creation by N. Bernaerts
+#   24/04/2020, v2.0 - rewrite for python3 compatibility
 # ---------------------------------------------------
 
-# import libraries
-import urllib
-import os
-import os.path
-import re
-import pygtk
+# -------------------
+#  Import libraries
+# -------------------
+
 import gi
 gi.require_version("GExiv2", "0.10")
-from gi.repository import GExiv2
-gi.require_version("Nautilus", "3.0")
+from urllib.parse import unquote
 from gi.repository import Nautilus, GObject, Gtk
+from gi.repository.GExiv2 import Metadata 
 
-# -------------------
-# Property page
-# -------------------
+# --------------------
+#   Class definition
+# --------------------
+
 class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
   def __init__(self):
     pass
 
-  # method to set one label in the table
-  def SetLabel(self, value, row, column, width, align):
-    # create label
-    labelValue = Gtk.Label()
-    labelValue.set_markup(value)
+  # --------------------
+  #   Display one tag
+  # --------------------
+  def dislayTag(self, name, interpreted, raw_value, x, y):
 
-    # set alignment
-    if align == "left": labelValue.set_alignment(xalign=0.0, yalign=0.0)
-    if align == "center": labelValue.set_alignment(xalign=0.5, yalign=0.0)
-    if align == "right": labelValue.set_alignment(xalign=1.0, yalign=0.0)
+    # check if third column is needed
+    width = 1
+    if raw_value == "": width = 2
+    
+    # dislay name
+    gtk_label = Gtk.Label()
+    gtk_label.set_markup(name)
+    gtk_label.set_alignment(1.0, 0)
+    gtk_label.set_padding(10, 2)
+    gtk_label.show()
+    self.grid.attach(gtk_label, x, y, 1, 1)
 
-    # place label
-    self.table.attach(labelValue, column, column + width, row, row + 1)
+    # dislay interpreted string
+    gtk_label = Gtk.Label()
+    gtk_label.set_markup(interpreted)
+    gtk_label.set_alignment(0.0, 0)
+    gtk_label.set_padding(10, 2)
+    gtk_label.show()
+    self.grid.attach(gtk_label, x + 1, y, width, 1)
+
+    # if different, dislay raw string
+    if raw_value != "": 
+      gtk_label = Gtk.Label()
+      gtk_label.set_markup(raw_value)
+      gtk_label.set_alignment(0.0, 0)
+      gtk_label.set_padding(10, 2)
+      gtk_label.show()
+      self.grid.attach(gtk_label, x + 2, y, 1, 1)
+    
     return
 
-  # method to generate properties tab
+  # -------------------------
+  #   Display property tab
+  # -------------------------
   def get_property_pages(self, files):
-    # default map size and zoom factor
-    sizeMap = '320x320'
-    zoomMap = '10'
-  
-    # if dealing with multiple selection, return
-    if len(files) != 1:
-      return
 
-    # if not dealing with file, return
+    # test file type
+    if len(files) != 1: return
     file = files[0]
-    if file.get_uri_scheme() != 'file':
-      return
+    if file.get_uri_scheme() != 'file': return
 
     # if mimetype corresponds to JPG image, read data and populate tab
     if file.get_mime_type() in ('image/jpeg' 'image/png'):
     
+      # default map size and zoom factor
+      sizeMap = '320x320'
+      zoomMap = '10'
+  
       # read data from APK file
-      filename = urllib.unquote(file.get_uri()[7:])
+      filename = unquote(file.get_uri()[7:])
+
+      # create label and grid
+      self.property_label = Gtk.Label('EXIF')
+      self.property_label.show()
+      self.grid = Gtk.Grid()
+      self.grid.set_margin_start(10)
+      self.grid.set_margin_end(10)
+      self.grid.set_margin_top(5)
+      self.grid.set_margin_bottom(5)
+      self.grid.show()
+
+      # display title
+      self.dislayTag("<b>Tag</b>", "<b>Readable value</b>", "<b>Raw value</b>", 0, 0)
+      gtk_separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+      self.grid.attach(gtk_separator, 0, 1, 3, 1)
 
       # get metadata
-      self.tags = GExiv2.Metadata(filename)
+      self.tags = Metadata()
+      self.tags.open_path(filename)
 
-      # create table
-      self.table = Gtk.Table(len(self.tags), 2)
-
-      # set spacing
-      self.table.set_col_spacings(10)
-      self.table.set_row_spacings(5)
-
-      # set margins
-      self.table.set_margin_start(10)
-      self.table.set_margin_end(10)
-      self.table.set_margin_top(10)
-      self.table.set_margin_bottom(10)
-
+      # loop thru the tags
       index = 0
-      for (val) in self.tags:
-        self.SetLabel("<b>" + val + "</b>", index, 0, 1, "right")
-        self.SetLabel(self.tags[val], index, 1, 1, "left")
+      for name in self.tags:
+        interpreted = self.tags.get_tag_interpreted_string(name)[0:64]
+        string_raw = self.tags.get_tag_string(name)[0:64]
+        if interpreted == string_raw: string_raw = ""
+        else: string_raw = "<i>" + string_raw + "</i>" 
+        name = "<b>" + name + "</b>"
+        self.dislayTag(name, interpreted, string_raw, 0, index + 2)
         index = index + 1
 
-      # set tab content (scrolled window -> table)
-      tab_win = Gtk.ScrolledWindow()
-      tab_win.add_with_viewport(self.table)
-      tab_win.show_all()
-
-      # set tab label
-      tab_label = Gtk.Label('Tags')
+      # declare main scrolled window
+      self.window = Gtk.ScrolledWindow()
+      self.window.add_with_viewport(self.grid)
+      self.window.show_all()
 
       # return label and tab content
-      return Nautilus.PropertyPage( name="NautilusPython::tags_info", label=tab_label, page=tab_win ),
+      return Nautilus.PropertyPage( name="NautilusPython::tags_info", label=self.property_label, page=self.window),
