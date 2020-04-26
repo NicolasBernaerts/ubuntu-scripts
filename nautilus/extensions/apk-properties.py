@@ -2,7 +2,7 @@
 # ---------------------------------------------------------
 # Nautilus extension to display properties tab
 # for Android APK files
-# Dependencies :
+# Dependency :
 #   - aapt
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/...

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------------
 # Nautilus extension to display EXIF properties tab
-# Dependencies :
+# Dependency :
 #   - gir1.2-gexiv2-0.10
 # Procedure :
-#   http://bernaerts.dyndns.org/linux/...
+#   http://www.bernaerts-nicolas.fr/linux/...
 #
 # Revision history :
 #   02/09/2016, V1.0 - Creation by N. Bernaerts
@@ -75,16 +75,11 @@ class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
     file = files[0]
     if file.get_uri_scheme() != 'file': return
 
-    # if mimetype corresponds to JPG image, read data and populate tab
-    if file.get_mime_type() in ('image/jpeg' 'image/png'):
+    # if mimetype corresponds to an image, read exif tags
+    #if file.get_mime_type() in ('image/jpeg' 'image/png'):
+    mimetype = file.get_mime_type().split('/')
+    if mimetype[0] == "image":
     
-      # default map size and zoom factor
-      sizeMap = '320x320'
-      zoomMap = '10'
-  
-      # read data from APK file
-      filename = unquote(file.get_uri()[7:])
-
       # create label and grid
       self.property_label = Gtk.Label('EXIF')
       self.property_label.show()
@@ -100,7 +95,8 @@ class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
       gtk_separator = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
       self.grid.attach(gtk_separator, 0, 1, 3, 1)
 
-      # get metadata
+      # read metadata from file
+      filename = unquote(file.get_uri()[7:])
       self.tags = Metadata()
       self.tags.open_path(filename)
 

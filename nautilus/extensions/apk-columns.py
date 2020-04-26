@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------
 # Nautilus extension to add APK specific columns
-# Procedure :
-#   http://bernaerts.dyndns.org/linux/76-gnome/324-gnome-nautilus-apk-column-property-provider-extension
-# Depends on :
+# Dependency :
 #   * aapt
+# Procedure :
+#   http://www.bernaerts-nicolas.fr/linux/76-gnome/324-gnome-nautilus-apk-column-property-provider-extension
+#
 # Revision history :
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
 #   25/04/2020, v2.0 - rewrite for python3 compatibility
