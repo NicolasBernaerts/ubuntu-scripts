@@ -12,6 +12,8 @@
 #   25/04/2020, v2.0 - rewrite for python3 compatibility
 # ---------------------------------------------------
 
+apikey = "your-google-key"
+  
 # -------------------
 #  Import libraries
 # -------------------
@@ -66,7 +68,6 @@ class GeotagPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
     # default map size and zoom factor
     sizeMap = "512x512"
     zoomMap = "7"
-    apikey = "your-google-key"
   
     # test file type
     file = files[0]
