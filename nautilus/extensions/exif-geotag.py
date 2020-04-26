@@ -2,7 +2,8 @@
 # ---------------------------------------------------------
 # Nautilus extension to add Geolocalisation properties tab
 # Dependency :
-#   * python3-geopy
+#   - gir1.2-gexiv2-0.10
+#   - python3-geopy
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/...
 #
