@@ -5,7 +5,11 @@
 # 26/04/2018, V1.0 - Migrated from Xenial
 # 30/09/2018, V1.1 - Update Grisbi from unstable
 # 20/04/2020, V1.2 - Add PDF compression tool
+# 01/05/2020, V1.3 - Add HP printer GUI
 # -------------------------------------------------------
+
+# HP printer GUI 
+sudo apt -y install hplip-gui
 
 # libreoffice PPA
 logger "office - libreoffice"
