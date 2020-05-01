@@ -7,7 +7,12 @@
 # 02/06/2018, V1.0 - Migrated from Xenial
 # 15/04/2019, V1.1 - Add synaptics touchpad
 # 31/01/2020, V1.2 - Add SSH keepalive
+# 30/04/2020, V1.3 - Add Google DNS servers
 # -------------------------------------------------------
+
+# force Google DNS servers on DHCP networks
+echo "# Google DNS servers" | sudo tee -a /etc/dhcp/dhclient.conf
+echo "supersede domain-name-servers 8.8.8.8, 8.8.4.4;" | sudo tee -a /etc/dhcp/dhclient.conf
 
 # SSH keepalive
 echo "ClientAliveInterval 30" >> /etc/ssh/sshd_config
