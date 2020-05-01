@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=generate-booklet
+Exec=pdf-booklet
 Hidden=false
 NoDisplay=false
 Icon=emblem-documents
