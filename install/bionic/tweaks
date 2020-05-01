@@ -15,8 +15,8 @@ echo "# Google DNS servers" | sudo tee -a /etc/dhcp/dhclient.conf
 echo "supersede domain-name-servers 8.8.8.8, 8.8.4.4;" | sudo tee -a /etc/dhcp/dhclient.conf
 
 # SSH keepalive
-echo "ClientAliveInterval 30" >> /etc/ssh/sshd_config
-echo "ClientAliveCountMax 2" >> /etc/ssh/sshd_config
+echo "ClientAliveInterval 30" | sudo tee -a /etc/ssh/sshd_config
+echo "ClientAliveCountMax 2" | sudo tee -a /etc/ssh/sshd_config
 
 # RTL8723be : Solves stability issue on HP Stream 13
 # RTL8821ae : Solves stability issues on Lenovo Ideapad 110
