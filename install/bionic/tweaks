@@ -11,8 +11,8 @@
 # -------------------------------------------------------
 
 # force Google DNS servers on DHCP networks
-echo "# Google DNS servers" | sudo tee -a /etc/dhcp/dhclient.conf
-echo "supersede domain-name-servers 8.8.8.8, 8.8.4.4;" | sudo tee -a /etc/dhcp/dhclient.conf
+echo "DNS=8.8.8.8 8.8.4.4" | sudo tee -a /etc/systemd/resolved.conf
+echo "Cache=no" | sudo tee -a /etc/dhcp/dhclient.conf
 
 # SSH keepalive
 echo "ClientAliveInterval 30" | sudo tee -a /etc/ssh/sshd_config
