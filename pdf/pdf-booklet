@@ -146,9 +146,12 @@ if [ "${ERROR}" = "" ]
 then
 	(
 
-	# if file is not PDF, convert file to pdf, else use original
-	echo "# Copy or convert original document to PDF format"
+	# if file is not PDF, convert file to pdf
+	echo "# Convert original document to PDF format"
 	[ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${TMP_PDF}" "${TMP_ORIGINAL}"
+
+	# if no PDF work file, use original
+	echo "# Copy original PDF document"
 	[ ! -f "${TMP_PDF}" ] && mv "${TMP_ORIGINAL}" "${TMP_PDF}"
 
 	# calculate number of pages of original PDF 
