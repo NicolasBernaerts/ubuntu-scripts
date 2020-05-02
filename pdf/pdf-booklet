@@ -21,20 +21,29 @@
 #   03/11/2015, V3.0 - Add support for LibreOffice & Ms-Office documents
 #   18/10/2017, V3.1 - Correct critical bug (thanks to Igor Kushnir)
 #   01/05/2020, V3.2 - Switch to pdfbook2
+#                      Adaptation for Ubuntu 20.04 LTS 
 # ---------------------------------------------------------
-
-echo "$$ $@" >> "/home/famille/log.txt"
 
 # variable
 TYPE=""
 ERROR=""
 
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+	echo "Tool to convert a document to a recto/verso booklet"
+	echo "Parameters are :"
+	echo "  --format         Booklet format (A2 A3 A4 A5 Letter Executive Legal)"
+	echo "  --file <file>    File to convert to booklet"
+	exit 1
+fi
+
 # iterate thru parameters
 while test ${#} -gt 0
 do
     case $1 in
-        --format) shift; FORMAT="$1"; shift; ;;
-        --file) shift; ORIGINAL_URI="$1"; shift; ;;
+        "--format") shift; FORMAT="$1"; shift; ;;
+        "--file") shift; ORIGINAL_URI="$1"; shift; ;;
         *) shift; ;;
     esac
 done
@@ -167,13 +176,18 @@ then
 	pdfbook2 --short-edge --signature ${NUMPAGES} "--paper=${TARGET}paper" "${TMP_PDF}"
 
 	# copy booklet to original directory
+	echo "# Copy resulting PDF booklet"
 	gio copy "${TMP_DIR}/${ORIGINAL_NAME}-book.pdf" "${ORIGINAL_DIR}/${ORIGINAL_NAME}-book.pdf"
 
 	) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${FORMAT} booklet generation" --window-icon="/usr/share/icons/pdf-booklet.png"
 fi
 
+# -------------------
+#   End of operation
+# -------------------
+
 # display error message
-[ "${ERROR}" != "" ] && zenity --error --text="${ERROR}"
+[ "${ERROR}" != "" ] && zenity --error --width=300 --text="${ERROR}"
 
 # remove temporary directory
 popd

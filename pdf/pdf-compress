@@ -10,44 +10,90 @@
 #
 # Revision history :
 #   20/04/2020, V1.0 - Creation by N. Bernaerts
+#   01/05/2020, V1.1 - Adaptation for Ubuntu 20.04 LTS 
 # ---------------------------------------------------
 
+# variable
+ERROR=""
+DENSITY=180
+QUALITY=40
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+	echo "Tool to compress scanned PDF files"
+	echo "Parameters are :"
+	echo "  --density        Document density in DPI (default is ${DENSITY})"
+	echo "  --quality        Jpeg image quality (default is ${QUALITY})"
+	echo "  --file <file>    File to compress"
+	exit 1
+fi
+
+# iterate thru parameters
+while test ${#} -gt 0
+do
+    case $1 in
+        "--density") shift; DENSITY="$1"; shift; ;;
+        "--quality") shift; QUALITY="$1"; shift; ;;
+        "--file") shift; ORIGINAL_URI="$1"; shift; ;;
+        *) shift; ;;
+    esac
+done
+
 # check tools availability
-command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
+command -v convert >/dev/null 2>&1 || ERROR="Please install convert [imagemagick]"
 
-# if no file selected, exit
-DOC_URI="$1"
-[ "$DOC_URI" = "" ] && exit 1
+# generate temporary directory
+TMP_DIR=$(mktemp -t -d "pdf-compress-XXXXXXXX")
+pushd "${TMP_DIR}"
 
-# extract document name and extension
-DOC_BASE=$(echo "${DOC_URI}" | sed 's/^\(.*\)\.[a-zA-Z0-9]*$/\1/')
-DOC_EXT=$(echo "${DOC_URI}" | sed 's/^.*\.\([a-zA-Z0-9]*\)$/\1/')
+# check if file is provided
+[ "${ERROR}" = "" -a "${ORIGINAL_URI}" = "" ] && ERROR="No file selected"
 
-# set PDF extension for files without extension
-[ "${DOC_BASE}" = "${DOC_EXT}" ] && DOC_EXT="pdf"
+# generate filename data
+if [ "${ERROR}" = "" ]
+then
+	# generate filenames
+	ORIGINAL_DIR=$(dirname "${ORIGINAL_URI}")
+	ORIGINAL_FILE=$(basename "${ORIGINAL_URI}")
+	ORIGINAL_NAME="${ORIGINAL_FILE%.*}"
 
-# generate temporary files and directory
-TMP_DIR=$(mktemp -t -d "pdf-repair-XXXXXXXX")
-TMP_ORIGINAL="${TMP_DIR}/original.pdf"
-TMP_COMPRESS="${TMP_DIR}/compress.pdf"
+	# generate temporary filenames
+	TMP_ORIGINAL="${TMP_DIR}/original.pdf"
+	TMP_COMPRESS="${TMP_DIR}/compressed.pdf"
+fi
 
-# copy input file to temporary local file
-gio copy "${DOC_URI}" "${TMP_ORIGINAL}"
+# ---------------------------
+#  Compress with Imagemagick
+# ---------------------------
 
-# -----------------------
-# Repair with GhostScript
-# -----------------------
+if [ "${ERROR}" = "" ]
+then
+	(
 
-# generate repaired PDF
-convert -density 180x180 -quality 40 -compress jpeg "${TMP_ORIGINAL}" "${TMP_COMPRESS}"
+	# copy input file to temporary folder
+	echo "# Copy of original PDF document ..."
+	gio copy "${ORIGINAL_URI}" "${TMP_ORIGINAL}"
+	
+	# compress PDF
+	echo "# Compression of document (${DENSITY} DPI and ${QUALITY} quality) ..."
+	convert -density "${DENSITY}x${DENSITY}" -quality "${QUALITY}" -compress jpeg "${TMP_ORIGINAL}" "${TMP_COMPRESS}"
 
-# place corrected file side to original 
-gio copy "${TMP_COMPRESS}" "${DOC_BASE}-compressed.${DOC_EXT}"
+	# copy compressed file side to original 
+	echo "# Copy of compressed PDF ..."
+	gio copy "${TMP_COMPRESS}" "${ORIGINAL_DIR}/${ORIGINAL_NAME}-compressed.pdf"
 
-# ------------
-#   Cleanup
-# ------------
+	) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "Compress scanned PDF" --window-icon="/usr/share/icons/pdf-compress.png"
+fi
+
+# -------------------
+#   End of operation
+# -------------------
+
+# display error message
+[ "${ERROR}" != "" ] && zenity --error --width=300 --text="${ERROR}"
 
 # remove temporary directory
+popd
 rm -r "${TMP_DIR}"
 
