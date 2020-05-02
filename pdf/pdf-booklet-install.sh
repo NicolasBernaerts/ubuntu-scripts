@@ -15,6 +15,9 @@ sudo apt-get -y install poppler-utils texlive-extra-utils unoconv
 gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
+# install icon
+sudo wget -O /usr/share/icons/pdf-booklet.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-booklet.png
+
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/pdf-booklet https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-booklet
 sudo chmod +x /usr/local/bin/pdf-booklet
