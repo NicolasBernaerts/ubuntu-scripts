@@ -5,7 +5,12 @@
 DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
-# install imagemagick and remove PDF generation restrictions
+# main packages installation
+sudo apt -y install imagemagick
+sudo apt -y install texlive-extra-utils
+sudo apt -y install ghostscript mupdf-tools
+
+# remove imagemagick PDF generation restrictions
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
 if [ -f ./imagemagisk-enable-pdf-install.sh ]
 then
@@ -14,10 +19,6 @@ then
   ./imagemagisk-enable-pdf-install.sh
   rm ./imagemagisk-enable-pdf-install.sh
 fi
-
-# main packages installation
-sudo apt -y install texlive-extra-utils
-sudo apt -y install ghostscript mupdf-tools
 
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
