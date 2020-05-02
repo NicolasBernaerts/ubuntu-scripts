@@ -23,38 +23,98 @@
 #   01/05/2020, V3.2 - Switch to pdfbook2
 # ---------------------------------------------------------
 
+echo "$$ $@" >> "/home/famille/log.txt"
+
+# variable
+TYPE=""
+ERROR=""
+
+# iterate thru parameters
+while test ${#} -gt 0
+do
+    case $1 in
+        --format) shift; FORMAT="$1"; shift; ;;
+        --file) shift; ORIGINAL_URI="$1"; shift; ;;
+        *) shift; ;;
+    esac
+done
+
 # check mimetype, pdfinfo, pdfbook and unoconv
-command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype"; exit 1; }
-command -v pdfinfo >/dev/null 2>&1 || { zenity --error --text="Please install pdfinfo [poppler-utils package]"; exit 1; }
-command -v pdfbook2 >/dev/null 2>&1 || { zenity --error --text="Please install pdfbook2 [texlive-extra-utils package]"; exit 1; }
-command -v unoconv >/dev/null 2>&1 || { zenity --error --text="Please install unoconv"; exit 1; }
+command -v mimetype >/dev/null 2>&1 || ERROR="Please install mimetype"
+command -v pdfinfo >/dev/null 2>&1 || ERROR="Please install pdfinfo [poppler-utils package]"
+command -v pdfbook2 >/dev/null 2>&1 || ERROR="Please install pdfbook2 [texlive-extra-utils package]"
+command -v unoconv >/dev/null 2>&1 || ERROR="Please install unoconv"
 
-# check if parameter is given, otherwise open dialog box selection
-[ "$1" != "" ] && FILE_ORIGINAL="$1" || FILE_ORIGINAL=$(zenity --file-selection --title="Select document to convert to booklet")
+# generate temporary directory
+TMP_DIR=$(mktemp -t -d "pdf-booklet-XXXXXXXX")
+pushd "${TMP_DIR}"
 
-# if no document selected, exit
-[ ! -f "${FILE_ORIGINAL}" ] && exit 1
+# ------------------
+#  Check parameters
+# ------------------
+
+# get filename
+if [ "${ERROR}" = "" ]
+then
+	# check if file is given, otherwise open dialog box selection
+	[ "${ORIGINAL_URI}" = "" ] && ORIGINAL_URI=$(zenity --file-selection --title="Select document to convert to booklet")
+
+	# if no document selected, exit
+	[ "${ORIGINAL_URI}" = "" ] && ERROR="No file selected"
+fi
+
+# generate filename data
+if [ "${ERROR}" = "" ]
+then
+	# generate filenames
+	ORIGINAL_DIR=$(dirname "${ORIGINAL_URI}")
+	ORIGINAL_FILE=$(basename "${ORIGINAL_URI}")
+	ORIGINAL_NAME="${ORIGINAL_FILE%.*}"
+	ORIGINAL_EXT="${ORIGINAL_FILE##*.}"
+
+	# generate temporary filenames
+	TMP_ORIGINAL="${TMP_DIR}/${ORIGINAL_FILE}"
+	TMP_PDF="${TMP_DIR}/${ORIGINAL_NAME}.pdf"
+fi
+
+# get format
+if [ "${ERROR}" = "" ]
+then
+	# check if target format is given, otherwise open dialog box selection
+	if [ "${FORMAT}" = "" ]
+	then
+		ARR_FORMAT=('false' 'A2' 'false' 'A3' 'true' 'A4' 'false' 'A5' 'false' 'Letter' 'false' 'Executive' 'false' 'Legal')
+		TEXT="Please select booklet target format.\n"
+		FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "${ORIGINAL_FILE}" --text "${TEXT}" --column="Choice" --column="Format" ${ARR_FORMAT[@]})
+	fi
+
+	# exit if no format selected
+	[ "${FORMAT}" = "" ] && ERROR="No target format selected"
+fi
+
 
 # ---------------------
 #  Check document type
 # ---------------------
 
-# get the file mime type (application/msword, ...)
-TYPE=""
-MIMETYPE=$(mimetype -b "${FILE_ORIGINAL}")
-
-# check if file is a libreoffice file (.odt, .ods, ...)
-CHECK=$(echo "${MIMETYPE}" | grep ".opendocument.")
-[ "${CHECK}" != "" ] && TYPE="libreoffice"
-
-# check if file is a microsoft file 2007+ file (.docx, .xlsx, .pptx, ...)
-CHECK=$(echo "${MIMETYPE}" | grep "vnd.openxmlformats-officedocument.")
-[ "${CHECK}" != "" ] && TYPE="ms-office"
-
-# if type is not found, check specific document types
-if [ "${TYPE}" = "" ]
+if [ "${ERROR}" = "" ]
 then
-	case "${MIMETYPE}" in 
+	# copy input file to temporary folder
+	gio copy "${ORIGINAL_URI}" "${TMP_ORIGINAL}"
+	
+	# get the file mime type (application/msword, ...)
+	MIMETYPE=$(mimetype -b "${TMP_ORIGINAL}")
+
+	# check if file is a libreoffice file (.odt, .ods, ...)
+	CHECK=$(echo "${MIMETYPE}" | grep ".opendocument.")
+	[ "${CHECK}" != "" ] && TYPE="libreoffice"
+
+	# check if file is a microsoft file 2007+ file (.docx, .xlsx, .pptx, ...)
+	CHECK=$(echo "${MIMETYPE}" | grep "vnd.openxmlformats-officedocument.")
+	[ "${CHECK}" != "" ] && TYPE="ms-office"
+
+	# if type is not found, check specific document types
+	[ "${TYPE}" = "" ] && case "${MIMETYPE}" in 
 	# ms-office document (.doc, .xls, .ppt, ...)
 	"application/msword" | "application/vnd.ms-word" | "application/vnd.ms-powerpoint" )
 		TYPE="ms-office"
@@ -74,61 +134,43 @@ then
 	* )
 		;;
 	esac
+
+	# if document type is not a candidate one, exit
+	[ "${TYPE}" = "" ] && ERROR="Document format is not compatible (pdf, libreoffice or ms-office)"
 fi
-
-# if document type is not a candidate one, exit
-[ "${TYPE}" = "" ] && { zenity --error --text="Document format is not compatible (pdf, libreoffice or ms-office)"; exit 1; }
-
-# ----------------------
-#  Select target format
-# ----------------------
-
-# select target format
-ARR_FORMAT=('false' 'A2' 'false' 'A3' 'true' 'A4' 'false' 'A5' 'false' 'Letter' 'false' 'Executive' 'false' 'Legal')
-TITLE=$(basename "${FILE_ORIGINAL}")
-TEXT="Booklet will be generated from this document.\nPlease select target format.\n"
-FORMAT=$(zenity --list --radiolist --width 350 --height 380 --title "${TITLE}" --text "${TEXT}" --column="Choice" --column="Format" ${ARR_FORMAT[@]})
-
-# exit if no format selected
-[ "${FORMAT}" = "" ] && exit
 
 # --------------------
 #  booklet conversion 
 # --------------------
+if [ "${ERROR}" = "" ]
+then
+	(
 
-# generate filenames
-ORIGINAL_FILE=$(basename "${FILE_ORIGINAL}")
-ORIGINAL_DIR=$(dirname "${FILE_ORIGINAL}")
-ORIGINAL_NAME="${ORIGINAL_FILE%.*}"
-ORIGINAL_EXT="${ORIGINAL_FILE##*.}"
+	# if file is not PDF, convert file to pdf, else use original
+	echo "# Copy or convert original document to PDF format"
+	[ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${TMP_PDF}" "${TMP_ORIGINAL}"
+	[ ! -f "${TMP_PDF}" ] && mv "${TMP_ORIGINAL}" "${TMP_PDF}"
 
-# generate temporary directory
-TMP_DIR=$(mktemp -t -d "pdf-booklet-XXXXXXXX")
-TMP_ORIGINAL="${TMP_DIR}/${ORIGINAL_FILE}"
-pushd "${TMP_DIR}"
+	# calculate number of pages of original PDF 
+	# and determine if blank pages to be added at the end to get multiple of 4
+	echo "# Calculating number of booklet pages"
+	NUMPAGES=$(pdfinfo "${TMP_PDF}" | grep "Pages" | xargs | cut -d' ' -f2)
+	DIVPAGES=$((${NUMPAGES} % 4))
+	[ ${DIVPAGES} -gt 0 ] && NUMPAGES=$((${NUMPAGES} + 4 - ${DIVPAGES}))
 
-(
-# if file is not PDF, convert file to pdf, else use original
-echo "# Copy or convert original document to PDF format"
-[ "${TYPE}" != "pdf" ] && unoconv -f pdf -o "${TMP_ORIGINAL}" "${FILE_ORIGINAL}" || cp "${FILE_ORIGINAL}" "${TMP_ORIGINAL}"
+	# generate document with proper page number (multiple of 4)
+	echo "# Generating PDF booklet ..."
+	TARGET=$(echo "${FORMAT}" | tr '[:upper:]' '[:lower:]')
+	pdfbook2 --short-edge --signature ${NUMPAGES} "--paper=${TARGET}paper" "${TMP_PDF}"
 
-# calculate number of pages of original PDF 
-# and determine if blank pages to be added at the end to get multiple of 4
-echo "# Calculate number of booklet pages"
-NUMPAGES=$(pdfinfo "${TMP_ORIGINAL}" | grep "Pages" | sed 's/^Pages:[ ]*\([0-9]*\).*$/\1/g')
-DIVPAGES=$(expr ${NUMPAGES} % 4)
-[ ${DIVPAGES} -gt 0 ] && NUMPAGES=$(expr ${NUMPAGES} + 4 - ${DIVPAGES})
+	# copy booklet to original directory
+	gio copy "${TMP_DIR}/${ORIGINAL_NAME}-book.pdf" "${ORIGINAL_DIR}/${ORIGINAL_NAME}-book.pdf"
 
-# generate document with proper page number (multiple of 4)
-echo "# Generation of PDF booklet"
-TARGET=$(echo "${FORMAT}" | tr '[:upper:]' '[:lower:]')
-pdfbook2 --short-edge --signature ${NUMPAGES} "--paper=${TARGET}paper" "${TMP_ORIGINAL}"
+	) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "${FORMAT} booklet generation" --window-icon="/usr/share/icons/pdf-booklet.png"
+fi
 
-# copy booklet to original directory
-rm "${TMP_ORIGINAL}"
-cp ${TMP_DIR}/*.pdf "${ORIGINAL_DIR}"
-
-) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "Booklet generation (${FORMAT})" --window-icon="/usr/share/icons/pdf-booklet.png"
+# display error message
+[ "${ERROR}" != "" ] && zenity --error --text="${ERROR}"
 
 # remove temporary directory
 popd
