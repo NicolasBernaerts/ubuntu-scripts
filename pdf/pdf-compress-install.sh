@@ -16,6 +16,7 @@ gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
+sudo wget -O /usr/share/icons/pdf-menu.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-menu.png
 sudo wget -O /usr/share/icons/pdf-compress.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/pdf/icons/pdf-compress.png
 
 # install main script
