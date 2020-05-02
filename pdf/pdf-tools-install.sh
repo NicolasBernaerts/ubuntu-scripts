@@ -1,12 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 # PDF compress extension
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
-# install tools
-sudo apt -y install imagemagick
+# install imagemagick and remove PDF generation restrictions
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
+if [ -f ./imagemagisk-enable-pdf-install.sh ]
+then
+  logger "graphical - ImageMagick PDF and PostScript restriction removal"
+  chmod +x ./imagemagisk-enable-pdf-install.sh
+  ./imagemagisk-enable-pdf-install.sh
+  rm ./imagemagisk-enable-pdf-install.sh
+fi
 
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
