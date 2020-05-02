@@ -12,7 +12,7 @@ Tooltip[fr_FR]=Outil de génération d'un livret au format PDF
 Profiles=pdf_booklet;
 
 [X-Action-Profile pdf_booklet]
-Exec=pdf-booklet %f
+Exec=pdf-booklet --file %f
 MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;application/msword;application/vnd.ms-word;application/vnd.oasis.opendocument.text;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.oasis.opendocument.spreadsheet;application/vnd.ms-powerpoint;application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.openxmlformats-officedocument.presentationml.template;application/vnd.openxmlformats-officedocument.presentationml.slideshow;text/plain;
 Name[en_US]=Default profile
 Name[en]=Default profile
