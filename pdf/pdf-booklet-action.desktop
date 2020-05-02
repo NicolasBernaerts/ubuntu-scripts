@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Action
-Icon=emblem-documents
+Icon=pdf-booklet
 Name[C]=Generate Booklet
 Name[en]=Generate Booklet
 Name[en_US]=Generate Booklet
@@ -9,9 +9,9 @@ Tooltip[C]=Tool to generate a PDF booklet
 Tooltip[en]=Tool to generate a PDF booklet
 Tooltip[en_US]=Tool to generate a PDF booklet
 Tooltip[fr_FR]=Outil de génération d'un livret au format PDF
-Profiles=generate_booklet;
+Profiles=pdf_booklet;
 
-[X-Action-Profile generate_booklet]
+[X-Action-Profile pdf_booklet]
 Exec=pdf-booklet %f
 MimeTypes=application/pdf;application/x-pdf;application/x-bzpdf;application/x-gzpdf;application/msword;application/vnd.ms-word;application/vnd.oasis.opendocument.text;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.oasis.opendocument.spreadsheet;application/vnd.ms-powerpoint;application/vnd.openxmlformats-officedocument.presentationml.presentation;application/vnd.openxmlformats-officedocument.presentationml.template;application/vnd.openxmlformats-officedocument.presentationml.slideshow;text/plain;
 Name[en_US]=Default profile
