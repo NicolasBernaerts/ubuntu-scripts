@@ -31,7 +31,7 @@ sudo wget -O /usr/share/icons/pdf-menu.png https://github.com/NicolasBernaerts/u
 
 # if needed, create nautilus python extensions folder
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget -O $HOME/.local/share/nautilus-python/extensions/pdf-tools-menu.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-booklet-menu.py
+wget -O $HOME/.local/share/nautilus-python/extensions/pdf-tools-menu.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-tools-menu.py
 
 # -----------------
 #  PDF compression
