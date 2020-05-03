@@ -8,4 +8,4 @@ Capabilities=Writable
 Profiles=rotate;
   
 [X-Action-Profile rotate]
-Exec=pdf-rotate --up-down %F
+Exec=pdf-rotate --updown --file %F
