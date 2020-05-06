@@ -16,6 +16,7 @@
 #    07/10/2014, V1.3 - Add monitors size and rate handling (idea from jescalante)
 #    08/10/2014, V1.4 - Handle primary display parameter
 #    08/12/2014, V1.5 - Waiting time in seconds becomes a parameter
+#    06/05/2020, V1.6 - Handle scale parameter
 # -------------------------------------------------
 
 esc() { printf "%s\n" "$1" | sed -e "s/'/'\"'\"'/g" -e "1s/^/'/" -e "\$s/\$/'/" }
@@ -32,6 +33,7 @@ for (( i=1; i<=$NUM; i++)); do
   NAME=$(xmllint --xpath 'string(//monitors/configuration['1']/logicalmonitor['$i']/monitor/monitorspec/connector/text())' "${MONITOR_XML}" 2>/dev/null)
   POS_X=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/x/text()' "${MONITOR_XML}" 2>/dev/null)
   POS_Y=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/y/text()' "${MONITOR_XML}" 2>/dev/null)
+  SCALE=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/scale/rate/text()' "${MONITOR_XML}" 2>/dev/null)
 #   ROTATE=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/rotation/text()' $MONITOR_XML 2>/dev/null)
   WIDTH=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/width/text()' "${MONITOR_XML}" 2>/dev/null)
   HEIGHT=$(xmllint --xpath '//monitors/configuration['1']/logicalmonitor['$i']/monitor/mode/height/text()' "${MONITOR_XML}" 2>/dev/null)
@@ -44,6 +46,7 @@ for (( i=1; i<=$NUM; i++)); do
 
   # if position is defined for current monitor, add its position and orientation to command line parameters
   [ -n "${POS_X}" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--output" "${NAME}" "--pos" "${POS_X}x${POS_Y}" "--mode" "${MODERES}" "--rate" "${RATE}")
+  [ -n "${SCALE}" ] && PARAM_ARR=("${PARAM_ARR[@]}" "--scale" "${SCALE}")
 
   # addmodes before so they can set
   eval "xrandr" "--newmode ${MODELINE[@]}"
