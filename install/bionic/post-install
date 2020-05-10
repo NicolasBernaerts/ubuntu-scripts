@@ -155,9 +155,6 @@ fi
 # -----------------  Common options  ----------------
 # ---------------------------------------------------
 
-# disable apport crash report
-sudo systemctl disable apport.service
-
 # design apps
 if [ "${DESIGN}" = "ok" ]
 then
