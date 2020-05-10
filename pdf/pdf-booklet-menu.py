@@ -30,7 +30,7 @@ class PDFBookletMenuProvider(GObject.GObject, Nautilus.MenuProvider):
       filename = files[0].get_uri()
       
       # create menu item for right click menu
-      pdf_menu = Nautilus.MenuItem(name='PDFBookletMenuProvider::pdf_booklet', label='Generate PDF booklet', tip='Convert file to be printed recto/verso as a booklet', icon='/usr/share/icons/pdf-booklet.png')
+      pdf_menu = Nautilus.MenuItem(name='PDFBookletMenuProvider::pdf_booklet', label='PDF - Generate booklet', icon='pdf-booklet')
       pdf_menu.connect('activate', self.pdf_booklet, filename)
 
       return [pdf_menu]
