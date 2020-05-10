@@ -1,0 +1,229 @@
+#!/usr/bin/env bash
+# --------------------------------------------
+#  Generate a PDF document from a given list of documents
+#
+#  Setup procedure : http://bernaerts.dyndns.org/linux/74-ubuntu/338-ubuntu-generate-pdf-from-documents
+#
+#  Depends on :
+#   * convert [imagemagick]
+#   * unoconv
+#   * wkhtmltopdf
+#   * gs [ghostscript]
+#
+#  Revision history :
+#   05/07/2015, V1.0 - Creation by N. Bernaerts
+#   15/08/2015, V1.1 - Force jpeg quality to 95
+#   25/09/2015, V1.2 - Add configuration file
+#   02/10/2015, V2.0 - Code rewrite to handle progress and notification
+#   01/05/2016, V2.1 - Add HTML conversion
+#   12/10/2017, V2.2 - Correct PNG conversion bug giving white page
+#   07/05/2020, V3.0 - Rewrite, add PDF quality target
+#                      Drop HTML conversion
+# ---------------------------------------------------
+
+# default
+ORDER="normal"
+QUALITY="default"
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+	echo "Tool to generate PDF document from multiple files"
+	echo "Parameters are :"
+	echo "  --alpha                 Add files in alphabetical order"
+	echo "  --target                Target file name"
+	echo "  <file1> <file2>         Files to add"
+	echo "Target quality can be :"
+	echo "  --default               Default settings, best quality"
+	echo "  --screen                Screen quality, 72 dpi images"
+	echo "  --ebook                 Low quality, 150 dpi images (default)"
+	echo "  --printer               High quality, 300 dpi images"
+	echo "  --prepress              High quality, 300 dpi images, color preserving"
+	exit 1
+fi
+
+# loop to retrieve arguments
+while test $# -gt 0
+do
+	case "$1" in
+		"--alpha") ORDER="alpha"; shift; ;;
+		"--target") shift; TARGET="$1"; shift; ;;
+		"--default") QUALITY="default"; shift; ;;
+		"--screen") QUALITY="screen"; shift; ;;
+		"--ebook") QUALITY="ebook"; shift; ;;
+		"--printer") QUALITY="printer"; shift; ;;
+		"--prepress") QUALITY="prepress"; shift; ;;
+		*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
+	esac
+done
+
+# -------------------------------------------------------
+# check tools availability
+# -------------------------------------------------------
+
+command -v convert >/dev/null 2>&1 || ERROR="Please install convert [imagemagick]"
+command -v unoconv >/dev/null 2>&1 || ERROR="Please install unoconv"
+command -v gs >/dev/null 2>&1 || ERROR="Please install gs utility [ghostscript]"
+
+# generate temporary directory
+TMP_DIR=$(mktemp -t -d "pdf-merge-XXXXXXXX")
+TMP_ORIGINAL="${TMP_DIR}/original.pdf"
+TMP_MERGED="${TMP_DIR}/merged.pdf"
+pushd "${TMP_DIR}"
+
+# calculate page size
+PAGE_WIDTH=$((300 * 827 / 100))
+PAGE_HEIGHT=$((300 * 1170 / 100))
+
+# ------------------------------
+#  check files convertibility
+# ------------------------------
+
+# order generated PDF files in alphabetical order
+[ "${ORDER}" = "alpha" ] && readarray -t ARR_SORTED < <(printf '%s\n' "${ARR_FILE[@]}" | sort) \
+			 || ARR_SORTED=( "${ARR_FILE[@]}" )
+
+for FILE in "${ARR_SORTED[@]}"
+do
+	# document type undefined
+	DOCTYPE=""
+
+	# get the file mime type (application/msword, ...)
+	MIMETYPE=$(mimetype -b "${FILE}")
+
+	# check if file is a image file (.jpg, .png, .tiff, ...)
+	CHECKTYPE=$(echo "${MIMETYPE}" | grep "image/")
+	[ "${CHECKTYPE}" != "" ] && DOCTYPE="image"
+
+	# check if file is a libreoffice file (.odt, .ods, ...)
+	CHECKTYPE=$(echo "${MIMETYPE}" | grep ".opendocument.")
+	[ "${CHECKTYPE}" != "" -a "${DOCTYPE}" = "" ] && DOCTYPE="libreoffice"
+
+	# check if file is a microsoft file 2007+ file (.docx, .xlsx, .pptx, ...)
+	CHECKTYPE=$(echo "${MIMETYPE}" | grep "vnd.openxmlformats-officedocument.")
+	[ "${CHECKTYPE}" != "" -a "${DOCTYPE}" = "" ] && DOCTYPE="ms-office"
+
+	# check some specific document types
+	[ "${DOCTYPE}" = "" ] && case "${MIMETYPE}" in 
+		# ms-office document (.doc, .xls, .ppt, ...)
+		"application/msword" | "application/vnd.ms-word" | "application/vnd.ms-excel" | "application/vnd.ms-powerpoint" )
+		DOCTYPE="ms-office"
+		;;
+
+		# PDF document (.pdf)
+		"application/pdf" | "application/x-pdf" | "application/x-bzpdf" | "application/x-gzpdf" )
+		DOCTYPE="pdf"
+		;;
+
+		# plain text file (.txt)
+		"text/plain" | "application/x-shellscript" )
+		DOCTYPE="text"
+		;;
+
+		* )
+		;;
+	esac
+
+	# if document type is compatible, add current file as candidate
+	[ "${DOCTYPE}" != "" ] && ARR_CANDIDATE=("${ARR_CANDIDATE[@]}" "${FILE}|${DOCTYPE}")
+done
+
+# check at least one file is candidate
+NBR_FILE=${#ARR_CANDIDATE[@]}
+[ ${NBR_FILE} -eq 0 ] && ERROR="No compatible file provided"
+
+# --------------------------
+#  Confirmation and merge
+# --------------------------
+
+# if candidate files,
+if [ "${ERROR}" = "" ] 
+then
+	(
+	INDEX=0
+	NBR_STEP=$((NBR_FILE+2))
+	for CANDIDATE in "${ARR_CANDIDATE[@]}"
+	do
+		# increment file index
+		INDEX=$((INDEX+1))
+
+		# retrieve document type and filename
+	 	DOC_URI=$(echo "${CANDIDATE}" | cut -d'|' -f1)
+		DOC_TYPE=$(echo "${CANDIDATE}" | cut -d'|' -f2)
+
+		# generate filenames
+		DOC_DIR=$(dirname "${DOC_URI}")
+		DOC_FILE=$(basename "${DOC_URI}")
+		DOC_NAME="${DOC_FILE%.*}"
+
+		# if needed, set target name
+		[ "${TARGET}" = "" ] && TARGET="${DOC_DIR}/${DOC_NAME}-merged.pdf"
+	
+		# add temporary file
+		TMP_PDF="${TMP_DIR}/document-${INDEX}.pdf"
+
+		# copy input file to temporary folder
+		echo "# ${INDEX} / ${NBR_STEP} - Copy of ${DOC_FILE}"
+		gio copy "${DOC_URI}" "${TMP_ORIGINAL}"
+
+		# convert file according to its type
+		echo "# ${INDEX} / ${NBR_STEP} - Conversion of ${DOC_FILE}"
+		case "${DOC_TYPE}" in
+			# PDF files
+			"pdf" )
+			cp "${TMP_ORIGINAL}" "${TMP_PDF}"
+    			;;
+
+			# image files
+			"image" )
+			convert "${TMP_ORIGINAL}" -compress jpeg -quality 95 -resize ${PAGE_WIDTH}x${PAGE_HEIGHT} -extent ${PAGE_WIDTH}x${PAGE_HEIGHT} -units PixelsPerInch -density 300x300 "${TMP_PDF}"
+			;;
+
+			# office files
+			"libreoffice" | "ms-office" | "text" )
+			unoconv -f pdf -o "${TMP_PDF}" "${TMP_ORIGINAL}"
+			;;
+
+			# other formats, not handled
+			* )
+			;;
+		esac
+
+		# add file to target
+		[ -f "${TMP_PDF}" ] && ARR_PDF=("${ARR_PDF[@]}" "${TMP_PDF}")		
+	done
+
+	# merge documents	
+	if [ ${#ARR_PDF[@]} -gt 0 ]
+	then
+		# progress display
+		INDEX=$((INDEX+1))
+		TARGET_NAME=$(basename "${TARGET}")
+		echo "# ${INDEX} / ${NBR_STEP} - Final assembly of ${TARGET_NAME}"
+
+		# merge final PDF
+		ARR_PARAM=( "-q" "-dNOPAUSE" "-dBATCH" "-dSAFER" "-sDEVICE=pdfwrite" )
+		ARR_PARAM=( "${ARR_PARAM[@]}" "-sPAPERSIZE=a4" "-dPDFFitPage" "-dCompatibilityLevel=1.4" )
+		ARR_PARAM=( "${ARR_PARAM[@]}" "-dPDFSETTINGS=/${QUALITY}" "-sOutputFile=${TMP_MERGED}" )
+		gs "${ARR_PARAM[@]}" "${ARR_PDF[@]}"
+
+		# place corrected file side to original 
+		INDEX=$((INDEX+1))
+		echo "# ${INDEX} / ${NBR_STEP} - Copy of ${TARGET_NAME} ..."
+		gio copy "${TMP_MERGED}" "${TARGET}"
+	fi
+
+	) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "Merging documents"
+fi
+
+# -------------------
+#   End of operation
+# -------------------
+
+# display error message
+[ "${ERROR}" != "" ] && zenity --error --width=300 --text="${ERROR}"
+
+# remove temporary directory
+popd
+rm -r "${TMP_DIR}"
+

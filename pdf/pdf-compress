@@ -11,6 +11,7 @@
 # Revision history :
 #   20/04/2020, V1.0 - Creation by N. Bernaerts
 #   01/05/2020, V1.1 - Adaptation for Ubuntu 20.04 LTS 
+#   07/05/2020, V1.2 - Multiple files management 
 # ---------------------------------------------------
 
 # variable
@@ -23,66 +24,71 @@ if [ $# -eq 0 ]
 then
 	echo "Tool to compress scanned PDF files"
 	echo "Parameters are :"
-	echo "  --density        Document density in DPI (default is ${DENSITY})"
-	echo "  --quality        Jpeg image quality (default is ${QUALITY})"
-	echo "  --file <file>    File to compress"
+	echo "  --density         Document density in DPI (default is ${DENSITY})"
+	echo "  --quality         Jpeg image quality (default is ${QUALITY})"
+	echo "  <file1> <file2>   Files to compress"
 	exit 1
 fi
 
 # iterate thru parameters
 while test ${#} -gt 0
 do
-    case $1 in
-        "--density") shift; DENSITY="$1"; shift; ;;
-        "--quality") shift; QUALITY="$1"; shift; ;;
-        "--file") shift; ORIGINAL_URI="$1"; shift; ;;
-        *) shift; ;;
-    esac
+	case $1 in
+	"--density") shift; DENSITY="$1"; shift; ;;
+	"--quality") shift; QUALITY="$1"; shift; ;;
+	*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
+	esac
 done
+
+# --------------------------
+# check tools availability
+# --------------------------
 
 # check tools availability
 command -v convert >/dev/null 2>&1 || ERROR="Please install convert [imagemagick]"
 
 # generate temporary directory
 TMP_DIR=$(mktemp -t -d "pdf-compress-XXXXXXXX")
+TMP_ORIGINAL="${TMP_DIR}/original.pdf"
+TMP_COMPRESS="${TMP_DIR}/compressed.pdf"
 pushd "${TMP_DIR}"
 
-# check if file is provided
-[ "${ERROR}" = "" -a "${ORIGINAL_URI}" = "" ] && ERROR="No file selected"
+# check at least one file is provided
+NBR_FILE=${#ARR_FILE[@]}
+[ "${ERROR}" = "" -a ${NBR_FILE} -eq 0 ] && ERROR="No file selected"
 
-# generate filename data
-if [ "${ERROR}" = "" ]
-then
-	# generate filenames
-	ORIGINAL_DIR=$(dirname "${ORIGINAL_URI}")
-	ORIGINAL_FILE=$(basename "${ORIGINAL_URI}")
-	ORIGINAL_NAME="${ORIGINAL_FILE%.*}"
+# --------------------
+#   PDF compression
+# --------------------
 
-	# generate temporary filenames
-	TMP_ORIGINAL="${TMP_DIR}/original.pdf"
-	TMP_COMPRESS="${TMP_DIR}/compressed.pdf"
-fi
-
-# ---------------------------
-#  Compress with Imagemagick
-# ---------------------------
-
-if [ "${ERROR}" = "" ]
+# loop thru image files
+if [ "${ERROR}" = "" ] 
 then
 	(
+	INDEX=0
+	for ORIGINAL_URI in "${ARR_FILE[@]}"
+	do
+		# increment file index
+		INDEX=$((INDEX+1))
 
-	# copy input file to temporary folder
-	echo "# Copy of original PDF document ..."
-	gio copy "${ORIGINAL_URI}" "${TMP_ORIGINAL}"
+		# generate filenames
+		ORIGINAL_DIR=$(dirname "${ORIGINAL_URI}")
+		ORIGINAL_FILE=$(basename "${ORIGINAL_URI}")
+		ORIGINAL_NAME="${ORIGINAL_FILE%.*}"
+
+		# copy input file to temporary folder
+		echo "# ${INDEX} / ${NBR_FILE} - Copy of original PDF document ..."
+		gio copy "${ORIGINAL_URI}" "${TMP_ORIGINAL}"
 	
-	# compress PDF
-	echo "# Compression of document (${DENSITY} DPI and ${QUALITY} quality) ..."
-	convert -density "${DENSITY}x${DENSITY}" -quality "${QUALITY}" -compress jpeg "${TMP_ORIGINAL}" "${TMP_COMPRESS}"
+		# compress PDF
+		echo "# ${INDEX} / ${NBR_FILE} - Compression of document (${DENSITY} DPI and ${QUALITY} quality) ..."
+		convert -density "${DENSITY}x${DENSITY}" -quality "${QUALITY}" -compress jpeg "${TMP_ORIGINAL}" "${TMP_COMPRESS}"
 
-	# copy compressed file side to original 
-	echo "# Copy of compressed PDF ..."
-	gio copy "${TMP_COMPRESS}" "${ORIGINAL_DIR}/${ORIGINAL_NAME}-compressed.pdf"
-
+		# copy compressed file side to original 
+		echo "# ${INDEX} / ${NBR_FILE} - Copy of compressed PDF ..."
+		gio copy "${TMP_COMPRESS}" "${ORIGINAL_DIR}/${ORIGINAL_NAME}-compressed.pdf"
+	done
+	
 	) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "Compress scanned PDF" --window-icon="/usr/share/icons/pdf-compress.png"
 fi
 

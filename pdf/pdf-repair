@@ -16,6 +16,7 @@
 #   24/11/2017, V2.0 - Add MuTool repair method (thank to Willie Wildgrube idea)
 #   01/05/2020, V2.1 - Add method selection with --method
 #                      Adaptation for Ubuntu 20.04 LTS 
+#   07/05/2020, V2.2 - Multiple files management 
 # ---------------------------------------------------
 
 # variable
@@ -25,71 +26,75 @@ METHOD="ghostscript"
 # if no argument, display help
 if [ $# -eq 0 ] 
 then
-	echo "Tool to repair a PDF document"
+	echo "Tool to repair a PDF documents"
 	echo "Parameters are :"
-	echo "  --method <method>    Reparation method (ghostscrit or mutool)"
-	echo "  --file <file>        File to repair"
+	echo "  --method <method>   Reparation method (ghostscrit or mutool)"
+	echo "  <file1> <file2>     Files to repair"
 	exit 1
 fi
 
 # iterate thru parameters
 while test ${#} -gt 0
 do
-    case $1 in
-        --method) shift; METHOD="$1"; shift; ;;
-        --file) shift; ORIGINAL_URI="$1"; shift; ;;
-        *) shift; ;;
+	case $1 in
+		--method) shift; METHOD="$1"; shift; ;;
+		*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
     esac
 done
+
+# --------------------------
+# check tools availability
+# --------------------------
 
 # check tools availability
 command -v gs >/dev/null 2>&1 || { zenity --error --text="Please install gs [ghostscript]"; exit 1; }
 command -v mutool >/dev/null 2>&1 || { zenity --error --text="Please install mutool [mupdf-tools]"; exit 1; }
 
 # generate temporary directory
-TMP_DIR=$(mktemp -t -d "pdf-compress-XXXXXXXX")
+TMP_DIR=$(mktemp -t -d "pdf-repair-XXXXXXXX")
+TMP_ORIGINAL="${TMP_DIR}/original.pdf"
+TMP_REPAIRED="${TMP_DIR}/repaired.pdf"
 pushd "${TMP_DIR}"
 
-# check if file is provided
-[ "${ERROR}" = "" -a "${ORIGINAL_URI}" = "" ] && ERROR="No file selected"
+# check at least one file is provided
+NBR_FILE=${#ARR_FILE[@]}
+[ "${ERROR}" = "" -a ${NBR_FILE} -eq 0 ] && ERROR="No file selected"
 
 # check repair method
 [ "${ERROR}" = "" -a "${METHOD}" != "ghostscript" -a "${METHOD}" != "mutool" ] && ERROR="Unknown repair tool"
 
-# generate filename data
-if [ "${ERROR}" = "" ]
-then
-	# generate filenames
-	ORIGINAL_DIR=$(dirname "${ORIGINAL_URI}")
-	ORIGINAL_FILE=$(basename "${ORIGINAL_URI}")
-	ORIGINAL_NAME="${ORIGINAL_FILE%.*}"
+# --------------------
+#   PDF repair
+# --------------------
 
-	# generate temporary filenames
-	TMP_ORIGINAL="${TMP_DIR}/original.pdf"
-	TMP_REPAIRED="${TMP_DIR}/repaired.pdf"
-fi
-
-# -------------------
-#   Repair document
-# -------------------
-
-if [ "${ERROR}" = "" ]
+# loop thru image files
+if [ "${ERROR}" = "" ] 
 then
 	(
+	INDEX=0
+	for ORIGINAL_URI in "${ARR_FILE[@]}"
+	do
+		# increment file index
+		INDEX=$((INDEX+1))
 
-	# copy input file to temporary folder
-	echo "# Copy of original PDF document ..."
-	gio copy "${ORIGINAL_URI}" "${TMP_ORIGINAL}"
+		# generate filenames
+		ORIGINAL_DIR=$(dirname "${ORIGINAL_URI}")
+		ORIGINAL_FILE=$(basename "${ORIGINAL_URI}")
+
+		# copy input file to temporary folder
+		echo "# ${INDEX} / ${NBR_FILE} - Copy of original PDF document ..."
+		gio copy "${ORIGINAL_URI}" "${TMP_ORIGINAL}"
 	
-	# repair PDF
-	echo "# Repair original PDF using ${METHOD} ..."
-	[ "${METHOD}" = "ghostscript" ] && gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="${TMP_REPAIRED}" "${TMP_ORIGINAL}" \
-	                                || mutool clean "${TMP_ORIGINAL}" "${TMP_REPAIRED}"
+		# repair PDF
+		echo "# ${INDEX} / ${NBR_FILE} - Repair original PDF using ${METHOD} ..."
+		[ "${METHOD}" = "ghostscript" ] && gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -sOutputFile="${TMP_REPAIRED}" "${TMP_ORIGINAL}" \
+		                                || mutool clean "${TMP_ORIGINAL}" "${TMP_REPAIRED}"
 
-	# place corrected file side to original 
-	echo "# Copy of repaired PDF ..."
-	gio copy "${TMP_REPAIRED}" "${ORIGINAL_DIR}/${ORIGINAL_NAME}-repaired.pdf"
-
+		# place corrected file side to original 
+		echo "# ${INDEX} / ${NBR_FILE} - Copy of repaired PDF ..."
+		gio copy "${TMP_REPAIRED}" "${ORIGINAL_DIR}/${ORIGINAL_NAME}-repaired.pdf"
+	done
+	
 	) | zenity --width=500 --height=25 --progress --pulsate --auto-close --title "Repair PDF" --window-icon="/usr/share/icons/pdf-repair.png"
 fi
 
@@ -98,7 +103,7 @@ fi
 # -------------------
 
 # display error message
-[ "${ERROR}" != "" ] && zenity --error --width=300 --text="${ERROR}"
+[ "${ERROR}" != "" ] && zenity --error --width=600 --text="${ERROR}"
 
 # remove temporary directory
 popd
