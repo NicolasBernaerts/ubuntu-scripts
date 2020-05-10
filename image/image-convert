@@ -1,41 +1,42 @@
 #!/usr/bin/env bash
-# -------------------------------------------------------------------------------
-#  Convert image files to a list of formats described in ~/.image-convert.conf
+# ----------------------------------------------------------------
+#  Batch conversion of image files
 #
 #  Depends on :
-#    * imagemagick (convert and identify)
-#    * xdg-utils (xdg-mime)
-#    * dcraw
+#    * convert and identify [imagemagick]
+#    * xdg-mime [xdg-utils]
+#    * dcraw [dcraw]
 #
 #  Revision history :
 #    12/08/2016, V1.0 - Creation by N. Bernaerts
 #    13/08/2016, V1.1 - Add RAW image handling, performance tweaks
-# -------------------------------------------------------------------------------
+#    03/05/2020, V2.0 - Rewrite for Nautilus Python wrapper 
+#                       Adaptation for Ubuntu 20.04 LTS 
+# ----------------------------------------------------------------
 
-# -------------------------------------------------------
+echo "$$ $@" >> /tmp/test.log
+
+# ------------------
 #   Initialisation
-# -------------------------------------------------------
+# ------------------
 
-# check tools availability
-command -v xdg-mime >/dev/null 2>&1 || { zenity --error --text="Please install xdg-mime [xdg-utils]"; exit 1; }
-command -v dcraw >/dev/null 2>&1 || { zenity --error --text="Please install dcraw"; exit 1; }
-command -v convert >/dev/null 2>&1 || { zenity --error --text="Please install convert [imagemagick]"; exit 1; }
-command -v identify >/dev/null 2>&1 || { zenity --error --text="Please install identify [imagemagick]"; exit 1; }
-
-# configuration file
-FILE_CONF="$HOME/.config/image-convert.conf"
-
-# -------------------------------------------------------
-#   Loop to load arguments
-# -------------------------------------------------------
+# variables
+ERROR=""
+RATIO=""
+FORMAT=""
+ARR_FILE=( )
 
 # if no argument, display help
 if [ $# -eq 0 ] 
 then
   echo "Tool to convert pictures from Nautilus."
   echo "Parameters are :"
-  echo "  --format <format>       Conversion format to use (described in ${FILE_CONF})"
-  echo "  <file1> <file2> ...     List of files"
+  echo "  --format <format>     Target file format (png, jpg, tiff, gif)"
+  echo "  --width <widht>       Target width"
+  echo "  --height <height>     Target height"
+  echo "  --keep-ratio          Keep original ratio"
+  echo "  --quality <quality>   Target quality"
+  echo "  <file1> <file2> ...   List of files"
   exit
 fi
 
@@ -43,123 +44,134 @@ fi
 while test $# -gt 0
 do
   case "$1" in
-    "--format") 
-      shift
-      NAME="$1"
-      shift
-      ;;
-    *) 
-      FILETYPE=$(xdg-mime query filetype "$1" | cut -d'/' -f1)
-      [ "$FILETYPE" = "image" ] && ARR_FILE=("${ARR_FILE[@]}" "$1")
-      shift
-      ;;
+    "--format") shift; FORMAT="$1"; shift; ;;
+    "--width") shift; WIDTH="$1"; shift; ;;
+    "--height") shift; HEIGHT="$1"; shift; ;;
+    "--quality") shift; QUALITY="$1"; shift; ;;
+    "--keep-ratio") RATIO="keep"; shift; ;;
+    *) ARR_FILE=("${ARR_FILE[@]}" "$1"); shift; ;;
    esac
 done
 
-# -------------------------------------------------------
-#   Error check
-# -------------------------------------------------------
+# --------------------------
+# check tools availability
+# --------------------------
 
-# calculate number of image files
+command -v xdg-mime >/dev/null 2>&1 || ERROR="Please install xdg-mime [xdg-utils]"
+command -v dcraw >/dev/null 2>&1 || ERROR="Please install dcraw"
+command -v convert >/dev/null 2>&1 || ERROR="Please install convert [imagemagick]"
+command -v identify >/dev/null 2>&1 || ERROR="Please install identify [imagemagick]"
+
+# generate temporary directory
+TMP_DIR=$(mktemp -t -d "image-convert-XXXXXXXX")
+pushd "${TMP_DIR}"
+
+# check if file is provided
 NBR_FILE=${#ARR_FILE[@]}
+[ "${ERROR}" = "" -a ${NBR_FILE} -eq 0 ] && ERROR="No file selected"
 
-# check for configuration file
-[ ! -f "${FILE_CONF}" ] && { zenity --error --title "Image conversion" --text "Format description file ${FILE_CONF} is not present"; exit; } 
-
-# check if at least one image to convert
-[ ${NBR_FILE} -eq 0 ] && { zenity --error --title "Image conversion" --text "There is no compatible image file in your selection"; exit; }
-
-# check that format is selected
-[ ${NAME} = "" ] && { zenity --error --title "Image conversion" --text "You need to provide a conversion format (--format)"; exit; }
-
-# get format data from configuration file
-CONVERT_DATA=$(grep "^${NAME}=" "${FILE_CONF}")
-[ ${CONVERT_DATA} = "" ] && { zenity --error --title "Image conversion" --text "Conversion format ${NAME} not present in ${FILE_CONF}"; exit; }
-
-# -------------------------------------------------------
-#   Conversion Data
-# -------------------------------------------------------
-
-# get format data
-DESCRIPTION=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f1)
-WIDTH=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f3)
-HEIGHT=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f4)
-TYPE=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f5)
-QUALITY=$(echo "${CONVERT_DATA}" | cut -d"=" -f2 | cut -d',' -f6)
-
-# if only file format change, no suffix will be added
-[ "${WIDTH}" = "-" -a "${HEIGHT}" = "-" ] && SIZE_CHANGE="no" || SIZE_CHANGE="yes"
-
-# create temporary files
-TMP_RAW=$(mktemp -t convert-XXXXXXXX.ppm) && rm "${TMP_RAW}"
-TMP_OUT=$(mktemp -t convert-XXXXXXXX.${TYPE}) && rm "${TMP_OUT}"
-
-# -------------------------------------------------------
-#   File conversion
-# -------------------------------------------------------
-
-# set progress dialog box title
-[ "${SIZE_CHANGE}" = "no" ] && TITLE="Conversion to ${DESCRIPTION}" || TITLE="Conversion to ${DESCRIPTION} (${WIDTH}x${HEIGHT})"
+# --------------------
+#   Files conversion
+# --------------------
 
 # loop thru image files
-INDEX=0
-for IMAGE in "${ARR_FILE[@]}"
-do
+if [ "${ERROR}" = "" ] 
+then
+	(
+	INDEX=0
+	for IMAGE_URI in "${ARR_FILE[@]}"
+	do
+		# increment file index
+		INDEX=$((INDEX+1))
 
-  # generate output filemane
-  DIRECTORY=$(dirname "${IMAGE}")
-  BASEFILE=$(basename "${IMAGE}")
-  BASENAME=$(echo ${BASEFILE} | sed 's|^\(.*\)[.].*$|\1|g')
+		# generate file data
+		IMAGE_DIR=$(dirname "${IMAGE_URI}")
+		IMAGE_FILE=$(basename "${IMAGE_URI}")
+		IMAGE_NAME="${IMAGE_FILE%.*}"
+		IMAGE_EXT="${IMAGE_FILE##*.}"
 
-  # display progress
-  echo $((INDEX*100/NBR_FILE))
+		# set target extension
+		[ "${FORMAT}" != "" ] && TARGET_EXT="${FORMAT}" || TARGET_EXT="${IMAGE_EXT}"
 
-  # index increment
-  INDEX=$((INDEX+1))
+		# generate temporary files
+		TMP_ORIGINAL="${TMP_DIR}/original.${IMAGE_EXT}"
+		TMP_PPM="${TMP_DIR}/image.ppm"
+		TMP_TARGET="${TMP_DIR}/target.${TARGET_EXT}"
 
-  # display current image filename
-  echo "# ${INDEX}/${NBR_FILE} - ${BASEFILE}"
+		# copy input file to temporary folder
+		echo "# ${INDEX} / ${NBR_FILE} - Copy of original image ..."
+		gio copy "${IMAGE_URI}" "${TMP_ORIGINAL}"
 
-  # check if we are dealing with RAW file
-  IS_RAW=$(dcraw -i -v "${IMAGE}"  | grep raw | cut -d':' -f2 | xargs)
+		# check if we are dealing with RAW file
+		echo "# ${INDEX} / ${NBR_FILE} - Check if raw image ..."
+		IS_RAW=$(dcraw -i -v "${TMP_ORIGINAL}"  | grep raw | cut -d':' -f2 | xargs)
+		if [ ${IS_RAW} -gt 0 ]
+		then
+			# convert RAW to PPM and set as original image
+			echo "# ${INDEX} / ${NBR_FILE} - Convert raw to ppm ..."
+			dcraw -w -c "${TMP_ORIGINAL}" > "${TMP_PPM}"
+			TMP_ORIGINAL="${TMP_PPM}"
+		fi 
 
-  # if image is RAW, convert it to temporary PPM
-  if [ ${IS_RAW} -gt 0 ]
-  then
-    # convert RAW to PPM
-    dcraw -w -c "${IMAGE}" > "${TMP_RAW}"
+		# if both width and height are provided and aspect ratio should be kept
+		if [ "${RATIO}" = "keep" -a "${WIDTH}" != "" -a "${HEIGHT}" != "" ]
+		then
+			TARGET_SIZE="${WIDTH}x${HEIGHT}"
 
-    # set PPM as original image
-    IMAGE="${TMP_RAW}"
-  fi 
+		# else if both width and height are provided, force new size
+		elif [ "${WIDTH}" != "" -a "${HEIGHT}" != "" ]
+		then
+			TARGET_SIZE="${WIDTH}x${HEIGHT}!"
 
-  # get image width and height
-  PIX_WIDTH=$(identify -format "%w" "${IMAGE}")
-  PIX_HEIGHT=$(identify -format "%h" "${IMAGE}")
+		# else if width only is provided
+		elif [ "${WIDTH}" != "" ]
+		then
+			TARGET_SIZE="${WIDTH}"
+			
+		# else if height only is provided
+		elif [ "${HEIGHT}" != "" ]
+		then
+			TARGET_SIZE="x${HEIGHT}"
 
-  # if no size specified ( - ), set it to image size
-  [ "${WIDTH}" = "-" ] && TARGET_WIDTH=${PIX_WIDTH} || TARGET_WIDTH=${WIDTH}
-  [ "${HEIGHT}" = "-" ] && TARGET_HEIGHT=${PIX_HEIGHT} || TARGET_HEIGHT=${HEIGHT}
+		# else, no target size
+		else
+			TARGET_SIZE=""
+		fi
 
-  # if image is horizontal, set size to target width, else set size to target height
-  [ "${PIX_WIDTH}" -gt "${PIX_HEIGHT}" ] && SIZE="${TARGET_WIDTH}" || SIZE="x${TARGET_HEIGHT}"
+		# set conversion parameters
+		ARR_PARAM=( "-auto-orient" "${TMP_ORIGINAL}" )
+		[ "${TARGET_SIZE}" != "" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "-resize" "${TARGET_SIZE}" )
+		[ "${QUALITY}" != "" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "-quality" "${QUALITY}" )
 
-  # convert picture with auto orientation
-  convert -auto-orient "${IMAGE}" -resize "${SIZE}" -quality "${QUALITY}" "${TMP_OUT}"
+  		# convert picture
+		echo "# ${INDEX} / ${NBR_FILE} - Convert image ..."
+  		convert "${ARR_PARAM[@]}" "${TMP_TARGET}"
 
-  # get final image width and height
-  PIX_WIDTH=$(identify -format "%w" "${TMP_OUT}")
-  PIX_HEIGHT=$(identify -format "%h" "${TMP_OUT}")
+		# get final image width and height
+		TARGET_WIDTH=$(identify -format "%w" "${TMP_TARGET}")
+		TARGET_HEIGHT=$(identify -format "%h" "${TMP_TARGET}")
 
-  # generate final file names
-  #  - type conversion   : change extension 
-  #  - format conversion : change extension and append size
-  [ "${SIZE_CHANGE}" = "no" ] && OUTPUT="${DIRECTORY}/${BASENAME}.${TYPE}" || OUTPUT="${DIRECTORY}/${BASENAME}-${PIX_WIDTH}x${PIX_HEIGHT}.${TYPE}"
+		# generate size suffix according to context (forced size or same extension)
+		SUFFIX_SIZE=""
+		[ "${WIDTH}" != "" -o "${HEIGHT}" != "" ] && SUFFIX_SIZE=" (${TARGET_WIDTH}x${TARGET_HEIGHT})"
+		[ "${TARGET_EXT}" = "${IMAGE_EXT}" ] && SUFFIX_SIZE=" (${TARGET_WIDTH}x${TARGET_HEIGHT})"
+		
+		# generate target name and copy file
+		echo "# ${INDEX} / ${NBR_FILE} - Copy back to original folder ..."
+		TARGET_URI="${IMAGE_DIR}/${IMAGE_NAME}${SUFFIX_SIZE}.${TARGET_EXT}"
+		gio copy "${TMP_TARGET}" "${TARGET_URI}"
+	done
+	) | zenity --width=500 --height=25 --pulsate --progress --auto-close --title "Conversion of ${NBR_FILE} images"
+fi
 
-  # mv result to final file
-  mv "${TMP_OUT}" "${OUTPUT}"
- 
-done | zenity --width=500 --height=25 --progress --auto-close --title "${TITLE}"
+# -------------------
+#   End of operation
+# -------------------
 
-# remove temporary file
-rm -f "${TMP_RAW}" "${TMP_OUT}"
+# display error message
+[ "${ERROR}" != "" ] && zenity --error --width=300 --text="${ERROR}"
+
+# remove temporary directory
+popd
+rm -r "${TMP_DIR}"
+

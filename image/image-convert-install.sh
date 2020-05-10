@@ -3,8 +3,8 @@
 # Uses Nautilus and Python3 wrapper
 
 # install nautilus-actions, xdg-utils, imagemagick and dcraw
-sudo apt-get update
-sudo apt-get -y install nautilus-actions xdg-utils imagemagick dcraw
+sudo apt update
+sudo apt -y install xdg-utils imagemagick dcraw
 
 # remove files from previous version
 sudo rm --force /usr/local/bin/image-convert-declare
@@ -12,7 +12,7 @@ sudo rm --force /usr/share/file-manager/actions/image-convert.desktop
 sudo rm --force /usr/share/file-manager/actions/image-convert-*.desktop
 rm --force $HOME/.local/share/file-manager/actions/image-convert-*.desktop
 
-# install image-convert scripts
+# main script installation
 sudo wget -O /usr/local/bin/image-convert https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert
 sudo chmod +x /usr/local/bin/image-convert
 

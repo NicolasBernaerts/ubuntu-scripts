@@ -8,41 +8,43 @@
 #    * pngtopnm, pnmtopng, giftopnm, ppmtogif, tifftopnm, pnmtotiff and pnmflip (netpbm package)
 #
 #  Revision history :
-#   09/10/2017, V1.0 - Creation by N. Bernaerts
-#   01/03/2018, V1.1 - Jpeg lossless rotation with exiftool
+#    09/10/2017, V1.0 - Creation by N. Bernaerts
+#    01/03/2018, V1.1 - Jpeg lossless rotation with exiftool
+#    03/05/2020, V2.0 - Rewrite for Nautilus Python wrapper 
+#                       Adaptation for Ubuntu 20.04 LTS 
 # ---------------------------------------------------
 
-# --------------------------
-# check tools availability
-# --------------------------
+# ------------------
+#   Initialisation
+# ------------------
 
-command -v mimetype >/dev/null 2>&1 || { zenity --error --text="Please install mimetype [libfile-mimeinfo-perl]"; exit 1; }
-command -v exiftool >/dev/null 2>&1 || { zenity --error --text="Please install exiftool [libimage-exiftool-perl]"; exit 1; }
-command -v pngtopnm >/dev/null 2>&1 || { zenity --error --text="Please install pngtopnm [netpbm]"; exit 1; }
-command -v pnmtopng >/dev/null 2>&1 || { zenity --error --text="Please install pnmtopng [netpbm]"; exit 1; }
-command -v giftopnm >/dev/null 2>&1 || { zenity --error --text="Please install giftopnm [netpbm]"; exit 1; }
-command -v ppmtogif >/dev/null 2>&1 || { zenity --error --text="Please install ppmtogif [netpbm]"; exit 1; }
-command -v tifftopnm >/dev/null 2>&1 || { zenity --error --text="Please install tifftopnm [netpbm]"; exit 1; }
-command -v pnmtotiff >/dev/null 2>&1 || { zenity --error --text="Please install pnmtotiff [netpbm]"; exit 1; }
-command -v pnmflip >/dev/null 2>&1 || { zenity --error --text="Please install pnmflip [netpbm]"; exit 1; }
-
-# ----------------------
 # JPEG rotation tables
-# ----------------------
-
-# no tag : no change
-# 1 : no change
-# 2 : horizontal mirror
-# 3 : 180
-# 4 : horizontal mirror + 180
-# 5 : horizontal mirror + left
-# 6 : right
-# 7 : horizontal mirror + right
-# 8 : left
+#   no tag : no change
+#   1 : no change
+#   2 : horizontal mirror
+#   3 : 180
+#   4 : horizontal mirror + 180
+#   5 : horizontal mirror + left
+#   6 : right
+#   7 : horizontal mirror + right
+#   8 : left
 ARR_LEFT=( "8" "8" "5" "6" "7" "4" "1" "2" "3" )
 ARR_RIGHT=( "6" "6" "7" "8" "5" "2" "3" "4" "1" )
 ARR_UPDOWN=( "3" "3" "4" "1" "2" "7" "8" "5" "6" )
 ARR_MIRROR=( "2" "2" "1" "4" "3" "8" "7" "6" "5" )
+PNM_ANGLE=""
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+  echo "Tool to convert pictures from Nautilus."
+  echo "Parameters are :"
+  echo "  --right               Rotate 90°"
+  echo "  --left                Rotate -90°"
+  echo "  --updown              Rotate 180°"
+  echo "  <file1> <file2> ...   List of files"
+  exit
+fi
 
 # loop to retrieve arguments
 while test $# -gt 0
@@ -50,73 +52,120 @@ do
 	case "$1" in
 	"--right") ARR_ROTATE=( "${ARR_RIGHT[@]}" ); PNM_ANGLE="270"; shift; ;;
 	"--left") ARR_ROTATE=( "${ARR_LEFT[@]}" ); PNM_ANGLE="90"; shift; ;;
-	"--up-down") ARR_ROTATE=( "${ARR_UPDOWN[@]}" ); PNM_ANGLE="180"; shift; ;;
+	"--updown") ARR_ROTATE=( "${ARR_UPDOWN[@]}" ); PNM_ANGLE="180"; shift; ;;
 	*) ARR_FILE=( "${ARR_FILE[@]}" "$1" ); shift; ;;
 	esac
 done
 
+# --------------------------
+# check tools availability
+# --------------------------
+
+command -v mimetype >/dev/null 2>&1 || ERROR="Please install mimetype [libfile-mimeinfo-perl]"
+command -v exiftool >/dev/null 2>&1 || ERROR="Please install exiftool [libimage-exiftool-perl]"
+command -v pngtopnm >/dev/null 2>&1 || ERROR="Please install pngtopnm [netpbm]"
+command -v pnmtopng >/dev/null 2>&1 || ERROR="Please install pnmtopng [netpbm]"
+command -v giftopnm >/dev/null 2>&1 || ERROR="Please install giftopnm [netpbm]"
+command -v ppmtogif >/dev/null 2>&1 || ERROR="Please install ppmtogif [netpbm]"
+command -v tifftopnm >/dev/null 2>&1 || ERROR="Please install tifftopnm [netpbm]"
+command -v pnmtotiff >/dev/null 2>&1 || ERROR="Please install pnmtotiff [netpbm]"
+command -v pnmflip >/dev/null 2>&1 || ERROR="Please install pnmflip [netpbm]"
+
+# generate temporary directory
+TMP_DIR=$(mktemp -t -d "image-convert-XXXXXXXX")
+pushd "${TMP_DIR}"
+
+# check if file is provided
+NBR_FILE=${#ARR_FILE[@]}
+[ "${ERROR}" = "" -a ${NBR_FILE} -eq 0 ] && ERROR="No file selected"
+
 # check rotation is selected
-[ "${ARR_ROTATE}" = "" ] && { zenity --error --text="Please select rotation parameter"; exit 1; }
+[ "${ERROR}" = "" -a "${PNM_ANGLE}" = "" ] && ERROR="No rotation selected (--right, --left or --updown)"
 
-# -------------------------------------
-# loop thru PDF files to convert them
-# -------------------------------------
+# --------------------
+#   Files rotation
+# --------------------
 
-# create temporary file
-TMP_PNM=$(mktemp --tmpdir XXXXXXXX-org.pnm)
-TMP_ROTATE=$(mktemp --tmpdir XXXXXXXX-rot.pnm)
+# loop thru image files
+if [ "${ERROR}" = "" ] 
+then
+	(
+	INDEX=0
+	for IMAGE_URI in "${ARR_FILE[@]}"
+	do
+		# increment file index
+		INDEX=$((INDEX+1))
 
-# loop thru files 
-for FILE in "${ARR_FILE[@]}"
-do
-	# remove temporary file
-	rm -f "${TMP_ROTATE}"
+		# generate file data
+		IMAGE_DIR=$(dirname "${IMAGE_URI}")
+		IMAGE_FILE=$(basename "${IMAGE_URI}")
+		IMAGE_NAME="${IMAGE_FILE%.*}"
+		IMAGE_EXT="${IMAGE_FILE##*.}"
 
-	# rotate file according to mimetype
-	TYPE_FILE=$(mimetype --brief "${FILE}")
-	case "${TYPE_FILE}" in
+		# generate temporary files
+		TMP_ORIGINAL="${TMP_DIR}/original.${IMAGE_EXT}"
+		TMP_PNM_ORG="${TMP_DIR}/original.pnm"
+		TMP_PNM_ROT="${TMP_DIR}/target.pnm"
+		TMP_TARGET="${TMP_DIR}/target.${IMAGE_EXT}"
 
-	"image/jpeg")
-		# read rotation tag
-		ANGLE=$(exiftool -args -Orientation -n "${FILE}" | cut -d'=' -f2)
-		[ "${ANGLE}" = "" ] && ANGLE="0"
+		# copy input file to temporary folder
+		echo "# ${INDEX} / ${NBR_FILE} - Copy of original image ..."
+		gio copy "${IMAGE_URI}" "${TMP_ORIGINAL}"
 
-		# rotate image
-		exiftool -overwrite_original -Orientation=${ARR_ROTATE[${ANGLE}]} -n "${FILE}"
-		;;
+		# rotate file according to mimetype
+		echo "# ${INDEX} / ${NBR_FILE} - Image rotation ..."
+		TYPE_FILE=$(mimetype --brief "${TMP_ORIGINAL}")
+		case "${TYPE_FILE}" in
 
-	"image/png")
-		# convert image to PNM
-		pngtopnm "${FILE}" > "${TMP_PNM}"
+		"image/jpeg")
+			# read rotation tag
+			ANGLE=$(exiftool -args -Orientation -n "${TMP_ORIGINAL}" | cut -d'=' -f2)
+			[ "${ANGLE}" = "" ] && ANGLE="0"
 
-		# rotate image
-		pnmflip -r${PNM_ANGLE} "${TMP_PNM}" | pnmtopng - > "${TMP_ROTATE}"
-		;;
+			# rotate image
+			exiftool -o "${TMP_TARGET}" -Orientation=${ARR_ROTATE[${ANGLE}]} -n "${TMP_ORIGINAL}"
+			;;
 
-	"image/gif")
-		# convert image to PNM
-		giftopnm "${FILE}" > "${TMP_PNM}"
+		"image/png")
+			# convert image to PNM and rotate
+			pngtopnm "${TMP_ORIGINAL}" > "${TMP_PNM_ORG}"
+			pnmflip -r${PNM_ANGLE} "${TMP_PNM_ORG}" > "${TMP_PNM_ROT}"
+			pnmtopng "${TMP_PNM_ROT}" > "${TMP_TARGET}"
+			;;
 
-		# rotate image
-		pnmflip -r${PNM_ANGLE} "${TMP_PNM}" | ppmtogif - > "${TMP_ROTATE}"
-		;;
+		"image/gif")
+			# convert image to PNM and rotate
+			giftopnm "${TMP_ORIGINAL}" > "${TMP_PNM_ORG}"
+			pnmflip -r${PNM_ANGLE} "${TMP_PNM_ORG}" > "${TMP_PNM_ROT}"
+			ppmtogif "${TMP_PNM_ROT}" > "${TMP_TARGET}"
+			;;
 
-	"image/tiff")
-		# convert image to PNM
-		tifftopnm "${FILE}" > "${TMP_PNM}" 
+		"image/tiff")
+			# convert image to PNM and rotate
+			tifftopnm "${TMP_ORIGINAL}" > "${TMP_PNM_ORG}" 
+			pnmflip -r${PNM_ANGLE} "${TMP_PNM_ORG}" > "${TMP_PNM_ROT}"
+			pnmtotiff "${TMP_PNM_ROT}" > "${TMP_TARGET}"
+			;;
 
-		# rotate image
-		pnmflip -r${PNM_ANGLE} "${TMP_PNM}" | pnmtotiff - > "${TMP_ROTATE}"
-		;;
+		*)
+			;;
+		esac
+		
+		# copy back rotated file
+		echo "# ${INDEX} / ${NBR_FILE} - Copy back to original folder ..."
+		gio copy "${TMP_TARGET}" "${IMAGE_URI}"
+	done
+	) | zenity --width=500 --height=25 --pulsate --progress --auto-close --title "Rotation of ${NBR_FILE} images"
+fi
 
-	*)
-		;;
-	esac
+# -------------------
+#   End of operation
+# -------------------
 
-	# replace original file
-	[ -s "${TMP_ROTATE}" ] && mv --force "${TMP_ROTATE}" "${FILE}"
+# display error message
+[ "${ERROR}" != "" ] && zenity --error --width=300 --text="${ERROR}"
 
-done
+# remove temporary directory
+popd
+rm -r "${TMP_DIR}"
 
-# remove temporary file
-rm -f "${TMP_PNM}" "${TMP_ROTATE}"

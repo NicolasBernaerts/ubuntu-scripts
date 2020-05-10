@@ -20,8 +20,8 @@ gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/Butto
 sudo wget -O /usr/share/icons/image-resize.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/icon/image/image-resize.png
 
 # main script installation
-sudo wget -O /usr/local/bin/image-resize https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize
-sudo chmod +x /usr/local/bin/image-resize
+sudo wget -O /usr/local/bin/image-convert https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert
+sudo chmod +x /usr/local/bin/image-convert
 
 # desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
