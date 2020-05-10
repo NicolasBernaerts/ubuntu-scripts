@@ -12,10 +12,10 @@ sudo apt -y install imagemagick texlive-extra-utils
 sudo apt -y install ghostscript mupdf-tools
 
 # remove files from previous version
-[ -f /usr/share/applications/pdf-repair.desktop ] && sudo rm /usr/share/applications/pdf-repair.desktop
-[ -f $HOME/.local/share/file-manager/actions/pdf-compress-action.desktop ] && rm $HOME/.local/share/file-manager/actions/pdf-compress-action.desktop
-[ -f $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop ] && rm $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop
-
+sudo rm --force /usr/share/applications/pdf-repair.desktop /usr/share/applications/pdf-repair-action.desktop
+sudo rm --force /usr/share/applications/pdf-compress.desktop /usr/share/applications/pdf-compress-action.desktop
+rm --force $HOME/.local/share/file-manager/actions/pdf-compress-action.desktop
+rm --force $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop
 
 # if needed, remove imagemagick PDF generation restrictions
 if [ ! -f "/etc/apt/apt.conf.d/99imagemagick-enable-pdf" ]
