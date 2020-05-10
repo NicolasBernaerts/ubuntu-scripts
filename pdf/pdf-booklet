@@ -48,7 +48,10 @@ do
     esac
 done
 
-# check mimetype, pdfinfo, pdfbook and unoconv
+# --------------------------
+# check tools availability
+# --------------------------
+
 command -v mimetype >/dev/null 2>&1 || ERROR="Please install mimetype"
 command -v pdfinfo >/dev/null 2>&1 || ERROR="Please install pdfinfo [poppler-utils package]"
 command -v pdfbook2 >/dev/null 2>&1 || ERROR="Please install pdfbook2 [texlive-extra-utils package]"
