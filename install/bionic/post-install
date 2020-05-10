@@ -7,7 +7,7 @@
 #  29/05/2018, V1.0 - Migrated from Xenial
 #  30/09/2018, V1.1 - Add --no-junk option
 #  15/04/2019, V1.2 - Change --wifi to --tweaks
-#  16/04/2019, V1.3 - Add --arduino
+#  16/04/2019, V1.3 - Add --programming
 #  11/11/2019, V1.4 - Add --design
 # ---------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ then
     echo "  --no-junk         Remove junk packages"
     echo "  --design          Install design apps"
     echo "  --docky           Add docky launcher"
-    echo "  --arduino         Install Arduino environment (with Tasmota)"
+    echo "  --programming     Install programming environment (Arduino & Tasmota)"
     echo "  --tweaks          Add some tweaks for problematic hardware"
     echo "  --ssd             Add some tweaks for SSD disk"
     echo "  --hp-printer      Add HP printer GUI"
@@ -59,7 +59,7 @@ do
         --no-junk) NOJUNK="ok"; shift; ;;
         --design) DESIGN="ok"; shift; ;;
         --docky) DOCKY="ok"; shift; ;;
-        --arduino) ARDUINO="ok"; shift; ;;
+        --programming) PROGRAMMING="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
         --hp-printer) HPPRINTER="ok"; shift; ;;
@@ -206,15 +206,15 @@ then
     fi
 fi
 
-# arduino
-if [ "${ARDUINO}" = "ok" ]
+# programming
+if [ "${PROGRAMMING}" = "ok" ]
 then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/arduino
-    if [ -f ./arduino ]
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/programming
+    if [ -f ./programming ]
     then
-        chmod +x ./arduino
-        ./arduino
-        rm ./arduino
+        chmod +x ./programming
+        ./programming
+        rm ./programming
     fi
 fi
 
