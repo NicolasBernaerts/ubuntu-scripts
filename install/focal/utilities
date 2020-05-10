@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install misc utilities & tools on Bionic
+#
+# 27/04/2018, v1.0 - Migrated from Xenial
+# 08/09/2018, v1.1 - Add flatpak
+# -------------------------------------------------------
+
+# curl
+logger "utilities - curl"
+sudo apt -y install curl
+
+# flatpak
+logger "utilities - flatpak"
+sudo apt -y install flatpak
+sudo apt -y install gnome-software-plugin-flatpak
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# yad editor (used by many scripts)
+logger "utilities - yad"
+sudo apt -y install yad
+
+# package management tools
+logger "utilities - package management"
+sudo apt -y install ppa-purge synaptic gdebi deborphan
+
+# disk tools
+logger "utilities - disk"
+sudo apt -y install gparted
+
+# filesystem clients
+logger "utilities - filesystem"
+sudo apt -y install cifs-utils exfat-fuse
+
+# compression tools
+logger "utilities - compression"
+sudo apt -y install p7zip-rar rar unrar
+
+# file comparison
+logger "utilities - file comparison"
+sudo apt -y install meld
+
+# alacarte : menu editor
+logger "utilities - alacarte"
+sudo apt -y install alacarte
+
+# keepassxc : electronic wallet
+sudo add-apt-repository -y ppa:phoerious/keepassxc
+sudo apt -y install keepassxc
+
