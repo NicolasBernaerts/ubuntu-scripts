@@ -12,6 +12,8 @@
 # ---------------------------------------------------
 
 DISTRI_NAME="focal"
+ARCHI="amd64"
+X86ARCHI="64"
 
 # ---------------------------------------------------
 # ------------ Distribution detection ---------------
@@ -19,13 +21,6 @@ DISTRI_NAME="focal"
 
 RESULT=$(cat /etc/lsb-release | grep "DISTRIB_CODENAME" | cut -d'=' -f2-)
 [ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_NAME}"; exit 1; }
-
-# -----------------------------------------
-# ------------ Architecture ---------------
-# -----------------------------------------
-
-ARCHI="amd64"
-X86ARCHI="64"
 
 # ---------------------------------------------------
 # -------------- Parameters handling ----------------
