@@ -1,13 +1,13 @@
 #!/bin/bash
-# PDF compress extension
+# Misc PDF tools extension (compress & repair)
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # main packages installation
-sudo apt -y install imagemagick
-sudo apt -y install texlive-extra-utils
+sudo apt -y install python3-nautilus
+sudo apt -y install imagemagick texlive-extra-utils
 sudo apt -y install ghostscript mupdf-tools
 
 # remove imagemagick PDF generation restrictions
@@ -19,9 +19,6 @@ then
   ./imagemagisk-enable-pdf-install.sh
   rm ./imagemagisk-enable-pdf-install.sh
 fi
-
-# if nautilus present, install nautilus-actions
-command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
 
 # show icon in menus (command different according to gnome version)
 gsettings set org.gnome.desktop.interface menus-have-icons true
@@ -55,16 +52,3 @@ sudo wget -O /usr/share/icons/pdf-repair.png https://github.com/NicolasBernaerts
 # install main script
 sudo wget -O /usr/local/bin/pdf-repair https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair
 sudo chmod +x /usr/local/bin/pdf-repair
-
-# -----------------
-#  PDF rotate
-# -----------------
-
-# install icons
-sudo wget -O /usr/share/icons/rotate-left.png https://github.com/NicolasBernaerts/icon/raw/master/rotate-left.png
-sudo wget -O /usr/share/icons/rotate-right.png https://github.com/NicolasBernaerts/icon/raw/master/rotate-right.png
-sudo wget -O /usr/share/icons/rotate-updown.png https://github.com/NicolasBernaerts/icon/raw/master/revert-updown.png
-
-# install main script
-sudo wget -O /usr/local/bin/pdf-rotate https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate
-sudo chmod +x /usr/local/bin/pdf-rotate
