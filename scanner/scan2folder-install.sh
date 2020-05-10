@@ -2,7 +2,7 @@
 # scan2folder tool
 
 # install tools
-sudo apt-get -y install ghostscript yad hplip-gui
+sudo apt -y install ghostscript yad hplip-gui
 
 # install yad
 IS_PRESENT=$(command -v yad)
