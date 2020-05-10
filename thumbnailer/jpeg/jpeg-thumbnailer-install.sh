@@ -42,7 +42,7 @@ sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/gps.png' | pnmscalefixed -ysize 64 -
 
 # list of supported cameras
 ARR_ICON=( "canon eos m3" "canon eos 1000d" "canon eos 1100d" "canon powershot g7 x" "dmc-fz200" "dmc-tz5" )
-ARR_ICON=( "${ARR_ICON[@]}" "oneplus e1003" "oneplus a0001" "one a2003" "oneplus a3003" "oneplus a5000" "oneplus a6000" "oneplus a6003" )
+ARR_ICON=( "${ARR_ICON[@]}" "oneplus e1003" "oneplus a0001" "one a2003" "oneplus a3003" "oneplus a5000" "oneplus a6000" "oneplus a6003" "oneplus hd1903" )
 ARR_ICON=( "${ARR_ICON[@]}" "pixel 2 xl" "hero" "hero4 session" "lg-h870" )
 
 # loop to install icons, masks and alpha masks
