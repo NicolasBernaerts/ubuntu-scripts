@@ -22,4 +22,6 @@ cd ../..
 rm -R -f photorec
 
 # desktop integration
+sudo wget -O /usr/share/icons/qphotorec.png https://github.com/NicolasBernaerts/icon/raw/master/qphotorec.png
+sudo wget -O /usr/share/applications/qphotorec.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/gphotorec.desktop
 
