@@ -1,25 +1,21 @@
 #!/usr/bin/env bash
-# Add image consersion extension menu to Nautilus
-
-# test Nautilus
-command -v nautilus >/dev/null 2>&1 || { echo "Nautilus has not been detected. Please install it first."; exit 1; }
+# Add image consersion extension menu
+# Uses Nautilus and Python3 wrapper
 
 # install nautilus-actions, xdg-utils, imagemagick and dcraw
 sudo apt-get update
 sudo apt-get -y install nautilus-actions xdg-utils imagemagick dcraw
 
-# nautilus : remove nautilus action root menu
-mv $HOME/.config/nautilus-actions/nautilus-actions.conf $HOME/.config/nautilus-actions/nautilus-actions.conf.org
-cat $HOME/.config/nautilus-actions/nautilus-actions.conf.org | sed 's/items-create-root-menu=.*/items-create-root-menu=false/' > $HOME/.config/nautilus-actions/nautilus-actions.conf
+# remove files from previous version
+sudo rm --force /usr/local/bin/image-convert-declare
+sudo rm --force /usr/share/file-manager/actions/image-convert.desktop
+sudo rm --force /usr/share/file-manager/actions/image-convert-*.desktop
+rm --force $HOME/.local/share/file-manager/actions/image-convert-*.desktop
 
 # install image-convert scripts
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/image-convert https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/image-convert-declare https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-declare
+sudo wget -O /usr/local/bin/image-convert https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert
 sudo chmod +x /usr/local/bin/image-convert
-sudo chmod +x /usr/local/bin/image-convert-declare
 
-# install .conf configuration file
-wget --header='Accept-Encoding:none' -O "$HOME/.config/image-convert.conf" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert.conf
-
-# declare image-convert nautilus extension
-/usr/local/bin/image-convert-declare --install
+# desktop integration
+mkdir --parents $HOME/.local/share/nautilus-python/extensions
+wget -O $HOME/.local/share/nautilus-python/extensions/image-convert-menu.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-menu.py
