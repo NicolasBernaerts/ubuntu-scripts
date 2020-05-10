@@ -143,6 +143,7 @@ fi
 
 # disable apport crash report
 sudo systemctl disable apport.service
+sudo apt -y remove apport apport-gtk
 
 # design apps
 if [ "${DESIGN}" = "ok" ]
