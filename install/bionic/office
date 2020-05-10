@@ -6,6 +6,7 @@
 # 30/09/2018, V1.1 - Update Grisbi from unstable
 # 20/04/2020, V1.2 - Add PDF compression tool
 # 01/05/2020, V1.3 - Add HP printer GUI
+# 10/05/2020, V1.4 - Update for Nautilus Python3 extensions
 # -------------------------------------------------------
 
 # HP printer GUI 
@@ -70,14 +71,14 @@ then
   rm ./msoffice-thumbnailer-install.sh
 fi
 
-# PDF : document generation from multiple files
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-generate-install.sh
-if [ -f ./pdf-generate-install.sh ]
+# PDF : document merge extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-merge-install.sh
+if [ -f ./pdf-merge-install.sh ]
 then
-  logger "office - PDF document generation"
-  chmod +x ./pdf-generate-install.sh
-  ./pdf-generate-install.sh
-  rm ./pdf-generate-install.sh
+  logger "office - PDF document merge"
+  chmod +x ./pdf-merge-install.sh
+  ./pdf-merge-install.sh
+  rm ./pdf-merge-install.sh
 fi
 
 # PDF : rotation extension
@@ -90,32 +91,22 @@ then
   rm ./pdf-rotate-install.sh
 fi
 
-# PDF : repair extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair-install.sh
-if [ -f ./pdf-repair-install.sh ]
+# PDF : misc tools extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-tools-install.sh
+if [ -f ./pdf-tools-install.sh ]
 then
-  logger "office - PDF repair extension"
-  chmod +x ./pdf-repair-install.sh
-  ./pdf-repair-install.sh
-  rm ./pdf-repair-install.sh
-fi
-
-# PDF : compression extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-compress-install.sh
-if [ -f ./pdf-compress-install.sh ]
-then
-  logger "office - PDF compression extension"
-  chmod +x ./pdf-compress-install.sh
-  ./pdf-compress-install.sh
-  rm ./pdf-compress-install.sh
+  logger "office - PDF tools extension"
+  chmod +x ./pdf-tools-install.sh
+  ./pdf-tools-install.sh
+  rm ./pdf-tools-install.sh
 fi
 
 # PDF : booklet generation extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/generate-booklet-install.sh
-if [ -f ./generate-booklet-install.sh ]
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-booklet-install.sh
+if [ -f ./pdf-booklet-install.sh ]
 then
   logger "office - PDF booklet"
-  chmod +x ./generate-booklet-install.sh
-  ./generate-booklet-install.sh
-  rm ./generate-booklet-install.sh
+  chmod +x ./pdf-booklet-install.sh
+  ./pdf-booklet-install.sh
+  rm ./pdf-booklet-install.sh
 fi
