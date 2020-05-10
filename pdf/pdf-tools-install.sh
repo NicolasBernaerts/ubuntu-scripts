@@ -1,5 +1,6 @@
 #!/bin/bash
 # Misc PDF tools extension (compress & repair)
+# Uses Nautilus and Python3 wrapper
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
@@ -10,14 +11,23 @@ sudo apt -y install python3-nautilus
 sudo apt -y install imagemagick texlive-extra-utils
 sudo apt -y install ghostscript mupdf-tools
 
-# remove imagemagick PDF generation restrictions
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
-if [ -f ./imagemagisk-enable-pdf-install.sh ]
+# remove files from previous version
+[ -f /usr/share/applications/pdf-repair.desktop ] && sudo rm /usr/share/applications/pdf-repair.desktop
+[ -f $HOME/.local/share/file-manager/actions/pdf-compress-action.desktop ] && rm $HOME/.local/share/file-manager/actions/pdf-compress-action.desktop
+[ -f $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop ] && rm $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop
+
+
+# if needed, remove imagemagick PDF generation restrictions
+if [ ! -f "/etc/apt/apt.conf.d/99imagemagick-enable-pdf" ]
 then
-  logger "graphical - ImageMagick PDF and PostScript restriction removal"
-  chmod +x ./imagemagisk-enable-pdf-install.sh
-  ./imagemagisk-enable-pdf-install.sh
-  rm ./imagemagisk-enable-pdf-install.sh
+	wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
+	if [ -f ./imagemagisk-enable-pdf-install.sh ]
+	then
+		logger "graphical - ImageMagick PDF and PostScript restriction removal"
+		chmod +x ./imagemagisk-enable-pdf-install.sh
+		./imagemagisk-enable-pdf-install.sh
+		rm ./imagemagisk-enable-pdf-install.sh
+	fi
 fi
 
 # show icon in menus (command different according to gnome version)
@@ -27,7 +37,7 @@ gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/Butto
 # install main menu icon
 sudo wget -O /usr/share/icons/pdf-menu.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/icon/pdf/pdf-menu.png
 
-# if needed, create nautilus python extensions folder
+# desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
 wget -O $HOME/.local/share/nautilus-python/extensions/pdf-tools-menu.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-tools-menu.py
 
