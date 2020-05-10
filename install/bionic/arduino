@@ -1,10 +1,17 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-# Script to install arduino environment
+# Script to install programming environment
 #
 # 15/04/2019, V1.0 - Creation by N. Bernaerts
+# 10/05/2020, V1.1 - Add EasySSH
 # -------------------------------------------------------
 
+# easyssh
+flatpak -y install https://flathub.org/repo/appstream/com.github.muriloventuroso.easyssh.flatpakref
+
+# ----------
+#  Arduino
+# ----------
 # create sources directory
 [ ! -d "$HOME/sources" ] && mkdir "$HOME/sources"
 [ ! -d "$HOME/Arduino" ] && mkdir "$HOME/Arduino"
