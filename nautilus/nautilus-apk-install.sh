@@ -5,9 +5,7 @@
 command -v nautilus >/dev/null 2>&1 || { echo "Nautilus has not been detected. Please install it first."; exit 1; }
 
 # install python extension management for nautilus
-sudo apt -y install python-nautilus
-
-# install aapt
+sudo apt -y install python3-nautilus
 sudo apt -y install aapt
 
 # if needed, create extensions directory
