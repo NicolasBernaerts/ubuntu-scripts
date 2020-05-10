@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to apply different tweaks for Focal
+#
+# 10/05/2020, V1.0 - Migrated from Bionic
+# ------------------------------------------------------
+
+# force Google DNS servers on DHCP networks
+echo "DNS=8.8.8.8 8.8.4.4" | sudo tee -a /etc/systemd/resolved.conf
+echo "Cache=no" | sudo tee -a /etc/systemd/resolved.conf
+
+# SSH keepalive
+echo "ClientAliveInterval 30" | sudo tee -a /etc/ssh/sshd_config
+echo "ClientAliveCountMax 2" | sudo tee -a /etc/ssh/sshd_config
+
+# disable apport crash report
+sudo systemctl disable apport.service
+sudo apt -y remove apport apport-gtk
+
