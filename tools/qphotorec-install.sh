@@ -23,4 +23,5 @@ rm -R -f photorec
 
 # desktop integration
 sudo wget -O /usr/local/share/applications/qphotorec.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/qphotorec.desktop
-
+sudo wget -O /usr/local/bin/qphotorec.su https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/qphotorec.su
+sudo chmod +x /usr/local/bin/qphotorec.su
