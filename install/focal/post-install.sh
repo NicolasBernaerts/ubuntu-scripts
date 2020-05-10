@@ -33,6 +33,7 @@ then
     echo "It will install some important packages not provided by default installation."
     echo "Options are :"
     echo "  --design          Install design apps"
+    echo "  --photorec        Add photorec tools"
     echo "  --docky           Add docky launcher"
     echo "  --arduino         Install Arduino environment (with Tasmota)"
     echo "  --tweaks          Add some tweaks for problematic hardware"
@@ -45,6 +46,7 @@ while test ${#} -gt 0
 do
     case $1 in
         --design) DESIGN="ok"; shift; ;;
+        --photorec) PHOTOREC="ok"; shift; ;;
         --docky) DOCKY="ok"; shift; ;;
         --arduino) ARDUINO="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
@@ -166,6 +168,19 @@ then
         chmod +x ./tweaks
         ./tweaks
         rm ./tweaks
+    fi
+fi
+
+# Photorec
+if [ "${PHOTOREC}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/qphotorec-install.sh
+    if [ -f ./qphotorec-install.sh ]
+    then
+        logger "Tools - Photorec"
+        chmod +x ./qphotorec-install.sh
+        ./qphotorec-install.sh
+        rm ./qphotorec-install.sh
     fi
 fi
 
