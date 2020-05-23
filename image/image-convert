@@ -10,10 +10,10 @@
 #
 #  Revision history :
 #    12/08/2016, V1.0 - Creation by N. Bernaerts
-#    13/08/2016, V1.1 - Add RAW image handling, performance tweaks
+#    13/08/2016, V1.1 - Add RAW image reading, performance tweaks
 #    03/05/2020, V2.0 - Rewrite for Nautilus Python wrapper 
 #                       Adaptation for Ubuntu 20.04 LTS 
-#    22/05/2020, V2.1 - Add HEIF image handling 
+#    22/05/2020, V2.1 - Add HEIF image conversion 
 # ----------------------------------------------------------------
 
 # ------------------
@@ -62,11 +62,16 @@ command -v dcraw >/dev/null 2>&1 || ERROR="Please install dcraw"
 command -v convert >/dev/null 2>&1 || ERROR="Please install convert [imagemagick]"
 command -v identify >/dev/null 2>&1 || ERROR="Please install identify [imagemagick]"
 command -v heif-convert >/dev/null 2>&1 || ERROR="Please install heif-convert [libheif-examples]"
+command -v heif-enc >/dev/null 2>&1 || ERROR="Please install heif-enc [libheif-examples]"
 
 
 # generate temporary directory
 TMP_DIR=$(mktemp -t -d "image-convert-XXXXXXXX")
 pushd "${TMP_DIR}"
+
+# specific mimetypes
+ARR_RAW=( "image/x-sony-arw" "image/x-canon-cr2" "image/x-canon-crw" "image/x-kodak-dcr" "image/x-adobe-dng" "image/x-epson-erf" "image/x-kodak-k25" "image/x-kodak-kdc" "image/x-minolta-mrw" "image/x-nikon-nef" "image/x-olympus-orf" "image/x-pentax-pef" "image/x-fuji-raf" "image/x-panasonic-raw" "image/x-sony-sr2" "image/x-sony-srf" "image/x-sigma-x3f" )
+ARR_HEIF=( "image/heif" )
 
 # check if file is provided
 NBR_FILE=${#ARR_FILE[@]}
@@ -86,6 +91,10 @@ then
 		# increment file index
 		INDEX=$((INDEX+1))
 
+		# ------------------
+		#   initialisation
+		# ------------------
+		
 		# generate file data
 		IMAGE_DIR=$(dirname "${IMAGE_URI}")
 		IMAGE_FILE=$(basename "${IMAGE_URI}")
@@ -99,32 +108,44 @@ then
 		TMP_ORIGINAL="${TMP_DIR}/original.${IMAGE_EXT}"
 		TMP_PPM="${TMP_DIR}/image.ppm"
 		TMP_JPG="${TMP_DIR}/image.jpg"
+		TMP_PNG="${TMP_DIR}/image.png"
+		TMP_HEIF="${TMP_DIR}/image.heic"
 		TMP_TARGET="${TMP_DIR}/target.${TARGET_EXT}"
 
 		# copy input file to temporary folder
 		echo "# ${INDEX} / ${NBR_FILE} - Copy of original image ..."
 		gio copy "${IMAGE_URI}" "${TMP_ORIGINAL}"
 
+		# ------------------
+		#   pre-treatment
+		# ------------------
+
 		# get mimetype
 		echo "# ${INDEX} / ${NBR_FILE} - Check specific types ..."
-		IS_HEIF=$(mimetype --output-format %m "${TMP_ORIGINAL}" | grep "image/heif")
-		IS_RAW=$(dcraw -i -v "${TMP_ORIGINAL}"  | grep raw | cut -d':' -f2 | xargs)
+		FILEMIME=$(mimetype --output-format %m "${TMP_ORIGINAL}")
+		IS_HEIF=$(echo "${ARR_HEIF[@]}" | grep "${FILEMIME}")
+		IS_RAW=$(echo "${ARR_RAW[@]}" | grep "${FILEMIME}")
 		
-		# handle specific file types
-		if [ ${IS_HEIF} != "" ]
+		# pre-treatment of HEIF files
+		if [ "${IS_HEIF}" != "" ]
 		then
 			# convert HEIF to JPG
 			echo "# ${INDEX} / ${NBR_FILE} - Convert heif to jpg ..."
-			heif-convert "${TMP_ORIGINAL}" "${TMP_JPG}"
+			heif-convert -q 100 "${TMP_ORIGINAL}" "${TMP_JPG}"
 			TMP_ORIGINAL="${TMP_JPG}"
 		
-		elif [ ${IS_RAW} -gt 0 ]
+		# pre-treatment of RAW files
+		elif [ "${IS_RAW}" != "" ]
 		then
 			# convert RAW to PPM and set as original image
 			echo "# ${INDEX} / ${NBR_FILE} - Convert raw to ppm ..."
 			dcraw -w -c "${TMP_ORIGINAL}" > "${TMP_PPM}"
 			TMP_ORIGINAL="${TMP_PPM}"
 		fi 
+
+		# --------------
+		#   conversion
+		# --------------
 
 		# if both width and height are provided and aspect ratio should be kept
 		if [ "${RATIO}" = "keep" -a "${WIDTH}" != "" -a "${HEIGHT}" != "" ]
@@ -151,18 +172,45 @@ then
 			TARGET_SIZE=""
 		fi
 
-		# set conversion parameters
+  		# conversion parameters
+		echo "# ${INDEX} / ${NBR_FILE} - Convert image ..."
+		if [ "${TARGET_EXT}" = "heic" ]
+		then
+			TMP_CONVERT="${TMP_PNG}"
+			TMP_QUALITY=100
+		else
+			TMP_CONVERT="${TMP_TARGET}"
+			TMP_QUALITY="${QUALITY}"
+		fi
+		
+		# image conversion
+		echo "# ${INDEX} / ${NBR_FILE} - Convert picture ..."
 		ARR_PARAM=( "-auto-orient" "${TMP_ORIGINAL}" )
 		[ "${TARGET_SIZE}" != "" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "-resize" "${TARGET_SIZE}" )
-		[ "${QUALITY}" != "" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "-quality" "${QUALITY}" )
+		[ "${TMP_QUALITY}" != "" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "-quality" "${TMP_QUALITY}" )
+  		convert "${ARR_PARAM[@]}" "${TMP_CONVERT}"
 
-  		# convert picture
-		echo "# ${INDEX} / ${NBR_FILE} - Convert image ..."
-  		convert "${ARR_PARAM[@]}" "${TMP_TARGET}"
+		# ------------------
+		#   post-treatment
+		# ------------------
+
+  		# if needed, convert to heic
+		if [ "${TARGET_EXT}" = "heic" ]
+		then
+			# conversion du HEIC
+			echo "# ${INDEX} / ${NBR_FILE} - Post conversion to HEIC ..."
+			ARR_PARAM=( "--output" "${TMP_TARGET}" )
+			[ "${QUALITY}" != "" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--quality" "${QUALITY}" )
+			heif-enc "${ARR_PARAM[@]}" "${TMP_CONVERT}"
+		fi
+
+		# ---------------
+		#   final stage
+		# ---------------
 
 		# get final image width and height
-		TARGET_WIDTH=$(identify -format "%w" "${TMP_TARGET}")
-		TARGET_HEIGHT=$(identify -format "%h" "${TMP_TARGET}")
+		TARGET_WIDTH=$(identify -format "%w" "${TMP_CONVERT}")
+		TARGET_HEIGHT=$(identify -format "%h" "${TMP_CONVERT}")
 
 		# generate size suffix according to context (forced size or same extension)
 		SUFFIX_SIZE=""
