@@ -2,10 +2,7 @@
 # -------------------------------------------------------
 # Script to install graphical tools on Bionic
 #
-# 28/04/2018, V1.0 - Migrated from Xenial
-# 10/09/2018, V1.1 - Add darktable and krita
-# 08/10/2018, V1.2 - ImageMagick PDF and PostScript restriction removal
-# 11/11/2019, V1.3 - Split graphical and design tools
+# 22/05/2020, V1.0 - Migrated from Bionic
 # -------------------------------------------------------
 
 # screenshot apps
@@ -74,6 +71,9 @@ then
   ./raw-thumbnailer-install.sh
   rm ./raw-thumbnailer-install.sh
 fi
+
+# HEIF support
+sudo apt install heif-thumbnailer libheif-examples
 
 # scan2folder tool
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
