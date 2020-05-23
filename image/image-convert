@@ -3,18 +3,18 @@
 #  Batch conversion of image files
 #
 #  Depends on :
-#    * convert and identify [imagemagick]
-#    * xdg-mime [xdg-utils]
+#    * mimetype
 #    * dcraw [dcraw]
+#    * convert and identify [imagemagick]
+#    * heif-convert [libheif-examples]
 #
 #  Revision history :
 #    12/08/2016, V1.0 - Creation by N. Bernaerts
 #    13/08/2016, V1.1 - Add RAW image handling, performance tweaks
 #    03/05/2020, V2.0 - Rewrite for Nautilus Python wrapper 
 #                       Adaptation for Ubuntu 20.04 LTS 
+#    22/05/2020, V2.1 - Add HEIF image handling 
 # ----------------------------------------------------------------
-
-echo "$$ $@" >> /tmp/test.log
 
 # ------------------
 #   Initialisation
@@ -31,7 +31,7 @@ if [ $# -eq 0 ]
 then
   echo "Tool to convert pictures from Nautilus."
   echo "Parameters are :"
-  echo "  --format <format>     Target file format (png, jpg, tiff, gif)"
+  echo "  --format <format>     Target file format (png, jpg, tiff, gif, heic)"
   echo "  --width <widht>       Target width"
   echo "  --height <height>     Target height"
   echo "  --keep-ratio          Keep original ratio"
@@ -57,10 +57,12 @@ done
 # check tools availability
 # --------------------------
 
-command -v xdg-mime >/dev/null 2>&1 || ERROR="Please install xdg-mime [xdg-utils]"
+command -v mimetype >/dev/null 2>&1 || ERROR="Please install mimetype"
 command -v dcraw >/dev/null 2>&1 || ERROR="Please install dcraw"
 command -v convert >/dev/null 2>&1 || ERROR="Please install convert [imagemagick]"
 command -v identify >/dev/null 2>&1 || ERROR="Please install identify [imagemagick]"
+command -v heif-convert >/dev/null 2>&1 || ERROR="Please install heif-convert [libheif-examples]"
+
 
 # generate temporary directory
 TMP_DIR=$(mktemp -t -d "image-convert-XXXXXXXX")
@@ -96,16 +98,27 @@ then
 		# generate temporary files
 		TMP_ORIGINAL="${TMP_DIR}/original.${IMAGE_EXT}"
 		TMP_PPM="${TMP_DIR}/image.ppm"
+		TMP_JPG="${TMP_DIR}/image.jpg"
 		TMP_TARGET="${TMP_DIR}/target.${TARGET_EXT}"
 
 		# copy input file to temporary folder
 		echo "# ${INDEX} / ${NBR_FILE} - Copy of original image ..."
 		gio copy "${IMAGE_URI}" "${TMP_ORIGINAL}"
 
-		# check if we are dealing with RAW file
-		echo "# ${INDEX} / ${NBR_FILE} - Check if raw image ..."
+		# get mimetype
+		echo "# ${INDEX} / ${NBR_FILE} - Check specific types ..."
+		IS_HEIF=$(mimetype --output-format %m "${TMP_ORIGINAL}" | grep "image/heif")
 		IS_RAW=$(dcraw -i -v "${TMP_ORIGINAL}"  | grep raw | cut -d':' -f2 | xargs)
-		if [ ${IS_RAW} -gt 0 ]
+		
+		# handle specific file types
+		if [ ${IS_HEIF} != "" ]
+		then
+			# convert HEIF to JPG
+			echo "# ${INDEX} / ${NBR_FILE} - Convert heif to jpg ..."
+			heif-convert "${TMP_ORIGINAL}" "${TMP_JPG}"
+			TMP_ORIGINAL="${TMP_JPG}"
+		
+		elif [ ${IS_RAW} -gt 0 ]
 		then
 			# convert RAW to PPM and set as original image
 			echo "# ${INDEX} / ${NBR_FILE} - Convert raw to ppm ..."
