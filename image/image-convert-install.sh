@@ -2,9 +2,9 @@
 # Add image consersion extension menu
 # Uses Nautilus and Python3 wrapper
 
-# install nautilus-actions, xdg-utils, imagemagick and dcraw
+# install xdg-utils, imagemagick, dcraw and heif tools
 sudo apt update
-sudo apt -y install xdg-utils imagemagick dcraw
+sudo apt -y install xdg-utils imagemagick dcraw libheif-examples
 
 # remove files from previous version
 sudo rm --force /usr/local/bin/image-convert-declare
