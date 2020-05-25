@@ -4,7 +4,7 @@
 # -------------------------------------------------------
 
 # sweethome3d
-sudo apt-get -y install libjava3d-java
+sudo apt -y install libjava3d-java
 
 # get latest linux 64 version download link from sourceforge home page (2 steps)
 SITE="https://sourceforge.net"
