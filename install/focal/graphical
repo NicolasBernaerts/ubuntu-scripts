@@ -38,20 +38,6 @@ then
   rm ./gimp-tumbnailer-install.sh
 fi
 
-# graphviz
-logger "graphical - graphviz"
-sudo apt -y install graphviz
-
-# Graphviz DOT thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
-if [ -f ./graphviz-thumbnailer-install.sh ]
-then
-  logger "graphical - Graphviz DOT thumbnailer"
-  chmod +x ./graphviz-thumbnailer-install.sh
-  ./graphviz-thumbnailer-install.sh
-  rm graphviz-thumbnailer-install.sh
-fi
-
 # JPEG fast thumbnailer
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
 if [ -f ./jpeg-thumbnailer-install.sh ]
