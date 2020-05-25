@@ -34,10 +34,6 @@ sudo apt -y install cifs-utils exfat-fuse
 logger "utilities - compression"
 sudo apt -y install p7zip-rar rar unrar
 
-# file comparison
-logger "utilities - file comparison"
-sudo apt -y install meld
-
 # alacarte : menu editor
 logger "utilities - alacarte"
 sudo apt -y install alacarte
