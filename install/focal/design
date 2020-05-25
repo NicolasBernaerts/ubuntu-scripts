@@ -15,7 +15,12 @@ sudo apt -y install darktable
 
 # krita
 logger "graphical - krita"
-flatpak -y install https://flathub.org/repo/appstream/org.kde.krita.flatpakref
+sudo add-apt-repository -y ppa:kritalime/ppa
+sudo apt -y install krita
+
+# Luminance HDR and RAW Therapee
+logger "graphical - Luminance HDR & RAW Therapee"
+sudo apt -y install luminance-hdr rawtherapee
 
 # Sweet Home 3D
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
@@ -26,7 +31,3 @@ then
   ./sweethome3d-install.sh
   rm ./sweethome3d-install.sh
 fi
-
-# Luminance HDR and RAW Therapee
-logger "graphical - Luminance HDR & RAW Therapee"
-sudo apt -y install luminance-hdr rawtherapee
