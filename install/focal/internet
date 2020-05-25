@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# ----------------------------------------------------------------
+# Script to install internet tools on Focal
+#
+# 22/05/2020, V1.0 - Migrated from Bionic
+# ----------------------------------------------------------------
+
+# network tools
+logger "internet - nmap and snmp"
+sudo apt -y install nmap snmp snmp-mibs-downloader
+
+# firefox extension manager
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
+if [ -f ./firefox-extension-manager-install.sh ]
+then
+  logger "internet - firefox extension manager"
+  chmod +x ./firefox-extension-manager-install.sh
+  ./firefox-extension-manager-install.sh
+  rm ./firefox-extension-manager-install.sh
+fi
+
+# firefox gnomeshell extensions integration
+firefox-extension-manager --install --user --url https://addons.mozilla.org/en-US/firefox/addon/gnome-shell-integration/
+sudo apt -y install chrome-gnome-shell
+
+# firefox downloadhelper extension
+HELPER_URL=$(wget -O - https://github.com/mi-g/vdhcoapp/releases | grep "vdhcoapp/releases/download/" | grep "amd64.deb" | head -n 1 | cut -d'"' -f2)
+wget -O downloadhelper.deb "https://github.com${HELPER_URL}"
+if [ -f ./downloadhelper.deb ]
+then
+  logger "internet - firefox downloadhelper extension"
+  sudo gdebi --n ./downloadhelper.deb
+  rm ./downloadhelper.deb
+fi
+
+# thunderbird lightning calendar
+logger "internet - thunderbird lightning"
+sudo apt -y install xul-ext-lightning
+
+# chromium and filezilla
+logger "internet - chromium & filezilla"
+sudo apt -y install chromium-browser filezilla
+
+# telegram
+logger "internet - telegram"
+sudo apt -y install telegram-desktop
+
+# skype
+wget https://repo.skype.com/latest/skypeforlinux-64.deb
+if [ -f ./skypeforlinux-64.deb ]
+then
+  logger "internet - Skype"
+  sudo gdebi --n ./skypeforlinux-64.deb
+  rm ./skypeforlinux-64.deb
+fi
+
+# TeamViewer
+wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
+if [ -f ./teamviewer.deb ]
+then
+  logger "internet - TeamViewer"
+  sudo gdebi --n ./teamviewer.deb
+  rm ./teamviewer.deb
+fi
+
+# Open Drive (grive sync)
+sudo snap install odrive-unofficial
+
+# Syncthing (release channel)
+logger "internet - Syncthing"
+curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
+sudo apt update
+sudo apt -y install syncthing
+sudo systemctl enable syncthing@${USER}.service
+sudo systemctl start syncthing@${USER}.service
+mkdir --parents $HOME/.local/share/icons
+wget -O $HOME/.local/share/icons/syncthing.png  https://github.com/NicolasBernaerts/icon/raw/master/syncthing.png
