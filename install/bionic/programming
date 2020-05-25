@@ -4,6 +4,7 @@
 #
 # 15/04/2019, V1.0 - Creation by N. Bernaerts
 # 10/05/2020, V1.1 - Add EasySSH
+# 20/05/2020, V1.2 - Add Graphviz
 # -------------------------------------------------------
 
 # easyssh
@@ -37,4 +38,18 @@ rm tasmota.zip
 cp -R $HOME/sources/Sonoff-Tasmota-6.5.0/lib/* $HOME/Arduino/libraries
 cp -R $HOME/sources/Sonoff-Tasmota-6.5.0/sonoff $HOME/Arduino
 popd
+
+# graphviz
+logger "graphical - graphviz"
+sudo apt -y install graphviz
+
+# Graphviz DOT thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
+if [ -f ./graphviz-thumbnailer-install.sh ]
+then
+  logger "graphical - Graphviz DOT thumbnailer"
+  chmod +x ./graphviz-thumbnailer-install.sh
+  ./graphviz-thumbnailer-install.sh
+  rm graphviz-thumbnailer-install.sh
+fi
 
