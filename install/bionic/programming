@@ -4,7 +4,7 @@
 #
 # 15/04/2019, V1.0 - Creation by N. Bernaerts
 # 10/05/2020, V1.1 - Add EasySSH
-# 20/05/2020, V1.2 - Add Graphviz
+# 20/05/2020, V1.2 - Add Graphviz & Meld
 # -------------------------------------------------------
 
 # easyssh
@@ -53,3 +53,6 @@ then
   rm graphviz-thumbnailer-install.sh
 fi
 
+# file comparison
+logger "utilities - file comparison"
+sudo apt -y install meld
