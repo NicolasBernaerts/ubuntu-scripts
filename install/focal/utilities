@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-# Script to install misc utilities & tools on Bionic
+# Script to install misc utilities & tools on Focal
 #
-# 27/04/2018, v1.0 - Migrated from Xenial
-# 08/09/2018, v1.1 - Add flatpak
+# 22/05/2020, v1.0 - Migrated from Bionic
 # -------------------------------------------------------
 
 # curl
@@ -12,8 +11,7 @@ sudo apt -y install curl
 
 # flatpak
 logger "utilities - flatpak"
-sudo apt -y install flatpak
-sudo apt -y install gnome-software-plugin-flatpak
+sudo apt -y install flatpak gnome-software-plugin-flatpak
 sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # yad editor (used by many scripts)
