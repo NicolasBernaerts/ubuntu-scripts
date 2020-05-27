@@ -54,15 +54,6 @@ then
   rm ./skypeforlinux-64.deb
 fi
 
-# TeamViewer
-wget -O teamviewer.deb https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
-if [ -f ./teamviewer.deb ]
-then
-  logger "internet - TeamViewer"
-  sudo gdebi --n ./teamviewer.deb
-  rm ./teamviewer.deb
-fi
-
 # Open Drive (grive sync)
 sudo snap install odrive-unofficial
 
