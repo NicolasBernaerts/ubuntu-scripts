@@ -54,8 +54,9 @@ then
   rm ./skypeforlinux-64.deb
 fi
 
-# Open Drive (grive sync)
-sudo snap install odrive-unofficial
+# Google drive Ocam
+sudo add-apt-repository -y ppa:alessandro-strada/ppa
+sudo apt -y install google-drive-ocamlfuse
 
 # Syncthing (release channel)
 logger "internet - Syncthing"
