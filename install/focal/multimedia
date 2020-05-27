@@ -52,30 +52,14 @@ logger "multimedia - kdenlive"
 sudo add-apt-repository -y ppa:kdenlive/kdenlive-stable
 sudo apt -y install kdenlive
 
-# openshot video editor
-sudo add-apt-repository ppa:openshot.developers/ppa
-sudo apt update
-sudo apt install openshot-qt 
-
-# vidcutter
-logger "multimedia - vidcutter"
-sudo add-apt-repository -y ppa:ozmartian/apps
-sudo apt update
-sudo apt -y install vidcutter
-
 # audio recorder
 logger "multimedia - audio recorder"
 sudo add-apt-repository -y ppa:audio-recorder/ppa
-sudo apt update
 sudo apt -y install audio-recorder
 
 # vlc
 logger "multimedia - vlc"
-flatpak -y install https://flathub.org/repo/appstream/org.videolan.VLC.flatpakref
-
-# gnome mpv
-logger "multimedia - gnome mpv"
-flatpak -y install https://flathub.org/repo/appstream/io.github.GnomeMpv.flatpakref
+sudo snap install vlc
 
 # Convert video to MKV container and transcode audio to AAC
 logger "multimedia - convert video to MKV"
