@@ -6,13 +6,13 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "LinuxMint" ] && [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu or Linux Mint"; exit 1; }
 
 # install yad
-sudo apt-get -y install yad
+sudo apt -y install yad
 
 # install fdkaac encoder
-sudo apt-get -y install fdkaac aac-enc
+sudo apt -y install fdkaac aac-enc
 
 # install mediainfo, libav-tools (avconv), sox and mkvtoolnix (mkvmerge)
-sudo apt-get -y install mediainfo ffmpeg sox mkvtoolnix
+sudo apt -y install mediainfo ffmpeg sox mkvtoolnix
 
 # if nautilus present, install nautilus-actions
 command -v nautilus >/dev/null 2>&1 && sudo apt-get -y install nautilus-actions
