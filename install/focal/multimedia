@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install multimedia tools for Focal
+#
+# 26/05/2020, V1.0 - Migrated from Bionic
+# -------------------------------------------------------
+
+# auto-accept mscorefonts eula and install it
+logger "multimedia - auto-accept mscorefonts eula"
+sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
+sudo apt -y install ttf-mscorefonts-installer
+
+# restricted codecs and flash
+logger "multimedia - restricted codecs & flash"
+sudo apt -y install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter-extra x264 x265
+
+# CSS DVD decryption
+logger "multimedia - CSS DVD decryption"
+sudo DEBIAN_FRONTEND=noninteractive apt -yq install libdvd-pkg
+sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure libdvd-pkg
+
+# misc audio tools
+logger "multimedia - audio tools"
+sudo apt -y install pavucontrol soundconverter
+
+# CD ripping
+logger "multimedia - cd ripping"
+sudo apt -y install asunder lame
+
+# mp3 tools
+logger "multimedia - mp3 tools"
+sudo apt -y install easytag id3v2
+
+# easymp3gain
+sudo add-apt-repository -y ppa:flexiondotorg/audio
+sudo apt-get update
+sudo apt -y install mp3gain
+wget https://netcologne.dl.sourceforge.net/project/easymp3gain/easymp3gain%20x86_64/easymp3gain-0.5.0/easymp3gain-gtk2_0.5.0-2_amd64.deb
+sudo gdebi --n easymp3gain-gtk2_0.5.0-2_amd64.deb
+rm easymp3gain-gtk2_0.5.0-2_amd64.deb
+
+# audacity
+logger "multimedia - audacity"
+sudo apt -y install audacity
+
+# MKV toolnix
+logger "multimedia - MKV toolnix"
+wget -q -O - https://mkvtoolnix.download/gpg-pub-moritzbunkus.txt | sudo apt-key add -
+echo "deb https://mkvtoolnix.download/ubuntu/ bionic main" | sudo tee "/etc/apt/sources.list.d/bunkus.org.list"
+echo "deb-src https://mkvtoolnix.download/ubuntu/ bionic main" | sudo tee -a "/etc/apt/sources.list.d/bunkus.org.list"
+sudo apt update
+sudo apt -y install mkvtoolnix mkvtoolnix-gui
+
+# handbrake video transcoder
+logger "multimedia - handbrake"
+flatpak -y install https://flathub.org/repo/appstream/fr.handbrake.ghb.flatpakref
+
+# kdenlive video editor
+logger "multimedia - kdenlive"
+flatpak -y install https://flathub.org/repo/appstream/org.kde.kdenlive.flatpakref
+
+# openshot video editor
+sudo add-apt-repository ppa:openshot.developers/ppa
+sudo apt update
+sudo apt install openshot-qt 
+
+# vidcutter
+logger "multimedia - vidcutter"
+sudo add-apt-repository -y ppa:ozmartian/apps
+sudo apt update
+sudo apt -y install vidcutter
+
+# audio recorder
+logger "multimedia - audio recorder"
+sudo add-apt-repository -y ppa:audio-recorder/ppa
+sudo apt update
+sudo apt -y install audio-recorder
+
+# vlc
+logger "multimedia - vlc"
+flatpak -y install https://flathub.org/repo/appstream/org.videolan.VLC.flatpakref
+
+# gnome mpv
+logger "multimedia - gnome mpv"
+flatpak -y install https://flathub.org/repo/appstream/io.github.GnomeMpv.flatpakref
+
+# Convert video to MKV container and transcode audio to AAC
+logger "multimedia - convert video to MKV"
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac-install.sh
+chmod +x ./video-convert2mkvaac-install.sh
+./video-convert2mkvaac-install.sh
+rm ./video-convert2mkvaac-install.sh
+
+# Video Stabilizer based on MLT and vid.stab
+logger "multimedia - video stabilizer"
+wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-install.sh
+chmod +x ./video-stabilize-install.sh
+./video-stabilize-install.sh
+rm ./video-stabilize-install.sh
