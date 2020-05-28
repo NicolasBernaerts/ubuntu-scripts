@@ -31,7 +31,7 @@ class ConvertMkvAacMenuProvider(GObject.GObject, Nautilus.MenuProvider):
       filename = files[0].get_uri()
       
       # create menu item for right click menu
-      convert_mkvaac_menu = Nautilus.MenuItem(name='ConvertMkvAacMenuProvider::convert_mkvaac', label='Video - Convert to MKV/AAC', icon='video')
+      convert_mkvaac_menu = Nautilus.MenuItem(name='ConvertMkvAacMenuProvider::convert_mkvaac', label='Video - Convert to MKV/AAC', icon='video-aac')
       convert_mkvaac_menu.connect('activate', self.convert_mkvaac, filename)
 
       return [convert_mkvaac_menu]
