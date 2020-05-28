@@ -14,6 +14,9 @@ sudo apt -y install mediainfo ffmpeg sox mkvtoolnix
 sudo rm --force /usr/share/applications/video-convert2mkvaac.desktop
 rm --force $HOME/.local/share/file-manager/actions/video-convert2mkvaac-action.desktop
 
+# install icons
+sudo wget -O /usr/share/icons/video-aac.png https://github.com/NicolasBernaerts/icon/raw/master/video/video-aac.png
+
 # install configuration file
 mkdir --parents $HOME/.config
 wget -O $HOME/.config/video-convert2mkvaac.conf https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac.conf
