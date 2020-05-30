@@ -53,6 +53,9 @@ then
   rm graphviz-thumbnailer-install.sh
 fi
 
+# kicad electronic diagram editor
+sudo apt -y install kicad
+
 # file comparison
 logger "utilities - file comparison"
 sudo apt -y install meld
