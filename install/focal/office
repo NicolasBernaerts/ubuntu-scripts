@@ -29,20 +29,7 @@ sudo apt -y install tesseract-ocr-fra aspell-fr
 logger "office - gramps"
 sudo apt -y install gramps
 
-# PDF editor
-PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.deb" | cut -d'"' -f2)
-[ "${PACKAGE}" != "" ] && wget -O master-pdf-editor.deb "${PACKAGE}"
-if [ -f ./master-pdf-editor.deb ]
-then
-  logger "office - PDF editor"
-  sudo gdebi --n ./master-pdf-editor.deb
-  rm ./master-pdf-editor.deb
-fi
-
-# declare office file association 
-logger "office - office file association"
-xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
-xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
+# Master PDF editor
 
 # Thumbnailer - LibreOffice
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
