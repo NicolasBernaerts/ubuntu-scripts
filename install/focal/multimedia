@@ -69,8 +69,8 @@ chmod +x ./video-convert2mkvaac-install.sh
 rm ./video-convert2mkvaac-install.sh
 
 # Video Stabilizer based on MLT and vid.stab
-logger "multimedia - video stabilizer"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-install.sh
-chmod +x ./video-stabilize-install.sh
-./video-stabilize-install.sh
-rm ./video-stabilize-install.sh
+#logger "multimedia - video stabilizer"
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-stabilize-install.sh
+#chmod +x ./video-stabilize-install.sh
+#./video-stabilize-install.sh
+#rm ./video-stabilize-install.sh
