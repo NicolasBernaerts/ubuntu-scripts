@@ -35,9 +35,8 @@ then
     echo "  --design          Install design apps"
     echo "  --photorec        Add photorec tools"
     echo "  --docky           Add docky launcher"
-    echo "  --arduino         Install Arduino environment (with Tasmota)"
+    echo "  --programming     Install programming environment (Visual studio code, Tasmota, ...)"
     echo "  --tweaks          Add some tweaks for problematic hardware"
-    echo "  --ssd             Add some tweaks for SSD disk"
     exit 1
 fi
 
@@ -48,9 +47,8 @@ do
         --design) DESIGN="ok"; shift; ;;
         --photorec) PHOTOREC="ok"; shift; ;;
         --docky) DOCKY="ok"; shift; ;;
-        --arduino) ARDUINO="ok"; shift; ;;
+        --programming) PROGRAMMING="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
-        --ssd) SSD="ok"; shift; ;;
         *) shift; ;;
     esac
 done
@@ -180,18 +178,6 @@ then
     fi
 fi
 
-# SSD tweaks
-if [ "${SSD}" = "ok" ]
-then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
-    if [ -f ./ssd ]
-    then
-        chmod +x ./ssd
-        ./ssd
-        rm ./ssd
-    fi
-fi
-
 # docky : add desktop launcher
 if [ "${DOCKY}" = "ok" ]
 then
@@ -205,14 +191,14 @@ then
 fi
 
 # arduino
-if [ "${ARDUINO}" = "ok" ]
+if [ "${PROGRAMMING}" = "ok" ]
 then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/arduino
-    if [ -f ./arduino ]
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/programming
+    if [ -f ./programming ]
     then
-        chmod +x ./arduino
-        ./arduino
-        rm ./arduino
+        chmod +x ./programming
+        ./programming
+        rm ./programming
     fi
 fi
 
