@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install office tools on Focal
+#
+# 30/05/2020, V1.0 - Migrated from Bionic
+# -------------------------------------------------------
+
+# HP printer GUI 
+sudo apt -y install hplip-gui
+
+# libreoffice PPA
+logger "office - libreoffice"
+sudo add-apt-repository -y ppa:libreoffice/ppa
+sudo apt -y upgrade
+
+# grisbi
+logger "office - grisbi"
+wget -O grisbi-common.deb https://sourceforge.net/projects/grisbi/files/grisbi%20stable/1.2.x/1.2.2/Ubuntu%2018.04/grisbi-common_1.2.2-1_all.deb/download
+wget -O grisbi.deb https://sourceforge.net/projects/grisbi/files/grisbi%20stable/1.2.x/1.2.2/Ubuntu%2018.04/grisbi_1.2.2-1_amd64.deb/download#
+sudo gdebi --n ./grisbi-common.deb
+sudo gdebi --n ./grisbi.deb
+rm ./grisbi-common.deb ./grisbi.deb
+
+# tesseract-ocr client and french langage
+logger "office - tesseract-ocr"
+sudo apt -y install tesseract-ocr-fra aspell-fr
+
+# gramps (genealogy)
+logger "office - gramps"
+sudo apt -y install gramps
+
+# PDF editor
+PACKAGE=$(wget -O - https://code-industry.net/free-pdf-editor/ | grep "${ARCHI}.deb" | cut -d'"' -f2)
+[ "${PACKAGE}" != "" ] && wget -O master-pdf-editor.deb "${PACKAGE}"
+if [ -f ./master-pdf-editor.deb ]
+then
+  logger "office - PDF editor"
+  sudo gdebi --n ./master-pdf-editor.deb
+  rm ./master-pdf-editor.deb
+fi
+
+# declare office file association 
+logger "office - office file association"
+xdg-mime default libreoffice-writer.desktop application/vnd.oasis.opendocument.text application/msword
+xdg-mime default libreoffice-calc.desktop application/vnd.oasis.opendocument.spreadsheet application/vnd.ms-excel
+
+# Thumbnailer - LibreOffice
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
+if [ -f ./lo-thumbnailer-install.sh ]
+then
+  logger "office - LibreOffice thumbnailer"
+  chmod +x ./lo-thumbnailer-install.sh
+  ./lo-thumbnailer-install.sh
+  rm ./lo-thumbnailer-install.sh
+fi
+
+# Thumbnailer - Ms Office thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
+if [ -f ./msoffice-thumbnailer-install.sh ]
+then
+  logger "office - Ms Office thumbnailer"
+  chmod +x ./msoffice-thumbnailer-install.sh
+  ./msoffice-thumbnailer-install.sh
+  rm ./msoffice-thumbnailer-install.sh
+fi
+
+# PDF : document merge extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-merge-install.sh
+if [ -f ./pdf-merge-install.sh ]
+then
+  logger "office - PDF document merge"
+  chmod +x ./pdf-merge-install.sh
+  ./pdf-merge-install.sh
+  rm ./pdf-merge-install.sh
+fi
+
+# PDF : rotation extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-install.sh
+if [ -f ./pdf-rotate-install.sh ]
+then
+  logger "office - PDF rotation extension"
+  chmod +x ./pdf-rotate-install.sh
+  ./pdf-rotate-install.sh
+  rm ./pdf-rotate-install.sh
+fi
+
+# PDF : misc tools extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-tools-install.sh
+if [ -f ./pdf-tools-install.sh ]
+then
+  logger "office - PDF tools extension"
+  chmod +x ./pdf-tools-install.sh
+  ./pdf-tools-install.sh
+  rm ./pdf-tools-install.sh
+fi
+
+# PDF : booklet generation extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-booklet-install.sh
+if [ -f ./pdf-booklet-install.sh ]
+then
+  logger "office - PDF booklet"
+  chmod +x ./pdf-booklet-install.sh
+  ./pdf-booklet-install.sh
+  rm ./pdf-booklet-install.sh
+fi
