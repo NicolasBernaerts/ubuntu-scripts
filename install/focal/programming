@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install programming environment on Focal
+#
+# 28/05/2020, V1.0 - Migration from Bionic
+# -------------------------------------------------------
+
+# easyssh
+logger "programming - easyssh"
+flatpak -y install https://flathub.org/repo/appstream/com.github.muriloventuroso.easyssh.flatpakref
+
+#  Visual Studio Code (for PlatformIO IDE)
+logger "programming - visual studio code"
+sudo apt -y install python3-pip
+wget -O vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868
+sudo gdebi --n ./vscode.deb
+rm vscode.deb
+
+# Extend inotify limits for VS Code
+logger "programming - vscode tweaks"
+echo "# For Visual Studio Code" | sudo tee -a /etc/sysctl.conf
+echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# Tasmota sources (under $HOME/sources/Tasmota-master)
+logger "programming - tasmota"
+wget https://github.com/arendst/Tasmota/archive/master.zip
+mkdir --parents  $HOME/sources
+unzip master.zip -d $HOME/sources
+rm master.zip
+
+# graphviz
+logger "programming - graphviz"
+sudo apt -y install graphviz
+
+# Graphviz DOT thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/graphviz/graphviz-thumbnailer-install.sh
+if [ -f ./graphviz-thumbnailer-install.sh ]
+then
+  logger "programming - Graphviz DOT thumbnailer"
+  chmod +x ./graphviz-thumbnailer-install.sh
+  ./graphviz-thumbnailer-install.sh
+  rm graphviz-thumbnailer-install.sh
+fi
+
+# kicad electronic diagram editor
+logger "programming - kicad"
+sudo apt -y install kicad
+
+# file comparison
+logger "programming - file comparison"
+sudo apt -y install meld
