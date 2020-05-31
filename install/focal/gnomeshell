@@ -4,7 +4,12 @@
 #   for Focal 20.04 LTS
 #
 # 10/05/2020, V1.0 - Migrate from Bionic
+# 30/05/2020, V1.1 - Add gnome-system-tools
 # -------------------------------------------------------
+
+# install gnome system tools to manage users and groups
+logger "gnome-shell - gnome system tools"
+sudo apt -y install gnome-system-tools
 
 # install gnome shell extensions
 logger "gnome-shell - gnome shell extensions"
