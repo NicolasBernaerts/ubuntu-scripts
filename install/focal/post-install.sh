@@ -32,6 +32,7 @@ then
     echo "Script to finalise Ubuntu ${DISTRI_NAME} installation."
     echo "It will install some important packages not provided by default installation."
     echo "Options are :"
+    echo "  --start           Start install"
     echo "  --design          Install design apps"
     echo "  --photorec        Add photorec tools"
     echo "  --docky           Add docky launcher"
@@ -44,6 +45,7 @@ fi
 while test ${#} -gt 0
 do
     case $1 in
+        --start) START="ok"; shift; ;;
         --design) DESIGN="ok"; shift; ;;
         --photorec) PHOTOREC="ok"; shift; ;;
         --docky) DOCKY="ok"; shift; ;;
@@ -52,6 +54,9 @@ do
         *) shift; ;;
     esac
 done
+
+# if start not selected, exit
+[ "${START}" != "ok" ] && exit 1
 
 # ---------------------------------------------------
 # -------------- Disable sudo timeout ---------------
