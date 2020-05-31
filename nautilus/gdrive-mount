@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------
+#  Mount Gdrive thru Ocam Fuse and open Nautilus
+#  Depends on :
+#    * google-drive-ocamlfuse
+#  
+#  Revision history :
+#    30/05/2020, V1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+# if no argument, display help
+if [ $# -eq 0 ] 
+then
+	echo "Tool to mount Gdrive thru Ocam Fuse and open Nautilus"
+	echo "Parameters are :"
+	echo "  --label      GFuse label"
+	echo "  --folder     Folder where to mount"
+	exit 1
+fi
+
+# iterate thru parameters
+while test ${#} -gt 0
+do
+	case $1 in
+	"--label") shift; LABEL="$1"; shift; ;;
+	"--folder") shift; FOLDER="$1"; shift; ;;
+	*) shift; ;;
+	esac
+done
+
+# ---------------------------
+#  Check tools availability
+# ---------------------------
+
+# check google-drive-ocamlfuse
+command -v google-drive-ocamlfuse >/dev/null 2>&1 || { zenity --error --text="Please install google-drive-ocamlfuse"; exit 1; }
+
+# ---------------------------
+#  Mount drive
+# ---------------------------
+
+# mount GDrive thru Ocam Fuse
+google-drive-ocamlfuse -label "${LABEL}" "${FOLDER}"
+
+# launch Nautilus in the folder
+nautilus "${FOLDER}"
