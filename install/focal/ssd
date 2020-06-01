@@ -23,6 +23,7 @@ then
   echo "#!bin/sh" | sudo tee -a /etc/cron.weekly/fstrim
   echo "# trim all mounted filesystems" | sudo tee -a /etc/cron.weekly/fstrim
   echo "/sbin/fstrim --all" | sudo tee -a /etc/cron.weekly/fstrim
+  sudo chmod +x /etc/cron.weekly/fstrim
 fi
 
 # almost disable swapiness
