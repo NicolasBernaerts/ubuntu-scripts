@@ -9,12 +9,6 @@
 logger "ssd - noatime"
 sudo sed -i "s/errors=remount-ro/noatime,errors=remount-ro/g" /etc/fstab
 
-# set /tmp as tmpfs
-logger "ssd - tmpfs"
-echo " " | sudo tee -a /etc/fstab
-echo "# SSD tweak : temporary directories as tmpfs" | sudo tee -a /etc/fstab
-echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0" | sudo tee -a /etc/fstab
-
 # if needed, set triming
 logger "ssd - triming"
 TRIM_POSSIBLE=$(lsblk -D | grep "sd" | head -n 1 | xargs | cut -d ' ' -f4)
