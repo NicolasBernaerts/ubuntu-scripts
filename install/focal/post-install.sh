@@ -8,21 +8,6 @@
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------
-# ------------- User defined variable ---------------
-# ---------------------------------------------------
-
-DISTRI_NAME="focal"
-ARCHI="amd64"
-X86ARCHI="64"
-
-# ---------------------------------------------------
-# ------------ Distribution detection ---------------
-# ---------------------------------------------------
-
-RESULT=$(cat /etc/lsb-release | grep "DISTRIB_CODENAME" | cut -d'=' -f2-)
-[ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_NAME}"; exit 1; }
-
-# ---------------------------------------------------
 # -------------- Parameters handling ----------------
 # ---------------------------------------------------
 
@@ -54,6 +39,18 @@ do
         *) shift; ;;
     esac
 done
+
+# --------------------------------------------
+# ------------- Initialisation ---------------
+# --------------------------------------------
+
+DISTRI_NAME="focal"
+ARCHI="amd64"
+X86ARCHI="64"
+
+# Distribution detection
+RESULT=$(cat /etc/lsb-release | grep "DISTRIB_CODENAME" | cut -d'=' -f2-)
+[ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_NAME}"; exit 1; }
 
 # Disable sudo timeout
 sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
