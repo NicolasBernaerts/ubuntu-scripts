@@ -35,9 +35,9 @@ then
     echo "  --start           Start install"
     echo "  --design          Install design apps"
     echo "  --photorec        Add photorec tools"
-    echo "  --docky           Add docky launcher"
     echo "  --programming     Install programming environment (Visual studio code, Tasmota, ...)"
     echo "  --tweaks          Add some tweaks for problematic hardware"
+    echo "  --ssd             Apply SSD tweaks"
     exit 1
 fi
 
@@ -48,9 +48,9 @@ do
         --start) START="ok"; shift; ;;
         --design) DESIGN="ok"; shift; ;;
         --photorec) PHOTOREC="ok"; shift; ;;
-        --docky) DOCKY="ok"; shift; ;;
         --programming) PROGRAMMING="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
+        --ssd) SSD="ok"; shift; ;;
         *) shift; ;;
     esac
 done
@@ -183,19 +183,19 @@ then
     fi
 fi
 
-# docky : add desktop launcher
-if [ "${DOCKY}" = "ok" ]
+# SSD : tweaks
+if [ "${SSD}" = "ok" ]
 then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/docky-install.sh
-    if [ -f ./docky-install.sh ]
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/ssd
+    if [ -f ./ssd ]
     then
-        chmod +x ./docky-install.sh
-        ./docky-install.sh
-        rm ./docky-install.sh
+        chmod +x ./ssd
+        ./ssd
+        rm ./ssd
     fi
 fi
 
-# arduino
+# programming
 if [ "${PROGRAMMING}" = "ok" ]
 then
     wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/programming
