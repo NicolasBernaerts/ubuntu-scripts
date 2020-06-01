@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to tweak configuration for SSD disks for Focal
+#
+# 30/05/2020, V1.0 - Migrated from Bionic
+# -------------------------------------------------------
+
+# add noatime parameters to partitions
+logger "ssd - noatime"
+sudo sed -i "s/errors=remount-ro/noatime,errors=remount-ro/g" /etc/fstab
+
+# set /tmp as tmpfs
+logger "ssd - tmpfs"
+echo " " | sudo tee -a /etc/fstab
+echo "# SSD tweak : temporary directories as tmpfs" | sudo tee -a /etc/fstab
+echo "tmpfs /tmp tmpfs defaults,noatime,mode=1777 0 0" | sudo tee -a /etc/fstab
+
+# if needed, set triming
+logger "ssd - triming"
+TRIM_POSSIBLE=$(lsblk -D | grep "sd" | head -n 1 | xargs | cut -d ' ' -f4)
+if [ "${TRIM_POSSIBLE}" != "" -a ! -f "/etc/cron.weekly/fstrim" ]
+then
+  echo "#!bin/sh" | sudo tee -a /etc/cron.weekly/fstrim
+  echo "# trim all mounted filesystems" | sudo tee -a /etc/cron.weekly/fstrim
+  echo "/sbin/fstrim --all" | sudo tee -a /etc/cron.weekly/fstrim
+fi
+
+# almost disable swapiness
+logger "ssd - swapiness"
+echo " " | sudo tee -a /etc/sysctl.conf
+echo "# minimize swap use to a minimum" | sudo tee -a /etc/sysctl.conf
+echo "vm.swappiness=1" | sudo tee -a /etc/sysctl.conf
