@@ -11,8 +11,7 @@ sudo sed -i "s/errors=remount-ro/noatime,errors=remount-ro/g" /etc/fstab
 
 # if needed, set triming
 logger "ssd - triming"
-TRIM_POSSIBLE=$(lsblk -D | grep "sd" | head -n 1 | xargs | cut -d ' ' -f4)
-if [ "${TRIM_POSSIBLE}" != "" -a ! -f "/etc/cron.weekly/fstrim" ]
+if [ ! -f "/etc/cron.weekly/fstrim" ]
 then
   echo "#!/bin/bash" | sudo tee -a /etc/cron.weekly/fstrim
   echo "# trim all mounted filesystems" | sudo tee -a /etc/cron.weekly/fstrim
