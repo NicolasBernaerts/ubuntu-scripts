@@ -32,12 +32,12 @@ then
     echo "Script to finalise Ubuntu ${DISTRI_NAME} installation."
     echo "It will install some important packages not provided by default installation."
     echo "Options are :"
-    echo "  --start           Start install"
+    echo "  --common          Install all common packages"
     echo "  --design          Install design apps"
-    echo "  --photorec        Add photorec tools"
     echo "  --programming     Install programming environment (Visual studio code, Tasmota, ...)"
     echo "  --tweaks          Add some tweaks for problematic hardware"
     echo "  --ssd             Apply SSD tweaks"
+    echo "  --photorec        Add photorec tools"
     exit 1
 fi
 
@@ -45,106 +45,96 @@ fi
 while test ${#} -gt 0
 do
     case $1 in
-        --start) START="ok"; shift; ;;
+        --common) COMMON="ok"; shift; ;;
         --design) DESIGN="ok"; shift; ;;
-        --photorec) PHOTOREC="ok"; shift; ;;
         --programming) PROGRAMMING="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
+        --photorec) PHOTOREC="ok"; shift; ;;
         *) shift; ;;
     esac
 done
 
-# if start not selected, exit
-[ "${START}" != "ok" ] && exit 1
-
-# ---------------------------------------------------
-# -------------- Disable sudo timeout ---------------
-# ---------------------------------------------------
-
+# Disable sudo timeout
 sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
 
-# ---------------------------------------------------
-# --------------- Full System Update ----------------
-# ---------------------------------------------------
-
+# Full System Update
 sudo apt update
 sudo apt -y upgrade
-
-# ---------------------------------------------------
-# ------------------  Gnome Shell  ------------------
-# ---------------------------------------------------
-
-# gnomeshell
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnomeshell
-if [ -f ./gnomeshell ]
-then
-    chmod +x ./gnomeshell
-    ./gnomeshell
-    rm ./gnomeshell
-fi
 
 # ---------------------------------------------------
 # ----------------- Common Packages  ----------------
 # ---------------------------------------------------
 
-# utilities and tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
-if [ -f ./utilities ]
+if [ "${COMMON}" = "ok" ]
 then
-    chmod +x ./utilities
-    ./utilities
-    rm ./utilities
+    # gnomeshell
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnomeshell
+    if [ -f ./gnomeshell ]
+    then
+        chmod +x ./gnomeshell
+        ./gnomeshell
+        rm ./gnomeshell
+    fi
+
+    # utilities and tools
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
+    if [ -f ./utilities ]
+    then
+        chmod +x ./utilities
+        ./utilities
+        rm ./utilities
+    fi
+
+    # office tools
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
+    if [ -f ./office ]
+    then
+        chmod +x ./office
+        ./office
+        rm ./office
+    fi
+
+    # graphical tools
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
+    if [ -f ./graphical ]
+    then
+        chmod +x ./graphical
+        ./graphical
+        rm ./graphical
+    fi
+
+    # multimedia tools
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
+    if [ -f ./multimedia ]
+    then
+        chmod +x ./multimedia
+        ./multimedia
+        rm ./multimedia
+    fi
+
+    # internet tools
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
+    if [ -f ./internet ]
+    then
+        chmod +x ./internet
+        ./internet
+        rm ./internet
+    fi
+
+    # android tools
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
+    if [ -f ./android ]
+    then
+        chmod +x ./android
+        ./android
+        rm ./android
+    fi
 fi
 
-# office tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
-if [ -f ./office ]
-then
-    chmod +x ./office
-    ./office
-    rm ./office
-fi
-
-# graphical tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
-if [ -f ./graphical ]
-then
-    chmod +x ./graphical
-    ./graphical
-    rm ./graphical
-fi
-
-# multimedia tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
-if [ -f ./multimedia ]
-then
-    chmod +x ./multimedia
-    ./multimedia
-    rm ./multimedia
-fi
-
-# internet tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
-if [ -f ./internet ]
-then
-    chmod +x ./internet
-    ./internet
-    rm ./internet
-fi
-
-# android tools
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
-if [ -f ./android ]
-then
-    chmod +x ./android
-    ./android
-    rm ./android
-fi
-
-# ---------------------------------------------------
-# -----------------  Common options  ----------------
-# ---------------------------------------------------
+# --------------------------------------------
+# -----------------  Options  ----------------
+# --------------------------------------------
 
 # design apps
 if [ "${DESIGN}" = "ok" ]
@@ -167,19 +157,6 @@ then
         chmod +x ./tweaks
         ./tweaks
         rm ./tweaks
-    fi
-fi
-
-# Photorec
-if [ "${PHOTOREC}" = "ok" ]
-then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/qphotorec-install.sh
-    if [ -f ./qphotorec-install.sh ]
-    then
-        logger "Tools - Photorec"
-        chmod +x ./qphotorec-install.sh
-        ./qphotorec-install.sh
-        rm ./qphotorec-install.sh
     fi
 fi
 
@@ -207,6 +184,19 @@ then
     fi
 fi
 
+# Photorec
+if [ "${PHOTOREC}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/qphotorec-install.sh
+    if [ -f ./qphotorec-install.sh ]
+    then
+        logger "Tools - Photorec"
+        chmod +x ./qphotorec-install.sh
+        ./qphotorec-install.sh
+        rm ./qphotorec-install.sh
+    fi
+fi
+
 # ---------------------------------------------------
 # ------------------ Package cleanup ----------------
 # ---------------------------------------------------
@@ -219,8 +209,5 @@ sudo apt -y autoclean
 [ -d $HOME/.thumbnails ] && rm -r $HOME/.thumbnails/*
 [ -d $HOME/.cache/thumbnails ] && rm -r $HOME/.cache/thumbnails/*
 
-# ---------------------------------------------------
-# -------------- Enable sudo timeout ---------------
-# ---------------------------------------------------
-
+# Enable sudo timeout
 sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
