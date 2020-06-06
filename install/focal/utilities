@@ -28,7 +28,7 @@ sudo apt -y install gparted
 
 # filesystem clients
 logger "utilities - filesystem"
-sudo apt -y install cifs-utils exfat-fuse
+sudo apt -y install smbclient cifs-utils exfat-fuse
 
 # compression tools
 logger "utilities - compression"
