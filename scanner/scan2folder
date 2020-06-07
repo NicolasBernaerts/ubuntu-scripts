@@ -33,7 +33,6 @@ TMP_DIR=$(mktemp -t -d "scan-XXXXXXXX")
 TMP_LIST="${TMP_DIR}/list.txt"
 TMP_CONF="${TMP_DIR}/file.conf"
 
-
 DLG_WIDTH=600
 
 # set choice possibilities
@@ -92,7 +91,7 @@ do case ${CHOICE} in
     echo "# Scanning document from ${SOURCE} (${DPI} dpi) ..."
     
     # parameters
-    ARR_PARAM=( "--device-name=${SCAN_DEVICE}" "--format=pnm"  "--batch=${DIRECTORY}/${FILE}-%d.pnm" )
+    ARR_PARAM=( "--device-name=${SCAN_DEVICE}" "--format=pnm"  "--batch=${TMP_DIR}/${FILE}-%d.pnm" )
     ARR_PARAM=( "${ARR_PARAM[@]}" "--mode=${MODE}" "--resolution=${DPI}" "--source" "${SOURCE}" )
 
     # detect if scan is from the glass window
@@ -111,23 +110,22 @@ do case ${CHOICE} in
     HEIGHT_PIX=$((10*${HEIGHT_MM}*${DPI}/254))
 
     # auto adjust levels and crop picture to target page size
-    mogrify -crop "${WIDTH_PIX}x${HEIGHT_PIX}+0+0" -auto-level ${DIRECTORY}/${FILE}*.pnm
+    mogrify -crop "${WIDTH_PIX}x${HEIGHT_PIX}+0+0" -auto-level ${TMP_DIR}/${FILE}*.pnm
 
     # convert to proper format
-    mogrify -format ${FORMAT} -page ${PAGE} ${DIRECTORY}/${FILE}*.pnm
-    rm ${DIRECTORY}/${FILE}*.pnm
- 
+    mogrify -format ${FORMAT} -page ${PAGE} ${TMP_DIR}/${FILE}*.pnm
+    
     # if needed, merge all scanned documents in a single PDF file
     if [ "${FORMAT}" = "pdf" ]
     then
       # generate array of PDF files
-      ARR_PDF=$(ls ${DIRECTORY}/${FILE}*.pdf)
+      ARR_PDF=( $(ls ${TMP_DIR}/${FILE}*.pdf) )
 
       # generate resulting PDF
-      gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=${PDF_PAGE} -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite "-sOutputFile=${DIRECTORY}/${FILE}.pdf" "${ARR_PDF[@]}"
-
-      # remove PDF single pages
-      rm "${ARR_PDF[@]}"
+      gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=${PAGE} -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite "-sOutputFile=${DIRECTORY}/${FILE}.pdf" "${ARR_PDF[@]}"
+    else
+        # move documents
+    	mv ${TMP_DIR}/${FILE}*.${FORMAT} ${DIRECTORY} 
     fi
 
     # end
@@ -206,11 +204,11 @@ do case ${CHOICE} in
 
       # retreive parameters list and default values
       DPI=$(cat "${TMP_CONF}" | grep "\-\-resolution" | cut -d'[' -f2 | cut -d']' -f1)
-      ARR_DPI=( $(cat "${TMP_CONF}" | grep "\-\-resolution" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "^${DPI}$") )
+      ARR_DPI=( $(cat "${TMP_CONF}" | grep "\-\-resolution" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "${DPI}") )
       MODE=$(cat "${TMP_CONF}" | grep "\-\-mode" | cut -d'[' -f2 | cut -d']' -f1)
-      ARR_MODE=( $(cat "${TMP_CONF}" | grep "\-\-mode" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "^${MODE}$") )
+      ARR_MODE=( $(cat "${TMP_CONF}" | grep "\-\-mode" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "${MODE}") )
       SOURCE=$(cat "${TMP_CONF}" | grep "\-\-source" | cut -d'[' -f2 | cut -d']' -f1)
-      ARR_SOURCE=( $(cat "${TMP_CONF}" | grep "\-\-source" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "^${SOURCE}$") )
+      ARR_SOURCE=( $(cat "${TMP_CONF}" | grep "\-\-source" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "${SOURCE}") )
     fi
 
     # back to parameter dialog box
