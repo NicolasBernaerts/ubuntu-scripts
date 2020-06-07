@@ -33,6 +33,7 @@ TMP_DIR=$(mktemp -t -d "scan-XXXXXXXX")
 TMP_LIST="${TMP_DIR}/list.txt"
 TMP_CONF="${TMP_DIR}/file.conf"
 
+# default dialog box width
 DLG_WIDTH=600
 
 # set choice possibilities
@@ -42,44 +43,39 @@ CHOICE_SAVE=2
 CHOICE_DEVICE=3
 CHOICE_PARAM=4
 
-# ----------------------------------------------------
-# User defined default parameters
-# Please, do not modify anything out of this section
-# ----------------------------------------------------
+# ------------------------
+#      Load config
+# ------------------------
 
-# if possible,load parameters from configuration file
-if [ -f "$CONF_FILE" ]
-then
-  SCAN_NAME=$(cat "${CONF_FILE}" | grep "scanner-name=" | cut -d"=" -f2-)
-  SCAN_DEVICE=$(cat "${CONF_FILE}" | grep "scanner-device=" | cut -d"=" -f2-)
+SCAN_NAME=$(cat "${CONF_FILE}" | grep "scanner-name=" | cut -d"=" -f2-)
+SCAN_DEVICE=$(cat "${CONF_FILE}" | grep "scanner-device=" | cut -d"=" -f2-)
 
-  ARR_FORMAT=( $(cat "${CONF_FILE}" | grep "list-format=" | cut -d"=" -f2- | tr ',' '\n') )
-  ARR_PAGE=( $(cat "${CONF_FILE}" | grep "list-page=" | cut -d"=" -f2- | tr -d ' ' | tr ',' '\n') )
-  ARR_DPI=( $(cat "${CONF_FILE}" | grep "list-dpi=" | cut -d"=" -f2- | tr ',' '\n') )
-  ARR_MODE=( $(cat "${CONF_FILE}" | grep "list-mode=" | cut -d"=" -f2- | tr ',' '\n') )
-  ARR_SOURCE=( $(cat "${CONF_FILE}" | grep "list-source=" | cut -d"=" -f2- | tr ',' '\n') )
+ARR_FORMAT=( $(cat "${CONF_FILE}" | grep "list-format=" | cut -d"=" -f2- | tr ',' '\n') )
+ARR_PAGE=( $(cat "${CONF_FILE}" | grep "list-page=" | cut -d"=" -f2- | tr -d ' ' | tr ',' '\n') )
+ARR_DPI=( $(cat "${CONF_FILE}" | grep "list-dpi=" | cut -d"=" -f2- | tr ',' '\n') )
+ARR_MODE=( $(cat "${CONF_FILE}" | grep "list-mode=" | cut -d"=" -f2- | tr ',' '\n') )
+ARR_SOURCE=( $(cat "${CONF_FILE}" | grep "list-source=" | cut -d"=" -f2- | tr ',' '\n') )
 
-  PAGE=$(cat "${CONF_FILE}" | grep "default-page=" | cut -d"=" -f2)
-  DPI=$(cat "${CONF_FILE}" | grep "default-dpi=" | cut -d"=" -f2)
-  MODE=$(cat "${CONF_FILE}" | grep "default-mode=" | cut -d"=" -f2)
-  SOURCE=$(cat "${CONF_FILE}" | grep "default-source=" | cut -d"=" -f2)
-  FORMAT=$(cat "${CONF_FILE}" | grep "default-format=" | cut -d"=" -f2)
-  DIRECTORY=$(cat "${CONF_FILE}" | grep "default-dir=" | cut -d"=" -f2-)
-fi
+PAGE=$(cat "${CONF_FILE}" | grep "default-page=" | cut -d"=" -f2)
+DPI=$(cat "${CONF_FILE}" | grep "default-dpi=" | cut -d"=" -f2)
+MODE=$(cat "${CONF_FILE}" | grep "default-mode=" | cut -d"=" -f2)
+SOURCE=$(cat "${CONF_FILE}" | grep "default-source=" | cut -d"=" -f2)
+FORMAT=$(cat "${CONF_FILE}" | grep "default-format=" | cut -d"=" -f2)
+DIRECTORY=$(cat "${CONF_FILE}" | grep "default-dir=" | cut -d"=" -f2-)
 
-# if scanner not selected, force selection. Otherwise, display scan parameters dialog
+# if no scanner selected, force device scanning
 [ "${SCAN_DEVICE}" = "" ] && CHOICE="${CHOICE_DEVICE}" || CHOICE="${CHOICE_PARAM}"
 
-# ----------------------------------------------------
-# Main loop
-# ----------------------------------------------------
+# ------------------------
+#         Main loop
+# ------------------------
 
 while [ "${CHOICE}" != "${CHOICE_EXIT}" ]
 do case ${CHOICE} in
 
-  # --------------------------------------
-  # Scan pages according to parameters
-  # --------------------------------------
+  # ---------------------
+  #     Scan pages
+  # ---------------------
   ${CHOICE_SCAN})
   
     (
@@ -136,9 +132,9 @@ do case ${CHOICE} in
     CHOICE="${CHOICE_PARAM}"
     ;;
 
-  # --------------------------------------
-  # Save actual parameters as default
-  # --------------------------------------
+  # -------------------------
+  #     Save parameters
+  # -------------------------
   
   ${CHOICE_SAVE})
     # convert arrays to lists
@@ -172,16 +168,16 @@ do case ${CHOICE} in
     CHOICE=${CHOICE_PARAM}
     ;;
 
-  # --------------------------------------
-  # Select scanner to use
-  # --------------------------------------
+  # ------------------------
+  #      Select scanner
+  # ------------------------
   
   ${CHOICE_DEVICE})
   
     # list available scanners (remove all spaces and set space as separator)
     (
     echo 0
-    scanimage -L > "${TMP_LIST}"
+    scanimage --list-devices > "${TMP_LIST}"
     echo 100
     ) | yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" --title "Detecting scanners ..." --text="" --progress --pulsate --auto-close --no-buttons
 
@@ -224,14 +220,14 @@ do case ${CHOICE} in
     CHOICE="${CHOICE_PARAM}"
     ;;
 
-  # --------------------------------------
-  # Select scan parameters
-  # --------------------------------------
+  # -------------------------------
+  #     Select scan parameters
+  # -------------------------------
   
   ${CHOICE_PARAM})
   
-    # prepare dialog box lists combo lists
-    # -> remove default choice and add it on top of the list
+    # prepare dialog box combo lists
+    #   -> place default choice as top of the list
     DLG_DPI=$(echo "${DPI},$(echo "${ARR_DPI[@]}" | tr ' ' '\n' | grep -v "^${DPI}$" | xargs | tr ' ' ',')")
     DLG_MODE=$(echo "${MODE},$(echo "${ARR_MODE[@]}" | tr ' ' '\n' | grep -v "^${MODE}$" | xargs | tr ' ' ',')")
     DLG_SOURCE=$(echo "${SOURCE},$(echo "${ARR_SOURCE[@]}" | tr ' ' '\n' | grep -v "^${SOURCE}$" | xargs | tr ' ' ',')")
@@ -260,9 +256,9 @@ do case ${CHOICE} in
     fi
     ;;
 
-  # --------------------------------------
-  # Other choice ... should not come
-  # --------------------------------------
+  # ---------------------------
+  #     Unexpected choice
+  # ---------------------------
   *)
     # by default, exit
     CHOICE="${CHOICE_EXIT}"
