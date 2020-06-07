@@ -28,8 +28,12 @@ command -v yad >/dev/null 2>&1 || { zenity --error --text="Please install yad"; 
 CONF_FILE="$HOME/.config/scan2folder.conf"
 [ -f "${CONF_FILE}" ] || { zenity --error --text="Please create and configure ${CONF_FILE}"; exit 1; }
 
-# initialize default parameters
-TMP_FILE=$(mktemp)
+# generate temporary files and directory
+TMP_DIR=$(mktemp -t -d "scan-XXXXXXXX")
+TMP_LIST="${TMP_DIR}/list.txt"
+TMP_CONF="${TMP_DIR}/file.conf"
+
+
 DLG_WIDTH=600
 
 # set choice possibilities
@@ -86,13 +90,16 @@ do case ${CHOICE} in
 
     # display scan message
     echo "# Scanning document from ${SOURCE} (${DPI} dpi) ..."
+    
+    # parameters
+    ARR_PARAM=( "--device-name=${SCAN_DEVICE}" "--format=pnm"  "--batch=${DIRECTORY}/${FILE}-%d.pnm" )
+    ARR_PARAM=( "${ARR_PARAM[@]}" "--mode=${MODE}" "--resolution=${DPI}" "--source" "${SOURCE}" )
 
     # detect if scan is from the glass window
-    [ "${SOURCE}" = "Flatbed" ] && PAGE_NUMBER="--batch-count 1" || PAGE_NUMBER=""
+    [ "${SOURCE}" = "Flatbed" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--batch-count" "1" )
 
     # scan image with needed resolution
-    NUMBER=$(scanimage --device-name="${SCAN_DEVICE}" --format=pnm --mode=${MODE} --resolution=${DPI} ${PAGE_NUMBER} \
-                       --batch="${DIRECTORY}/${FILE}-%d.pnm" --source ${SOURCE} 2>&1 | grep "Scanned" | sed 's/^.*page \([0-9]*\).*$/\1/g' | tail --lines=1)
+    NUMBER=$(scanimage "${ARR_PARAM[@]}" 2>&1 | grep "terminated" | cut -d',' -f2 | xargs | cut -d' ' -f1)
 
     # display conversion message
     echo "# Converting ${NUMBER} document(s) ..."
@@ -117,7 +124,7 @@ do case ${CHOICE} in
       ARR_PDF=$(ls ${DIRECTORY}/${FILE}*.pdf)
 
       # generate resulting PDF
-      gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=${PDF_PAGE} -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite -sOutputFile="${DIRECTORY}/${FILE}.pdf" "${ARR_PDF[@]}"
+      gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=${PDF_PAGE} -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite "-sOutputFile=${DIRECTORY}/${FILE}.pdf" "${ARR_PDF[@]}"
 
       # remove PDF single pages
       rm "${ARR_PDF[@]}"
@@ -167,12 +174,12 @@ do case ${CHOICE} in
   ${CHOICE_DEVICE})
   
     # list available scanners (remove all spaces and set space as separator)
-    ( echo 0 ; scanimage -L > ${TMP_FILE} ; echo 100 ) | \
+    ( echo 0 ; scanimage -L > ${TMP_LIST} ; echo 100 ) | \
       yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" \
           --title "Detecting scanners ..." --text="" --progress --pulsate --auto-close --no-buttons
 
     # generate scanner list
-    LIST_SCANNER=$(cat ${TMP_FILE} | sed 's/device..\(.*\). is a \(.*\)$/\2|\1/' | tr ' ' '_' | tr '|' ' ' | tr '\n' ' ')
+    LIST_SCANNER=$(cat ${TMP_LIST} | sed 's/device..\(.*\). is a \(.*\)$/\2|\1/' | tr ' ' '_' | tr '|' ' ' | tr '\n' ' ')
 
     # display scanner selection dialog
     TITLE="Scanner selection"
@@ -189,17 +196,17 @@ do case ${CHOICE} in
       SCAN_DEVICE=$(echo "${SELECTION}" | cut -d'|' -f2)
  
       # get scanner possibilities
-      ( echo 0 ; scanimage --help --device ${SCAN_DEVICE} > ${TMP_FILE} ; echo 100 ) | \
+      ( echo 0 ; scanimage --help --device ${SCAN_DEVICE} > ${TMP_CONF} ; echo 100 ) | \
         yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" \
             --title "Retrieving scanner parameters ..." --text="" --progress --pulsate --auto-close --no-buttons
 
       # retreive parameters list and default values
-      DPI=$(cat ${TMP_FILE} | grep "\-\-resolution" | sed 's/^.*\[\(.*\)\].*$/\1/')
-      LIST_DPI=$(cat ${TMP_FILE} | grep "\-\-resolution" | sed 's/^.*--resolution.\([0-9|]*\).*$/\1/' | sed 's/|/,/g')
-      MODE=$(cat ${TMP_FILE} | grep "\-\-mode" | sed 's/^.*\[\(.*\)\].*$/\1/')
-      LIST_MODE=$(cat ${TMP_FILE} | grep "\-\-mode" | sed 's/^.*--mode.\([^ ]*\).*$/\1/' | sed 's/|/,/g')
-      SOURCE=$(cat ${TMP_FILE} | grep "\-\-source" | sed 's/^.*\[\(.*\)\].*$/\1/')
-      LIST_SOURCE=$(cat ${TMP_FILE} | grep "\-\-source" | sed 's/^.*--source.\([^ ]*\).*$/\1/' | sed 's/|/,/g')
+      DPI=$(cat "${TMP_CONF}" | grep "\-\-resolution" | cut -d'[' -f2 | cut -d']' -f1)
+      ARR_DPI=( $(cat "${TMP_CONF}" | grep "\-\-resolution" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "^${DPI}$") )
+      MODE=$(cat "${TMP_CONF}" | grep "\-\-mode" | cut -d'[' -f2 | cut -d']' -f1)
+      ARR_MODE=( $(cat "${TMP_CONF}" | grep "\-\-mode" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "^${MODE}$") )
+      SOURCE=$(cat "${TMP_CONF}" | grep "\-\-source" | cut -d'[' -f2 | cut -d']' -f1)
+      ARR_SOURCE=( $(cat "${TMP_CONF}" | grep "\-\-source" | xargs | cut -d' ' -f2 | tr '|' '\n' | grep -v "^${SOURCE}$") )
     fi
 
     # back to parameter dialog box
@@ -214,12 +221,9 @@ do case ${CHOICE} in
   
     # prepare dialog box lists combo lists
     # -> remove default choice and add it on top of the list
-    DLG_DPI=$(echo ${LIST_DPI} | sed 's/'"${DPI}"'/,/' | sed 's/,,//')
-    DLG_DPI="${DPI},${DLG_DPI}"
-    DLG_MODE=$(echo ${LIST_MODE} | sed 's/'"${MODE}"'/,/' | sed 's/,,//')
-    DLG_MODE="${MODE},${DLG_MODE}"
-    DLG_SOURCE=$(echo ${LIST_SOURCE} | sed 's/'"${SOURCE}"'/,/' | sed 's/,,//')
-    DLG_SOURCE="${SOURCE},${DLG_SOURCE}"
+    DLG_DPI=$(echo "${DPI} ${ARR_DPI[@]}" | tr ' ' ',')
+    DLG_MODE=$(echo "${MODE} ${ARR_MODE[@]}" | tr ' ' ',')
+    DLG_SOURCE=$(echo "${SOURCE} ${ARR_SOURCE[@]}" | tr ' ' ',')
     DLG_FORMAT=$(echo ${LIST_FORMAT} | sed 's/'"${FORMAT}"'/,/' | sed 's/,,//')
     DLG_FORMAT="${FORMAT},${DLG_FORMAT}"
 
@@ -261,5 +265,6 @@ do case ${CHOICE} in
   esac
 done
 
-# remove temporary file
-rm -f ${TMP_FILE}
+# remove temporary directory
+rm -r "${TMP_DIR}"
+
