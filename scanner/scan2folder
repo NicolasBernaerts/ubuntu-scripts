@@ -55,9 +55,9 @@ then
   SCAN_DEVICE=$(cat ${CONF_FILE} | grep "scanner-device=" | cut -d"=" -f2-)
   LIST_FORMAT=$(cat ${CONF_FILE} | grep "list-format=" | cut -d"=" -f2-)
   LIST_PAGE=$(cat ${CONF_FILE} | grep "list-page=" | cut -d"=" -f2-)
-  LIST_DPI=$(cat ${CONF_FILE} | grep "list-dpi=" | cut -d"=" -f2-)
-  LIST_MODE=$(cat ${CONF_FILE} | grep "list-mode=" | cut -d"=" -f2-)
-  LIST_SOURCE=$(cat ${CONF_FILE} | grep "list-source=" | cut -d"=" -f2-)
+  ARR_DPI=( $(cat ${CONF_FILE} | grep "list-dpi=" | cut -d"=" -f2- | tr '\n' ',') )
+  ARR_MODE=( $(cat ${CONF_FILE} | grep "list-mode=" | cut -d"=" -f2- | tr '\n' ',') )
+  ARR_SOURCE=( $(cat ${CONF_FILE} | grep "list-source=" | cut -d"=" -f2- | tr '\n' ',') )
   PAGE=$(cat ${CONF_FILE} | grep "default-page=" | cut -d"=" -f2)
   DPI=$(cat ${CONF_FILE} | grep "default-dpi=" | cut -d"=" -f2)
   MODE=$(cat ${CONF_FILE} | grep "default-mode=" | cut -d"=" -f2)
@@ -144,6 +144,10 @@ do case ${CHOICE} in
   # --------------------------------------
   
   ${CHOICE_SAVE})
+    # convert arrays
+    LIST_DPI=$(echo "${ARR_DPI[@]}" | xargs | tr ' ' ',')
+    LIST_MODE=$(echo "${ARR_MODE[@]}" | xargs | tr ' ' ',')
+    LIST_SOURCE=$(echo "${ARR_SOURCE[@]}" | xargs | tr ' ' ',')
 
     # save configuration
     echo "[scanner]" > ${CONF_FILE}
