@@ -3,6 +3,7 @@
 # Script to apply different tweaks for Focal
 #
 # 10/05/2020, V1.0 - Migrated from Bionic
+# 19/05/2020, V1.1 - Wifi on Lenovo Ideapad 110
 # ------------------------------------------------------
 
 # force Google DNS servers on DHCP networks
@@ -17,3 +18,6 @@ echo "ClientAliveCountMax 2" | sudo tee -a /etc/ssh/sshd_config
 sudo systemctl disable apport.service
 sudo apt -y remove apport apport-gtk
 
+# RTL8188EE : Solves wifi issues on Lenovo Ideapad 110 by blacklisting ideapad module
+HAS_RTL8188EE=$(lspci | grep "RTL8188EE")
+[ "${HAS_RTL8188EE}" != "" ] && echo "blacklist ideapad_laptop" | sudo tee /etc/modprobe.d/ideapad.conf
