@@ -5,9 +5,9 @@
 # 22/05/2020, v1.0 - Migrated from Bionic
 # -------------------------------------------------------
 
-# curl
-logger "utilities - curl"
-sudo apt -y install curl
+# network tools
+logger "utilities - network tools"
+sudo apt -y install curl net-tools
 
 # flatpak
 logger "utilities - flatpak"
@@ -22,12 +22,9 @@ sudo apt -y install yad
 logger "utilities - package management"
 sudo apt -y install ppa-purge synaptic gdebi deborphan
 
-# disk tools
-logger "utilities - disk"
+# disk tools & filesystem clients
+logger "utilities - disk tools & filesystem clients"
 sudo apt -y install gparted
-
-# filesystem clients
-logger "utilities - filesystem"
 sudo apt -y install smbclient cifs-utils exfat-fuse
 
 # compression tools
