@@ -9,13 +9,14 @@
 #  * yad
 #
 # Revision history :
-#  08/02/2013, V1.0 - Creation by N. Bernaerts
-#  27/09/2014, V2.0 - Rework & multi scanner support
-#  24/01/2015, V2.1 - Check tools availability
-#  26/02/2016, V2.2 - Move config to ~/.config and add auto adjust level
-#  28/02/2016, V2.3 - Select page size and generate multi-pages PDF (thanks to Kevin McArdle idea)
-#  05/06/2017, V2.4 - Code cleanup
-#  06/06/2020, V2.5 - Conversion of lists to arrays
+#  08/02/2013, v1.0 - Creation by N. Bernaerts
+#  27/09/2014, v2.0 - Rework & multi scanner support
+#  24/01/2015, v2.1 - Check tools availability
+#  26/02/2016, v2.2 - Move config to ~/.config and add auto adjust level
+#  28/02/2016, v2.3 - Select page size and generate multi-pages PDF (thanks to Kevin McArdle idea)
+#  05/06/2017, v2.4 - Code cleanup
+#  06/06/2020, v2.5 - Conversion of lists to arrays
+#  20/06/2020, v2.6 - Shortcut if only one scanner is detected
 # ----------------------------------------------------
 
 # check tools availability
@@ -77,13 +78,18 @@ do case ${CHOICE} in
   #     Scan pages
   # ---------------------
   ${CHOICE_SCAN})
+
+    # scanning documents : parameters
+    ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" "--no-buttons" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress-text" "Scanning documents ..." )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress" "--pulsate" "--auto-close" "--undecorated" )
   
     (
     # beginning
     echo 0
   
     # generate timestamped filename
-    FILE=$(date '+Scan-%Y%b%d-%Ih%Mm%Ss')
+    FILE=$(date '+Scan-%Y%b%d-%Hh%Mm%Ss')
 
     # display scan message
     echo "# Scanning document from ${SOURCE} (${DPI} dpi) ..."
@@ -114,11 +120,15 @@ do case ${CHOICE} in
     # if needed, merge all scanned documents in a single PDF file
     if [ "${FORMAT}" = "pdf" ]
     then
-      # generate array of PDF files
+      # parameters
+      ARR_PARAM=( "-q" "-dNOPAUSE" "-dBATCH" "-dSAFER" "-sPAPERSIZE=${PAGE}" "-dPDFFitPage" "-dCompatibilityLevel=1.4" )
+      ARR_PARAM=( "${ARR_PARAM[@]}" "-sDEVICE=pdfwrite" "-sOutputFile=${DIRECTORY}/${FILE}.pdf" )
+
+      # array of PDF files
       ARR_PDF=( $(ls ${TMP_DIR}/${FILE}*.pdf) )
 
       # generate resulting PDF
-      gs -q -dNOPAUSE -dBATCH -dSAFER -sPAPERSIZE=${PAGE} -dPDFFitPage -dCompatibilityLevel=1.4 -sDEVICE=pdfwrite "-sOutputFile=${DIRECTORY}/${FILE}.pdf" "${ARR_PDF[@]}"
+      gs "${ARR_PARAM[@]}" "${ARR_PDF[@]}"
     else
         # move documents
     	mv ${TMP_DIR}/${FILE}*.${FORMAT} ${DIRECTORY} 
@@ -126,7 +136,7 @@ do case ${CHOICE} in
 
     # end
     echo 100
-    ) | yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" --title "Scanning documents ..." --text="" --progress --pulsate --auto-close --no-buttons
+    ) | yad "${ARR_DIALOG[@]}"
 
     # back to parameter dialog box
     CHOICE="${CHOICE_PARAM}"
@@ -174,36 +184,62 @@ do case ${CHOICE} in
   
   ${CHOICE_DEVICE})
   
-    # list available scanners (remove all spaces and set space as separator)
+    # init
+    SELECTION=""
+  
+    # scanner available dialog : parameters
+    ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" "--no-buttons" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress-text" "Looking for scanners ..." )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress" "--pulsate" "--auto-close" "--undecorated" )
+
+    # scanner available dialog : display
     (
     echo 0
     scanimage --list-devices > "${TMP_LIST}"
     echo 100
-    ) | yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" --title "Detecting scanners ..." --text="" --progress --pulsate --auto-close --no-buttons
+    ) | yad "${ARR_DIALOG[@]}"
 
     # generate scanner list
-    LIST_SCANNER=$(cat "${TMP_LIST}" | sed 's/device..\(.*\). is a \(.*\)$/\2|\1/' | tr ' ' '_' | tr '|' ' ' | tr '\n' ' ')
+    ARR_DEVICE=( $(cat "${TMP_LIST}" | sed 's/device..\(.*\). is a \(.*\)$/\1|\2/' | tr ' ' '-') )
 
-    # display scanner selection dialog
-    TITLE="Scanner selection"
-    TEXT="Select scanner to use"
-    SELECTION=$(yad --center --width=$DLG_WIDTH --height=250 --window-icon="scanner" --image="scanner" \
-                    --title="$TITLE" --text="$TEXT" \
-                    --list --column="Scanner" --column="Device" --hide-column=2 ${LIST_SCANNER})
+    # if more than one scanner has been detected
+    if [ ${#ARR_DEVICE[@]} -gt 1 ]
+    then
+      # scanner selection dialog : parameters
+      ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--height=250" "--window-icon=scanner" "--image=scanner" )
+      ARR_DIALOG=( "${ARR_DIALOG[@]}" "--text=\nPlease, select scanner to use\n" "--list" "--no-headers" )
+      ARR_DIALOG=( "${ARR_DIALOG[@]}" "--column=Device" "--column=Scanner" "--hide-column=1" "--undecorated" )
 
-    # if needed, update current scanner
+      # scanner selection dialog : list of scanner
+      ARR_SCANNER=( $(echo "${ARR_DEVICE[@]}" | tr '|' ' ' | xargs) )
+
+      # scanner selection dialog : display
+      SELECTION=$(yad "${ARR_DIALOG[@]}" "${ARR_SCANNER[@]}")
+
+    # else, if one scanner has been detected
+    elif [ ${#ARR_DEVICE[@]} -eq 1 ]
+    then
+      SELECTION="${ARR_DEVICE[0]}" 
+    fi
+
+    # if one scanner has been detected and selected
     if [ "${SELECTION}" != "" ]
     then
       # retrieve selected scanner
-      SCAN_NAME=$(echo "${SELECTION}" | cut -d'|' -f1 | tr '_' ' ')
-      SCAN_DEVICE=$(echo "${SELECTION}" | cut -d'|' -f2)
+      SCAN_DEVICE=$(echo "${SELECTION}" | cut -d'|' -f1)
+      SCAN_NAME=$(echo "${SELECTION}" | cut -d'|' -f2)
  
-      # get scanner possibilities
+      # scanner possibilities dialog : parameters
+      ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" "--no-buttons" )
+      ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress-text" "Retrieving scanner capabilities ..." )
+      ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress" "--pulsate" "--auto-close" "--undecorated" )
+      
+      # scanner possibilities dialog : display
       (
       echo 0
       scanimage --help --device "${SCAN_DEVICE}" > "${TMP_CONF}"
       echo 100
-      ) | yad --center --width=${DLG_WIDTH} --window-icon="scanner" --image="scanner" --title "Retrieving scanner parameters ..." --text="" --progress --pulsate --auto-close --no-buttons
+      ) | yad "${ARR_DIALOG[@]}"
 
       # retreive parameters list
       ARR_DPI=( $(cat "${TMP_CONF}" | grep "\-\-resolution" | xargs | cut -d' ' -f2 | sed 's/[^0-9|]*//g' | tr '|' '\n') )
@@ -234,25 +270,29 @@ do case ${CHOICE} in
     DLG_FORMAT=$(echo "${FORMAT},$(echo "${ARR_FORMAT[@]}" | tr ' ' '\n' | grep -v "^${FORMAT}$" | xargs | tr ' ' ',')")
     DLG_PAGE=$(echo "${PAGE},$(echo "${ARR_PAGE[@]}" | tr ' ' '\n' | grep -v "^${PAGE}" | cut -d'(' -f1 | xargs | tr ' ' ',')")
 
-    # Scan parameter selection dialog
-    TITLE="Scanning parameters"
-    TEXT="Select parameters for the scan job :"
-    SELECTION=$(yad --center "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" "--title=${TITLE}" "--text=${TEXT}" \
-                   "--button=Device:${CHOICE_DEVICE}" "--button=Save:${CHOICE_SAVE}" "--button=Close:${CHOICE_EXIT}" "--button=Scan:${CHOICE_SCAN}" \
-                   --form --item-separator="," "--field=Scanner:RO" "${SCAN_NAME}" \
-                   "--field=Resolution:CB" "${DLG_DPI}" "--field=Mode:CB" "${DLG_MODE}" "--field=Source:CB" "${DLG_SOURCE}" "--field=Format:CB" "${DLG_FORMAT}" \
-                   "--field=Page size:CB" "${DLG_PAGE}" "--field=Location:DIR" "${DIRECTORY}")
+    # scan parameters dialog : parameters
+    ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--title=Scan direct" "--text=\n${SCAN_NAME}\n" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--button=Device:${CHOICE_DEVICE}" "--button=Save:${CHOICE_SAVE}" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--button=Close:${CHOICE_EXIT}" "--button=Scan:${CHOICE_SCAN}" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--form" "--item-separator=," )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--field=Resolution:CB" "${DLG_DPI}" "--field=Mode:CB" "${DLG_MODE}" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--field=Source:CB" "${DLG_SOURCE}" "--field=Format:CB" "${DLG_FORMAT}" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--field=Page size:CB" "${DLG_PAGE}" "--field=Location:DIR" "${DIRECTORY}" )
+
+    # scan parameters dialog : display
+    SELECTION=$(yad "${ARR_DIALOG[@]}")
     CHOICE=$?
 
     # if needed, update parameters from dialog box selection
     if [ "${SELECTION}" != "" ]
     then
-      DPI=$(echo "${SELECTION}" | cut -d"|" -f2)
-      MODE=$(echo "${SELECTION}" | cut -d"|" -f3)
-      SOURCE=$(echo "${SELECTION}" | cut -d"|" -f4)
-      FORMAT=$(echo "${SELECTION}" | cut -d"|" -f5)
-      PAGE=$(echo "${SELECTION}" | cut -d"|" -f6)
-      DIRECTORY=$(echo "${SELECTION}" | cut -d"|" -f7)
+      DPI=$(echo "${SELECTION}" | cut -d"|" -f1)
+      MODE=$(echo "${SELECTION}" | cut -d"|" -f2)
+      SOURCE=$(echo "${SELECTION}" | cut -d"|" -f3)
+      FORMAT=$(echo "${SELECTION}" | cut -d"|" -f4)
+      PAGE=$(echo "${SELECTION}" | cut -d"|" -f5)
+      DIRECTORY=$(echo "${SELECTION}" | cut -d"|" -f6)
     fi
     ;;
 
@@ -268,4 +308,3 @@ done
 
 # remove temporary directory
 rm -r "${TMP_DIR}"
-
