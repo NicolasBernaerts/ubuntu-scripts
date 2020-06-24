@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-# Script to install android tools
+# Script to install android tools for Focal
 #
 # 22/05/2020, V1.0 - Migrated and tested from Bionic
 # -------------------------------------------------------
