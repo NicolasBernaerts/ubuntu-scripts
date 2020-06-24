@@ -44,5 +44,5 @@ fi
 
 # android scrcpy utility
 logger "android - scrcpy utility"
-sudo snap install scrcpy
+sudo apt -y install scrcpy
 sudo wget -O /usr/share/applications/scrcpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/scrcpy.desktop
