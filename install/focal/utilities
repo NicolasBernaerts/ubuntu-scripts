@@ -7,7 +7,7 @@
 
 # network tools
 logger "utilities - network tools"
-sudo apt -y install curl net-tools
+sudo apt -y install curl net-tools fping
 
 # flatpak
 logger "utilities - flatpak"
