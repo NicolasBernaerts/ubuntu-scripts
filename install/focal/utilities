@@ -3,7 +3,12 @@
 # Script to install misc utilities & tools on Focal
 #
 # 22/05/2020, v1.0 - Migrated from Bionic
+# 12/07/2020, v1.1 - Add Zeroconf
 # -------------------------------------------------------
+
+# zeroconf tools
+logger "utilities - zeroconf"
+sudo apt -y install avahi-daemon avahi-discover libnss-mdns
 
 # network tools
 logger "utilities - network tools"
