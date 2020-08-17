@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=/bin/bash -c "sleep 10 && /usr/bin/syndaemon -i 0.5 -d -K"
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[en_US]=syndaemon.desktop
+Name=Syndaemon
+Comment[en_US]=Disable touchpad while typing
+Comment=Disable touchpad while typing
