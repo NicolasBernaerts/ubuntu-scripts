@@ -23,6 +23,13 @@ echo "# For Visual Studio Code" | sudo tee -a /etc/sysctl.conf
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
+# esptool
+logger "programming - esptool"
+sudo apt -y install esptool
+wget -O esptool.deb https://launchpad.net/ubuntu/+archive/primary/+files/esptool_2.8+dfsg-1_all.deb
+sudo gdebi --n ./esptool.deb
+rm esptool.deb
+
 # Tasmota sources (under $HOME/sources/Tasmota-master)
 logger "programming - tasmota"
 wget https://github.com/arendst/Tasmota/archive/master.zip
