@@ -10,4 +10,4 @@ Comment=Tool to scan documents directly to a local folder
 Comment[fr]=Outil pour scanner directment des documents vers un répertoire
 Categories=GNOME;Graphics
 MimeType=
-Icon=scanner
+Icon=/usr/share/icons/gnome/256x256/devices/scanner.png
