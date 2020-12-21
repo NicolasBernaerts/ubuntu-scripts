@@ -77,7 +77,6 @@ do
 		echo "PubkeyAuthentication yes" >> "${SSH_CONFIG}"
 		echo "StrictHostKeyChecking no" >> "${SSH_CONFIG}"
 		echo "Compression yes" >> "${SSH_CONFIG}"
-		echo "CompressionLevel 9" >> "${SSH_CONFIG}"
 		echo " " >> "${SSH_CONFIG}"
 
 		# set access mode to 600
