@@ -19,6 +19,7 @@ then
     echo "Options are :"
     echo "  --common          Install all common packages"
     echo "  --design          Install design apps"
+    echo "  --android         Install android tools"
     echo "  --programming     Install programming environment (Visual studio code, Tasmota, ...)"
     echo "  --tweaks          Add some tweaks for problematic hardware"
     echo "  --ssd             Apply SSD tweaks"
@@ -32,6 +33,7 @@ do
     case $1 in
         --common) COMMON="ok"; shift; ;;
         --design) DESIGN="ok"; shift; ;;
+        --android) ANDROID="ok"; shift; ;;
         --programming) PROGRAMMING="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
@@ -118,8 +120,15 @@ then
         ./internet
         rm ./internet
     fi
+fi
 
-    # android tools
+# --------------------------------------------
+# -----------------  Options  ----------------
+# --------------------------------------------
+
+# android tools
+if [ "${ANDROID}" = "ok" ]
+then
     wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
     if [ -f ./android ]
     then
@@ -128,10 +137,6 @@ then
         rm ./android
     fi
 fi
-
-# --------------------------------------------
-# -----------------  Options  ----------------
-# --------------------------------------------
 
 # design apps
 if [ "${DESIGN}" = "ok" ]
