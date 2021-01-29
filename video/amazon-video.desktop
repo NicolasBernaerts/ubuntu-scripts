@@ -1,15 +1,15 @@
 [Desktop Entry]
 Version=1.0
-Name=Firefox Web Browser
-Comment=Browse the World Wide Web
+Name=Prime Video
+Comment=Amazon Prime Video
 GenericName=Web Browser
 Keywords=Internet;WWW;Browser;Web;Explorer
 Exec=firefox https://www.primevideo.com/
 Terminal=false
 X-MultipleArgs=false
 Type=Application
-Icon=/home/nicolas/.config/icons/amazon-video.png
+Icon=amazon-video.png
 Categories=GNOME;GTK;Network;WebBrowser;
 MimeType=
 StartupNotify=true
-Name[en_US]=Amazon Video
+Name[en_US]=Prime Video
