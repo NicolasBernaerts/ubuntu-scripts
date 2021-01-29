@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
-Name=Firefox Web Browser
-Comment=Browse the World Wide Web
+Name=Molotov TV
+Comment=Molotov TV
 GenericName=Web Browser
 Keywords=Internet;WWW;Browser;Web;Explorer
 Exec=/home/nicolas/.local/apps/molotov.AppImage
@@ -12,4 +12,4 @@ Icon=/home/nicolas/.config/icons/molotov.png
 Categories=GNOME;GTK;Network;WebBrowser;
 MimeType=
 StartupNotify=true
-Name[en_US]=Molotov
+Name[en_US]=Molotov TV
