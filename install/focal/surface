@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install Microsoft Surface kernel and tools
+# Based on https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup
+#
+# 10/02/2021, V1.0 - Creation by N. Bernaerts
+# -------------------------------------------------------
+
+# import the keys we use to sign packages
+wget -qO - https://raw.githubusercontent.com/linux-surface/linux-surface/master/pkg/keys/surface.asc | gpg --dearmor | sudo dd of=/etc/apt/trusted.gpg.d/linux-surface.gpg
+
+# add the repository configuration 
+echo "deb [arch=amd64] https://pkg.surfacelinux.com/debian release main" | sudo tee /etc/apt/sources.list.d/linux-surface.list
+
+# update packages
+sudo apt update
+
+# install the linux-surface kernel and its dependencies
+sudo apt install linux-image-surface linux-headers-surface iptsd libwacom-surface
+
+# enable the iptsd service for touchscreen support
+sudo systemctl enable iptsd
+
+# import the key that the linux-surface kernel is signed with into your bootloader, so that the kernel is bootable without disabling secureboot
+sudo apt install linux-surface-secureboot-mok
+
+# update bootloader configuration to make sure the surface kernel is by default
+sudo update-grub
+
+# configure Linux to use localtime as Windows stores the hardware clock as localtime
+sudo timedatectl set-local-rtc 1
+sudo hwclock --systohc --localtime
