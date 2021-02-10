@@ -5,6 +5,7 @@
 #  This script will run some commands as sudo
 # 
 #  01/05/2020, V1.0 - Migrated from Bionic
+#  10/02/2021, V1.1 - Add Microsoft Surface option --surface
 # ---------------------------------------------------------------------------------
 
 # ---------------------------------------------------
@@ -23,6 +24,7 @@ then
     echo "  --programming     Install programming environment (Visual studio code, Tasmota, ...)"
     echo "  --tweaks          Add some tweaks for problematic hardware"
     echo "  --ssd             Apply SSD tweaks"
+    echo "  --surface         Install Surface kernel and tools"
     echo "  --photorec        Add photorec tools"
     exit 1
 fi
@@ -37,6 +39,7 @@ do
         --programming) PROGRAMMING="ok"; shift; ;;
         --tweaks) TWEAKS="ok"; shift; ;;
         --ssd) SSD="ok"; shift; ;;
+        --surface) SURFACE="ok"; shift; ;;
         --photorec) PHOTOREC="ok"; shift; ;;
         *) shift; ;;
     esac
@@ -159,6 +162,18 @@ then
         chmod +x ./tweaks
         ./tweaks
         rm ./tweaks
+    fi
+fi
+
+# Ms Surface : kernel and tools
+if [ "${SURFACE}" = "ok" ]
+then
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/surface
+    if [ -f ./surface ]
+    then
+        chmod +x ./surface
+        ./surface
+        rm ./surface
     fi
 fi
 
