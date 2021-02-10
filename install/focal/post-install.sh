@@ -18,7 +18,7 @@ then
     echo "Script to finalise Ubuntu ${DISTRI_NAME} installation."
     echo "It will install some important packages not provided by default installation."
     echo "Options are :"
-    echo "  --common          Install all common packages"
+    echo "  --common          Install common packages (gnomeshell, utilities, graphical, multimedia, internet and office"
     echo "  --design          Install design apps"
     echo "  --android         Install android tools"
     echo "  --programming     Install programming environment (Visual studio code, Tasmota, ...)"
