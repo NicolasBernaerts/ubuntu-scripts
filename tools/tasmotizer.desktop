@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Tasmotizer
+Comment=Tasmota flashing tool
+Exec=tasmotizer.py
+Icon=tasmota.svg
+Categories=Utility;
+Keywords=tasmota;flash;esp;tasmotizer;
+Terminal=false
+StartupNotify=true
