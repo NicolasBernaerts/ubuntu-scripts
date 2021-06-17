@@ -5,6 +5,7 @@
 # 28/05/2020, V1.0 - Migration from Bionic
 # 17/07/2020, V1.1 - Add KiCad
 # 17/07/2020, V1.2 - Add EspTool
+# 16/05/2021, V1.3 - Add Tasmotizer
 # -------------------------------------------------------
 
 # easyssh
@@ -30,6 +31,11 @@ sudo apt -y install esptool
 wget -O esptool.deb https://launchpad.net/ubuntu/+archive/primary/+files/esptool_2.8+dfsg-1_all.deb
 sudo gdebi --n ./esptool.deb
 rm esptool.deb
+
+# tasmotizer
+pip3 install --upgrade pip
+pip3 install tasmotizer
+
 
 # Tasmota sources (under $HOME/sources/Tasmota-master)
 logger "programming - tasmota"
