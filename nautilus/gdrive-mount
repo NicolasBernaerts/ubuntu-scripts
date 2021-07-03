@@ -36,6 +36,9 @@ done
 [ "${OCAM_LABEL}" = "" ] && OCAM_LABEL="default"
 [ "${OCAM_MOUNT}" = "" ] && { zenity --error --width 300 --text="Please specify mount point (--mount)"; exit 1; }
 
+# if mount point is relative, start from home directory
+[ "${OCAM_MOUNT:0:1}" != "/" ] && OCAM_MOUNT="$HOME/${OCAM_MOUNT}"
+
 # create mount point if it doesn't exist
 [ ! -d "${OCAM_MOUNT}" ] && mkdir --parent "${OCAM_MOUNT}"
 [ ! -d "${OCAM_MOUNT}" ] && { zenity --error --width 400 --text="Impossible to create mount point\n(${OCAM_MOUNT})"; exit 1; }
