@@ -3,11 +3,16 @@
 # Script to install internet tools on Focal
 #
 # 22/05/2020, V1.0 - Migrated from Bionic
+# 15/07/2021, V1.1 - Add Youtube-dl
 # ----------------------------------------------------------------
 
 # network tools
 logger "internet - nmap and snmp"
 sudo apt -y install nmap snmp snmp-mibs-downloader
+
+# youtube-dl
+sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl
+sudo chmod a+rx /usr/local/bin/youtube-dl
 
 # firefox extension manager
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
