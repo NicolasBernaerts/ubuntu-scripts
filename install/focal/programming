@@ -32,7 +32,11 @@ wget -O esptool.deb https://launchpad.net/ubuntu/+archive/primary/+files/esptool
 sudo gdebi --n ./esptool.deb
 rm esptool.deb
 
-# esp32 partitionning tool
+# esp32 default partitions and partitionning tool
+wget https://github.com/NicolasBernaerts/tasmota/raw/master/esptool.zip
+mkdir --parents $HOME/sources
+unzip esptool.zip -d $HOME/sources
+rm esptool.zip
 sudo wget -O /usr/local/bin/gen_esp32part.py https://raw.githubusercontent.com/espressif/esp-idf/f65c8249af109de349650b9cf79ae28399261750/components/partition_table/gen_esp32part.py
 sudo chmod +x /usr/local/bin/gen_esp32part.py
 
