@@ -34,6 +34,7 @@ rm esptool.deb
 
 # esp32 partitionning tool
 sudo wget -O /usr/local/bin/gen_esp32part.py https://raw.githubusercontent.com/espressif/esp-idf/f65c8249af109de349650b9cf79ae28399261750/components/partition_table/gen_esp32part.py
+sudo chmod +x /usr/local/bin/gen_esp32part.py
 
 # tasmotizer
 pip3 install --upgrade pip
