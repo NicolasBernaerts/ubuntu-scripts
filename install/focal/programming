@@ -2,10 +2,11 @@
 # -------------------------------------------------------
 # Script to install programming environment on Focal
 #
-# 28/05/2020, V1.0 - Migration from Bionic
-# 17/07/2020, V1.1 - Add KiCad
-# 17/07/2020, V1.2 - Add EspTool
-# 16/05/2021, V1.3 - Add Tasmotizer
+# 28/05/2020, v1.0 - Migration from Bionic
+# 17/07/2020, v1.1 - Add KiCad
+# 17/07/2020, v1.2 - Add EspTool
+# 16/05/2021, v1.3 - Add Tasmotizer
+# 30/12/2021, v1.4 - Add Raspberry Pi Imager
 # -------------------------------------------------------
 
 # easyssh
@@ -48,6 +49,9 @@ wget https://github.com/arendst/Tasmota/archive/master.zip
 mkdir --parents  $HOME/sources
 unzip master.zip -d $HOME/sources
 rm master.zip
+
+# Rpi imager
+sudo snap install rpi-imager
 
 # graphviz
 logger "programming - graphviz"
