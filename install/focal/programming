@@ -9,7 +9,7 @@
 # 30/12/2021, v1.4 - Add Raspberry Pi Imager
 # -------------------------------------------------------
 
-# easyssh
+# EasySSH
 logger "programming - easyssh"
 flatpak -y install https://flathub.org/repo/appstream/com.github.muriloventuroso.easyssh.flatpakref
 
@@ -26,18 +26,18 @@ echo "# For Visual Studio Code" | sudo tee -a /etc/sysctl.conf
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
-# esptool
+# EspTool
 logger "programming - esptool"
 sudo apt -y install esptool
 wget -O esptool.deb https://launchpad.net/ubuntu/+archive/primary/+files/esptool_2.8+dfsg-1_all.deb
 sudo gdebi --n ./esptool.deb
 rm esptool.deb
 
-# esp32 partitionning tool
+# Esp32 partitionning tool
 sudo wget -O /usr/local/bin/gen_esp32part.py https://raw.githubusercontent.com/espressif/esp-idf/master/components/partition_table/gen_esp32part.py
 sudo chmod +x /usr/local/bin/gen_esp32part.py
 
-# tasmotizer
+# Tasmotizer
 pip3 install --upgrade pip
 pip3 install tasmotizer
 wget -O $HOME/.local/share/icons/tasmota.svg https://tasmota.github.io/docs/_media/logo.svg
@@ -53,7 +53,7 @@ rm master.zip
 # Rpi imager
 sudo snap install rpi-imager
 
-# graphviz
+# Graphviz
 logger "programming - graphviz"
 sudo apt -y install graphviz
 
@@ -67,12 +67,12 @@ then
   rm graphviz-thumbnailer-install.sh
 fi
 
-# kicad electronic diagram editor
+# Kicad electronic diagram editor
 logger "programming - kicad"
 sudo add-apt-repository --yes ppa:kicad/kicad-5.1-releases
 sudo apt update
 sudo apt install --install-recommends kicad
 
-# file comparison
+# File comparison
 logger "programming - file comparison"
 sudo apt -y install meld
