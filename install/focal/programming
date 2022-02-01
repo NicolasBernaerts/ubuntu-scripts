@@ -7,6 +7,7 @@
 # 17/07/2020, v1.2 - Add EspTool
 # 16/05/2021, v1.3 - Add Tasmotizer
 # 30/12/2021, v1.4 - Add Raspberry Pi Imager
+# 31/01/2022, v1.5 - Switch to esptool.py
 # -------------------------------------------------------
 
 # EasySSH
@@ -26,22 +27,17 @@ echo "# For Visual Studio Code" | sudo tee -a /etc/sysctl.conf
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
-# EspTool
-logger "programming - esptool"
-sudo apt -y install esptool
-wget -O esptool.deb https://launchpad.net/ubuntu/+archive/primary/+files/esptool_2.8+dfsg-1_all.deb
-sudo gdebi --n ./esptool.deb
-rm esptool.deb
-
-# Esp32 partitionning tool
-sudo wget -O /usr/local/bin/gen_esp32part.py https://raw.githubusercontent.com/espressif/esp-idf/master/components/partition_table/gen_esp32part.py
-sudo chmod +x /usr/local/bin/gen_esp32part.py
-
 # Tasmotizer
 pip3 install --upgrade pip
 pip3 install tasmotizer
 wget -O $HOME/.local/share/icons/tasmota.svg https://tasmota.github.io/docs/_media/logo.svg
 wget -O $HOME/.local/share/applications/tasmotizer.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/tasmotizer.desktop
+
+# EspTool and Esp32 partitionning tool
+logger "programming - esptool"
+pip3 install --upgrade esptool
+sudo wget -O /usr/local/bin/gen_esp32part.py https://raw.githubusercontent.com/espressif/esp-idf/master/components/partition_table/gen_esp32part.py
+sudo chmod +x /usr/local/bin/gen_esp32part.py
 
 # Tasmota sources (under $HOME/sources/Tasmota-master)
 logger "programming - tasmota"
