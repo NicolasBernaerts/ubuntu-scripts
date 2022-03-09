@@ -21,6 +21,69 @@
 command -v unzip >/dev/null 2>&1 || { echo "Please install unzip"; exit 1; }
 command -v wget >/dev/null 2>&1 || { echo "Please install wget"; exit 1; }
 
+
+# --------------
+#   Functions
+# --------------
+
+function GetUID ()
+{
+	local LOC_XPI="$1"
+	local LOC_UID=""
+
+	# get extension UID from install.rdf in original format (<em:id>extension-uid</em:id>)
+	LOC_UID=$(unzip -qq -p "${LOC_XPI}" install.rdf 2>/dev/null | grep "<em:id>" | head -n 1 | cut -d'>' -f2 | cut -d'<' -f1)
+
+	# if extension UID not found, get it from install.rdf in new format (<RDF:Description ... em:id="{extension-uid}" ...) 
+	[ "${LOC_UID}" = "" ] && LOC_UID=$(unzip -qq -p "${LOC_XPI}" install.rdf 2>/dev/null | grep "em:id=" | head -n 1 | sed "s/^.*em:id=\"\([^\"]*\).*$/\1/")
+
+	# if extension UID not found, get it from key "id" in manifest.json ("id": "extension-uid") 
+	[ "${LOC_UID}" = "" ] && LOC_UID=$(unzip -qq -p "${LOC_XPI}" manifest.json 2>/dev/null | grep "\"id\"" | head -n 1 | cut -d'"' -f4)
+
+	# if extension UID not found, get it from key "name" in manifest.json ("name": "extension name") 
+	[ "${LOC_UID}" = "" ] && LOC_UID=$(unzip -qq -p "${LOC_XPI}" manifest.json 2>/dev/null | grep "\"name\"" | head -n 1 | cut -d'"' -f4 | tr ' ' '-')}
+
+	# display extension UID
+	echo "${LOC_UID}"
+}
+
+function GetName ()
+{
+	local LOC_XPI="$1"
+	local LOC_NAME=""
+
+	# get extension name from install.rdf in original format (<em:id>extension-uid</em:id>)
+	LOC_NAME=$(unzip -qq -p "${LOC_XPI}" install.rdf 2>/dev/null | grep "<em:name>" | head -n 1 | cut -d'>' -f2 | cut -d'<' -f1)
+
+	# if extension name not found, get it from install.rdf in new format (<RDF:Description ... em:name="extension-name" ...) 
+	[ "${LOC_NAME}" = "" ] && LOC_NAME=$(unzip -qq -p "${LOC_XPI}" install.rdf 2>/dev/null | grep "em:name=" | head -n 1 | sed "s/^.*em:name//" | cut -d'"' -f2)
+
+	# if extension name not found, get it from key "name" in manifest.json ("name": "extension name") 
+	[ "${LOC_NAME}" = "" ] && LOC_NAME=$(unzip -qq -p "${LOC_XPI}" manifest.json 2>/dev/null | grep "\"name\"" | head -n 1 | cut -d'"' -f4)
+
+	# display extension name
+	echo "${LOC_NAME}"
+}
+
+function GetVersion ()
+{
+	local LOC_XPI="$1"
+	local LOC_VERSION=""
+
+	# get extension version from install.rdf in original format (<em:version>version-number</em:version>)
+	LOC_VERSION=$(unzip -qq -p "${LOC_XPI}" install.rdf 2>/dev/null | grep "<em:version>" | head -n 1 | cut -d'>' -f2 | cut -d'<' -f1)
+
+	# if extension version not found, get it from install.rdf in new format (<RDF:Description ... em:version="version-number" ...) 
+	[ "${LOC_VERSION}" = "" ] && LOC_VERSION=$(unzip -qq -p "${LOC_XPI}" install.rdf 2>/dev/null | grep "em:version=" | head -n 1 | sed "s/^.*em:version//" | cut -d'"' -f2)
+
+	# if extension name not found, get it from key "name" in manifest.json ("name": "extension name") 
+	[ "${LOC_VERSION}" = "" ] && LOC_VERSION=$(unzip -qq -p "${LOC_XPI}" manifest.json 2>/dev/null | grep "\"version\"" | head -n 1 | cut -d'"' -f4)
+
+	# display extension name
+	echo "${LOC_VERSION}"
+}
+
+
 # ---------------
 #   Parameters
 # ---------------
@@ -199,23 +262,42 @@ then
 # by URL
 elif [ "${MESSAGE}" = "" -a "${EXT_URL}" != "" ]
 then
-	# download extension if not local (file:///)
-	wget --quiet -O "${TMP_HTML}" "${EXT_URL}"
+	if [[ "${EXT_URL}" != *.xpi ]]
+	then
+		# download extension if not local (file:///)
+		wget --quiet -O "${TMP_HTML}" "${EXT_URL}"
 
-	# extract extension UID
-	EXT_UID=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"guid\"" | tail -n 1 | cut -d'"' -f4)
+		# extract extension UID
+		EXT_UID=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"guid\"" | tail -n 1 | cut -d'"' -f4)
 
-	# extract extension name
-	EXT_NAME=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"name\"" | tail -n 1 | cut -d'"' -f4)
+		# extract extension name
+		EXT_NAME=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"name\"" | tail -n 1 | cut -d'"' -f4)
 
-	# extract extension name
-	EXT_VERSION=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"version\"" | cut -d'"' -f4)
+		# extract extension name
+		EXT_VERSION=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"version\"" | cut -d'"' -f4)
 
-	# generate XPI target file path
-	EXT_XPI=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"url\"" | grep ".xpi" | head -n 1 | cut -d'"' -f4 | sed "s|u002F||g" | tr '\\' '/')
+		# generate XPI target file path
+		EXT_XPI=$(cat "${TMP_HTML}" | tr ',' '\n' | grep "^\"url\"" | grep ".xpi" | head -n 1 | cut -d'"' -f4 | sed "s|u002F||g" | tr '\\' '/')
+
+	else
+		EXT_XPI="${EXT_URL}"
+	fi
 
 	# download XPI extension
-	wget --quiet -O "${TMP_XPI}" "${EXT_XPI}"
+	wget --quiet -O "${TMP_XPI}" "${EXT_XPI}"		
+	
+	if [[ "${EXT_URL}" == *.xpi ]]
+	then
+		# extract XPI extension UID
+		EXT_UID=$(GetUID "${TMP_XPI}")
+
+		# extract XPI extension name
+		EXT_NAME=$(GetName "${TMP_XPI}")
+
+		# extract XPI extension name
+		EXT_VERSION=$(GetVersion "${TMP_XPI}")
+	fi
+
 
 	# generate XPI target file path
 	EXT_TARGET="${EXT_PATH}/${EXT_UID}.xpi"
