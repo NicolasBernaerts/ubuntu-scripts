@@ -80,6 +80,7 @@ then
 		# generate filenames
 		ORIGINAL_DIR=$(dirname "${ORIGINAL_URI}")
 		ORIGINAL_FILE=$(basename "${ORIGINAL_URI}")
+		ORIGINAL_NAME="${ORIGINAL_FILE%.*}"
 
 		# copy input file to temporary folder
 		echo "# ${INDEX} / ${NBR_FILE} - Copy of original PDF document ..."
