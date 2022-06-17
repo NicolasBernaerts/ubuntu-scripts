@@ -10,7 +10,11 @@
 # 31/01/2022, v1.5 - Switch to esptool.py
 # -------------------------------------------------------
 
-# EasySSH
+# SSH - Asbru connexion manager
+curl -1sLf 'https://dl.cloudsmith.io/public/asbru-cm/release/cfg/setup/bash.deb.sh' | sudo -E bash
+sudo apt install asbru-cm 
+
+# SSH - EasySSH
 logger "programming - easyssh"
 flatpak -y install https://flathub.org/repo/appstream/com.github.muriloventuroso.easyssh.flatpakref
 
