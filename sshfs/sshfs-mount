@@ -1,7 +1,10 @@
 #!/bin/bash
+# ---------------------------------------------------------------
 # SSHFS ressource mounting script
-# Handles SSHFS resource mount for environment given in $1
-# Configuration file used is $HOME/.config/sshfs-$1.conf
+#
+# Environment is given as $1
+# It's configuration is stored under $HOME/.config/sshfs-$1.conf
+# ---------------------------------------------------------------
 
 # parameter
 SSHFS_NAME="$1"
@@ -26,8 +29,9 @@ TMP_DIR=$(mktemp -t -d "sshfs-XXXXXXXX")
 TMP_FLAG="${TMP_DIR}/mount.flg"
 
 (
+
 # test server
-echo "5"
+echo 10
 echo "# Initialisation ..."
 
 # get uid and gui
@@ -53,19 +57,18 @@ do
 	if [ "${SERVER_ADDRESS}" != "" ]
 	then
 		# display
-		echo "${INDEX}5"
+		echo $((INDEX * 10 + 10))
 		echo "# ${SERVER_LABEL} - Checking connectivity ..."
 
-		# ping server
-		ping -c 1 -W 1 ${SERVER_ADDRESS}
-		SERVER_REACHED=$(nmap --max-retries 1 --host-timeout 5 -p${SERVER_PORT} "${SERVER_ADDRESS}" | grep "open")
+		# test server connectivity
+		SERVER_REACHED=$(nmap --max-retries 1 --host-timeout 5 -p${SERVER_PORT} "${SERVER_ADDRESS}" 2>/dev/null | grep "open")
 		[ "${SERVER_PROTOCOL}" != "" ] && SERVER_REACHED=$(echo "${SERVER_REACHED}" | grep "${SERVER_PROTOCOL}")
 
 		# if server reached, end of quest
 		if [ "${SERVER_REACHED}" != "" ]
 		then
 			# display
-			echo "${INDEX}8"
+			echo $((INDEX * 10 + 15))
 			echo "# ${SERVER_LABEL} - Reachable"
 			SERVER_INDEX=${INDEX}
 			INDEX=0
@@ -73,7 +76,7 @@ do
 		# else try next server
 		else
 			# display
-			echo "${INDEX}8"
+			echo  $((INDEX * 10 + 15))
 			echo "# ${SERVER_LABEL} - Not reachable"
 			INDEX=$((INDEX + 1))
 		fi
@@ -88,12 +91,12 @@ done
 if [ ${SERVER_INDEX} -gt 0 ]
 then
 	# unmount ressource if any
-	echo "50"
+	echo 80
 	echo "# ${SERVER_LABEL} - Preparation of ${MOUNT_POINT} ..."
 	fusermount -uz "${MOUNT_POINT}"
 
 	# mount ressource
-	echo "75"
+	echo 90
 	echo "# ${SERVER_LABEL} - Connection ..."
 	sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" "${SSHFS_NAME}_${SERVER_INDEX}:" "${MOUNT_POINT}"
 
@@ -105,7 +108,8 @@ fi
 [ ${SERVER_INDEX} -gt 0 ] && echo "ok" > "${TMP_FLAG}" || echo "ko" > "${TMP_FLAG}"
 
 # finished
-echo "100"
+echo 100
+
 ) | zenity --progress --auto-close --width 300 --title "Connection to ${SSHFS_LABEL}"
 
 RESULT=$(cat "${TMP_FLAG}")
