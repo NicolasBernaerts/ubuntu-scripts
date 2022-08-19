@@ -110,7 +110,7 @@ fi
 # finished
 echo 100
 
-) | zenity --progress --auto-close --width 300 --title "Connection to ${SSHFS_LABEL}"
+) | zenity --no-cancel --progress --auto-close --width 300 --title "Connection to ${SSHFS_LABEL}"
 
 RESULT=$(cat "${TMP_FLAG}")
 if [ "${RESULT}" = "ok" ]
