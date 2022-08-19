@@ -21,8 +21,11 @@ SSHFS_ACCOUNT=$(grep "^account=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
 FILE_MANAGER=$(grep "^file-manager=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
 MOUNT_POINT=$(grep "^mount-point=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
 
-(
+# generate temporary directory
+TMP_DIR=$(mktemp -t -d "sshfs-XXXXXXXX")
+TMP_FLAG="${TMP_DIR}/mount.flg"
 
+(
 # test server
 echo "5"
 echo "# Initialisation ..."
@@ -90,7 +93,7 @@ then
 	fusermount -uz "${MOUNT_POINT}"
 
 	# mount ressource
-	echo "60"
+	echo "75"
 	echo "# ${SERVER_LABEL} - Connection ..."
 	sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" "${SSHFS_NAME}_${SERVER_INDEX}:" "${MOUNT_POINT}"
 
@@ -99,13 +102,15 @@ then
 fi
 
 # if ressource has been mounted
-if [ ${SERVER_INDEX} -gt 0 ]
-then
-	# open file manager windows on the drive
-	echo "80"
-	echo "# ${SERVER_LABEL} - Launch file manager ..."
-	${FILE_MANAGER} "${MOUNT_POINT}" &
+[ ${SERVER_INDEX} -gt 0 ] && echo "ok" > "${TMP_FLAG}" || echo "ko" > "${TMP_FLAG}"
 
+# finished
+echo "100"
+) | zenity --progress --auto-close --width 300 --title "Connection to ${SSHFS_LABEL}"
+
+RESULT=$(cat "${TMP_FLAG}")
+if [ "${RESULT}" = "ok" ]
+then
 	# sucess notification
 	TEXT="${SSHFS_LABEL} is now accessible thru ${SERVER_LABEL}."
 	TITLE="${SSHFS_LABEL} mounted"
@@ -120,11 +125,10 @@ else
 fi
 
 # final notification
-echo "90"
-echo "# Notification"
 notify-send --icon="${ICON}" --expire-time=5000 "${TITLE}" "${TEXT}"
 
-# finished
-echo "100"
+# open file manager windows on the mount point
+[ "${RESULT}" = "ok" ] && "${FILE_MANAGER}" "${MOUNT_POINT}" &
 
-) | zenity --progress --auto-close --width 300 --title "Connection to ${SSHFS_LABEL}"
+# remove temporary directory
+rm -r "${TMP_DIR}"
