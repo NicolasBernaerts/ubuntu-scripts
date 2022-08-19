@@ -11,15 +11,9 @@
 logger "internet - nmap and snmp"
 sudo apt -y install nmap snmp snmp-mibs-downloader
 
-# youtube-dl + francetv patch
-wget -O youtube-dl.deb https://launchpad.net/ubuntu/+source/youtube-dl/2021.06.06-1/+build/21766807/+files/youtube-dl_2021.06.06-1_all.deb
-if [ -f ./youtube-dl.deb ]
-then
-  logger "internet - youtube downloader"
-  sudo gdebi --n ./youtube-dl.deb
-  rm ./youtube-dl.deb
-fi
-sudo wget -O '/usr/lib/python3/dist-packages/youtube_dl/extractor/francetv.py' https://github.com/ytdl-org/youtube-dl/files/7161309/francetv.py.txt
+# youtube-dl replaced by yt-dlp
+sudo wget -O "/usr/local/bin/yt-dlp" https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
+sudo chmod +x "/usr/local/bin/yt-dlp"
 
 # firefox extension manager
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
