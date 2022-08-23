@@ -18,8 +18,5 @@ firefox-extension-manager --install --user --url https://addons.mozilla.org/fr/f
 # Print Friendly and PDF
 firefox-extension-manager --install --user --url https://addons.mozilla.org/fr/firefox/addon/print-friendly-pdf/
 
-# Video DownloadHelper
-firefox-extension-manager --install --user --url https://addons.mozilla.org/fr/firefox/addon/video-downloadhelper/
-
 # Empty cache button
 firefox-extension-manager --install --user --url https://addons.mozilla.org/fr/firefox/addon/empty-cache-button/
