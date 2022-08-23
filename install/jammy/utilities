@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-# Script to install misc utilities & tools on Yammy
+# Script to install misc utilities & tools on Jammy
 #
 # 22/08/2022, v1.0 - Migrated from Focal
 # -------------------------------------------------------
