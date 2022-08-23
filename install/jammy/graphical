@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install graphical tools on Yammy
+#
+# 22/08/2022, V1.0 - Migrated from Focal
+# -------------------------------------------------------
+
+# screenshot apps
+logger "graphical - screenshot apps"
+sudo apt -y install flameshot
+
+# misc graphical apps
+logger "graphical - graphical apps"
+sudo apt -y install exiv2 dcraw
+
+# imagemagick
+sudo apt -y install imagemagick
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/imagemagisk-enable-pdf-install.sh
+if [ -f ./imagemagisk-enable-pdf-install.sh ]
+then
+  logger "graphical - ImageMagick PDF and PostScript restriction removal"
+  chmod +x ./imagemagisk-enable-pdf-install.sh
+  ./imagemagisk-enable-pdf-install.sh
+  rm ./imagemagisk-enable-pdf-install.sh
+fi
+
+# gimp
+logger "graphical - gimp"
+sudo apt -y install gimp
+
+# GIMP XCF thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-tumbnailer-install.sh
+if [ -f ./gimp-tumbnailer-install.sh ]
+then
+  logger "graphical - GIMP XCF thumbnailer"
+  chmod +x ./gimp-tumbnailer-install.sh
+  ./gimp-tumbnailer-install.sh
+  rm ./gimp-tumbnailer-install.sh
+fi
+
+# JPEG fast thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
+if [ -f ./jpeg-thumbnailer-install.sh ]
+then
+  logger "graphical - JPEG fast thumbnailer"
+  chmod +x ./jpeg-thumbnailer-install.sh
+  ./jpeg-thumbnailer-install.sh
+  rm ./jpeg-thumbnailer-install.sh
+fi
+
+# RAW pictures thumbnailer
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer-install.sh
+if [ -f ./raw-thumbnailer-install.sh ]
+then
+  logger "graphical - RAW pictures thumbnailer"
+  chmod +x ./raw-thumbnailer-install.sh
+  ./raw-thumbnailer-install.sh
+  rm ./raw-thumbnailer-install.sh
+fi
+
+# HEIF support
+sudo apt install heif-thumbnailer libheif-examples
+
+# scan2folder tool
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/scanner/scan2folder-install.sh
+if [ -f ./scan2folder-install.sh ]
+then
+  logger "graphical - scan2folder"
+  chmod +x ./scan2folder-install.sh
+  ./scan2folder-install.sh
+  rm ./scan2folder-install.sh
+fi
+
+# Nautilus : Image convert extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
+if [ -f ./image-convert-install.sh ]
+then
+  logger "graphical - Image convert extension"
+  chmod +x ./image-convert-install.sh
+  ./image-convert-install.sh
+  rm ./image-convert-install.sh
+fi
+
+# Nautilus : Image resize extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
+if [ -f ./image-resize-install.sh ]
+then
+  logger "graphical - Image resize extension"
+  chmod +x ./image-resize-install.sh
+  ./image-resize-install.sh
+  rm ./image-resize-install.sh
+fi
+
+# Nautilus : Image rotate extension
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-rotate-install.sh
+if [ -f ./image-rotate-install.sh ]
+then
+  logger "graphical - Image rotate extension"
+  chmod +x ./image-rotate-install.sh
+  ./image-rotate-install.sh
+  rm ./image-rotate-install.sh
+fi
+
+# Nautilus : EXIF extensions
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-exif-install.sh
+if [ -f ./nautilus-exif-install.sh ]
+then
+  logger "graphical - Nautilus EXIF extensions"
+  chmod +x ./nautilus-exif-install.sh
+  ./nautilus-exif-install.sh
+  rm ./nautilus-exif-install.sh
+fi
