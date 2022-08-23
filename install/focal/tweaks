@@ -18,8 +18,8 @@ sudo systemctl disable apport.service
 sudo apt -y remove apport apport-gtk
 
 # RTL8188EE : Solves wifi issues on Lenovo Ideapad 110 by blacklisting ideapad module
-#HAS_RTL8188EE=$(lspci | grep "RTL8188EE")
-#[ "${HAS_RTL8188EE}" != "" ] && echo "blacklist ideapad_laptop" | sudo tee /etc/modprobe.d/ideapad.conf
+HAS_RTL8188EE=$(lspci | grep "RTL8188EE")
+[ "${HAS_RTL8188EE}" != "" ] && echo "blacklist ideapad_laptop" | sudo tee /etc/modprobe.d/ideapad.conf
 
 # disable trackpad while typing
 wget -O $HOME/.config/autostart/syndaemon.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/syndaemon.desktop
