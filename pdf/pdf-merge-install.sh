@@ -7,11 +7,11 @@ sudo apt -y install python3-nautilus
 sudo apt -y install imagemagick unoconv ghostscript
 
 # remove files from previous version
-sudo rm --force /usr/local/bin/pdf-generate
-sudo rm --force /usr/share/applications/pdf-generate.desktop
-sudo rm --force /usr/share/applications/pdf-generate-action.desktop
-rm --force $HOME/.local/share/file-manager/actions/pdf-generate.desktop
-rm --force $HOME/.local/share/file-manager/actions/pdf-generate-action.desktop
+[ -f "/usr/local/bin/pdf-generate" ] && sudo rm "/usr/local/bin/pdf-generate"
+[ -f "/usr/share/applications/pdf-generate.desktop" ] && sudo rm "/usr/share/applications/pdf-generate.desktop"
+[ -f "/usr/share/applications/pdf-generate-action.desktop" ] && sudo rm "/usr/share/applications/pdf-generate-action.desktop"
+[ -f "$HOME/.local/share/file-manager/actions/pdf-generate.desktop" ] && rm "$HOME/.local/share/file-manager/actions/pdf-generate.desktop"
+[ -f "$HOME/.local/share/file-manager/actions/pdf-generate-action.desktop" ] && rm "$HOME/.local/share/file-manager/actions/pdf-generate-action.desktop"
 
 # if needed, remove imagemagick PDF generation restrictions
 if [ ! -f "/etc/apt/apt.conf.d/99imagemagick-enable-pdf" ]
@@ -27,7 +27,6 @@ then
 fi
 
 # show icon in menus (command different according to gnome version)
-gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
