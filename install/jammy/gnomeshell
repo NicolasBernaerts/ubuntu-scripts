@@ -90,3 +90,7 @@ sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
 logger "gnome-shell - default extensions"
 # Refresh Wifi Connections : adds a refresh button to the Wifi connection selection dialog
 gnomeshell-extension-manage --install --user --extension-id 905 --version latest
+# Application menu
+gnomeshell-extension-manage --install --user --extension-id 6 --version latest
+# Open weather
+gnomeshell-extension-manage --install --user --extension-id 750 --version latest
