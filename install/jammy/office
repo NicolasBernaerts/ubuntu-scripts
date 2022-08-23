@@ -15,11 +15,7 @@ sudo apt -y upgrade
 
 # grisbi
 logger "office - grisbi"
-wget -O grisbi-common.deb https://sourceforge.net/projects/grisbi/files/grisbi%20stable/2.0.x/2.0.5/Ubuntu%2020.04/grisbi-common_2.0.5-1_all.deb/download
-wget -O grisbi.deb https://sourceforge.net/projects/grisbi/files/grisbi%20stable/2.0.x/2.0.5/Ubuntu%2020.04/grisbi_2.0.5-1_amd64.deb/download
-sudo gdebi --n ./grisbi-common.deb
-sudo gdebi --n ./grisbi.deb
-rm ./grisbi-common.deb ./grisbi.deb
+sudo apt install grisbi
 
 # tesseract-ocr client and french langage
 logger "office - tesseract-ocr"
