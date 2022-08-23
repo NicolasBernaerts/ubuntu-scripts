@@ -36,7 +36,7 @@ fi
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install main menu icon
-sudo wget -O /usr/share/icons/pdf-menu.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/icon/pdf/pdf-menu.png
+sudo wget -O /usr/share/icons/pdf-menu.png https://github.com/NicolasBernaerts/icon/raw/master/pdf/pdf-menu.png
 
 # desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
@@ -47,7 +47,7 @@ wget -O $HOME/.local/share/nautilus-python/extensions/pdf-tools-menu.py https://
 # -----------------
 
 # install icon
-sudo wget -O /usr/share/icons/pdf-compress.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/icon/pdf/pdf-compress.png
+sudo wget -O /usr/share/icons/pdf-compress.png https://github.com/NicolasBernaerts/icon/raw/master/pdf/pdf-compress.png
 
 # install main script
 sudo wget -O /usr/local/bin/pdf-compress https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-compress
@@ -58,7 +58,7 @@ sudo chmod +x /usr/local/bin/pdf-compress
 # -----------------
 
 # install icon
-sudo wget -O /usr/share/icons/pdf-repair.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/icon/pdf/pdf-repair.png
+sudo wget -O /usr/share/icons/pdf-repair.png https://github.com/NicolasBernaerts/icon/raw/master/pdf/pdf-repair.png
 
 # install main script
 sudo wget -O /usr/local/bin/pdf-repair https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-repair
