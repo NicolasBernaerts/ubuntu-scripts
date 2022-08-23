@@ -3,7 +3,7 @@
 # Script to install Microsoft Surface kernel and tools
 # Based on https://github.com/linux-surface/linux-surface/wiki/Installation-and-Setup
 #
-# 10/02/2021, V1.0 - Creation by N. Bernaerts
+# 22/08/2022, V1.0 - Migration from focal
 # -------------------------------------------------------
 
 # import the keys we use to sign packages
@@ -19,7 +19,7 @@ sudo apt update
 sudo apt install linux-image-surface linux-headers-surface iptsd libwacom-surface
 
 # enable the iptsd service for touchscreen support
-sudo systemctl enable iptsd
+#sudo systemctl enable iptsd
 
 # import the key that the linux-surface kernel is signed with into your bootloader, so that the kernel is bootable without disabling secureboot
 sudo apt install linux-surface-secureboot-mok
