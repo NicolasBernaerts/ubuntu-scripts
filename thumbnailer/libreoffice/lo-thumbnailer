@@ -21,6 +21,7 @@
 # 12/03/2018, V3.1 - Handle libreoffice and soffice binaries
 # 08/11/2018, V3.2 - Handle gio and gvfs-copy tools
 # 11/12/2018, V3.3 - Rework for bubblewrap compatibility (thanks to Li Chong)
+# 22/08/2012, V3.4 - Fix libreoffice content size to 256x256
 # ---------------------------------------------------
 
 # check libreoffice availability
@@ -66,7 +67,7 @@ IS_ZIPPED=$(file -ib "${FILE_LOCAL}" | cut -d';' -f2 | grep "binary")
 if [ "${IS_ZIPPED}" != "" ]
 then
 	# extract thumbnail from zipped document
-	unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | pngtopnm > "${TMP_PNM}"
+	unzip -p "${FILE_LOCAL}" "Thumbnails/thumbnail.png" | pngtopnm | pnmscalefixed -xysize 256 256 - > "${TMP_PNM}"
 
 # else, file is a flat one, generate thumbnail
 else
