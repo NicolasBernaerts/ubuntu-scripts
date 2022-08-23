@@ -2,8 +2,7 @@
 # -------------------------------------------------------
 # Script to install office tools on Focal
 #
-# 30/05/2020, V1.0 - Migrated from Bionic
-# 15/08/2022, V1.1 - Add FSearch
+# 22/08/2022, V1.0 - Migrated from Focal
 # -------------------------------------------------------
 
 # HP printer GUI 
