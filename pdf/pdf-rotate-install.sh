@@ -2,18 +2,17 @@
 # Install PDF rotate extension
 # Uses Nautilus and Python3 wrapper
 
+# remove files from previous version
+[ -f "/usr/share/applications/pdf-rotate.desktop" ] && sudo rm "/usr/share/applications/pdf-rotate.desktop"
+sudo rm --force /usr/share/applications/pdf-rotate-*.desktop
+rm --force $HOME/.local/share/file-manager/actions/pdf-rotate-*.desktop
+
 # main packages installation
 sudo apt update
 sudo apt -y install python3-nautilus
 sudo apt -y install texlive-extra-utils
 
-# remove files from previous version
-sudo rm --force /usr/share/applications/pdf-rotate.desktop
-sudo rm --force /usr/share/applications/pdf-rotate-*.desktop
-rm --force $HOME/.local/share/file-manager/actions/pdf-rotate-*.desktop
-
 # show icon in menus (command different according to gnome version)
-gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
