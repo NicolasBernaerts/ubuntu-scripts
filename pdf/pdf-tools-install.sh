@@ -6,16 +6,18 @@
 DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
+# remove files from previous version
+[ -f "/usr/share/applications/pdf-repair.desktop" ] && sudo rm "/usr/share/applications/pdf-repair.desktop"
+[ -f "/usr/share/applications/pdf-repair-action.desktop" ] && sudo rm "/usr/share/applications/pdf-repair-action.desktop"
+[ -f "/usr/share/applications/pdf-compress.desktop" ] && sudo rm "/usr/share/applications/pdf-compress.desktop"
+[ -f "/usr/share/applications/pdf-compress-action.desktop" ] && sudo rm "/usr/share/applications/pdf-compress-action.desktop"
+[ -f "$HOME/.local/share/file-manager/actions/pdf-compress-action.desktop" ] && rm "$HOME/.local/share/file-manager/actions/pdf-compress-action.desktop"
+[ -f "$HOME/.local/share/file-manager/actions/pdf-repair-action.desktop" ] && rm "$HOME/.local/share/file-manager/actions/pdf-repair-action.desktop"
+
 # main packages installation
 sudo apt -y install python3-nautilus
 sudo apt -y install imagemagick texlive-extra-utils
 sudo apt -y install ghostscript mupdf-tools
-
-# remove files from previous version
-sudo rm --force /usr/share/applications/pdf-repair.desktop /usr/share/applications/pdf-repair-action.desktop
-sudo rm --force /usr/share/applications/pdf-compress.desktop /usr/share/applications/pdf-compress-action.desktop
-rm --force $HOME/.local/share/file-manager/actions/pdf-compress-action.desktop
-rm --force $HOME/.local/share/file-manager/actions/pdf-repair-action.desktop
 
 # if needed, remove imagemagick PDF generation restrictions
 if [ ! -f "/etc/apt/apt.conf.d/99imagemagick-enable-pdf" ]
@@ -31,7 +33,6 @@ then
 fi
 
 # show icon in menus (command different according to gnome version)
-gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install main menu icon
