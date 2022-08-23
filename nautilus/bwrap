@@ -6,13 +6,11 @@
 # intialise parameters array
 ARR_PARAM=( )
 
-# since editing /usr/local/bin requires root privilege, we can trust it
-[ -d "/usr/local/bin" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/usr/local/bin" "/usr/local/bin" )
-
-# add both --ro-bind needed by thumbnailers using imagemagick tools
-[ -d "/etc/alternatives" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/alternatives" "/etc/alternatives" )
-[ -d "/etc/ImageMagick-6" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc/ImageMagick-6" "/etc/ImageMagick-6" )
-[ -d "/var/cache/fontconfig" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache/fontconfig" "/var/cache/fontconfig" )
+# add read only access to /usr/local, /var/lib, /var/cache and /etc
+[ -d "/usr/local" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/usr/local" "/usr/local" )
+[ -d "/var/lib" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/lib" "/var/lib" )
+[ -d "/var/cache" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/var/cache" "/var/cache" )
+[ -d "/etc" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--ro-bind" "/etc" "/etc" )
 
 # if exists, enable $TMPDIR
 [ -n "${TMPDIR}" ] && [ -d "${TMPDIR}" ] && ARR_PARAM=( "${ARR_PARAM[@]}" "--bind" "${TMPDIR}" "${TMPDIR}" )
