@@ -16,18 +16,14 @@ sudo apt -y install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter
 
 # misc audio tools
 logger "multimedia - audio tools"
-sudo apt -y install soundconverter lame easytag id3v2
-sudo snap install mp3gain
+sudo apt -y install soundconverter lame easytag id3v2 mp3gain
 
 # AAC Gain
-sudo add-apt-repository -y ppa:robert-tari/main
-sudo apt -y install aacgain
+sudo snap install aacgain
 
 # CD ripping
 logger "multimedia - cd ripping"
 sudo apt -y install asunder
-
-# easymp3gain
 
 # audacity
 logger "multimedia - audacity"
@@ -39,12 +35,10 @@ sudo apt -y install mkvtoolnix mkvtoolnix-gui
 
 # handbrake video transcoder
 logger "multimedia - handbrake"
-sudo add-apt-repository -y ppa:stebbins/handbrake-releases
-sudo apt -y install handbrake-gtk
+sudo apt -y install handbrake libdvdcss2
 
 # kdenlive video editor
 logger "multimedia - kdenlive"
-sudo add-apt-repository -y ppa:kdenlive/kdenlive-stable
 sudo apt -y install kdenlive
 
 # audio recorder
