@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-# Script to apply different tweaks for Focal
+# Script to apply different tweaks for Jammy
 #
 # 22/08/2022, V1.0 - Migrated from Focal
 # ------------------------------------------------------
