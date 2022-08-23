@@ -17,8 +17,6 @@ sudo apt -y install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter
 # misc audio tools
 logger "multimedia - audio tools"
 sudo apt -y install soundconverter lame easytag id3v2 mp3gain
-
-# AAC Gain
 sudo snap install aacgain
 
 # CD ripping
