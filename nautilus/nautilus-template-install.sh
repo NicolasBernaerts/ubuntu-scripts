@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Declaration of empty document models for Nautilus
-# Tested on Ubuntu 18.04 and 20.04 LTS
+# Tested on Ubuntu 18.04, 20.04 and 22.04 LTS
 
 # get templates user path
 DIR_TEMPLATE=$(xdg-user-dir TEMPLATES)
