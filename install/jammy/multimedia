@@ -50,7 +50,7 @@ sudo snap install vlc
 
 # Convert video to MKV container and transcode audio to AAC
 logger "multimedia - convert video to MKV"
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac-install.sh
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac-install.sh
 chmod +x ./video-convert2mkvaac-install.sh
 ./video-convert2mkvaac-install.sh
 rm ./video-convert2mkvaac-install.sh
