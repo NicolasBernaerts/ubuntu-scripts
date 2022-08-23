@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
 # Script to configure GnomeShell environment 
-#   for Focal 20.04 LTS
+#   for Jammy 22.04 LTS
 #
-# 10/05/2020, V1.0 - Migrate from Bionic
-# 30/05/2020, V1.1 - Add gnome-system-tools
+# 22/08/2022, V1.0 - Migrate from Focal
 # -------------------------------------------------------
 
 # install gnome system tools to manage users and groups
