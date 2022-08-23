@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to apply different tweaks for Focal
+#
+# 22/05/2020, V1.0 - Migrated from Bionic
+# ------------------------------------------------------
+
+# force Google DNS servers on DHCP networks
+echo "DNS=8.8.8.8 8.8.4.4" | sudo tee -a /etc/systemd/resolved.conf
+echo "Cache=no" | sudo tee -a /etc/systemd/resolved.conf
+
+# SSH keepalive
+echo "ClientAliveInterval 30" | sudo tee -a /etc/ssh/sshd_config
+echo "ClientAliveCountMax 2" | sudo tee -a /etc/ssh/sshd_config
+
+# disable apport crash report
+sudo systemctl disable apport.service
+sudo apt -y remove apport apport-gtk
+
+# RTL8188EE : Solves wifi issues on Lenovo Ideapad 110 by blacklisting ideapad module
+#HAS_RTL8188EE=$(lspci | grep "RTL8188EE")
+#[ "${HAS_RTL8188EE}" != "" ] && echo "blacklist ideapad_laptop" | sudo tee /etc/modprobe.d/ideapad.conf
+
+# disable trackpad while typing
+wget -O $HOME/.config/autostart/syndaemon.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/syndaemon.desktop
