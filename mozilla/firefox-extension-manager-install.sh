@@ -1,5 +1,5 @@
 #!/bin/sh
-# Mozilla Firefoxcommandline extension
+# Mozilla Firefox command line extension installation handler
 
 # install main script
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/firefox-extension-manager https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager
