@@ -23,24 +23,6 @@ then
   rm ./firefox-extension-manager-install.sh
 fi
 
-# firefox gnomeshell extensions integration
-firefox-extension-manager --install --user --url https://addons.mozilla.org/en-US/firefox/addon/gnome-shell-integration/
-sudo apt -y install chrome-gnome-shell
-
-# firefox downloadhelper extension
-HELPER_URL=$(wget -O - https://github.com/mi-g/vdhcoapp/releases | grep "vdhcoapp/releases/download/" | grep "amd64.deb" | head -n 1 | cut -d'"' -f2)
-wget -O downloadhelper.deb "https://github.com${HELPER_URL}"
-if [ -f ./downloadhelper.deb ]
-then
-  logger "internet - firefox downloadhelper extension"
-  sudo gdebi --n ./downloadhelper.deb
-  rm ./downloadhelper.deb
-fi
-
-# thunderbird lightning calendar
-logger "internet - thunderbird lightning"
-sudo apt -y install xul-ext-lightning
-
 # chromium and filezilla
 logger "internet - chromium & filezilla"
 sudo apt -y install chromium-browser filezilla
@@ -48,15 +30,6 @@ sudo apt -y install chromium-browser filezilla
 # telegram
 logger "internet - telegram"
 sudo apt -y install telegram-desktop
-
-# skype
-wget https://repo.skype.com/latest/skypeforlinux-64.deb
-if [ -f ./skypeforlinux-64.deb ]
-then
-  logger "internet - Skype"
-  sudo gdebi --n ./skypeforlinux-64.deb
-  rm ./skypeforlinux-64.deb
-fi
 
 # Google drive Ocam
 sudo add-apt-repository -y ppa:alessandro-strada/ppa
@@ -66,10 +39,7 @@ sudo chmod +x /usr/local/bin/gdrive-mount
 
 # Syncthing (release channel)
 logger "internet - Syncthing"
-curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
-echo "deb http://apt.syncthing.net/ syncthing release" | sudo tee /etc/apt/sources.list.d/syncthing.list
-sudo apt update
-sudo apt -y install syncthing
+sudo apt install syncthing
 sudo systemctl enable syncthing@${USER}.service
 sudo systemctl start syncthing@${USER}.service
 mkdir --parents $HOME/.local/share/icons
