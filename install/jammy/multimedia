@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
-# Script to install multimedia tools for Yammy
+# Script to install multimedia tools for Jammy
 #
 # 23/08/2022, V1.0 - Migrated from Focal
 # -------------------------------------------------------
