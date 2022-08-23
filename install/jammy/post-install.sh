@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------------
-#  Ubuntu Yammy 22.04 LTS Post-installation script
+#  Ubuntu Jammy 22.04 LTS Post-installation script
 #
 #  This script will run some commands as sudo
 # 
@@ -12,7 +12,7 @@
 # ---------------------------------------------------
 
 
-DISTRI_NAME="yammy"
+DISTRI_NAME="jammy"
 ARCHI="amd64"
 X86ARCHI="64"
 
