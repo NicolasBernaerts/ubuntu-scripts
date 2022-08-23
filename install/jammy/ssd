@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to tweak configuration for SSD disks for Jammy
+#
+# 23/08/2022, V1.0 - Migrated from Focal
+# -------------------------------------------------------
+
+# add noatime parameters to partitions
+logger "ssd - noatime"
+sudo sed -i "s/errors=remount-ro/noatime,errors=remount-ro/g" /etc/fstab
+
+# if needed, set triming
+logger "ssd - triming"
+if [ ! -f "/etc/cron.weekly/fstrim" ]
+then
+  echo "#!/bin/bash" | sudo tee -a /etc/cron.weekly/fstrim
+  echo "# trim all mounted filesystems" | sudo tee -a /etc/cron.weekly/fstrim
+  echo "/sbin/fstrim --all" | sudo tee -a /etc/cron.weekly/fstrim
+  sudo chmod +x /etc/cron.weekly/fstrim
+fi
+
+# almost disable swapiness
+logger "ssd - swapiness"
+echo " " | sudo tee -a /etc/sysctl.conf
+echo "# minimize swap use to a minimum" | sudo tee -a /etc/sysctl.conf
+echo "vm.swappiness=1" | sudo tee -a /etc/sysctl.conf
