@@ -34,7 +34,7 @@ gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 48
 gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
 gsettings set org.gnome.shell.extensions.dash-to-dock autohide-in-fullscreen true
 gsettings set org.gnome.shell.extensions.dash-to-dock transparency-mode FIXED
-gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 0
+gsettings set org.gnome.shell.extensions.dash-to-dock background-opacity 0.25
 
 # enable middle and right click on lower area
 gsettings set org.gnome.desktop.peripherals.touchpad click-method 'areas'
