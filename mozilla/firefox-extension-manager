@@ -10,8 +10,9 @@
 #  17/07/2018  V1.0 - Complete rewrite of mozilla-extension-manager, thanks to Michael Courvoisier
 #                     For older Firefox versions, use mozilla-extension-manager
 #                     This script doesn't handle Thunderbird extensions anymore.
-#  15/09/2018  V1.1 - Automatic creation of user profile extension path (thanks to Michael Courvoisier)
+#  01/09/2018  V1.1 - Automatic creation of user profile extension path (thanks to Michael Courvoisier)
 #  15/09/2018  V1.2 - Add --allow-create to create user profile (idea from Michael Courvoisier)
+#  22/08/2022  V1.3 - Handle normal and snap install
 # --------------------------------------------------------------------------------------------------
 
 # -------------------------------------------------------
@@ -20,7 +21,6 @@
 
 command -v unzip >/dev/null 2>&1 || { echo "Please install unzip"; exit 1; }
 command -v wget >/dev/null 2>&1 || { echo "Please install wget"; exit 1; }
-
 
 # --------------
 #   Functions
@@ -146,8 +146,8 @@ TMP_XPI="${TMP_DIR}/addon.xpi"
 #   Set user mode environment
 # ------------------------------------
 
-# set user space installation path
-USER_HOME="$HOME/.mozilla/firefox"
+# set home directory for normal or snap install
+[ ! -d "$HOME/snap/firefox" ] && USER_HOME="$HOME/snap/firefox/common/.mozilla/firefox" || USER_HOME="$HOME/.mozilla/firefox"
 
 # if user home environment absent, launch firefox for the first time to create it (if allowed)
 if [ ! -d "${USER_HOME}" -a "${ALLOW}" = "create" ]
