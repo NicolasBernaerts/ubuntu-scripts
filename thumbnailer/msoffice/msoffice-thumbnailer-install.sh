@@ -6,7 +6,7 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # install tools
-sudo apt-get -y install libfile-mimeinfo-perl gvfs-bin netpbm
+sudo apt-get -y install libfile-mimeinfo-perl netpbm
 
 # install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
 sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
