@@ -1,0 +1,59 @@
+#!/bin/bash
+# ---------------------------------------------------------------
+# KeePassXC SSHFS wrapper
+#
+# Script should be placed under /usr/local/bin/keepassxc
+#
+# SSHFS configuration is stored in $HOME/.config/keepassxc-sshfs.conf
+# It should include following keys :
+#   server=your-server
+#   port=your-port
+#   user=your-user
+#
+# Before first connexion, make sure to generate a key exchange
+# by running following command on your PC :
+#
+#   ssh-copy-id -p your-port your-user@your-server
+#
+# History
+#   27/08/2022, V1.0 - Creation
+# ---------------------------------------------------------------
+
+# configuration file
+SSHFS_CONFIG="$HOME/.config/keepassxc-sshfs.conf"
+[ ! -f "${SSHFS_CONFIG}" ] && { yad --center --no-buttons --close-on-unfocus --image=error --text="\nConfiguration file absent\n\n${SSHFS_CONFIG}"; exit 1; }
+
+# check tools availability
+command -v sshfs >/dev/null 2>&1 || { yad --center --no-buttons --close-on-unfocus --image=error --text="\nPlease install sshfs"; exit 1; }
+
+# mount point
+SSH_MOUNT="$HOME/keepass"
+[ ! -d "${SSH_MOUNT}" ] && mkdir --parent "${SSH_MOUNT}"
+
+# get uid and gui
+USER_UID=$(id -u)
+USER_GID=$(id -g)
+
+# retreive SSHFS configuration
+SSH_SERVER=$(grep "server=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
+SSH_PORT=$(grep "port=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
+SSH_USER=$(grep "user=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
+
+# unmount any previous mount
+SSH_MOUNTED=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
+[ "${SSH_MOUNTED}" != "" ] && fusermount -uz "${SSH_MOUNT}"
+
+# mount ressource
+sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" -p ${SSH_PORT} "${SSH_USER}@${SSH_SERVER}:" "${SSH_MOUNT}" 
+
+# check ressource
+SSH_MOUNTED=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
+[ "${SSH_MOUNTED}" = "" ] && { yad --center --no-buttons --close-on-unfocus --image=error --text="\nImpossible to mount SSHFS ressource"; exit 1; }
+
+# launch keepassxc
+/usr/bin/keepassxc
+
+# umount ressource
+fusermount -uz "${SSH_MOUNT}"
+
+
