@@ -9,6 +9,7 @@
 #   server=your-server
 #   port=your-port
 #   user=your-user
+#   mount=mount-directory-in-your-home-directory
 #
 # Before first connexion, make sure to generate a key exchange
 # by running following command on your PC :
@@ -26,10 +27,6 @@ SSHFS_CONFIG="$HOME/.config/keepassxc-sshfs.conf"
 # check tools availability
 command -v sshfs >/dev/null 2>&1 || { yad --center --no-buttons --close-on-unfocus --image=error --text="\nPlease install sshfs"; exit 1; }
 
-# mount point
-SSH_MOUNT="$HOME/keepass"
-[ ! -d "${SSH_MOUNT}" ] && mkdir --parent "${SSH_MOUNT}"
-
 # get uid and gui
 USER_UID=$(id -u)
 USER_GID=$(id -g)
@@ -38,21 +35,27 @@ USER_GID=$(id -g)
 SSH_SERVER=$(grep "server=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
 SSH_PORT=$(grep "port=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
 SSH_USER=$(grep "user=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
+SSH_MOUNT=$(grep "mount=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
 
-# check is ressource is already mounted
+# set mount point
+[ "${SSH_MOUNT}" = "" ] && SSH_MOUNT="keepass"
+SSH_MOUNT="$HOME/${SSH_MOUNT}"
+
+# check if mount point exist
+[ -d "$HOME/${SSH_MOUNT}" ] && SSH_DIR_EXIST="ok"
+
+# check if ressource is already mounted
+SSH_MOUNT_EXIST=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
+
+# if needed, create directory and mount ressource
+[ "${SSH_DIR_EXIST}" = "" ] && mkdir --parent "${SSH_MOUNT}"
+[ "${SSH_MOUNT_EXIST}" = "" ] && sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" -p ${SSH_PORT} "${SSH_USER}@${SSH_SERVER}:" "${SSH_MOUNT}" 
+
+# if ressource is available, launch keepassxc, else error message
 SSH_MOUNTED=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
+[ "${SSH_MOUNTED}" != "" ] && /usr/bin/keepassxc || { yad --center --no-buttons --close-on-unfocus --image=error --text="\nImpossible to mount SSHFS ressource"; exit 1; }
 
-# if not mounted, mount the ressource
-[ "${SSH_MOUNTED}" = "" ] && sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" -p ${SSH_PORT} "${SSH_USER}@${SSH_SERVER}:" "${SSH_MOUNT}" 
-
-# check if ressource is available
-IS_AVAILABLE=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
-[ "${IS_AVAILABLE}" = "" ] && { yad --center --no-buttons --close-on-unfocus --image=error --text="\nImpossible to mount SSHFS ressource"; exit 1; }
-
-# launch keepassxc
-/usr/bin/keepassxc
-
-# umount ressource if not previously mounted
-[ "${SSH_MOUNTED}" = "" ] && fusermount -uz "${SSH_MOUNT}"
-
+# if needed, cleanup environment
+[ "${SSH_MOUNT_EXIST}" = "" -a "${SSH_MOUNTED}" != "" ] && fusermount -uz "${SSH_MOUNT}"
+[ "${SSH_DIR_EXIST}" = "" ] && rmdir "${SSH_MOUNT}"
 
