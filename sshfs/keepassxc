@@ -39,21 +39,20 @@ SSH_SERVER=$(grep "server=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
 SSH_PORT=$(grep "port=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
 SSH_USER=$(grep "user=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d '\r')
 
-# unmount any previous mount
+# check is ressource is already mounted
 SSH_MOUNTED=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
-[ "${SSH_MOUNTED}" != "" ] && fusermount -uz "${SSH_MOUNT}"
 
-# mount ressource
-sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" -p ${SSH_PORT} "${SSH_USER}@${SSH_SERVER}:" "${SSH_MOUNT}" 
+# if not mounted, mount the ressource
+[ "${SSH_MOUNTED}" = "" ] && sshfs -o "reconnect,uid=${USER_UID},gid=${USER_GID}" -p ${SSH_PORT} "${SSH_USER}@${SSH_SERVER}:" "${SSH_MOUNT}" 
 
-# check ressource
-SSH_MOUNTED=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
-[ "${SSH_MOUNTED}" = "" ] && { yad --center --no-buttons --close-on-unfocus --image=error --text="\nImpossible to mount SSHFS ressource"; exit 1; }
+# check if ressource is available
+IS_AVAILABLE=$(mount | grep "sshfs" | grep "${SSH_MOUNT}") 
+[ "${IS_AVAILABLE}" = "" ] && { yad --center --no-buttons --close-on-unfocus --image=error --text="\nImpossible to mount SSHFS ressource"; exit 1; }
 
 # launch keepassxc
 /usr/bin/keepassxc
 
-# umount ressource
-fusermount -uz "${SSH_MOUNT}"
+# umount ressource if not previously mounted
+[ "${SSH_MOUNTED}" = "" ] && fusermount -uz "${SSH_MOUNT}"
 
 
