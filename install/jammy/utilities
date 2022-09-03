@@ -5,6 +5,11 @@
 # 22/08/2022, v1.0 - Migrated from Focal
 # -------------------------------------------------------
 
+# htop and iotop
+logger "utilities - htop and iotop"
+sudo apt -y install htop iotop
+
+
 # zeroconf tools
 logger "utilities - zeroconf"
 sudo apt -y install avahi-daemon avahi-discover libnss-mdns
