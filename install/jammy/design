@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install design tools on Jammy
+#
+# 03/09/2022, V1.0 - Migration from Focal
+# -------------------------------------------------------
+
+# hugin panorama
+logger "graphical - hugin panorama"
+sudo add-apt-repository -y ppa:ubuntuhandbook1/apps
+sudo apt update
+sudo apt -y install hugin
+
+# darktable
+logger "graphical - darktable"
+sudo apt -y install darktable
+
+# krita
+logger "graphical - krita"
+sudo add-apt-repository -y ppa:kritalime/ppa
+sudo apt -y install krita
+
+# Luminance HDR and RAW Therapee
+logger "graphical - Luminance HDR & RAW Therapee"
+#sudo apt -y install luminance-hdr
+sudo apt -y install rawtherapee
+
+# Sweet Home 3D
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
+if [ -f ./sweethome3d-install.sh ]
+then
+  logger "graphical - Sweet Home 3D"
+  chmod +x ./sweethome3d-install.sh
+  ./sweethome3d-install.sh
+  rm ./sweethome3d-install.sh
+fi
