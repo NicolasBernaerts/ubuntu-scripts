@@ -33,7 +33,7 @@ sudo apt -y install mkvtoolnix mkvtoolnix-gui
 
 # handbrake video transcoder
 logger "multimedia - handbrake"
-sudo apt -y install handbrake libdvdcss2
+sudo apt -y install handbrake
 
 # kdenlive video editor
 logger "multimedia - kdenlive"
