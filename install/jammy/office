@@ -15,7 +15,7 @@ sudo apt -y upgrade
 
 # grisbi
 logger "office - grisbi"
-sudo apt install grisbi
+sudo apt -y install grisbi
 
 # tesseract-ocr client and french langage
 logger "office - tesseract-ocr"
