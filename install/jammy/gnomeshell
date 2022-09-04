@@ -12,6 +12,7 @@ sudo apt -y install gnome-system-tools
 
 # install gnome shell extensions
 logger "gnome-shell - gnome shell extensions"
+sudo apt -y install gnome-shell-extension-manager
 sudo apt -y install gnome-shell-extensions
 
 # install gnome sushi (space bar preview) 
