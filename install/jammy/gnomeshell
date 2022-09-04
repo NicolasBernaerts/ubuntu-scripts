@@ -3,7 +3,8 @@
 # Script to configure GnomeShell environment 
 #   for Jammy 22.04 LTS
 #
-# 22/08/2022, V1.0 - Migrate from Focal
+# 22/08/2022, v1.0 - Migrate from Focal
+# 04/09/2022, v1.1 - Add gnome-shell-extension-manager
 # -------------------------------------------------------
 
 # install gnome system tools to manage users and groups
