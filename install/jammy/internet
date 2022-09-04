@@ -2,16 +2,20 @@
 # ----------------------------------------------------------------
 # Script to install internet tools on Jammy
 #
-# 22/08/2022, V1.0 - Migrated from Focal
+# 22/08/2022, v1.0 - Migrated from Focal
+# 04/09/2022, v1.1 - Replace Firefox snap by Mozilla PPA
 # ----------------------------------------------------------------
 
 # network tools
 logger "internet - nmap and snmp"
 sudo apt -y install nmap snmp snmp-mibs-downloader
 
-# youtube-dl replaced by yt-dlp
-sudo wget -O "/usr/local/bin/yt-dlp" https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
-sudo chmod +x "/usr/local/bin/yt-dlp"
+# replace snap firefox by official mozilla deb
+echo "Package: *" | sudo tee /etc/apt/preferences.d/mozilla-firefox
+echo "Pin: release o=LP-PPA-mozillateam" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
+echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
+echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+sudo apt -y install firefox
 
 # firefox extension manager
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
@@ -22,6 +26,10 @@ then
   ./firefox-extension-manager-install.sh
   rm ./firefox-extension-manager-install.sh
 fi
+
+# youtube-dl replaced by yt-dlp
+sudo wget -O "/usr/local/bin/yt-dlp" https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
+sudo chmod +x "/usr/local/bin/yt-dlp"
 
 # chromium and filezilla
 logger "internet - chromium & filezilla"
