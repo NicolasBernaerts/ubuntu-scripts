@@ -2,11 +2,21 @@
 # -------------------------------------------------------
 # Script to install office tools on Jammy
 #
-# 22/08/2022, V1.0 - Migrated from Focal
+# 22/08/2022, v1.0 - Migrated from Focal
+# 06/09/2022, v1.1 - Add Master PDF Editor 4
 # -------------------------------------------------------
 
 # HP printer GUI 
 sudo apt -y install hplip-gui
+
+# master PDF editor
+wget -O master-pdf-editor.deb https://code-industry.net/public/master-pdf-editor-4.3.89_qt5.amd64.deb
+if [ -f ./master-pdf-editor.deb ]
+then
+  logger "office - Master PDF Editor"
+  sudo gdebi -n ./master-pdf-editor.deb
+  rm ./master-pdf-editor.deb
+fi
 
 # libreoffice PPA
 logger "office - libreoffice"
