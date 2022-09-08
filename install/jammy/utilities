@@ -3,12 +3,16 @@
 # Script to install misc utilities & tools on Jammy
 #
 # 22/08/2022, v1.0 - Migrated from Focal
+# 07/09/2022, v1.1 - Add gtkterm
 # -------------------------------------------------------
 
 # htop and iotop
 logger "utilities - htop and iotop"
 sudo apt -y install htop iotop
 
+# serial terminal client
+sudo usermod -aG dialout ${USERNAME}
+sudo apt -y install gtkterm
 
 # zeroconf tools
 logger "utilities - zeroconf"
