@@ -11,10 +11,12 @@ logger "internet - nmap and snmp"
 sudo apt -y install nmap snmp snmp-mibs-downloader
 
 # replace snap firefox by official mozilla deb
+sudo snap remove --purge firefox
 echo "Package: *" | sudo tee /etc/apt/preferences.d/mozilla-firefox
 echo "Pin: release o=LP-PPA-mozillateam" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
 echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
 echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+sudo add-apt-repository -y ppa:mozillateam/ppa
 sudo apt -y install firefox
 
 # firefox extension manager
