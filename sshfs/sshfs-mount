@@ -19,10 +19,10 @@ command -v nmap >/dev/null 2>&1 || { zenity --error --text="Please install nmap"
 command -v sshfs >/dev/null 2>&1 || { zenity --error --text="Please install sshfs"; exit 1; }
 
 # retreive SSHFS configuration
-SSHFS_LABEL=$(grep "^label=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-SSHFS_ACCOUNT=$(grep "^account=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-FILE_MANAGER=$(grep "^file-manager=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-MOUNT_POINT=$(grep "^mount-point=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
+SSHFS_LABEL=$(grep "^label=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
+SSHFS_ACCOUNT=$(grep "^account=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
+FILE_MANAGER=$(grep "^file-manager=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
+MOUNT_POINT=$(grep "^mount-point=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
 
 # generate temporary directory
 TMP_DIR=$(mktemp -t -d "sshfs-XXXXXXXX")
@@ -48,10 +48,10 @@ SERVER_INDEX=0
 while [ ${INDEX} -gt 0 -a ${SERVER_INDEX} -eq 0 ]
 do
 	# read server config
-	SERVER_LABEL=$(grep "^${INDEX}-label=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-	SERVER_ADDRESS=$(grep "^${INDEX}-address=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-	SERVER_PORT=$(grep "^${INDEX}-port=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
-	SERVER_PROTOCOL=$(grep "^${INDEX}-protocol=" "${SSHFS_CONFIG}" | cut -d'=' -f2)
+	SERVER_LABEL=$(grep "^${INDEX}-label=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
+	SERVER_ADDRESS=$(grep "^${INDEX}-address=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
+	SERVER_PORT=$(grep "^${INDEX}-port=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
+	SERVER_PROTOCOL=$(grep "^${INDEX}-protocol=" "${SSHFS_CONFIG}" | cut -d'=' -f2 | tr -d "\n\r")
 
 	# if server address is defined, test server
 	if [ "${SERVER_ADDRESS}" != "" ]
