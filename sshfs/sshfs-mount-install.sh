@@ -11,10 +11,10 @@ CONFIG_INDEX="$2"
 [ ! -f "${CONFIG_FILE}" ] && { echo "${CONFIG_FILE} doesn't exist"; exit 1; }
 
 # read configuration
-NAME=$(grep "^name=" "${CONFIG_FILE}" | cut -d'=' -f2)
-LABEL=$(grep "^label=" "${CONFIG_FILE}" | cut -d'=' -f2)
-ICON=$(grep "^icon=" "${CONFIG_FILE}" | cut -d'=' -f2)
-ACCOUNT=$(grep "^account=" "${CONFIG_FILE}" | cut -d'=' -f2)
+NAME=$(grep "^name=" "${CONFIG_FILE}" | cut -d'=' -f2 | tr -d "\n\r")
+LABEL=$(grep "^label=" "${CONFIG_FILE}" | cut -d'=' -f2 | tr -d "\n\r")
+ICON=$(grep "^icon=" "${CONFIG_FILE}" | cut -d'=' -f2 | tr -d "\n\r")
+ACCOUNT=$(grep "^account=" "${CONFIG_FILE}" | cut -d'=' -f2 | tr -d "\n\r")
 
 # check configuration data
 [ "${NAME}" = "" ] && { echo "Ressource name not defined in ${CONFIG_FILE}"; exit 1; }
@@ -55,8 +55,8 @@ INDEX=1
 while [ ${INDEX} -gt 0 ]
 do
 	# read configuration
-	SERVER_ADDRESS=$(grep "^${INDEX}-address=" "${CONFIG_FILE}" | cut -d'=' -f2)
-	SERVER_PORT=$(grep "^${INDEX}-port=" "${CONFIG_FILE}" | cut -d'=' -f2)
+	SERVER_ADDRESS=$(grep "^${INDEX}-address=" "${CONFIG_FILE}" | cut -d'=' -f2 | tr -d "\n\r")
+	SERVER_PORT=$(grep "^${INDEX}-port=" "${CONFIG_FILE}" | cut -d'=' -f2 | tr -d "\n\r")
 	[ "${SERVER_ADDRESS}" = "" ] && INDEX=0
 	[ "${SERVER_PORT}" = "" ] && SERVER_PORT=22
 
