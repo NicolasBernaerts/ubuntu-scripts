@@ -13,7 +13,7 @@ wget --header='Accept-Encoding:none' -O $HOME/.rsync-backup.conf https://raw.git
 
 # install main scripts
 sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/rsync-backup https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/backup/rsync-backup
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/rsync-backup.awk https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/backup/rsync-backup.awk
+sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/rsync.awk https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/backup/rsync.awk
 sudo chmod +x /usr/local/bin/rsync-backup
 
 # desktop integration
