@@ -11,7 +11,7 @@
 CONF_FILE="$HOME/.rsync-backup.conf"
 
 # path to awk script, in the same directory as current script
-AWK_SCRIPT=$(dirname $(readlink -f $0))"/rsync-backup.awk"
+AWK_SCRIPT=$(dirname $(readlink -f $0))"/rsync.awk"
 
 # check rsync and configuration file availability
 command -v rsync >/dev/null 2>&1 || { zenity --error --text="Please install rsync"; exit 1; }
