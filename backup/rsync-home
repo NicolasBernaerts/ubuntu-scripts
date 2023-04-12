@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# 
+# Script to backup home folder on a Rsync server
+#
+# Depends on rsync and zenity
+# 
+# 12/04/2023, v1.0 - Creation by Nicolas Bernaerts
+
+# --------------
+# Rsync server
+# --------------
+SERVER=""
+PORT="873"
+MODULE=""
+USER=""
+PASSWORD=''
+SUBDIR="backup"
+OPTION=( "-r" "-t" "-x" "-v" "--progress" "--delete" "-D" )
+EXCLUDE=( ".*" "snap" "Téléchargements" )
+
+# path to awk script, in the same directory as current script
+AWK_SCRIPT=$(dirname $(readlink -f $0))"/rsync.awk"
+ 
+# check rsync and configuration file availability
+command -v rsync >/dev/null 2>&1 || { zenity --error --text="Please install rsync"; exit 1; }
+[ "${SERVER}" = "" ] && { zenity --error --text="Please configure $(readlink -f $0)"; exit 1; }
+
+# set begining time
+TIME_BEGIN=$(date +%s)
+
+# create temporary password file
+TMP_PASSWORD="/tmp/rsync-home.pwd"
+echo "${PASSWORD}" > $TMP_PASSWORD
+chmod 0700 "${TMP_PASSWORD}"
+
+# generate exclude directories
+for DIRECTORY in ${EXCLUDE[@]}
+do 
+  ARR_PARAM=( "${ARR_PARAM[@]}" "--exclude=${DIRECTORY}" )
+done
+
+# backup current directory
+rsync --password-file=${TMP_PASSWORD} "${OPTION[@]}" "${ARR_PARAM[@]}" ${HOME} rsync://${USER}@${SERVER}:${PORT}/${MODULE}/${SUBDIR} | awk -f ${AWK_SCRIPT} | zenity --progress --width=1000 --auto-close --title "Home backup on ${SERVER}"
+
+# remove temporary password file
+rm $TMP_PASSWORD
+
+# calculate execution time
+TIME_END=$(date +%s)
+TIME_TOTAL=$(($TIME_END-$TIME_BEGIN))
+
+# end of backup notification
+zenity --notification --text="Home backup finished in $TIME_TOTAL seconds" &
