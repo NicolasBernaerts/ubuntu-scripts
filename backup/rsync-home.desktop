@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+TryExec=
+Exec=/usr/local/bin/rsync-home
+Categories=Utility
+Icon=gtk-save
+Name[en_US]=Home data backup
+Name[en]=Home data backup
+Name[C]=Home data backup
+Name[fr_FR]=Sauvegarde des données personnelles
+Tooltip[en_US]=Backup home data on a remote Rsync server
+Tooltip[en]=Backup home data on a remote Rsync server
+Tooltip[C]=Backup home data on a remote Rsync server
+Tooltip[fr_FR]=Sauvegarde les données personnelles sur un serveur Rsync
