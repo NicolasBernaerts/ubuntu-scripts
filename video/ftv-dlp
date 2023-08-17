@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# -------------------------------------------------
+#  Download FranceTV streamed video with yt-dlp
+#
+#  Depends on :
+#    * yt-dlp
+#
+#  Revision history :
+#    17/08/2023, v1.0 - Creation by N. Bernaerts
+# -------------------------------------------------
+
+# check tools availability
+command -v yt-dlp >/dev/null 2>&1 || { echo "Please install yt-dlp"; exit 1; }
+
+# check parameter
+URL=$1
+[ "${URL}" = "" ] && { echo "No stream provided"; exit 1; }
+
+# generate temporary directory
+TMP_DIR=$(mktemp -t -d "ftv-dlp-XXXXXXXX")
+TMP_CONTENT="${TMP_DIR}/content.txt"
+TMP_STREAM="${TMP_DIR}/stream.csv"
+
+# get stream parts
+yt-dlp -F "${URL}" > "${TMP_CONTENT}"
+cat "${TMP_CONTENT}" | grep "^hls-" | tail -n 1 | cut -d' ' -f1 > "${TMP_STREAM}"
+cat "${TMP_CONTENT}" | grep "^dash-audio" | cut -d' ' -f1 >> "${TMP_STREAM}"
+
+# generate stream list
+STREAM_LIST=$(cat "${TMP_STREAM}" | xargs | tr ' ' '+')
+
+# download stream
+yt-dlp --cache-dir "${TMP_DIR}" --audio-multistreams --merge-output-format mkv -f "${STREAM_LIST}" "${URL}"
+
+# remove temporary directory
+rm -r "${TMP_DIR}"
+
