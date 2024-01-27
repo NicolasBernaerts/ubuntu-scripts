@@ -52,9 +52,9 @@ sudo wget -O /usr/local/bin/gdrive-mount https://raw.githubusercontent.com/Nicol
 sudo chmod +x /usr/local/bin/gdrive-mount
 
 # Syncthing (release channel)
-logger "internet - Syncthing"
-sudo apt install syncthing
-sudo systemctl enable syncthing@${USER}.service
-sudo systemctl start syncthing@${USER}.service
-mkdir --parents $HOME/.local/share/icons
-wget -O $HOME/.local/share/icons/syncthing.png  https://github.com/NicolasBernaerts/icon/raw/master/syncthing.png
+#logger "internet - Syncthing"
+#sudo apt install syncthing
+#sudo systemctl enable syncthing@${USER}.service
+#sudo systemctl start syncthing@${USER}.service
+#mkdir --parents $HOME/.local/share/icons
+#wget -O $HOME/.local/share/icons/syncthing.png  https://github.com/NicolasBernaerts/icon/raw/master/syncthing.png
