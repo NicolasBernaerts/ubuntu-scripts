@@ -7,8 +7,8 @@
 # ----------------------------------------------------------------
 
 # network tools
-logger "internet - nmap and snmp"
-sudo apt -y install nmap snmp snmp-mibs-downloader
+#logger "internet - nmap and snmp"
+#sudo apt -y install nmap snmp snmp-mibs-downloader
 
 # replace snap firefox by official mozilla deb
 sudo snap remove --purge firefox
