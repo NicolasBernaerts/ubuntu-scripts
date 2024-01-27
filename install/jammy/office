@@ -24,18 +24,16 @@ sudo add-apt-repository -y ppa:libreoffice/ppa
 sudo apt -y upgrade
 
 # grisbi
-logger "office - grisbi"
-sudo apt -y install grisbi
+#logger "office - grisbi"
+#sudo apt -y install grisbi
 
 # tesseract-ocr client and french langage
-logger "office - tesseract-ocr"
-sudo apt -y install tesseract-ocr-fra aspell-fr
+#logger "office - tesseract-ocr"
+#sudo apt -y install tesseract-ocr-fra aspell-fr
 
 # gramps (genealogy)
-logger "office - gramps"
-sudo apt -y install gramps
-
-# Master PDF editor
+#logger "office - gramps"
+#sudo apt -y install gramps
 
 # Thumbnailer - LibreOffice
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
@@ -98,6 +96,6 @@ then
 fi
 
 # FSearch
-sudo add-apt-repository -y ppa:christian-boxdoerfer/fsearch-stable
-sudo apt update
-sudo apt install fsearch
+#sudo add-apt-repository -y ppa:christian-boxdoerfer/fsearch-stable
+#sudo apt update
+#sudo apt install fsearch
