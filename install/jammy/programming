@@ -42,6 +42,11 @@ then
   rm tasmota-tools-install.sh
 fi
 
+# Tasmota device manager
+python3 -m pip install --upgrade pip
+pip install PyQtWebEngine
+pip install tdmgr
+
 # Rpi imager
 sudo snap install rpi-imager
 
