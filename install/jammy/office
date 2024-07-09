@@ -4,10 +4,20 @@
 #
 # 22/08/2022, v1.0 - Migrated from Focal
 # 06/09/2022, v1.1 - Add Master PDF Editor 4
+# 09/07/2024, v1.2 - Add NAPS2 scanner
 # -------------------------------------------------------
 
 # HP printer GUI 
 sudo apt -y install hplip-gui
+
+# NAPS2 scanner
+wget -O naps2.deb https://github.com/cyanfish/naps2/releases/download/v7.4.3/naps2-7.4.3-linux-x64.deb
+if [ -f ./naps2.deb ]
+then
+  logger "office - NAPS2 scanner"
+  sudo gdebi -n ./naps2.deb
+  rm ./naps2.deb
+fi
 
 # master PDF editor
 wget -O master-pdf-editor.deb https://code-industry.net/public/master-pdf-editor-4.3.89_qt5.amd64.deb
