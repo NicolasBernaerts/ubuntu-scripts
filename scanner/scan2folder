@@ -17,6 +17,7 @@
 #  05/06/2017, v2.4 - Code cleanup
 #  06/06/2020, v2.5 - Conversion of lists to arrays
 #  20/06/2020, v2.6 - Shortcut if only one scanner is detected
+#  09/07/2024, v2.7 - Compatibility with Ubuntu 24.04
 # ----------------------------------------------------
 
 # check tools availability
@@ -188,30 +189,30 @@ do case ${CHOICE} in
     SELECTION=""
   
     # scanner available dialog : parameters
-    ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" "--no-buttons" )
+    ARR_DIALOG=( "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" "--no-buttons" )
     ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress-text" "Looking for scanners ..." )
-    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress" "--pulsate" "--auto-close" "--undecorated" )
+    ARR_DIALOG=( "${ARR_DIALOG[@]}" "--center" "--progress" "--pulsate" "--auto-close" "--undecorated" )
 
     # scanner available dialog : display
     (
     echo 0
-    scanimage --list-devices > "${TMP_LIST}"
+    scanimage --formatted-device-list="%i|%d|%m%n" > "${TMP_LIST}"
     echo 100
     ) | yad "${ARR_DIALOG[@]}"
 
     # generate scanner list
-    ARR_DEVICE=( $(cat "${TMP_LIST}" | sed 's/device..\(.*\). is a \(.*\)$/\1|\2/' | tr ' ' '-') )
+    NBR_DEVICE=$(cat "${TMP_LIST}" | wc -l)
 
     # if more than one scanner has been detected
-    if [ ${#ARR_DEVICE[@]} -gt 1 ]
+    if [ ${NBR_DEVICE} -gt 1 ]
     then
       # scanner selection dialog : parameters
       ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--height=250" "--window-icon=scanner" "--image=scanner" )
       ARR_DIALOG=( "${ARR_DIALOG[@]}" "--text=\nPlease, select scanner to use\n" "--list" "--no-headers" )
-      ARR_DIALOG=( "${ARR_DIALOG[@]}" "--column=Device" "--column=Scanner" "--hide-column=1" "--undecorated" )
+      ARR_DIALOG=( "${ARR_DIALOG[@]}" "--column=Index" "--column=Scanner" "--hide-column=1" "--undecorated" )
 
       # scanner selection dialog : list of scanner
-      ARR_SCANNER=( $(echo "${ARR_DEVICE[@]}" | tr '|' ' ' | xargs) )
+      ARR_SCANNER=( $(cat "${TMP_LIST}" | cut -d'|' -f1,3 | tr ' ' '_' | tr '|' ' ' | xargs) )
 
       # scanner selection dialog : display
       SELECTION=$(yad "${ARR_DIALOG[@]}" "${ARR_SCANNER[@]}")
@@ -226,9 +227,12 @@ do case ${CHOICE} in
     if [ "${SELECTION}" != "" ]
     then
       # retrieve selected scanner
-      SCAN_DEVICE=$(echo "${SELECTION}" | cut -d'|' -f1)
-      SCAN_NAME=$(echo "${SELECTION}" | cut -d'|' -f2)
- 
+      SCAN_INDEX=$(echo "${SELECTION}" | cut -d'|' -f1)
+      SCAN_INDEX=$((SCAN_INDEX + 1))
+      SCAN_LINE=$(sed -n ${SCAN_INDEX}p "${TMP_LIST}")
+      SCAN_DEVICE=$(echo "${SCAN_LINE}" | cut -d'|' -f2)
+      SCAN_NAME=$(echo "${SCAN_LINE}" | cut -d'|' -f3)
+      
       # scanner possibilities dialog : parameters
       ARR_DIALOG=( "--center" "--width=${DLG_WIDTH}" "--window-icon=scanner" "--image=scanner" "--no-buttons" )
       ARR_DIALOG=( "${ARR_DIALOG[@]}" "--progress-text" "Retrieving scanner capabilities ..." )
@@ -237,7 +241,7 @@ do case ${CHOICE} in
       # scanner possibilities dialog : display
       (
       echo 0
-      scanimage --help --device "${SCAN_DEVICE}" > "${TMP_CONF}"
+      scanimage --all-options --device-name "${SCAN_DEVICE}" > "${TMP_CONF}"
       echo 100
       ) | yad "${ARR_DIALOG[@]}"
 
