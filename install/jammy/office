@@ -5,7 +5,11 @@
 # 22/08/2022, v1.0 - Migrated from Focal
 # 06/09/2022, v1.1 - Add Master PDF Editor 4
 # 09/07/2024, v1.2 - Add NAPS2 scanner
+# 11/07/2024, v1.3 - Google drive PDF opening bug 
 # -------------------------------------------------------
+
+# Remove AppArmor rule to open PDF from Google Drive
+sudo apparmor_parser -R /etc/apparmor.d/usr.bin.evince
 
 # HP printer GUI 
 sudo apt -y install hplip-gui
