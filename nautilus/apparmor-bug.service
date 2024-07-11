@@ -1,0 +1,10 @@
+[Unit]
+Description=Local Startup Script
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/apparmor-bug
+
+[Install]
+WantedBy=multi-user.target
+

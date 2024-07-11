@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------
+#  Correct AppArmor limitation for :
+#   - Evince PDF viewer on remote Google Drive
+#
+#  Revision history :
+#    11/07/2024, v1.0 - Creation by N. Bernaerts
+# ---------------------------------------------------
+
+apparmor_parser -R /etc/apparmor.d/usr.bin.evince
+
