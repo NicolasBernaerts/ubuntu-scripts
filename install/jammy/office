@@ -10,7 +10,7 @@
 
 # Remove AppArmor rule to open PDF from Google Drive
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/apparmor-bug-install.sh
-if [ -f ./apparmor-bug.sh ]
+if [ -f ./apparmor-bug-install.sh ]
 then
   logger "office - AppArmor nautilus bugs"
   chmod +x ./apparmor-bug-install.sh
