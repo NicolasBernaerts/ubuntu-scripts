@@ -9,7 +9,14 @@
 # -------------------------------------------------------
 
 # Remove AppArmor rule to open PDF from Google Drive
-sudo apparmor_parser -R /etc/apparmor.d/usr.bin.evince
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/apparmor-bug-install.sh
+if [ -f ./apparmor-bug.sh ]
+then
+  logger "office - AppArmor nautilus bugs"
+  chmod +x ./apparmor-bug-install.sh
+  ./apparmor-bug-install.sh
+  rm ./apparmor-bug-install.sh
+fi
 
 # HP printer GUI 
 sudo apt -y install hplip-gui
