@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install misc utilities & tools on 24.04
+#
+# 07/12/2024, v1.0 - Migration from 22.04
+#                    To be tested !
+# -------------------------------------------------------
+
+# htop and iotop
+logger "utilities - htop and iotop"
+sudo apt -y install htop iotop
+
+# serial terminal client
+sudo usermod -aG dialout ${USERNAME}
+sudo apt -y install gtkterm
+
+# zeroconf tools
+logger "utilities - zeroconf"
+sudo apt -y install avahi-daemon avahi-discover libnss-mdns
+
+# network tools
+logger "utilities - network tools"
+sudo apt -y install curl net-tools fping
+
+# yad editor (used by many scripts)
+logger "utilities - yad"
+sudo apt -y install yad
+
+# package management tools
+logger "utilities - package management"
+sudo apt -y install ppa-purge synaptic gdebi deborphan
+
+# disk tools & filesystem clients
+logger "utilities - disk tools & filesystem clients"
+sudo apt -y install gparted
+sudo apt -y install smbclient cifs-utils exfat-fuse
+
+# compression tools
+logger "utilities - compression"
+sudo apt -y install p7zip-rar rar unrar
+
+# alacarte : menu editor
+logger "utilities - alacarte"
+sudo apt -y install alacarte
+
+# keepassxc : electronic wallet
+sudo add-apt-repository -y ppa:phoerious/keepassxc
+sudo apt -y install keepassxc
