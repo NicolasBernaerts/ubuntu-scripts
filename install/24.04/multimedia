@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# -------------------------------------------------------
+# Script to install multimedia tools for 24.04
+#
+# 05/12/2024, v1.0 - Migrated from 22.04
+#
+# -------------------------------------------------------
+
+# auto-accept mscorefonts eula and install it
+logger "multimedia - auto-accept mscorefonts eula"
+sudo sh -c "echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections"
+sudo apt -y install ttf-mscorefonts-installer
+
+# restricted codecs and flash
+logger "multimedia - restricted codecs & flash"
+sudo apt -y install ubuntu-restricted-extras ffmpeg libavcodec-extra libavfilter-extra x264 x265
+
+# misc audio tools
+logger "multimedia - audio tools"
+sudo apt -y install soundconverter lame easytag id3v2 mp3gain
+sudo snap install aacgain
+
+# CD ripping
+logger "multimedia - cd ripping"
+sudo apt -y install asunder
+
+# audacity
+logger "multimedia - audacity"
+sudo apt -y install audacity
+
+# MKV toolnix
+logger "multimedia - MKV toolnix"
+sudo apt -y install mkvtoolnix mkvtoolnix-gui
+
+# handbrake video transcoder
+logger "multimedia - handbrake"
+sudo apt -y install handbrake
+
+# kdenlive video editor
+logger "multimedia - kdenlive"
+sudo apt -y install kdenlive
+
+# audio recorder
+logger "multimedia - audio recorder"
+sudo add-apt-repository -y ppa:audio-recorder/ppa
+sudo apt -y install audio-recorder
+
+# vlc
+logger "multimedia - vlc"
+sudo snap install vlc
+
+# Convert video to MKV container and transcode audio to AAC
+logger "multimedia - convert video to MKV"
+wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/video/video-convert2mkvaac-install.sh
+chmod +x ./video-convert2mkvaac-install.sh
+./video-convert2mkvaac-install.sh
+rm ./video-convert2mkvaac-install.sh
+
