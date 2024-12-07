@@ -11,13 +11,13 @@
 #sudo apt -y install nmap snmp snmp-mibs-downloader
 
 # replace snap firefox by official mozilla deb
-sudo snap remove --purge firefox
-echo "Package: *" | sudo tee /etc/apt/preferences.d/mozilla-firefox
-echo "Pin: release o=LP-PPA-mozillateam" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
-echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
-echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
-sudo add-apt-repository -y ppa:mozillateam/ppa
-sudo apt install firefox
+#sudo snap remove --purge firefox
+#echo "Package: *" | sudo tee /etc/apt/preferences.d/mozilla-firefox
+#echo "Pin: release o=LP-PPA-mozillateam" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
+#echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
+#echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+#sudo add-apt-repository -y ppa:mozillateam/ppa
+#sudo apt install firefox
 
 # firefox extension manager
 wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
@@ -42,19 +42,4 @@ logger "internet - telegram"
 sudo snap install telegram-desktop
 
 # whatsapp web
-#logger "internet - whatsapp"
-#sudo snap install whatsapp-for-linux
-
-# Google drive Ocam
-#sudo add-apt-repository -y ppa:alessandro-strada/ppa
-#sudo apt -y install google-drive-ocamlfuse
-#sudo wget -O /usr/local/bin/gdrive-mount https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/gdrive-mount
-#sudo chmod +x /usr/local/bin/gdrive-mount
-
-# Syncthing (release channel)
-#logger "internet - Syncthing"
-#sudo apt install syncthing
-#sudo systemctl enable syncthing@${USER}.service
-#sudo systemctl start syncthing@${USER}.service
-#mkdir --parents $HOME/.local/share/icons
-#wget -O $HOME/.local/share/icons/syncthing.png  https://github.com/NicolasBernaerts/icon/raw/master/syncthing.png
+# should be now installed as chromium web app
