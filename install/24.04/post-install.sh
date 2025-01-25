@@ -12,14 +12,14 @@
 # ---------------------------------------------------
 
 
-DISTRI_NAME="24.04"
+DISTRI_VERSION="24.04"
 ARCHI="amd64"
 X86ARCHI="64"
 
 # help message if no parameter
 if [ ${#} -eq 0 ];
 then
-    echo "Script to finalise Ubuntu ${DISTRI_NAME} installation."
+    echo "Script to finalise Ubuntu ${DISTRI_VERSION} installation."
     echo "It will install some important packages not provided by default installation."
     echo "Options are :"
     echo "  --common          Install common packages (gnomeshell, utilities, graphical, multimedia, internet and office"
@@ -48,8 +48,8 @@ done
 # --------------------------------------------
 
 # Distribution detection
-RESULT=$(cat /etc/lsb-release | grep "DISTRIB_CODENAME" | cut -d'=' -f2-)
-[ "${RESULT}" != "${DISTRI_NAME}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_NAME}"; exit 1; }
+RESULT=$(cat /etc/lsb-release | grep "DISTRIB_RELEASE" | cut -d'=' -f2-)
+[ "${RESULT}" != "${DISTRI_VERSION}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_VERSION}"; exit 1; }
 
 # Disable sudo timeout
 sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
@@ -65,7 +65,7 @@ sudo apt -y upgrade
 if [ "${COMMON}" = "ok" ]
 then
     # gnomeshell
-    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/gnomeshell
+    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/gnomeshell
     if [ -f ./gnomeshell ]
     then
         chmod +x ./gnomeshell
@@ -74,7 +74,7 @@ then
     fi
 
     # utilities and tools
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/utilities
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/utilities
     if [ -f ./utilities ]
     then
         chmod +x ./utilities
@@ -83,7 +83,7 @@ then
     fi
 
     # office tools
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/office
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/office
     if [ -f ./office ]
     then
         chmod +x ./office
@@ -92,7 +92,7 @@ then
     fi
 
     # graphical tools
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/graphical
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/graphical
     if [ -f ./graphical ]
     then
         chmod +x ./graphical
@@ -101,7 +101,7 @@ then
     fi
 
     # multimedia tools
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/multimedia
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/multimedia
     if [ -f ./multimedia ]
     then
         chmod +x ./multimedia
@@ -110,7 +110,7 @@ then
     fi
 
     # internet tools
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/internet
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/internet
     if [ -f ./internet ]
     then
         chmod +x ./internet
@@ -126,7 +126,7 @@ fi
 # android tools
 if [ "${ANDROID}" = "ok" ]
 then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/android
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/android
     if [ -f ./android ]
     then
         chmod +x ./android
@@ -138,7 +138,7 @@ fi
 # design apps
 if [ "${DESIGN}" = "ok" ]
 then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/design
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/design
     if [ -f ./design ]
     then
         chmod +x ./design
@@ -150,7 +150,7 @@ fi
 # programming
 if [ "${PROGRAMMING}" = "ok" ]
 then
-    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_NAME}/programming
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/programming
     if [ -f ./programming ]
     then
         chmod +x ./programming
