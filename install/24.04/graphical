@@ -39,14 +39,14 @@ then
 fi
 
 # JPEG fast thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
-if [ -f ./jpeg-thumbnailer-install.sh ]
-then
-  logger "graphical - JPEG fast thumbnailer"
-  chmod +x ./jpeg-thumbnailer-install.sh
-  ./jpeg-thumbnailer-install.sh
-  rm ./jpeg-thumbnailer-install.sh
-fi
+#wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer-install.sh
+#if [ -f ./jpeg-thumbnailer-install.sh ]
+#then
+#  logger "graphical - JPEG fast thumbnailer"
+#  chmod +x ./jpeg-thumbnailer-install.sh
+#  ./jpeg-thumbnailer-install.sh
+#  rm ./jpeg-thumbnailer-install.sh
+#fi
 
 # RAW pictures thumbnailer
 wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/raw/raw-thumbnailer-install.sh
