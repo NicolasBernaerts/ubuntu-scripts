@@ -41,9 +41,9 @@ logger "multimedia - kdenlive"
 sudo apt -y install kdenlive
 
 # audio recorder
-logger "multimedia - audio recorder"
-sudo add-apt-repository -y ppa:audio-recorder/ppa
-sudo apt -y install audio-recorder
+#logger "multimedia - audio recorder"
+#sudo add-apt-repository -y ppa:audio-recorder/ppa
+#sudo apt -y install audio-recorder
 
 # vlc
 logger "multimedia - vlc"
