@@ -20,14 +20,14 @@
 #sudo apt install firefox
 
 # firefox extension manager
-wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
-if [ -f ./firefox-extension-manager-install.sh ]
-then
-  logger "internet - firefox extension manager"
-  chmod +x ./firefox-extension-manager-install.sh
-  ./firefox-extension-manager-install.sh
-  rm ./firefox-extension-manager-install.sh
-fi
+#wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
+#if [ -f ./firefox-extension-manager-install.sh ]
+#then
+#  logger "internet - firefox extension manager"
+#  chmod +x ./firefox-extension-manager-install.sh
+#  ./firefox-extension-manager-install.sh
+#  rm ./firefox-extension-manager-install.sh
+#fi
 
 # youtube-dl replaced by yt-dlp
 sudo wget -O "/usr/local/bin/yt-dlp" https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
