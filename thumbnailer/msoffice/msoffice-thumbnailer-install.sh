@@ -10,7 +10,7 @@ sudo apt-get -y install libfile-mimeinfo-perl netpbm
 sudo apt install default-jre libreoffice-java-common
 
 # install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
-sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
+sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/bwrap
 sudo chmod +rx /usr/local/bin/bwrap
 
 # create icons ressource directory
@@ -22,7 +22,7 @@ ARR_DOCTYPE=( "odt" "ods" "odp" )
 for DOCTYPE in "${ARR_DOCTYPE[@]}"
 do
 	# download document type icon
-	sudo wget -O "${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.png" "https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/icons/msoffice-${DOCTYPE}.png"
+	sudo wget -O "${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.png" "https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/msoffice/icons/msoffice-${DOCTYPE}.png"
 
 	# generate mask
 	sudo bash -c "pngtopnm ${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.png | pnmscalefixed -xysize 256 256 - > ${ROOT_DOCTYPE}/msoffice-${DOCTYPE}.pnm" 
@@ -32,11 +32,11 @@ do
 done
 
 # install main script
-sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer
+sudo wget -O /usr/local/sbin/msoffice-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/msoffice/msoffice-thumbnailer
 sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
 
 # thumbnailer integration
-sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice.thumbnailer
+sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/msoffice/msoffice.thumbnailer
 
 # if present, disable gsf-office.thumbnailer (used in UbuntuGnome 16.04)
 [ -f /usr/share/thumbnailers/gsf-office.thumbnailer ] && sudo mv /usr/share/thumbnailers/gsf-office.thumbnailer /usr/share/thumbnailers/gsf-office.thumbnailer.org
