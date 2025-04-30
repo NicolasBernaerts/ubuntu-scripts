@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------
-# Nautilus extension to merge multiple 
+#
+# Nautilus extension to merge multiple
 #  office documents to a PDF document
+#
 # Tools handled are :
 #   * pdf-merge
 #
 # Revision history :
-#   07/05/2020, V1.0 - Creation by N. Bernaerts
+#   07/05/2020, v1.0 - Creation by N. Bernaerts
+#   30/04/2025, v1.1 - Update get_file_items
+#
 # ---------------------------------------------------
 
 import subprocess
@@ -30,7 +34,7 @@ class PDFMergeMenuProvider(GObject.GObject, Nautilus.MenuProvider):
   def pdf_merge_prepress(self, menu, listUri):
     subprocess.Popen("pdf-merge --alpha --prepress " + listUri, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-  def get_file_items(self, window, files):
+  def get_file_items(self, files):
     # variables
     strFiles = ""
     compatFiles = True;
