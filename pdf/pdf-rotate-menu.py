@@ -46,17 +46,17 @@ class PDFRotateMenuProvider(GObject.GObject, Nautilus.MenuProvider):
       pdf_rotate.set_submenu(submenu)
       
       # rotate right
-      pdf_rotate_right = Nautilus.MenuItem(name='PDFRotateMenuProvider::pdf_rotate_right', label='Rotate Right (+90°)', icon='rotate-right')
+      pdf_rotate_right = Nautilus.MenuItem(name='PDFRotateMenuProvider::pdf_rotate_right', label='Rotate Right (+90°)', icon='pdf-right')
       pdf_rotate_right.connect('activate', self.pdf_rotate_right, strFiles)
       submenu.append_item(pdf_rotate_right)
 
       # rotate left
-      pdf_rotate_left = Nautilus.MenuItem(name='PDFRotateMenuProvider::pdf_rotate_left', label='Rotate Left (-90°)', icon='rotate-left')
+      pdf_rotate_left = Nautilus.MenuItem(name='PDFRotateMenuProvider::pdf_rotate_left', label='Rotate Left (-90°)', icon='pdf-left')
       pdf_rotate_left.connect('activate', self.pdf_rotate_left, strFiles)
       submenu.append_item(pdf_rotate_left)
 
       # rotate 180
-      pdf_rotate_updown = Nautilus.MenuItem(name='PDFRotateMenuProvider::pdf_rotate_updown', label='Rotate Upside Down (+180°)', icon='rotate-updown')
+      pdf_rotate_updown = Nautilus.MenuItem(name='PDFRotateMenuProvider::pdf_rotate_updown', label='Rotate Upside Down (+180°)', icon='pdf-updown')
       pdf_rotate_updown.connect('activate', self.pdf_rotate_updown, strFiles)
       submenu.append_item(pdf_rotate_updown)
 
