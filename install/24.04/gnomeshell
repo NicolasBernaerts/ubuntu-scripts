@@ -57,7 +57,7 @@ echo "items-create-root-menu=false" >> $HOME/.config/filemanager-actions/fileman
 
 # nautilus : declare new document templates
 logger "gnome-shell - declare new document templates"
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-template-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/nautilus-template-install.sh
 if [ -f ./nautilus-template-install.sh ]
 then 
   chmod +x ./nautilus-template-install.sh
@@ -66,7 +66,7 @@ then
 fi
 
 # nautilus : APK extensions
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-apk-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/nautilus-apk-install.sh
 if [ -f ./nautilus-apk-install.sh ]
 then 
   chmod +x ./nautilus-apk-install.sh
@@ -77,7 +77,7 @@ fi
 # nautilus : EXIF tags extensions
 #   AttributeError: 'gi.repository.Nautilus' object has no attribute 'PropertyPageProvider'.
 #   Did you mean: 'PropertiesModelProvider'?
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-exif-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/nautilus-exif-install.sh
 if [ -f ./nautilus-exif-install.sh ]
 then 
   chmod +x ./nautilus-exif-install.sh
@@ -87,7 +87,7 @@ fi
 
 # gnomeshell extensions - console management
 logger "gnome-shell - console management of gnomeshell extensions"
-sudo wget -O /usr/local/bin/gnomeshell-extension-manage https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/ubuntugnome/gnomeshell-extension-manage
+sudo wget -O /usr/local/bin/gnomeshell-extension-manage https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/ubuntugnome/gnomeshell-extension-manage
 sudo chmod +x /usr/local/bin/gnomeshell-extension-manage
 
 # gnomeshell extensions - default extensions
