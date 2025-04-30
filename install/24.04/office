@@ -6,7 +6,7 @@
 # -------------------------------------------------------
 
 # Remove AppArmor rule to open PDF from Google Drive
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/apparmor-bug-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/apparmor-bug-install.sh
 if [ -f ./apparmor-bug-install.sh ]
 then
   logger "office - AppArmor nautilus bugs"
@@ -42,7 +42,7 @@ fi
 #sudo apt -y upgrade
 
 # Thumbnailer - LibreOffice
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
 if [ -f ./lo-thumbnailer-install.sh ]
 then
   logger "office - LibreOffice thumbnailer"
@@ -52,7 +52,7 @@ then
 fi
 
 # Thumbnailer - Ms Office thumbnailer
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
 if [ -f ./msoffice-thumbnailer-install.sh ]
 then
   logger "office - Ms Office thumbnailer"
@@ -62,7 +62,7 @@ then
 fi
 
 # PDF : document merge extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-merge-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-merge-install.sh
 if [ -f ./pdf-merge-install.sh ]
 then
   logger "office - PDF document merge"
@@ -72,7 +72,7 @@ then
 fi
 
 # PDF : rotation extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-rotate-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-rotate-install.sh
 if [ -f ./pdf-rotate-install.sh ]
 then
   logger "office - PDF rotation extension"
@@ -82,7 +82,7 @@ then
 fi
 
 # PDF : misc tools extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-tools-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-tools-install.sh
 if [ -f ./pdf-tools-install.sh ]
 then
   logger "office - PDF tools extension"
@@ -92,7 +92,7 @@ then
 fi
 
 # PDF : booklet generation extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-booklet-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet-install.sh
 if [ -f ./pdf-booklet-install.sh ]
 then
   logger "office - PDF booklet"
