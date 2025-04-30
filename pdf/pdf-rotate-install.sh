@@ -16,7 +16,6 @@ sudo apt -y install texlive-extra-utils
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
-sudo wget -O /usr/share/icons/pdf-rotate.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate.png
 sudo wget -O /usr/share/icons/rotate-left.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate-left.png
 sudo wget -O /usr/share/icons/rotate-right.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate-right.png
 sudo wget -O /usr/share/icons/rotate-updown.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate-updown.png
