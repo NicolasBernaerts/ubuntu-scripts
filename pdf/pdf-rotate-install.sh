@@ -16,10 +16,10 @@ sudo apt -y install texlive-extra-utils
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
-sudo wget -O /usr/share/icons/pdf-rotate.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/pdf-rotate.png
-sudo wget -O /usr/share/icons/rotate-left.png https://github.com/NicolasBernaerts/icon/blob/master/rotation/rotate-left.png
-sudo wget -O /usr/share/icons/rotate-right.png https://github.com/NicolasBernaerts/icon/blob/master/rotation/rotate-right.png
-sudo wget -O /usr/share/icons/rotate-updown.png https://github.com/NicolasBernaerts/icon/blob/master/rotation/rotate-updown.png
+sudo wget -O /usr/share/icons/pdf-rotate.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate.png
+sudo wget -O /usr/share/icons/rotate-left.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate-left.png
+sudo wget -O /usr/share/icons/rotate-right.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate-right.png
+sudo wget -O /usr/share/icons/rotate-updown.png https://github.com/NicolasBernaerts/icon/blob/master/pdf/rotate-updown.png
 
 # main script installation
 sudo wget -O /usr/local/bin/pdf-rotate https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-rotate
