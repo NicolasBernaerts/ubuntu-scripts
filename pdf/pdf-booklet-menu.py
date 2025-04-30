@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------------
+#
 # Nautilus extension to add PDF booklet generation menu 
 # Menus is displayed according to pdf-booklet availability
 #
 # Revision history :
 #   02/05/2020, V1.0 - Creation by N. Bernaerts
+#   30/04/2025, v1.1 - Update get_file_items
+#
 # ---------------------------------------------------------
 
 import subprocess
@@ -15,7 +18,7 @@ class PDFBookletMenuProvider(GObject.GObject, Nautilus.MenuProvider):
 
   def pdf_booklet(self, menu, file): subprocess.Popen("pdf-booklet --file '" + file + "'", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-  def get_file_items(self, window, files):
+  def get_file_items(self, files):
     # if multiple selection, nothing to do
     if len(files) != 1: return
 
