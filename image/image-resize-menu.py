@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------
+#
 # Nautilus extension to resize image files 
 # to predefined formats
+#
 # Tools handled are :
 #   * image-convert
+#
 # Revision history :
 #   03/05/2020, V1.0 - Creation by N. Bernaerts
+#   30/04/2025, v1.1 - Update get_file_items
+#
 # ---------------------------------------------------
 
 import subprocess
@@ -38,7 +43,7 @@ class ImageResizeMenuProvider(GObject.GObject, Nautilus.MenuProvider):
   def resize_2000x2000(self, menu, listUri):
     subprocess.Popen("image-convert --width 2000 --height 2000 --keep-ratio " + listUri, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-  def get_file_items(self, window, files):
+  def get_file_items(self, files):
 
     # variables
     strFiles = ""
