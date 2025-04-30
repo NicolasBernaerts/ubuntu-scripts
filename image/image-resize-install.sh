@@ -18,12 +18,12 @@ gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
-sudo wget -O /usr/share/icons/image-resize.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/icon/image/image-resize.png
+sudo wget -O /usr/share/icons/image-resize.png https://github.com/NicolasBernaerts/icon/blob/master/image/image-resize.png
 
 # main script installation
-sudo wget -O /usr/local/bin/image-convert https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert
+sudo wget -O /usr/local/bin/image-convert https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-convert
 sudo chmod +x /usr/local/bin/image-convert
 
 # desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget -O $HOME/.local/share/nautilus-python/extensions/image-resize-menu.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-menu.py
+wget -O $HOME/.local/share/nautilus-python/extensions/image-resize-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-resize-menu.py
