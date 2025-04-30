@@ -13,7 +13,7 @@ mkdir --parents "$HOME/.local/share/nautilus-python/extensions"
 
 # install nautilus extensions
 wget -O "$HOME/.local/share/nautilus-python/extensions/apk-columns.py" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/extensions/apk-columns.py
-wget -O "$HOME/.local/share/nautilus-python/extensions/apk-properties.py" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/headshttps://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/extensions/apk-columns.py/master/nautilus/extensions/apk-properties.py
+wget -O "$HOME/.local/share/nautilus-python/extensions/apk-properties.py" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/extensions/apk-properties.py
 
 # close nautilus to force extension reload
 nautilus -q
