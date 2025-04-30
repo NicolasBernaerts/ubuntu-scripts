@@ -16,26 +16,26 @@ sudo apt -y install build-essential cmake nasm git autoconf libtool
 sudo apt -y install libjpeg-turbo8-dev libexif-dev
 
 # install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
-sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
+sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/bwrap
 sudo chmod +rx /usr/local/bin/bwrap
 
 # install main thumbnailer script
-sudo wget -O /usr/local/sbin/jpeg-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg-thumbnailer
+sudo wget -O /usr/local/sbin/jpeg-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/jpeg/jpeg-thumbnailer
 sudo chmod +rx /usr/local/sbin/jpeg-thumbnailer
 
 # thumbnailer integration
-sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/jpeg/jpeg.thumbnailer
+sudo wget -O /usr/share/thumbnailers/jpeg.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/jpeg/jpeg.thumbnailer
 
 # create icons ressource directory
 ROOT_ICON="/usr/local/sbin/jpeg-thumbnailer.res"
 [ ! -d "${ROOT_ICON}" ] && sudo mkdir "${ROOT_ICON}"
 
 # download transparent icon and generate alpha
-sudo wget -O "${ROOT_ICON}/none.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/none.png"
+sudo wget -O "${ROOT_ICON}/none.png" "https://github.com/NicolasBernaerts/icon/blob/master/camera/none.png"
 sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/none.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/none-alpha.pnm'" 
 
 # download gps icon and generate mask / alpha
-sudo wget -O "${ROOT_ICON}/gps.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/gps.png"
+sudo wget -O "${ROOT_ICON}/gps.png" "https://github.com/NicolasBernaerts/icon/blob/master/camera/gps.png"
 sudo bash -c "pngtopnm '${ROOT_ICON}/gps.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/gps.pnm'" 
 sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/gps.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/gps-alpha.pnm'" 
 
@@ -50,7 +50,7 @@ ARR_ICON=( "${ARR_ICON[@]}" "pixel 2 xl" "hero" "hero4 session" "lg-h870" )
 for ICON in "${ARR_ICON[@]}"
 do
 	# download document type icon
-	sudo wget -O "${ROOT_ICON}/${ICON}.png" "https://raw.githubusercontent.com/NicolasBernaerts/icon/master/camera/${ICON}.png"
+	sudo wget -O "${ROOT_ICON}/${ICON}.png" "https://github.com/NicolasBernaerts/icon/blob/master/camera/${ICON}.png"
 
 	# generate mask
 	sudo bash -c "pngtopnm '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/${ICON}.pnm'" 
