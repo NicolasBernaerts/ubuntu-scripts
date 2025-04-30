@@ -9,15 +9,15 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 sudo apt -y install xcftools netpbm
 
 # install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
-[ ! -f /usr/local/bin/bwrap ] && sudo wget -O /usr/local/bin/bwrap https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/bwrap
+[ ! -f /usr/local/bin/bwrap ] && sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/bwrap
 sudo chmod +rx /usr/local/bin/bwrap
 
 # install main script
-sudo wget -O /usr/local/sbin/gimp-thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp-thumbnailer
+sudo wget -O /usr/local/sbin/gimp-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/gimp/gimp-thumbnailer
 sudo chmod +x /usr/local/sbin/gimp-thumbnailer
 
 # thumbnailer integration
-sudo wget -O /usr/share/thumbnailers/gimp.thumbnailer https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/gimp/gimp.thumbnailer
+sudo wget -O /usr/share/thumbnailers/gimp.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/gimp/gimp.thumbnailer
 
 # stop nautilus
 nautilus -q
