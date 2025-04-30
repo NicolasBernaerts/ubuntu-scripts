@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------
+#
 # Nautilus extension to add APK specific columns
+#
 # Dependency :
 #   * aapt
 # Procedure :
@@ -10,6 +12,8 @@
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
 #   25/04/2020, v2.0 - rewrite for python3 compatibility
 #                      add application name
+#   30/04/2025, v2.1 - change \g to \\g
+#
 # ---------------------------------------------------
 
 # -------------------
@@ -74,11 +78,11 @@ class ApkColumnExtension(GObject.GObject, Nautilus.ColumnProvider, Nautilus.Info
           if re.compile('^package:.*$').match(line):
             handled = True
             found_package == True
-            value = re.compile('^.*name=.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
+            value = re.compile('^.*name=.([^ \']*).*$').sub('\\g<1>', line).rstrip('\n')
             file.add_string_attribute('apk_pkg_name', value)
-            value = re.compile('^.*versionName=.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
+            value = re.compile('^.*versionName=.([^ \']*).*$').sub('\\g<1>', line).rstrip('\n')
             file.add_string_attribute('apk_pkg_ver', value)
-            value = re.compile('^.*versionCode=.([^ \']*).*$').sub('\g<1>',line).rstrip('\n')
+            value = re.compile('^.*versionCode=.([^ \']*).*$').sub('\\g<1>',line).rstrip('\n')
             file.add_string_attribute('apk_pkg_code', value)
            
         # line application:
@@ -86,7 +90,7 @@ class ApkColumnExtension(GObject.GObject, Nautilus.ColumnProvider, Nautilus.Info
           if re.compile('^application:.*$').match(line):
             handled = True
             found_application = True
-            value = re.compile('^.*label=.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
+            value = re.compile('^.*label=.([^ \']*).*$').sub('\\g<1>', line).rstrip('\n')
             file.add_string_attribute('apk_pkg_app', value)
            
         # line sdkVersion:
@@ -94,7 +98,7 @@ class ApkColumnExtension(GObject.GObject, Nautilus.ColumnProvider, Nautilus.Info
           if re.compile('^sdkVersion:.*$').match(line):
             handled = True
             found_sdkversion = True
-            value = re.compile('^sdkVersion:.([^ \']*).*$').sub('\g<1>', line).rstrip('\n')
+            value = re.compile('^sdkVersion:.([^ \']*).*$').sub('\\g<1>', line).rstrip('\n')
             file.add_string_attribute('apk_sdk_ver', value)
 
     # else, file is not an APK

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# ---------------------------------------------------------
+# -------------------------------------------------------------------------------
+#
 # Nautilus extension to display EXIF properties tab
 # Dependency :
 #   - gir1.2-gexiv2-0.10
@@ -9,13 +10,16 @@
 # Revision history :
 #   02/09/2016, V1.0 - Creation by N. Bernaerts
 #   24/04/2020, v2.0 - rewrite for python3 compatibility
-# ---------------------------------------------------
+#   30/04/2025, v2.1 - change PropertiesPageProvider to PropertiesModelProvider
+#
+# --------------------------------------------------------------------------------
 
 # -------------------
 #  Import libraries
 # -------------------
 
 import gi
+gi.require_version("Gtk", "4.0")
 gi.require_version("GExiv2", "0.10")
 from urllib.parse import unquote
 from gi.repository import Nautilus, GObject, Gtk
@@ -25,7 +29,7 @@ from gi.repository.GExiv2 import Metadata
 #   Class definition
 # --------------------
 
-class TagsPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
+class TagsPropertyPage(GObject.GObject, Nautilus.PropertiesModelProvider):
   def __init__(self):
     pass
 
