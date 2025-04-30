@@ -22,7 +22,7 @@ sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-date https://gi
 sudo chmod +x /usr/local/bin/tags-date
 
 # desktop integration : icon
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/tags.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tags/tags.png
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/tags.png https://github.com/NicolasBernaerts/icon/blob/master/tags.png
 
 # desktop integration : preparation
 mkdir --parents $HOME/.local/share/file-manager/actions
