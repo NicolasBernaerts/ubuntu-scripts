@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------
+#
 # Nautilus extension to add rotation to PDF documents 
 # Menus are displayed according to available tools
+#
 # Tools handled are :
 #   * pdf-rotate
 #
 # Revision history :
 #   01/05/2020, V1.0 - Creation by N. Bernaerts
+#   30/04/2025, v1.1 - Update get_file_items
+#
 # ---------------------------------------------------
 
 import subprocess
@@ -22,7 +26,7 @@ class PDFRotateMenuProvider(GObject.GObject, Nautilus.MenuProvider):
   def pdf_rotate_updown(self, menu, listUri):
     subprocess.Popen("pdf-rotate --updown " + listUri, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-  def get_file_items(self, window, files):
+  def get_file_items(self, files):
   
     # variables
     strFiles = ""
