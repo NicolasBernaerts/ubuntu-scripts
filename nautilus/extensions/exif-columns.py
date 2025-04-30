@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------
+#
 # Nautilus extension to add EXIF specific columns
+#
 # Dependency :
 #   - gir1.2-gexiv2-0.10
+#
 # Procedure :
 #   http://www.bernaerts-nicolas.fr/linux/xxx...
 #
 # Revision history :
 #   20/09/2016, V1.0 - Creation by N. Bernaerts
 #   25/04/2020, v2.0 - rewrite for python3 compatibility
+#
 # ---------------------------------------------------
 
 # -------------------
