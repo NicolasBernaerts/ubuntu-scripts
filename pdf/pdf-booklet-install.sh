@@ -22,9 +22,9 @@ gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/Butto
 sudo wget -O /usr/share/icons/pdf-booklet.png https://github.com/NicolasBernaerts/icon/raw/master/pdf/pdf-booklet.png
 
 # install main script
-sudo wget -O /usr/local/bin/pdf-booklet https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-booklet
+sudo wget -O /usr/local/bin/pdf-booklet https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet
 sudo chmod +x /usr/local/bin/pdf-booklet
 
 # desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget -O $HOME/.local/share/nautilus-python/extensions/pdf-booklet-menu.py https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/pdf/pdf-booklet-menu.py
+wget -O $HOME/.local/share/nautilus-python/extensions/pdf-booklet-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet-menu.py
