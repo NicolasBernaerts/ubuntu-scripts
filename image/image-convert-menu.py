@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------
+#
 # Nautilus extension to convert image files 
 # to predefined formats
+#
 # Tools handled are :
 #   * image-convert
+#
 # Revision history :
 #   03/05/2020, V1.0 - Creation by N. Bernaerts
 #   22/05/2020, V1.1 - Add HEIF support
+#   30/04/2025, v1.1 - Update get_file_items
+#
 # ---------------------------------------------------
 
 import subprocess
@@ -33,7 +38,7 @@ class ImageConvertMenuProvider(GObject.GObject, Nautilus.MenuProvider):
   def convert_heif(self, menu, listUri):
     subprocess.Popen("image-convert --format heic " + listUri, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-  def get_file_items(self, window, files):
+  def get_file_items(self, files):
 
     # variables
     strFiles = ""
