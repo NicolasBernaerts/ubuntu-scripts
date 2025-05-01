@@ -13,16 +13,16 @@ sudo apt-get -y install yad
 
 # install configuration file
 mkdir --parents $HOME/.config
-wget --header='Accept-Encoding:none' -O $HOME/.config/tags-update.conf https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tags/tags-update.conf
+wget -O $HOME/.config/tags-update.conf https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tags/tags-update.conf
 
 # install main script
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-update https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tags/tags-update
+sudo wget -O /usr/local/bin/tags-update https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tags/tags-update
 sudo chmod +x /usr/local/bin/tags-update
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/tags-date https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tags/tags-date
+sudo wget -O /usr/local/bin/tags-date https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tags/tags-date
 sudo chmod +x /usr/local/bin/tags-date
 
 # desktop integration : icon
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/tags.png https://github.com/NicolasBernaerts/icon/blob/master/tags.png
+sudo wget -O /usr/share/icons/tags.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/tags.png
 
 # desktop integration : preparation
 mkdir --parents $HOME/.local/share/file-manager/actions
