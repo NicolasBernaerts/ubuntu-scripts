@@ -12,4 +12,4 @@ as thumbnail. This allows you to handle your APK files from Nautilus as they app
 
 Just download and run :
 
-./apk-thumbnailer-install.sh
+    ./apk-thumbnailer-install.sh
