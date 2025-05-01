@@ -27,6 +27,16 @@ then
   rm ./naps2.deb
 fi
 
+# scan2folder tool
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/scanner/scan2folder-install.sh
+if [ -f ./scan2folder-install.sh ]
+then
+  logger "graphical - scan2folder"
+  chmod +x ./scan2folder-install.sh
+  ./scan2folder-install.sh
+  rm ./scan2folder-install.sh
+fi
+
 # master PDF editor
 wget -O master-pdf-editor.deb https://code-industry.net/public/master-pdf-editor-4.3.89_qt5.amd64.deb
 if [ -f ./master-pdf-editor.deb ]
