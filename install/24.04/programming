@@ -26,11 +26,10 @@ echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
 # Tasmotizer
-sudo apt -y install python3-pip
-pip3 install --upgrade pip
-pip3 install tasmotizer
+sudo apt install pipx
+pipx install tasmotizer
 wget -O $HOME/.local/share/icons/tasmota.svg https://tasmota.github.io/docs/_media/logo.svg
-wget -O $HOME/.local/share/applications/tasmotizer.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/tasmotizer.desktop
+wget -O $HOME/.local/share/applications/tasmotizer.desktop klet https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs//master/tools/tasmotizer.desktop
 
 # EspTool and tasmota helper scripts
 wget https://raw.githubusercontent.com/NicolasBernaerts/tasmota/master/tools/tasmota-tools-install.sh
