@@ -14,6 +14,7 @@
 #   02/03/2014, v1.0 - creation by N. Bernaerts
 #   24/04/2020, v2.0 - rewrite for python3 compatibility
 #   01/05/2025, v2.1 - convert \g to \\g
+#                      change PropertiesPageProvider to PropertiesModelProvider
 #
 # ---------------------------------------------------
 
@@ -32,7 +33,7 @@ from gi.repository import Nautilus, Gtk, GObject
 #   Class definition
 # --------------------
 
-class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
+class APKInfoPropertyPage(GObject.GObject, Nautilus.PropertiesModelProvider):
   def __init__(self): pass
     
   # --------------------
