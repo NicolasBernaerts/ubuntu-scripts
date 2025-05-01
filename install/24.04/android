@@ -48,5 +48,6 @@ logger "android - scrcpy utility"
 wget -O scrcpy.tar.gz https://github.com/Genymobile/scrcpy/releases/download/v3.2/scrcpy-linux-x86_64-v3.2.tar.gz
 sudo mkdir /usr/local/bin/scrcpy
 sudo tar -xvf scrcpy.tar.gz -C /usr/local/bin --strip-components 1
+sudo mv /usr/local/bin/icon.png /usr/share/icons/scrcpy.png
 rm scrcpy.tar.gz
 sudo wget -O /usr/share/applications/scrcpy.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/android/scrcpy.desktop
