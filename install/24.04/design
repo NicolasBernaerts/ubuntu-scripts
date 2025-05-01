@@ -9,9 +9,9 @@
 
 # hugin panorama
 logger "graphical - hugin panorama"
-sudo add-apt-repository -y ppa:hugin/hugin-builds
-sudo apt-get update
-sudo apt-get install hugin enblend panini
+sudo add-apt-repository -y ppa:ubuntuhandbook1/hugin
+sudo apt update
+sudo apt-get -y install hugin
 
 # darktable
 logger "graphical - darktable"
