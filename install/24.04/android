@@ -16,16 +16,16 @@ sudo apt -y install android-tools-adb android-tools-fastboot
 
 # declare complementary devices
 logger "android - complementary devices"
-sudo wget -O /etc/udev/rules.d/51-android.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/51-android.rules
+sudo wget -O /etc/udev/rules.d/51-android.rules https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/android/51-android.rules
 sudo chmod a+r /etc/udev/rules.d/51-android.rules
-sudo wget -O /etc/udev/rules.d/69-mtp.rules https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/69-mtp.rules
+sudo wget -O /etc/udev/rules.d/69-mtp.rules https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/android/69-mtp.rules
 sudo chmod a+r /etc/udev/rules.d/69-mtp.rules
 mkdir --parent $HOME/.android
-wget -O $HOME/.android/adb_usb.ini https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/adb_usb.ini
+wget -O $HOME/.android/adb_usb.ini https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/android/adb_usb.ini
 
 # APK thumbnailer
 logger "android - APK thumbnailer"
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/thumbnailer/apk/apk-thumbnailer-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/apk/apk-thumbnailer-install.sh
 if [ -f ./apk-thumbnailer-install.sh ]
 then
   chmod +x ./apk-thumbnailer-install.sh
@@ -35,7 +35,7 @@ fi
 
 # file manager APK extensions
 logger "android - file manager APK extensions"
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-apk-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/nautilus-apk-install.sh
 if [ -f ./nautilus-apk-install.sh ]
 then
   chmod +x ./nautilus-apk-install.sh
@@ -46,4 +46,4 @@ fi
 # android scrcpy utility
 logger "android - scrcpy utility"
 sudo apt -y install scrcpy
-sudo wget -O /usr/share/applications/scrcpy.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/android/scrcpy.desktop
+sudo wget -O /usr/share/applications/scrcpy.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/android/scrcpy.desktop
