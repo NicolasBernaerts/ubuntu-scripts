@@ -31,11 +31,11 @@ ROOT_ICON="/usr/local/sbin/jpeg-thumbnailer.res"
 [ ! -d "${ROOT_ICON}" ] && sudo mkdir "${ROOT_ICON}"
 
 # download transparent icon and generate alpha
-sudo wget -O "${ROOT_ICON}/none.png" "https://github.com/NicolasBernaerts/icon/blob/master/camera/none.png"
+sudo wget -O "${ROOT_ICON}/none.png" "https://github.com/NicolasBernaerts/icon/raw/refs/heads/master/camera/none.png"
 sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/none.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/none-alpha.pnm'" 
 
 # download gps icon and generate mask / alpha
-sudo wget -O "${ROOT_ICON}/gps.png" "https://github.com/NicolasBernaerts/icon/blob/master/camera/gps.png"
+sudo wget -O "${ROOT_ICON}/gps.png" "https://github.com/NicolasBernaerts/icon/raw/refs/heads/master/camera/gps.png"
 sudo bash -c "pngtopnm '${ROOT_ICON}/gps.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/gps.pnm'" 
 sudo bash -c "pngtopnm -alpha '${ROOT_ICON}/gps.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/gps-alpha.pnm'" 
 
@@ -50,7 +50,7 @@ ARR_ICON=( "${ARR_ICON[@]}" "pixel 2 xl" "hero" "hero4 session" "lg-h870" )
 for ICON in "${ARR_ICON[@]}"
 do
 	# download document type icon
-	sudo wget -O "${ROOT_ICON}/${ICON}.png" "https://github.com/NicolasBernaerts/icon/blob/master/camera/${ICON}.png"
+	sudo wget -O "${ROOT_ICON}/${ICON}.png" "https://github.com/NicolasBernaerts/icon/raw/refs/heads/master/camera/${ICON}.png"
 
 	# generate mask
 	sudo bash -c "pngtopnm '${ROOT_ICON}/${ICON}.png' | pnmscalefixed -ysize 64 - > '${ROOT_ICON}/${ICON}.pnm'" 
