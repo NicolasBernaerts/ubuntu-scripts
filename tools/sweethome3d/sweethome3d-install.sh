@@ -23,14 +23,14 @@ sudo chown -R root:root /opt/sweethome3d
 rm ./sweethome3d.tgz
 
 # install sweethome3d project icon
-sudo wget -O /usr/share/icons/sweethome3d.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/master/tools/sweethome3d/sweethome3d.png
+sudo wget -O /usr/share/icons/sweethome3d.png https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tools/sweethome3d/sweethome3d.png
 
 # declare sweethome3d mimetype
-sudo wget -O /usr/share/mime/packages/sweethome3d.xml https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d.xml
+sudo wget -O /usr/share/mime/packages/sweethome3d.xml https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tools/sweethome3d/sweethome3d.xml
 sudo update-mime-database /usr/share/mime
 
 # declare desktop file
-sudo wget -O /usr/share/applications/sweethome3d.desktop https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d.desktop
+sudo wget -O /usr/share/applications/sweethome3d.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tools/sweethome3d/sweethome3d.desktop
 sudo chmod +x /usr/share/applications/sweethome3d.desktop
 
 # associate mimetype to desktop file
