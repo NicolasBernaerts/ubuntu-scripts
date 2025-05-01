@@ -18,9 +18,9 @@ gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/Butto
 
 # install icons
 sudo wget -O /usr/share/icons/image-rotate.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate.png
-sudo wget -O /usr/share/icons/rotate-left.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/rotation/rotate-left.png
-sudo wget -O /usr/share/icons/rotate-right.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/rotation/rotate-right.png
-sudo wget -O /usr/share/icons/rotate-updown.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/rotation/rotate-updown.png
+sudo wget -O /usr/share/icons/rotate-left.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-left.png
+sudo wget -O /usr/share/icons/rotate-right.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-right.png
+sudo wget -O /usr/share/icons/rotate-updown.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-updown.png
 
 # main script installation
 sudo wget -O /usr/local/bin/image-rotate https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-rotate
