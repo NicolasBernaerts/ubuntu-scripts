@@ -5,6 +5,7 @@
 #
 # Dependency :
 #   * aapt
+#
 # Procedure :
 #   http://www.bernaerts-nicolas.fr/linux/76-gnome/324-gnome-nautilus-apk-column-property-provider-extension
 #
