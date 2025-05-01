@@ -5,7 +5,7 @@
 # main packages installation
 sudo apt update
 sudo apt -y install python3-nautilus
-sudo apt -y install libfile-mimeinfo-perl libjpeg-turbo-progs netpbm
+sudo apt -y install libimage-exiftool-perl libfile-mimeinfo-perl libjpeg-turbo-progs netpbm
 
 # remove files from previous version
 sudo rm --force /usr/share/file-manager/actions/image-rotate.desktop
