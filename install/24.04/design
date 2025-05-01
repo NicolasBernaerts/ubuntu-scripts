@@ -27,7 +27,7 @@ logger "graphical - Luminance HDR & RAW Therapee"
 sudo apt -y install rawtherapee
 
 # Sweet Home 3D
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/tools/sweethome3d/sweethome3d-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tools/sweethome3d/sweethome3d-install.sh
 if [ -f ./sweethome3d-install.sh ]
 then
   logger "graphical - Sweet Home 3D"
