@@ -7,8 +7,7 @@
 # -------------------------------------------------------
 
 # SSH - Asbru connexion manager
-curl -1sLf 'https://dl.cloudsmith.io/public/asbru-cm/release/cfg/setup/bash.deb.sh' | sudo -E bash
-sudo apt -y install asbru-cm 
+snap install asbru
 
 #  Visual Studio Code (for PlatformIO IDE)
 logger "programming - visual studio code"
