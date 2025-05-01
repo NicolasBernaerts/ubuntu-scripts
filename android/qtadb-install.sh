@@ -12,7 +12,7 @@ sudo mv ./QtADB*/QtADB /usr/local/sbin/qtadb
 sudo chmod +x /usr/local/sbin/qtadb
 
 # download desktop launcher
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/qtadb.png https://github.com/NicolasBernaerts/icon/blob/master/qtadb.png
+sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/qtadb.png https://github.com/NicolasBernaerts/icon/raw/refs/heads/master/qtadb.png
 sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/qtadb.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/android/qtadb.desktop
 
 # configuration file to get rid of launch crash
