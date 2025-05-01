@@ -25,7 +25,7 @@ echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
 # Tasmotizer
-sudo apt-get install python3-pyqt5.qtserialport
+sudo apt -y install python3-pyqt5.qtserialport
 pip3 install --break-system-packages tasmotizer
 mkdir --parent $HOME/.local/share/icons
 wget -O $HOME/.local/share/icons/tasmota.svg https://tasmota.github.io/docs/_media/logo.svg
