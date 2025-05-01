@@ -16,7 +16,7 @@ class ConvertMkvAacMenuProvider(GObject.GObject, Nautilus.MenuProvider):
 
   def convert_mkvaac(self, menu, file): subprocess.Popen("video-convert2mkvaac --video '" + file + "'", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-  def get_file_items(self, window, files):
+  def get_file_items(self, files):
     # if multiple selection, nothing to do
     if len(files) != 1: return
 
