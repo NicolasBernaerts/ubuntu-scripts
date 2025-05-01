@@ -3,7 +3,7 @@
 # Script to install misc utilities & tools on 24.04
 #
 # 07/12/2024, v1.0 - Migration from 22.04
-#                    To be tested !
+#
 # -------------------------------------------------------
 
 # htop and iotop
