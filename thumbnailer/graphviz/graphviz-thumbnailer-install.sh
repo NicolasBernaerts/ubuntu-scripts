@@ -13,20 +13,20 @@ sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scr
 sudo chmod +rx /usr/local/bin/bwrap
 
 # install previewer
-sudo wget --header='Accept-Encoding:none' -O /usr/share/icons/graphviz.png http://bernaerts.dyndns.org/download/ubuntu/graphviz/text-vnd.graphviz.png
-sudo wget --header='Accept-Encoding:none' -O /usr/local/bin/graphviz-preview https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-preview
+sudo wget -O /usr/share/icons/graphviz.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/graphviz.png
+sudo wget -O /usr/local/bin/graphviz-preview https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-preview
 sudo chmod +x /usr/local/bin/graphviz-preview
 
 # desktop integration
-sudo wget --header='Accept-Encoding:none' -O /usr/share/applications/graphviz.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.desktop
+sudo wget /usr/share/applications/graphviz.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.desktop
 sudo chmod +x /usr/share/applications/graphviz.desktop
 
 # install main thumnailer script
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/graphviz-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-thumbnailer
+sudo wget -O /usr/local/sbin/graphviz-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-thumbnailer
 sudo chmod +x /usr/local/sbin/graphviz-thumbnailer
 
 # thumbnailer integration
-sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/graphviz.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.thumbnailer
+sudo wget -O /usr/share/thumbnailers/graphviz.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.thumbnailer
 
 # stop nautilus
 nautilus -q
