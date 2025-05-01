@@ -48,17 +48,17 @@ class ImageRotateMenuProvider(GObject.GObject, Nautilus.MenuProvider):
       rotate_menu.set_submenu(submenu)
 
       # rotate left
-      rotate_left = Nautilus.MenuItem(name='ImageRotateMenuProvider::rotate_left', label='Left (-90°)', icon='rotate-left')
+      rotate_left = Nautilus.MenuItem(name='ImageRotateMenuProvider::rotate_left', label='Left (-90°)', icon='image-rotate-left')
       rotate_left.connect('activate', self.rotate_left, strFiles)
       submenu.append_item(rotate_left)
 
       # rotate right
-      rotate_right = Nautilus.MenuItem(name='ImageRotateMenuProvider::rotate_right', label='Right (+90°)', icon='rotate-right')
+      rotate_right = Nautilus.MenuItem(name='ImageRotateMenuProvider::rotate_right', label='Right (+90°)', icon='image-rotate-right')
       rotate_right.connect('activate', self.rotate_right, strFiles)
       submenu.append_item(rotate_right)
 
       # rotate updown
-      rotate_updown = Nautilus.MenuItem(name='ImageRotateMenuProvider::rotate_updown', label='Up side down (+180°)', icon='rotate-updown')
+      rotate_updown = Nautilus.MenuItem(name='ImageRotateMenuProvider::rotate_updown', label='Up side down (+180°)', icon='image-rotate-updown')
       rotate_updown.connect('activate', self.rotate_updown, strFiles)
       submenu.append_item(rotate_updown)
 
