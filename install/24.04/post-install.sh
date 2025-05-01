@@ -65,7 +65,7 @@ sudo apt -y upgrade
 if [ "${COMMON}" = "ok" ]
 then
     # gnomeshell
-    wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/gnomeshell
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/install/${DISTRI_VERSION}/gnomeshell
     if [ -f ./gnomeshell ]
     then
         chmod +x ./gnomeshell
