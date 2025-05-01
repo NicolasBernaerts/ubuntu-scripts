@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 # ---------------------------------------------------------
+#
 # Nautilus extension to convert a video file
-#  to MKV with AAC audio and optional midnight mode 
-# Menus is displayed according to pdf-booklet availability
+#  to MKV with AAC audio and optional midnight mode
+#
+# Menus is displayed according to video-convert2mkvaac availability
 #
 # Revision history :
 #   26/05/2020, V1.0 - Creation by N. Bernaerts
+#   30/04/2025, v1.1 - Update get_file_items
+#
 # ---------------------------------------------------------
 
 import subprocess
