@@ -46,11 +46,6 @@ then
   rm ./master-pdf-editor.deb
 fi
 
-# libreoffice PPA
-#logger "office - libreoffice"
-#sudo add-apt-repository -y ppa:libreoffice/ppa
-#sudo apt -y upgrade
-
 # Thumbnailer - LibreOffice
 wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
 if [ -f ./lo-thumbnailer-install.sh ]
