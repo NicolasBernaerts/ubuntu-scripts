@@ -3,7 +3,7 @@
 # Script to install android tools for 24.04
 #
 # 07/12/2024, v1.0 - Migration from 22.04
-#                    To be tested !
+#
 # -------------------------------------------------------
 
 # adb and fastboot
@@ -11,8 +11,8 @@ logger "android - adb and fastboot"
 sudo apt -y install android-tools-adb android-tools-fastboot
 
 # install GSConnect Gnomeshell plugin
-//logger "android - GSConnect"
-//gnomeshell-extension-manage --install --user --extension-id 1319 --version latest
+#logger "android - GSConnect"
+#gnomeshell-extension-manage --install --user --extension-id 1319 --version latest
 
 # declare complementary devices
 logger "android - complementary devices"
