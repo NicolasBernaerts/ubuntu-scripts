@@ -13,11 +13,11 @@ sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scr
 sudo chmod +rx /usr/local/bin/bwrap
 
 # install main script
-sudo wget --header='Accept-Encoding:none' -O /usr/local/sbin/apk-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/apk/apk-thumbnailer
+sudo wget -O /usr/local/sbin/apk-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/apk/apk-thumbnailer
 sudo chmod +x /usr/local/sbin/apk-thumbnailer
 
 # thumbnailer integration
-sudo wget --header='Accept-Encoding:none' -O /usr/share/thumbnailers/apk.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/apk/apk.thumbnailer
+sudo wget -O /usr/share/thumbnailers/apk.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/apk/apk.thumbnailer
 
 # stop nautilus
 nautilus -q
