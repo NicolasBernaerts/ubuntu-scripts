@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------------
-#  Ubuntu Jammy 24.04 LTS Post-installation script
+#  Ubuntu 24.04 LTS Post-installation script
 #
 #  This script will run some commands as sudo
 # 
