@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # ----------------------------------------------------------------
+#
 # Script to install internet tools on 24.04
 #
 # 05/12/2024, v1.0 - Migrated from 22.04
+# 01/05/2025, v1.1 - Firefox and Thunderbird from Mozilla PPA
 #
 # ----------------------------------------------------------------
 
@@ -11,13 +13,13 @@
 #sudo apt -y install nmap snmp snmp-mibs-downloader
 
 # replace snap firefox by official mozilla deb
-#sudo snap remove --purge firefox
-#echo "Package: *" | sudo tee /etc/apt/preferences.d/mozilla-firefox
-#echo "Pin: release o=LP-PPA-mozillateam" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
-#echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
-#echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
-#sudo add-apt-repository -y ppa:mozillateam/ppa
-#sudo apt install firefox
+sudo snap remove --purge firefox
+echo "Package: *" | sudo tee /etc/apt/preferences.d/mozilla-firefox
+echo "Pin: release o=LP-PPA-mozillateam" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
+echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/mozilla-firefox
+echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+sudo add-apt-repository -y ppa:mozillateam/ppa
+sudo apt -y install firefox
 
 # firefox extension manager
 #wget --header='Accept-Encoding:none' https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/mozilla/firefox-extension-manager-install.sh
@@ -28,6 +30,18 @@
 #  ./firefox-extension-manager-install.sh
 #  rm ./firefox-extension-manager-install.sh
 #fi
+
+# replace snap thunderbird by official mozilla deb
+sudo snap remove --purge thunderbird
+sudo apt remove thunderbird
+echo "Package: thunderbird*" | sudo tee /etc/apt/preferences.d/mozilla-thunderbird
+echo "Pin: release o=LP-PPA-mozillateam" | sudo tee -a /etc/apt/preferences.d/mozilla-thunderbird
+echo "Pin-Priority: 1001" | sudo tee -a /etc/apt/preferences.d/mozilla-thunderbird
+echo "Package: thunderbird*" | sudo tee -a /etc/apt/preferences.d/mozilla-thunderbird
+echo "Pin: release o=Ubuntu" | sudo tee -a /etc/apt/preferences.d/mozilla-thunderbird
+echo "Pin-Priority: -1" | sudo tee -a /etc/apt/preferences.d/mozilla-thunderbird
+sudo apt update
+sudo apt -y install thunderbird
 
 # youtube-dl replaced by yt-dlp
 sudo wget -O "/usr/local/bin/yt-dlp" https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux
