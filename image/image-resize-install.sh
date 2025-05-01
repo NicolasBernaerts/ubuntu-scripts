@@ -18,7 +18,7 @@ gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
-sudo wget -O /usr/share/icons/image-resize.png https://github.com/NicolasBernaerts/icon/blob/master/image/image-resize.png
+sudo wget -O /usr/share/icons/image-resize.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-resize.png
 
 # main script installation
 sudo wget -O /usr/local/bin/image-convert https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-convert
