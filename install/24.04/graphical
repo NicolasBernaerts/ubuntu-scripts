@@ -62,7 +62,7 @@ fi
 sudo apt -y install heif-thumbnailer libheif-examples
 
 # Nautilus : Image convert extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-convert-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-convert-install.sh
 if [ -f ./image-convert-install.sh ]
 then
   logger "graphical - Image convert extension"
@@ -72,7 +72,7 @@ then
 fi
 
 # Nautilus : Image resize extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-resize-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-resize-install.sh
 if [ -f ./image-resize-install.sh ]
 then
   logger "graphical - Image resize extension"
@@ -82,21 +82,11 @@ then
 fi
 
 # Nautilus : Image rotate extension
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/image/image-rotate-install.sh
+wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-rotate-install.sh
 if [ -f ./image-rotate-install.sh ]
 then
   logger "graphical - Image rotate extension"
   chmod +x ./image-rotate-install.sh
   ./image-rotate-install.sh
   rm ./image-rotate-install.sh
-fi
-
-# Nautilus : EXIF extensions
-wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/master/nautilus/nautilus-exif-install.sh
-if [ -f ./nautilus-exif-install.sh ]
-then
-  logger "graphical - Nautilus EXIF extensions"
-  chmod +x ./nautilus-exif-install.sh
-  ./nautilus-exif-install.sh
-  rm ./nautilus-exif-install.sh
 fi
