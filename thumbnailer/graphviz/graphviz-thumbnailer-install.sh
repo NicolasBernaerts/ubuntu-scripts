@@ -18,7 +18,7 @@ sudo wget -O /usr/local/bin/graphviz-preview https://github.com/NicolasBernaerts
 sudo chmod +x /usr/local/bin/graphviz-preview
 
 # desktop integration
-sudo wget /usr/share/applications/graphviz.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.desktop
+sudo wget -O /usr/share/applications/graphviz.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.desktop
 sudo chmod +x /usr/share/applications/graphviz.desktop
 
 # install main thumnailer script
