@@ -20,6 +20,7 @@
 # -------------------
 
 import gi
+gi.require_version("Gtk", "4.0")
 gi.require_version("GExiv2", "0.10")
 from urllib.parse import unquote
 from gi.repository import Nautilus, GObject
