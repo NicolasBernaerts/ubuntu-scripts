@@ -19,7 +19,7 @@ fi
 sudo apt -y install hplip-gui
 
 # NAPS2 scanner
-wget -O naps2.deb https://github.com/cyanfish/naps2/releases/download/v7.5.2/naps2-7.5.2-linux-x64.deb
+wget -O naps2.deb https://github.com/cyanfish/naps2/releases/download/v8.1.4/naps2-8.1.4-linux-x64.deb
 if [ -f ./naps2.deb ]
 then
   logger "office - NAPS2 scanner"
