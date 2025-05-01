@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=scrcpy
+Exec=/usr/local/bin/scrcpy
 Hidden=false
 NoDisplay=false
 Icon=phone
