@@ -11,3 +11,4 @@ Comment[fr]=Outil pour scanner directment des documents vers un répertoire
 Categories=GNOME;Graphics
 MimeType=
 Icon=/usr/share/icons/gnome/256x256/devices/scanner.png
+StartupWMClass=yad
