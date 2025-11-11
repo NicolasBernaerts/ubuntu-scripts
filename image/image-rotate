@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # --------------------------------------------
+#
 #  Rotate a list of image files
 #
 #  Depends on :
@@ -12,6 +13,8 @@
 #    01/03/2018, V1.1 - Jpeg lossless rotation with exiftool
 #    03/05/2020, V2.0 - Rewrite for Nautilus Python wrapper 
 #                       Adaptation for Ubuntu 20.04 LTS 
+#    11/10/2025, V2.1 - Correct multiple files bug
+#
 # ---------------------------------------------------
 
 # ------------------
@@ -104,10 +107,16 @@ then
 
 		# generate temporary files
 		TMP_ORIGINAL="${TMP_DIR}/original.${IMAGE_EXT}"
+		TMP_TARGET="${TMP_DIR}/target.${IMAGE_EXT}"
 		TMP_PNM_ORG="${TMP_DIR}/original.pnm"
 		TMP_PNM_ROT="${TMP_DIR}/target.pnm"
-		TMP_TARGET="${TMP_DIR}/target.${IMAGE_EXT}"
 
+		# cleanup files
+		rm -f "${TMP_ORIGINAL}"
+		rm -f "${TMP_TARGET}"
+		rm -f "${TMP_PNM_ORG}"
+		rm -f "${TMP_PNM_ROT}"
+		
 		# copy input file to temporary folder
 		echo "# ${INDEX} / ${NBR_FILE} - Copy of original image ..."
 		gio copy "${IMAGE_URI}" "${TMP_ORIGINAL}"
