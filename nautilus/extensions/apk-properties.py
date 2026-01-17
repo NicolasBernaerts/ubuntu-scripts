@@ -11,10 +11,11 @@
 #   http://bernaerts.dyndns.org/linux/...
 #
 # Revision history :
-#   02/03/2014, v1.0 - creation by N. Bernaerts
-#   24/04/2020, v2.0 - rewrite for python3 compatibility
-#   01/05/2025, v2.1 - convert \g to \\g
-#                      change PropertiesPageProvider to PropertiesModelProvider
+#   02/03/2014, v1.0 - Creation by N. Bernaerts
+#   24/04/2020, v2.0 - Rewrite for python3 compatibility
+#   01/05/2025, v2.1 - Convert \g to \\g
+#                      Change PropertiesPageProvider to PropertiesModelProvider
+#   17/01/2026, v2.2 - Remove reference to pipes module
 #
 # ---------------------------------------------------
 
@@ -25,7 +26,6 @@
 import io
 import subprocess
 import re
-import pipes
 from urllib.parse import unquote
 from gi.repository import Nautilus, Gtk, GObject
 
