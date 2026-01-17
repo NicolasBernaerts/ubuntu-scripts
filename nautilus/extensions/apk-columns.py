@@ -13,7 +13,8 @@
 #   08/11/2014, V1.0 - Creation by N. Bernaerts
 #   25/04/2020, v2.0 - rewrite for python3 compatibility
 #                      add application name
-#   30/04/2025, v2.1 - change \g to \\g
+#   30/04/2025, v2.1 - Change \g to \\g
+#   17/01/2026, v2.2 - Remove reference to pipes module
 #
 # ---------------------------------------------------
 
@@ -24,7 +25,6 @@
 import io
 import subprocess
 import re
-import pipes
 from urllib.parse import unquote
 from gi.repository import Nautilus, GObject
 
