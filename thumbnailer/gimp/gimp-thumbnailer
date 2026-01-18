@@ -5,7 +5,7 @@
 # Procedure :
 #   http://bernaerts.dyndns.org/linux/76-gnome/xxx
 # Depends on :
-#   * xcf2pnm (xcftools package)
+#   * convert (imagemagick package)
 #   * pnmscalefixed and pnmtopng (netpbm package)
 # Parameters :
 #   $1 - path of XCF file
@@ -15,6 +15,7 @@
 #   26/11/2014, V1.0 - Creation by N. Bernaerts
 #   07/10/2017, V1.1 - Speedup with netpbm tools
 #   11/12/2018, V1.2 - Rework for bubblewrap compatibility
+#   17/01/2026, V1.3 - Switch from xcftools to imagemagick
 # ---------------------------------------------------
 
 # check tools availability 
