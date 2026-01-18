@@ -6,7 +6,7 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
 
 # install tools
-sudo apt -y install xcftools netpbm
+sudo apt -y install netpbm
 
 # install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
 [ ! -f /usr/local/bin/bwrap ] && sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/bwrap
