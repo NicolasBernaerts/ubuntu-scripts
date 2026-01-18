@@ -18,7 +18,7 @@
 # ---------------------------------------------------
 
 # check tools availability 
-command -v xcf2pnm >/dev/null 2>&1 || { echo "[error] xcf2pnm missing"; exit 1; }
+command -v convert >/dev/null 2>&1 || { echo "[error] convert missing"; exit 1; }
 command -v pnmscalefixed >/dev/null 2>&1 || { echo "[error] pnmscalefixed missing"; exit 1; }
 command -v pnmtopng >/dev/null 2>&1 || { echo "[error] pnmtopng missing"; exit 1; }
 
@@ -31,4 +31,4 @@ FILE_THUMB="$2"
 HEIGHT="$3"
 
 # generate thumbnail
-xcf2pnm -c --autocrop "${FILE_LOCAL}" | pnmscalefixed -xysize ${HEIGHT} ${HEIGHT} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
+convert "${FILE_LOCAL}" PNM:- | pnmscalefixed -xysize ${HEIGHT} ${HEIGHT} - | pnmtopng -downscale -compression 0 - > "${FILE_THUMB}"
