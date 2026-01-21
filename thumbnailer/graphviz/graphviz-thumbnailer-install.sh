@@ -33,9 +33,7 @@ sudo chmod +x /usr/local/sbin/graphviz-thumbnailer
 sudo wget -O /usr/share/thumbnailers/graphviz.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.thumbnailer
 
 # stop file manager
-FILE_MANAGER=$(basename $(which nautilus))
-[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which nemo))
-[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which dolphin))
+FILE_MANAGER=$(grep -i "exec=" /usr/share/applications/$(xdg-mime query default "inode/directory")  | tail -n 1 | cut -d'=' -f2 | cut -d' ' -f1)
 [ "${FILE_MANAGER}" != "" ] && "${FILE_MANAGER}" -q
 
 # empty cache of previous thumbnails
