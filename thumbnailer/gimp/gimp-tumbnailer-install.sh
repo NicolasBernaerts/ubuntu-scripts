@@ -5,9 +5,9 @@
 #   Ubuntu, Debian and Linux Mint (thanks to kafeenstra)
 # -----------------------------------------
 
-# test Ubuntu distribution
+# test distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
-[ "${DISTRO}" != "Ubuntu" -a "${DISTRO}" != "Debian" -a "${DISTRO}" != "Linuxmint" ] && { zenity --error --text="This  installation script is for Ubuntu, Debian or Linux Mint"; exit 1; }
+[ "${DISTRO}" != "Ubuntu" -a "${DISTRO}" != "Debian" -a "${DISTRO}" != "Linuxmint" ] && { zenity --error --text="This installation script is for Ubuntu, Debian or Linux Mint"; exit 1; }
 
 # install tools
 sudo apt -y install netpbm
@@ -27,7 +27,7 @@ sudo wget -O /usr/share/thumbnailers/gimp.thumbnailer https://github.com/Nicolas
 FILE_MANAGER=$(basename $(which nautilus))
 [ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which nemo))
 [ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which dolphin))
-"${FILE_MANAGER}" -q
+[ "${FILE_MANAGER}" != "" ] && "${FILE_MANAGER}" -q
 
 # empty cache of previous thumbnails
 [ -d "$HOME/.cache/thumbnails" ] && rm --recursive --force $HOME/.cache/thumbnails/*
