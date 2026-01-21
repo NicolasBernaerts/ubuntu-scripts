@@ -1,25 +1,27 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------
+#
 # Thumbnailer for Ms Office documents
 #
-# Procedure :
-#   http://bernaerts.dyndns.org/linux/76-gnome/325-gnome-shell-generate-msoffice-thumbnail-nautilus
 # Depends on :
 #   * libreoffice
 #   * mimetype (libfile-mimeinfo-perl package)
 #   * pbmmake, pngtopnm, pnmtopng, pnmscalefixed and pnmcomp (netpbm package)
+#
 # Parameters :
 #   $1 - path of office file
 #   $2 - path of generated thumbnail
 #   $3 - height of thumbnail in pixels
+#
 # Revision history :
-# 11/11/2014, V1.0 - Creation by N. Bernaerts
-# 15/11/2014, V2.0 - Change to URI and GVFS to handle thumbnails on network shares
-# 31/07/2015, V2.1 - More robust unoconv command line (thanks to Vaderqk)
-# 07/10/2017, V2.2 - Speedup with netpbm tools
-# 10/03/2018, V3.0 - Switch from unoconv to libreoffice in headless mode
-# 15/03/2018, V3.1 - Handle libreoffice and soffice binaries
-# 09/12/2018, V3.2 - Rework for bubblewrap compatibility (thanks to Li Chong)
+#   11/11/2014, v1.0 - Creation by N. Bernaerts
+#   15/11/2014, v2.0 - Change to URI and GVFS to handle thumbnails on network shares
+#   31/07/2015, v2.1 - More robust unoconv command line (thanks to Vaderqk)
+#   07/10/2017, v2.2 - Speedup with netpbm tools
+#   10/03/2018, v3.0 - Switch from unoconv to libreoffice in headless mode
+#   15/03/2018, v3.1 - Handle libreoffice and soffice binaries
+#   09/12/2018, v3.2 - Rework for bubblewrap compatibility (thanks to Li Chong)
+#
 # ---------------------------------------------------
 
 # check libreoffice availability (binary can be either libreoffice or soffice)
