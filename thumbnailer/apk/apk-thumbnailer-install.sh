@@ -10,7 +10,7 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 [ "${DISTRO}" != "Ubuntu" -a "${DISTRO}" != "Debian" -a "${DISTRO}" != "Linuxmint" ] && { zenity --error --text="This installation script is for Ubuntu, Debian or Linux Mint"; exit 1; }
 
 # install tools
-sudo apt-get -y install gvfs-bin aapt unzip netpbm
+sudo apt-get -y install aapt unzip netpbm
 
 # install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
 sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/bwrap
