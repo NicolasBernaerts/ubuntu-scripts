@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------
+#
 # Thumbnailer for APK archives files
 # Display embedded icon and version number (option)
 #
-# Procedure :
-#   http://bernaerts.dyndns.org/linux/76-gnome/284-gnome-shell-generate-apk-thumbnail-nautilus
 # Depends on :
 #   * unzip
 #   * aapt
 #   * pngtopnm, pnmtopng, pnmcrop, pnmpad, pnmscalefixed and pnmcomp (netpbm package)
+#
 # Parameters :
 #   $1 - path of APK archive
 #   $2 - path of generated thumbnail
 #   $3 - height of thumbnail in pixels
+#
 # Revision history :
 #   04/08/2013, V1.0 - Creation by N. Bernaerts
 #   11/08/2013, V1.1 - Use aapt to get icon file
@@ -21,6 +22,7 @@
 #   15/11/2014, V3.0 - Use URI to handle network shares
 #   07/10/2017, V3.1 - Speedup with netpbm tools
 #   15/12/2018, V3.2 - Rework for bubblewrap compatibility
+#
 # ---------------------------------------------------
 
 # check tools availability
