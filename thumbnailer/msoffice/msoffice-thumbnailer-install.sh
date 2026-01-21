@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
+# -----------------------------------------
 # Ms Office thumbnailer installation script
+# Should be compatible with 
+#   Ubuntu, Debian and Linux Mint (thanks to kafeenstra)
+# -----------------------------------------
 
 # test Ubuntu distribution
 DISTRO=$(lsb_release -is 2>/dev/null)
-[ "${DISTRO}" != "Ubuntu" ] && { zenity --error --text="This automatic installation script is for Ubuntu only"; exit 1; }
+[ "${DISTRO}" != "Ubuntu" -a "${DISTRO}" != "Debian" -a "${DISTRO}" != "Linuxmint" ] && { zenity --error --text="This  installation script is for Ubuntu, Debian or Linux Mint"; exit 1; }
 
 # install tools
 sudo apt-get -y install libfile-mimeinfo-perl netpbm
@@ -38,11 +42,14 @@ sudo chmod +rx /usr/local/sbin/msoffice-thumbnailer
 # thumbnailer integration
 sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/msoffice/msoffice.thumbnailer
 
-# if present, disable gsf-office.thumbnailer (used in UbuntuGnome 16.04)
+# if present, disable gsf-office.thumbnailer
 [ -f /usr/share/thumbnailers/gsf-office.thumbnailer ] && sudo mv /usr/share/thumbnailers/gsf-office.thumbnailer /usr/share/thumbnailers/gsf-office.thumbnailer.org
 
-# stop nautilus
-nautilus -q
+# stop file manager
+FILE_MANAGER=$(basename $(which nautilus))
+[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which nemo))
+[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which dolphin))
+"${FILE_MANAGER}" -q
 
 # remove previously cached files (thumbnails and masks)
 [ -d "$HOME/.cache/thumbnails" ] && rm --recursive --force $HOME/.cache/thumbnails/*
