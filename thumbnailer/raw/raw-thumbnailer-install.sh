@@ -1,5 +1,13 @@
 #!/bin/sh
+# -----------------------------------------
 # RAW files thumbnailer installation script
+# Should be compatible with 
+#   Ubuntu, Debian and Linux Mint (thanks to kafeenstra)
+# -----------------------------------------
+
+# test distribution
+DISTRO=$(lsb_release -is 2>/dev/null)
+[ "${DISTRO}" != "Ubuntu" -a "${DISTRO}" != "Debian" -a "${DISTRO}" != "Linuxmint" ] && { zenity --error --text="This installation script is for Ubuntu, Debian or Linux Mint"; exit 1; }
 
 # install tools
 sudo apt-get -y install dcraw libjpeg-turbo-progs netpbm
@@ -15,8 +23,11 @@ sudo chmod +x /usr/local/sbin/raw-thumbnailer
 # thumbnailer integration
 sudo wget -O /usr/share/thumbnailers/raw.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/raw/raw.thumbnailer
 
-# stop nautilus
-nautilus -q
+# stop file manager
+FILE_MANAGER=$(basename $(which nautilus))
+[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which nemo))
+[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which dolphin))
+[ "${FILE_MANAGER}" != "" ] && "${FILE_MANAGER}" -q
 
 # empty cache of previous thumbnails
 [ -d "$HOME/.cache/thumbnails" ] && rm --recursive --force $HOME/.cache/thumbnails/*
