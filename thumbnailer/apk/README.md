@@ -1,4 +1,4 @@
-# Android APK files Thumbnailer for Nautilus #
+# Android APK files Thumbnailer #
 
 ## Introduction ##
 
