@@ -8,8 +8,6 @@ The package gnome-xcf-thumbnailer is supposed to enable XCF files thumbnailing u
 
 But till date it is broken. So I decided to write a small ans simple thumbnailer for XCF files.
 
-## Description & Installation ##
+## Installation ##
 
-Complete description and full installation procedure are available at
-
-http://www.bernaerts-nicolas.fr/linux/76-gnome/xxx
+Just download and run installation script : 
