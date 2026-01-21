@@ -4,6 +4,7 @@ You'll find here some Thumbnailers I've made for various file formats :
   * GIMP
   * Graphviz
   * RAW pictures
+  * Android APK files
 
 They should work under Ubuntu, Debian and Linux Mint.
 
