@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
+#
 #  Convert video to MKV container and
 #   transcode audio to AAC with optionnal midnight mode audio track
-#  
+#
 #  Usage is explained at http://www.bernaerts-nicolas.fr/linux/74-ubuntu/336-ubuntu-transcode-video-mkv-aac-nautilus
 #
 #  Depends on :
@@ -12,23 +13,26 @@
 #    * sox
 #    * fdkaac
 #    * mkvmerge (mkvtoolnix)
-#  
+#
 #  Revision history :
-#    23/01/2015, V1.0 - Creation by N. Bernaerts
-#    24/01/2015, V1.1 - Properly handle progress cancellation
+#    23/01/2015, v1.0 - Creation by N. Bernaerts
+#    24/01/2015, v1.1 - Properly handle progress cancellation
 #                       Change video file detection algorithm
-#    19/07/2015, V2.0 - Handle multiple file selection
+#    19/07/2015, v2.0 - Handle multiple file selection
 #                       Add GUI mode to select tracks
 #                       and to add midnight mode tracks
-#    20/07/2015, V2.1 - Switch to YAD and select rates
-#    12/12/2015, V2.2 - Make track langage editable
-#    13/12/2015, V2.3 - Add default track selection
-#    18/12/2015, V2.4 - Correct nasty bug with PID < 10000
-#    03/06/2016, V2.5 - Remove any multi-threaded option to avoid audio time shift
-#    05/06/2016, V2.6 - Add audio tracks description
-#    05/08/2018, V2.7 - Switch to ffmpeg instead of avconv
-#    26/05/2020, V2.8 - Ubuntu Focal 20.04 compatibility
-#    30/05/2020, V3.0 - Rewrite mediainfo data extraction
+#    20/07/2015, v2.1 - Switch to YAD and select rates
+#    12/12/2015, v2.2 - Make track langage editable
+#    13/12/2015, v2.3 - Add default track selection
+#    18/12/2015, v2.4 - Correct nasty bug with PID < 10000
+#    03/06/2016, v2.5 - Remove any multi-threaded option to avoid audio time shift
+#    05/06/2016, v2.6 - Add audio tracks description
+#    05/08/2018, v2.7 - Switch to ffmpeg instead of avconv
+#    26/05/2020, v2.8 - Ubuntu Focal 20.04 compatibility
+#    30/05/2020, v3.0 - Rewrite mediainfo data extraction
+#    17/01/2026, v3.1 - Port mediainfo extraction on jq
+#                       Ubuntu 26.04 compatibility
+#
 # -------------------------------------------------------
 
 # ------------------
@@ -88,7 +92,7 @@ FILE_COVER="${FILE_DIR}/${FILE_NAME}.${COVER_EXT}"
 TMP_DIR=$(mktemp -t -d "video-XXXXXXXX")
 TMP_ORIGINAL="${TMP_DIR}/original.${FILE_EXT}"
 TMP_TARGET="${TMP_DIR}/target.mkv"
-TMP_INFO="${TMP_DIR}/info.txt"
+TMP_INFO="${TMP_DIR}/info.json"
 TMP_AUDIO="${TMP_DIR}/audio.txt"
 
 # ---------------------
@@ -111,27 +115,35 @@ COVER_EXT=$(cat "${FILE_CONF}" | grep "extension" | cut -d'=' -f2)
 # -------------------------
 
 # set main parameters
-ARR_PARAM_CONFIG=( "--field=File:RO" "${FILE_BASE}" "--field=\nTranscode rates (kbits/s)\n:LBL" "rate" "--field=Midnight mode:CB" "${RATE_DRC}|${RATE_AVAILABLE}" "--field=Stereo:CB" "${RATE_STEREO}|${RATE_AVAILABLE}" "--field=Multi channels:CB" "${RATE_MULTI}|${RATE_AVAILABLE}")
+ARR_PARAM_CONFIG=( "--field=File:RO" "${FILE_BASE}" )
+#ARR_PARAM_CONFIG=( "${ARR_PARAM_CONFIG[@]}" "--field=\nTranscode(kbits):LBL" "rate" )
+ARR_PARAM_CONFIG=( "${ARR_PARAM_CONFIG[@]}" "--field=Midnight mode:CB" "${RATE_DRC}|${RATE_AVAILABLE}" )
+ARR_PARAM_CONFIG=( "${ARR_PARAM_CONFIG[@]}" "--field=Stereo:CB" "${RATE_STEREO}|${RATE_AVAILABLE}" )
+ARR_PARAM_CONFIG=( "${ARR_PARAM_CONFIG[@]}" "--field=Multi-channels:CB" "${RATE_MULTI}|${RATE_AVAILABLE}" )
 
 # display dialog box selection
-CHOICE=$(yad --center --width=400 --height=200 --window-icon "video" --image "video" --title="MKV/AAC multiplexer" --form --item-separator='|' "${ARR_PARAM_CONFIG[@]}")
+echo yad --center --width=400 --height=200 --icon "video" --image "video" --title "MKV/AAC multiplexer" --form --item-separator "|" "${ARR_PARAM_CONFIG[@]}"
+
+CHOICE=$(yad --center --width=400 --height=200 --title "MKV/AAC multiplexer" --form --item-separator "|" "${ARR_PARAM_CONFIG[@]}")
+
+echo $CHOICE
 
 # get parameters
 [ "${CHOICE}" = "" ] && exit 1
-RATE=$(echo "${CHOICE}" | cut -d'|' -f3)
+RATE=$(echo "${CHOICE}" | cut -d'|' -f2)
 [ "${RATE}" != "" ] && RATE_DRC="${RATE}"
-RATE=$(echo "${CHOICE}" | cut -d'|' -f4)
+RATE=$(echo "${CHOICE}" | cut -d'|' -f3)
 [ "${RATE}" != "" ] && RATE_STEREO="${RATE}"
-RATE=$(echo "${CHOICE}" | cut -d'|' -f5)
+RATE=$(echo "${CHOICE}" | cut -d'|' -f4)
 [ "${RATE}" != "" ] && RATE_MULTI="${RATE}"
 
 # ---------------------------------------------------------------------
 # variable initialisation
 # ---------------------------------------------------------------------
 
-(
+#(
 
-#IFS=$'\n'
+IFS=$'\n'
 
 # initialize file list with original file (for video track)
 ARR_FILE=("0:0")
@@ -156,10 +168,10 @@ gio copy "${FILE_VIDEO}" "${TMP_ORIGINAL}"
 
 # get file properties to check it is a video file
 echo "# Check video file"
-mediainfo --Output=JSON "${TMP_ORIGINAL}" | xargs | sed "s|@type:|\n|g" > "${TMP_INFO}" 
+mediainfo --Output=JSON "${TMP_ORIGINAL}" > "${TMP_INFO}" 
 
 # extract video data
-VIDEO_ID=$(grep " Video," "${TMP_INFO}" | tail -n 1 | tr "," "\n" | grep " ID:" | cut -d ":" -f2 | xargs)
+VIDEO_ID=$(jq --raw-output '.media.track[] | select(.["@type"] == "Video") | .ID' "${TMP_INFO}")
 echo "# Video #${VIDEO_ID} detected"
 
 # if file contains a video track
@@ -169,26 +181,25 @@ then
 	#  extraction of audio tracks
 	# -----------------------------
 
-	grep " Audio," "${TMP_INFO}" > "${TMP_AUDIO}"
-	while read LINE           
-	do 
-		TRACK_ID=$(echo "${LINE}" | tr "," "\n" | grep -i " ID:" | cut -d ":" -f2 | xargs)
-		TRACK_LANGUAGE=$(echo "${LINE}" | tr "," "\n" | grep -i " Language:" | cut -d ":" -f2 | xargs)
-		TRACK_FORMAT=$(echo "${LINE}" | tr "," "\n" | grep -i " Format:" | cut -d ":" -f2 | xargs)
-		TRACK_CHANNEL=$(echo "${LINE}" | tr "," "\n" | grep -i " Channels:" | cut -d ":" -f2 | xargs)
-		TRACK_RATE=$(echo "${LINE}" | tr "," "\n" | grep -i " BitRate:" | cut -d ":" -f2 | xargs)
-		TRACK_DEFAULT=$(echo "${LINE}" | tr "," "\n" | grep -i " Default:" | cut -d ":" -f2 | xargs)
-		TRACK_TITLE=$(echo "${LINE}" | tr "," "\n" | grep -i " Title:" | cut -d ":" -f2 | xargs)
-		TRACK_DELAY=$(echo "${LINE}" | tr "," "\n" | grep -i " Delayrelativetovideo:" | cut -d ":" -f2 | xargs)
+	ARR_TRACK_ID=( $(jq --raw-output '.media.track[] | select(.["@type"] == "Audio") | .ID' "${TMP_INFO}") )
+	for TRACK_ID in "${ARR_TRACK_ID[@]}"
+	do
+		TRACK_LANGUAGE=$(jq --raw-output '.media.track[] | select(.["ID"] == "'${TRACK_ID}'") | .Language' "${TMP_INFO}")
+		TRACK_FORMAT=$(jq --raw-output   '.media.track[] | select(.["ID"] == "'${TRACK_ID}'") | .Format'   "${TMP_INFO}")
+		TRACK_CHANNEL=$(jq --raw-output  '.media.track[] | select(.["ID"] == "'${TRACK_ID}'") | .Channels' "${TMP_INFO}")
+		TRACK_RATE=$(jq --raw-output     '.media.track[] | select(.["ID"] == "'${TRACK_ID}'") | .BitRate'  "${TMP_INFO}")
+		TRACK_DEFAULT=$(jq --raw-output  '.media.track[] | select(.["ID"] == "'${TRACK_ID}'") | .Default'  "${TMP_INFO}")
+		TRACK_TITLE=$(jq --raw-output    '.media.track[] | select(.["ID"] == "'${TRACK_ID}'") | .Title'    "${TMP_INFO}")
+		TRACK_DELAY=$(jq --raw-output    '.media.track[] | select(.["ID"] == "'${TRACK_ID}'") | .Delayrelativetovideo' "${TMP_INFO}")
 
 		# format data
 		TRACK_ID=$((TRACK_ID - VIDEO_ID));
-		[ "${TRACK_LANGUAGE}" = "" ] && TRACK_LANGUAGE="und"
-		[ "${TRACK_DELAY}" = "" ] && TRACK_DELAY=0
+		[ "${TRACK_LANGUAGE}" = "null" ] && TRACK_LANGUAGE="und"
+		[ "${TRACK_DELAY}" = "null" ]    && TRACK_DELAY=0
 
 		echo "# Audio #${TRACK_ID} detected (${TRACK_FORMAT})"
 		ARR_TRACK=("${ARR_TRACK[@]}" "${TRACK_ID}|${TRACK_LANGUAGE}|${TRACK_FORMAT}|${TRACK_CHANNEL}|${TRACK_RATE}|${TRACK_DEFAULT}|${TRACK_DELAY}|${TRACK_TITLE}")
-	done < "${TMP_AUDIO}"
+	done
 
 	# -----------------------------------------
 	#  loop to prepare audio tracks selection
@@ -382,7 +393,7 @@ then
 	gio copy "${TMP_TARGET}" "${FILE_MKV}" 
 fi
 
-) | zenity --window-icon=video --width=500 --title="Conversion to MKV with AAC audio" --progress --pulsate --auto-close &
+#) | zenity --window-icon=video --width=500 --title="Conversion to MKV with AAC audio" --progress --pulsate --auto-close &
 
 # get zenity process and child proces which is parent of all running tasks 
 PID_ZENITY=${!}
@@ -404,4 +415,3 @@ done
 
 # remove temporary directory
 rm -r "${TMP_DIR}"
-
