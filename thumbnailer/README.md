@@ -1,4 +1,9 @@
-You'll find here some Thumbnailers I've made for various file formats.
+You'll find here some Thumbnailers I've made for various file formats :
+  * Libre Office
+  * Ms Office
+  * GIMP
+  * Graphviz
+  * RAW pictures
 
 They should work under Ubuntu, Debian and Linux Mint.
 
