@@ -10,4 +10,4 @@ But till date it is broken. So I decided to write a small ans simple thumbnailer
 
 ## Installation ##
 
-Just download and run installation script : 
+Just download and run installation script **gimp-tumbnailer-install.sh**
