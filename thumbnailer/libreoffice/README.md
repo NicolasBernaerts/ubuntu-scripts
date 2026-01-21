@@ -1,14 +1,13 @@
-# LibreOffice documents Thumbnailer for Nautilus #
+# LibreOffice documents Thumbnailer #
 
 ## Introduction ##
 
-When you use Gnome Shell under Ubuntu or Debian, all LibreOffice files are displayed thru some generic icons in Nautilus.
+When you use Gnome Shell under Ubuntu or Debian, all LibreOffice files are displayed thru some generic icons in your file manager.
 
-This project explains all the steps needed to configure Nautilus to display thumbnails of LibreOffice documents
-including document type icon and first page content, providing a simple and efficient LibreOffice documents preview.
+This project handles all the steps needed to configure your file manager to display thumbnails of LibreOffice documents.
 
-## Description & Installation ##
+Thumbnail includes document type icon and first page content, providing a simple and efficient LibreOffice documents preview.
 
-Complete description and full installation procedure are available at
+## Installation ##
 
-http://www.bernaerts-nicolas.fr/linux/76-gnome/285-gnome-shell-generate-libreoffice-thumbnail-nautilus
+Just download and run installation script **libreoffice-tumbnailer-install.sh**
