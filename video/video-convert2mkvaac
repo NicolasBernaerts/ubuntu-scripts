@@ -9,9 +9,8 @@
 #  Depends on :
 #    * yad
 #    * mediainfo
-#    * ffmpeg
-#    * sox
-#    * fdkaac
+#    * jq
+#    * ffmpeg, sox, fdkaac
 #    * mkvmerge (mkvtoolnix)
 #
 #  Revision history :
