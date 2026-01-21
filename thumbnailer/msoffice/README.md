@@ -1,14 +1,13 @@
-# Gnome Shell Ms Office documents Thumbnailer #
+# Ms Office documents Thumbnailer #
 
 ## Introduction ##
 
-When you use Gnome Shell under Ubuntu or Debian, all Ms Office files are displayed thru some generic icons in Nautilus.
+Under Ubuntu or Debian, all Ms Office files are displayed thru some generic icons in Nautilus.
 
-This project explains all the steps needed to configure Nautilus to display thumbnails of Ms Office documents
-including document type icon and first page content, providing a simple and efficient documents preview.
+This project handles all the steps needed to configure your file manager to display thumbnails of Ms Office documents.
 
-## Description & Installation ##
+Thumnails include document type icon and first page content, providing a simple and efficient documents preview.
 
-Complete description and full installation procedure are available at
+## Installation ##
 
-http://www.bernaerts-nicolas.fr/linux/76-gnome/325-gnome-shell-generate-msoffice-thumbnail-nautilus
+Just download and run installation script **msoffice-tumbnailer-install.sh**
