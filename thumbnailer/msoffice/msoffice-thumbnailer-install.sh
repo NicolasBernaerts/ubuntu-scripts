@@ -46,9 +46,7 @@ sudo wget -O /usr/share/thumbnailers/msoffice.thumbnailer https://github.com/Nic
 [ -f /usr/share/thumbnailers/gsf-office.thumbnailer ] && sudo mv /usr/share/thumbnailers/gsf-office.thumbnailer /usr/share/thumbnailers/gsf-office.thumbnailer.org
 
 # stop file manager
-FILE_MANAGER=$(basename $(which nautilus))
-[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which nemo))
-[ "${FILE_MANAGER}" = "" ] && FILE_MANAGER=$(basename $(which dolphin))
+FILE_MANAGER=$(grep -i "exec=" /usr/share/applications/$(xdg-mime query default "inode/directory")  | tail -n 1 | cut -d'=' -f2 | cut -d' ' -f1)
 [ "${FILE_MANAGER}" != "" ] && "${FILE_MANAGER}" -q
 
 # remove previously cached files (thumbnails and masks)
