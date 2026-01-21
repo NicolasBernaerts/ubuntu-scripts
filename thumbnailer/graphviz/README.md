@@ -1,12 +1,9 @@
-# Graphviz files Thumbnailer for Nautilus #
+# Graphviz files Thumbnailer #
 
 ## Introduction ##
 
-This project explains all the steps needed to configure Nautilus to display graphviz .dot files result in their Nautilus icon.
+This project handles all the steps needed to configure your file manager to display graphviz .dot files content as their thumbnail.
 
-## Description & Installation ##
+## Installation ##
 
-Just download and run :
-
-    ./graphviz-thumbnailer-install.sh
-    
+Just download and run installation script **graphviz-tumbnailer-install.sh**
