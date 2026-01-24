@@ -9,10 +9,10 @@ DIR_TEMPLATE=$(xdg-user-dir TEMPLATES)
 if [ -d "${DIR_TEMPLATE}" ]
 then
   # download templates
-  wget -O "${DIR_TEMPLATE}/Calc Sheet.ods" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/template/Calc%20Sheet.ods
-  wget -O "${DIR_TEMPLATE}/Writer Document.odt" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/template/Writer%20Document.odt
-  wget -O "${DIR_TEMPLATE}/Bash Script.sh" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/template/Bash%20Script.sh
-  wget -O "${DIR_TEMPLATE}/Text File.txt" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/template/Text%20File.txt
+  wget -O "${DIR_TEMPLATE}/Calc Sheet.ods" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/nautilus/template/Calc%20Sheet.ods
+  wget -O "${DIR_TEMPLATE}/Writer Document.odt" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/nautilus/template/Writer%20Document.odt
+  wget -O "${DIR_TEMPLATE}/Bash Script.sh" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/nautilus/template/Bash%20Script.sh
+  wget -O "${DIR_TEMPLATE}/Text File.txt" https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/nautilus/template/Text%20File.txt
 
   # set execute attributes
   chmod +x "${DIR_TEMPLATE}/Bash Script.sh"
