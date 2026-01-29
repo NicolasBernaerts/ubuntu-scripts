@@ -64,7 +64,7 @@ sudo apt -y upgrade
 if [ "${COMMON}" = "ok" ]
 then
     # gnomeshell
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/gnomeshell
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/gnomeshell
     if [ -f ./gnomeshell ]
     then
         chmod +x ./gnomeshell
@@ -73,7 +73,7 @@ then
     fi
 
     # utilities and tools
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/utilities
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/utilities
     if [ -f ./utilities ]
     then
         chmod +x ./utilities
@@ -82,7 +82,7 @@ then
     fi
 
     # office tools
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/office
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/office
     if [ -f ./office ]
     then
         chmod +x ./office
@@ -91,7 +91,7 @@ then
     fi
 
     # graphical tools
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/graphical
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/graphical
     if [ -f ./graphical ]
     then
         chmod +x ./graphical
@@ -100,7 +100,7 @@ then
     fi
 
     # multimedia tools
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/multimedia
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/multimedia
     if [ -f ./multimedia ]
     then
         chmod +x ./multimedia
@@ -109,7 +109,7 @@ then
     fi
 
     # internet tools
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/internet
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/internet
     if [ -f ./internet ]
     then
         chmod +x ./internet
@@ -125,7 +125,7 @@ fi
 # android tools
 if [ "${ANDROID}" = "ok" ]
 then
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/android
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/android
     if [ -f ./android ]
     then
         chmod +x ./android
@@ -137,7 +137,7 @@ fi
 # design apps
 if [ "${DESIGN}" = "ok" ]
 then
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/design
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/design
     if [ -f ./design ]
     then
         chmod +x ./design
@@ -149,7 +149,7 @@ fi
 # programming
 if [ "${PROGRAMMING}" = "ok" ]
 then
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/install/${DISTRI_VERSION}/programming
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/install/${DISTRI_VERSION}/programming
     if [ -f ./programming ]
     then
         chmod +x ./programming
@@ -161,7 +161,7 @@ fi
 # Photorec
 if [ "${PHOTOREC}" = "ok" ]
 then
-    wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/tools/qphotorec-install.sh
+    wget https://raw.githubusercontent.com/NicolasBernaerts/ubuntu-scripts/refs/heads/master/tools/qphotorec-install.sh
     if [ -f ./qphotorec-install.sh ]
     then
         logger "Tools - Photorec"
