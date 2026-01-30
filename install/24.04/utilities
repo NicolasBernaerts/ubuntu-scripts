@@ -8,7 +8,7 @@
 
 # htop and iotop
 logger "utilities - htop and iotop"
-sudo apt -y install htop iotop
+sudo apt -y install htop iotop nvtop
 
 # serial terminal client
 sudo usermod -aG dialout ${USERNAME}
