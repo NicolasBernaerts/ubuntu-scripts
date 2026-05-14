@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # -------------------------------------------------------
+#
 # Script to install programming environment on Jammy
 #
 # 03/09/2022, v1.0 - Migration from Focal
 #                    Add Tasmota helper scripts
+# 14/05/2026, v1.1 - Add latest GLIBC update (for VSCode)
+#
 # -------------------------------------------------------
 
 # SSH - Asbru connexion manager
@@ -24,6 +27,11 @@ logger "programming - vscode tweaks"
 echo "# For Visual Studio Code" | sudo tee -a /etc/sysctl.conf
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
+
+# latest GLIBC libraries
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt update
+sudo apt-get install --only-upgrade libstdc++6
 
 # Tasmotizer
 sudo apt -y install python3-pip
