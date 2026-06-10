@@ -53,7 +53,7 @@ RESULT=$(cat /etc/lsb-release | grep "DISTRIB_RELEASE" | cut -d'=' -f2-)
 [ "${RESULT}" != "${DISTRI_VERSION}" ] && { echo "Distribution is ${RESULT}. This script is for ${DISTRI_VERSION}"; exit 1; }
 
 # Disable sudo timeout
-sudo sh -c 'echo "\nDefaults timestamp_timeout=-1" >> /etc/sudoers'
+sudo sh -c 'echo "\nDefaults timestamp_timeout=120" >> /etc/sudoers'
 
 # Full System Update
 sudo apt update
@@ -190,4 +190,4 @@ sudo apt -y autoclean
 [ -d $HOME/.cache/thumbnails ] && rm -r $HOME/.cache/thumbnails/*
 
 # Enable sudo timeout
-sudo sed -i "/Defaults timestamp_timeout=-1/d" /etc/sudoers
+sudo sed -i "/Defaults timestamp_timeout=120/d" /etc/sudoers
