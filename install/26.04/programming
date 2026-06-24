@@ -9,7 +9,8 @@
 # SSH - Asbru connexion manager
 snap install asbru
 
-#  Visual Studio Code (for PlatformIO IDE)
+#  Visual Studio Code
+#  Extensions to install : PlatformIO IDE, Python, Python Environments, Prettier, ESP crash decoder
 logger "programming - visual studio code"
 sudo apt -y install software-properties-common apt-transport-https wget
 sudo apt -y install python3-venv
