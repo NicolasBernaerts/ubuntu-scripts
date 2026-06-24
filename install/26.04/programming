@@ -9,6 +9,12 @@
 # SSH - Asbru connexion manager
 snap install asbru
 
+# Extend inotify limits for VS Code
+logger "programming - vscode tweaks"
+echo "# For Visual Studio Code" | sudo tee -a /etc/sysctl.conf
+echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
 #  Visual Studio Code
 #  Extensions to install : PlatformIO IDE, Python, Python Environments, Prettier, ESP crash decoder
 logger "programming - visual studio code"
@@ -18,12 +24,6 @@ wget -O- https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor 
 echo deb [arch=amd64 signed-by=/usr/share/keyrings/vscode.gpg] https://packages.microsoft.com/repos/vscode stable main | sudo tee /etc/apt/sources.list.d/vscode.list
 sudo apt update
 sudo apt -y install code
-
-# Extend inotify limits for VS Code
-logger "programming - vscode tweaks"
-echo "# For Visual Studio Code" | sudo tee -a /etc/sysctl.conf
-echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
-sudo sysctl -p
 
 # Tasmotizer
 sudo apt -y install python3-pyqt5.qtserialport python3-pip
