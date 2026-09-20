@@ -13,24 +13,24 @@ DISTRO=$(lsb_release -is 2>/dev/null)
 sudo apt-get -y install graphviz netpbm eog
 
 # install bubblewrap wrapper to handle Nautilus 3.26.4+ bug for external thumbnailers
-sudo wget -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/bwrap
+sudo wget -4 -O /usr/local/bin/bwrap https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/bwrap
 sudo chmod +rx /usr/local/bin/bwrap
 
 # install previewer
-sudo wget -O /usr/share/icons/graphviz.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/graphviz.png
-sudo wget -O /usr/local/bin/graphviz-preview https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-preview
+sudo wget -4 -O /usr/share/icons/graphviz.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/graphviz.png
+sudo wget -4 -O /usr/local/bin/graphviz-preview https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-preview
 sudo chmod +x /usr/local/bin/graphviz-preview
 
 # desktop integration
-sudo wget -O /usr/share/applications/graphviz.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.desktop
+sudo wget -4 -O /usr/share/applications/graphviz.desktop https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.desktop
 sudo chmod +x /usr/share/applications/graphviz.desktop
 
 # install main thumnailer script
-sudo wget -O /usr/local/sbin/graphviz-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-thumbnailer
+sudo wget -4 -O /usr/local/sbin/graphviz-thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz-thumbnailer
 sudo chmod +x /usr/local/sbin/graphviz-thumbnailer
 
 # thumbnailer integration
-sudo wget -O /usr/share/thumbnailers/graphviz.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.thumbnailer
+sudo wget -4 -O /usr/share/thumbnailers/graphviz.thumbnailer https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/graphviz/graphviz.thumbnailer
 
 # stop file manager
 FILE_MANAGER=$(grep -i "exec=" /usr/share/applications/$(xdg-mime query default "inode/directory")  | tail -n 1 | cut -d'=' -f2 | cut -d' ' -f1)
