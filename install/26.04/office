@@ -17,6 +17,8 @@ fi
 
 # HP printer GUI 
 sudo apt -y install hplip-gui
+hp-setup
+hp-plugin
 
 # NAPS2 scanner
 wget -O naps2.deb https://github.com/cyanfish/naps2/releases/download/v8.2.1/naps2-8.2.1-linux-x64.deb
