@@ -19,12 +19,12 @@ sudo apt-get -y install poppler-utils texlive-extra-utils unoconv
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icon
-sudo wget -O /usr/share/icons/pdf-booklet.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-booklet.png
+sudo wget -4 -O /usr/share/icons/pdf-booklet.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-booklet.png
 
 # install main script
-sudo wget -O /usr/local/bin/pdf-booklet https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet
+sudo wget -4 -O /usr/local/bin/pdf-booklet https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet
 sudo chmod +x /usr/local/bin/pdf-booklet
 
 # desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget -O $HOME/.local/share/nautilus-python/extensions/pdf-booklet-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet-menu.py
+wget -4 -O $HOME/.local/share/nautilus-python/extensions/pdf-booklet-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet-menu.py
