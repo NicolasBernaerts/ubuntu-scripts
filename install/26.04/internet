@@ -6,8 +6,12 @@
 # 19/03/2026, v1.0 - Migrated from 24.04
 # 21/03/2026, v1.1 - Add apparmor patch for firefox
 # 15/04/2026, v1.2 - Enable Web Serial on Chromium
+# 20/09/2026, v1.3 - Add Thunderbird
 #
 # ----------------------------------------------------------------
+
+# thunderbird
+sudo apt -y install thunderbird
 
 # set apparmor needed acces for Firefox snap
 wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/mozilla/apparmor-firefox-install.sh
