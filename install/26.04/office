@@ -17,7 +17,7 @@ fi
 
 # HP printer GUI 
 sudo apt -y install hplip-gui
-hp-setup
+hp-setup -i
 hp-plugin
 
 # NAPS2 scanner
