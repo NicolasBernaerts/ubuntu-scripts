@@ -2,7 +2,7 @@
 # Install service to handle AppArmor bugs
 
 # tool
-sudo wget -O "/usr/local/bin/apparmor-bug" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/apparmor-bug.service
+sudo wget -O "/usr/local/bin/apparmor-bug" https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/apparmor-bug
 sudo chmod +x /usr/local/bin/apparmor-bug
 
 # service
