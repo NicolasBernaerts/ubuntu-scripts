@@ -22,7 +22,7 @@ sudo apt -y install ghostscript mupdf-tools
 # if needed, remove imagemagick PDF generation restrictions
 if [ ! -f "/etc/apt/apt.conf.d/99imagemagick-enable-pdf" ]
 then
-	wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/imagemagisk-enable-pdf-install.sh
+	wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/imagemagisk-enable-pdf-install.sh
 	if [ -f ./imagemagisk-enable-pdf-install.sh ]
 	then
 		logger "graphical - ImageMagick PDF and PostScript restriction removal"
@@ -36,21 +36,21 @@ fi
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install main menu icon
-sudo wget -O /usr/share/icons/pdf-menu.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-menu.png
+sudo wget -4 -O /usr/share/icons/pdf-menu.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-menu.png
 
 # desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget -O $HOME/.local/share/nautilus-python/extensions/pdf-tools-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-tools-menu.py
+wget -4 -O $HOME/.local/share/nautilus-python/extensions/pdf-tools-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-tools-menu.py
 
 # -----------------
 #  PDF compression
 # -----------------
 
 # install icon
-sudo wget -O /usr/share/icons/pdf-compress.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-compress.png
+sudo wget -4 -O /usr/share/icons/pdf-compress.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-compress.png
 
 # install main script
-sudo wget -O /usr/local/bin/pdf-compress https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-compress
+sudo wget -4 -O /usr/local/bin/pdf-compress https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-compress
 sudo chmod +x /usr/local/bin/pdf-compress
 
 # -----------------
@@ -58,8 +58,8 @@ sudo chmod +x /usr/local/bin/pdf-compress
 # -----------------
 
 # install icon
-sudo wget -O /usr/share/icons/pdf-repair.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-repair.png
+sudo wget -4 -O /usr/share/icons/pdf-repair.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/pdf/pdf-repair.png
 
 # install main script
-sudo wget -O /usr/local/bin/pdf-repair https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-repair
+sudo wget -4 -O /usr/local/bin/pdf-repair https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-repair
 sudo chmod +x /usr/local/bin/pdf-repair
