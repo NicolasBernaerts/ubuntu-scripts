@@ -181,6 +181,9 @@ fi
 # ---                Package cleanup              ---
 # ---------------------------------------------------
 
+# langage selector
+sudo /usr/bin/gnome-language-selector
+
 # packages
 sudo apt -y autoremove
 sudo apt -y autoclean
