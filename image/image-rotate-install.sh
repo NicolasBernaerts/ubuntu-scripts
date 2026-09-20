@@ -17,15 +17,15 @@ gsettings set org.gnome.desktop.interface menus-have-icons true
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "{'Gtk/ButtonImages': <1>, 'Gtk/MenuImages': <1>}"
 
 # install icons
-sudo wget -O /usr/share/icons/image-rotate.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate.png
-sudo wget -O /usr/share/icons/rotate-left.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-left.png
-sudo wget -O /usr/share/icons/rotate-right.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-right.png
-sudo wget -O /usr/share/icons/rotate-updown.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-updown.png
+sudo wget -4 -O /usr/share/icons/image-rotate.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate.png
+sudo wget -4 -O /usr/share/icons/rotate-left.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-left.png
+sudo wget -4 -O /usr/share/icons/rotate-right.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-right.png
+sudo wget -4 -O /usr/share/icons/rotate-updown.png https://raw.githubusercontent.com/NicolasBernaerts/icon/refs/heads/master/image/image-rotate-updown.png
 
 # main script installation
-sudo wget -O /usr/local/bin/image-rotate https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-rotate
+sudo wget -4 -O /usr/local/bin/image-rotate https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-rotate
 sudo chmod +x /usr/local/bin/image-rotate
 
 # desktop integration
 mkdir --parents $HOME/.local/share/nautilus-python/extensions
-wget -O $HOME/.local/share/nautilus-python/extensions/image-rotate-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-rotate-menu.py
+wget -4 -O $HOME/.local/share/nautilus-python/extensions/image-rotate-menu.py https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/image/image-rotate-menu.py
