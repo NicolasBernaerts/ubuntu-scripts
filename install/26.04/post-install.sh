@@ -6,6 +6,7 @@
 # 
 #  20/03/2026, v1.0 - Migrated from 24.04
 #  21/03/2026, v1.1 - Disable ubuntu pro apt news
+#  20/09/2026, v1.2 - Add langage selector at the end
 # 
 # ---------------------------------------------------
 
