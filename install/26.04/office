@@ -6,7 +6,7 @@
 # -------------------------------------------------------
 
 # Remove AppArmor rule to open PDF from Google Drive
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/apparmor-bug-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/nautilus/apparmor-bug-install.sh
 if [ -f ./apparmor-bug-install.sh ]
 then
   logger "office - AppArmor nautilus bugs"
@@ -21,7 +21,7 @@ hp-setup -i
 hp-plugin
 
 # NAPS2 scanner
-wget -O naps2.deb https://github.com/cyanfish/naps2/releases/download/v8.2.1/naps2-8.2.1-linux-x64.deb
+wget -4 -O naps2.deb https://github.com/cyanfish/naps2/releases/download/v8.2.1/naps2-8.2.1-linux-x64.deb
 if [ -f ./naps2.deb ]
 then
   logger "office - NAPS2 scanner"
@@ -30,7 +30,7 @@ then
 fi
 
 # scan2folder tool
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/scanner/scan2folder-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/scanner/scan2folder-install.sh
 if [ -f ./scan2folder-install.sh ]
 then
   logger "graphical - scan2folder"
@@ -40,7 +40,7 @@ then
 fi
 
 # master PDF editor
-wget -O master-pdf-editor.deb https://code-industry.net/public/master-pdf-editor-4.3.89_qt5.amd64.deb
+wget -4 -O master-pdf-editor.deb https://code-industry.net/public/master-pdf-editor-4.3.89_qt5.amd64.deb
 if [ -f ./master-pdf-editor.deb ]
 then
   logger "office - Master PDF Editor"
@@ -49,7 +49,7 @@ then
 fi
 
 # Thumbnailer - LibreOffice
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/libreoffice/lo-thumbnailer-install.sh
 if [ -f ./lo-thumbnailer-install.sh ]
 then
   logger "office - LibreOffice thumbnailer"
@@ -59,7 +59,7 @@ then
 fi
 
 # Thumbnailer - Ms Office thumbnailer
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/thumbnailer/msoffice/msoffice-thumbnailer-install.sh
 if [ -f ./msoffice-thumbnailer-install.sh ]
 then
   logger "office - Ms Office thumbnailer"
@@ -69,7 +69,7 @@ then
 fi
 
 # PDF : document merge extension
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-merge-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-merge-install.sh
 if [ -f ./pdf-merge-install.sh ]
 then
   logger "office - PDF document merge"
@@ -79,7 +79,7 @@ then
 fi
 
 # PDF : rotation extension
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-rotate-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-rotate-install.sh
 if [ -f ./pdf-rotate-install.sh ]
 then
   logger "office - PDF rotation extension"
@@ -89,7 +89,7 @@ then
 fi
 
 # PDF : misc tools extension
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-tools-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-tools-install.sh
 if [ -f ./pdf-tools-install.sh ]
 then
   logger "office - PDF tools extension"
@@ -99,7 +99,7 @@ then
 fi
 
 # PDF : booklet generation extension
-wget https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet-install.sh
+wget -4 https://github.com/NicolasBernaerts/ubuntu-scripts/raw/refs/heads/master/pdf/pdf-booklet-install.sh
 if [ -f ./pdf-booklet-install.sh ]
 then
   logger "office - PDF booklet"
